@@ -24,6 +24,9 @@ const Background = () => {
         let warpRadius = minWarpRadius;
         let noiseOffsetX = 0;
         let noiseOffsetY = 10000;
+        let isTouching = false;
+        let touchX = 0;
+        let touchY = 0;
 
         p.setup = () => {
           const canvas = p.createCanvas(p.windowWidth, p.windowHeight);
@@ -31,24 +34,49 @@ const Background = () => {
           canvas.style('z-index', '-1');
           p.textSize(8);
           p.noStroke();
+
+          // Add touch event listeners
+          canvas.touchStarted((event: TouchEvent) => {
+            isTouching = true;
+            touchX = event.touches[0].clientX;
+            touchY = event.touches[0].clientY;
+            return false; // Prevent default
+          });
+
+          canvas.touchMoved((event: TouchEvent) => {
+            touchX = event.touches[0].clientX;
+            touchY = event.touches[0].clientY;
+            return false; // Prevent default
+          });
+
+          canvas.touchEnded(() => {
+            isTouching = false;
+            touchX = -1000;
+            touchY = -1000;
+            return false; // Prevent default
+          });
         };
 
         p.draw = () => {
           p.clear();
           
-          if (p.mouseX < 0 || p.mouseX > p.width || p.mouseY < 0 || p.mouseY > p.height) {
+          // Handle both mouse and touch input
+          const inputX = isTouching ? touchX : p.mouseX;
+          const inputY = isTouching ? touchY : p.mouseY;
+
+          if ((inputX < 0 || inputX > p.width || inputY < 0 || inputY > p.height) && !isTouching) {
             cursorX = -1000;
             cursorY = -1000;
           } else {
-            cursorX += (p.mouseX - cursorX) * easing;
-            cursorY += (p.mouseY - cursorY) * easing;
+            cursorX += (inputX - cursorX) * easing;
+            cursorY += (inputY - cursorY) * easing;
           }
 
-          let speed = p.dist(p.mouseX, p.mouseY, prevX, prevY);
+          let speed = p.dist(inputX, inputY, prevX, prevY);
           warpRadius = p.lerp(warpRadius, p.map(speed, 0, 20, minWarpRadius, maxWarpRadius), .02);
 
-          prevX = p.mouseX;
-          prevY = p.mouseY;
+          prevX = inputX;
+          prevY = inputY;
 
           noiseOffsetX += 0.008;
           noiseOffsetY += 0.005;
