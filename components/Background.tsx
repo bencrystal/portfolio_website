@@ -20,7 +20,7 @@ const Background = () => {
         let cursorY = 0;
         let prevX = 0;
         let prevY = 0;
-        let easing = 0.07;
+        let easing = 0.06;
         let warpRadius = minWarpRadius;
         let noiseOffsetX = 0;
         let noiseOffsetY = 10000;
@@ -45,12 +45,12 @@ const Background = () => {
           }
 
           let speed = p.dist(p.mouseX, p.mouseY, prevX, prevY);
-          warpRadius = p.lerp(warpRadius, p.map(speed, 0, 20, minWarpRadius, maxWarpRadius), 0.2);
+          warpRadius = p.lerp(warpRadius, p.map(speed, 0, 20, minWarpRadius, maxWarpRadius), .02);
 
           prevX = p.mouseX;
           prevY = p.mouseY;
 
-          noiseOffsetX += 0.005;
+          noiseOffsetX += 0.008;
           noiseOffsetY += 0.005;
 
           for (let x = spacing; x < p.width; x += spacing) {
@@ -60,9 +60,15 @@ const Background = () => {
               let dx = 0;
               let dy = 0;
               if (d < warpRadius) {
-                let force = (warpRadius - d) / warpRadius;
-                dx = (cursorX - x) * force * 0.5;
-                dy = (cursorY - y) * force * 0.5;
+                let force = p.pow((warpRadius - d) / warpRadius, 1.5);
+                dx = (cursorX - x) * force * 0.4;
+                dy = (cursorY - y) * force * 0.4;
+                let baseSize = 8;
+                let minSize = 6;
+                let newSize = p.map(force, 0, 1, baseSize, minSize);
+                p.textSize(newSize);
+              } else {
+                p.textSize(8);
               }
 
               let windX = p.map(p.noise(x * 0.05 + noiseOffsetX, y * 0.05), 0, 1, -2, 2);
