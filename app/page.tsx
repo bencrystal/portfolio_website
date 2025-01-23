@@ -149,13 +149,13 @@ export default function Page() {
         <section className="container mx-auto px-4 py-24">
           <div className="max-w-4xl">
             <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text">
-              Welcome to Ben Crystal's website! ✨
+              Welcome to Ben Crystal&apos;s website! ✨
             </h1>
             <p className="text-xl text-zinc-300 mb-4">
-              I'm an XR creative technologist and electrical engineer based in Brooklyn, NY.
+              I&apos;m an XR creative technologist and electrical engineer based in Brooklyn, NY.
             </p>
             <p className="text-xl text-zinc-300 mb-8">
-              My dream is to help people express themselves in ways they've never imagined.
+              My dream is to help people express themselves in ways they&apos;ve never imagined.
             </p>
             <div className="flex gap-4">
               <Button 
@@ -214,7 +214,7 @@ export default function Page() {
                   <h2 className="text-2xl font-bold mb-4 text-zinc-100">About Me</h2>
                   <div className="prose prose-invert max-w-none">
                     <p className="text-zinc-300">
-                      I'm a creative technologist and electrical engineer with a passion for building immersive experiences 
+                      I&apos;m a creative technologist and electrical engineer with a passion for building immersive experiences 
                       that blend the physical and digital worlds. With a background in music, engineering, and interactive design, 
                       I create tools and experiences that help people express themselves in new and meaningful ways.
                     </p>

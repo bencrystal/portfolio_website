@@ -85,9 +85,10 @@ const Background = () => {
     loadP5();
 
     return () => {
-      if (containerRef.current) {
-        while (containerRef.current.firstChild) {
-          containerRef.current.removeChild(containerRef.current.firstChild);
+      const currentContainer = containerRef.current;
+      if (currentContainer) {
+        while (currentContainer.firstChild) {
+          currentContainer.removeChild(currentContainer.firstChild);
         }
       }
     };
