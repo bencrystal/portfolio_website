@@ -120,6 +120,22 @@ export default function Page() {
   const [showAbout, setShowAbout] = useState(false);
   const [showResume, setShowResume] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const aboutSectionRef = useRef<HTMLElement>(null);
+
+  const scrollToSection = (ref: React.RefObject<HTMLElement>) => {
+    if (ref.current) {
+      ref.current.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (showAbout) {
+      scrollToSection(aboutSectionRef);
+    }
+  }, [showAbout]);
 
   useEffect(() => {
     observerRef.current = new IntersectionObserver((entries) => {
@@ -196,7 +212,7 @@ export default function Page() {
 
         {/* Expandable About Section */}
         {showAbout && (
-          <section className="container mx-auto px-4 py-8 fade-in">
+          <section ref={aboutSectionRef} className="container mx-auto px-4 py-8 fade-in transition-all duration-500 ease-out">
             <div className="max-w-4xl bg-zinc-950/30 backdrop-blur-sm rounded-lg p-8">
               <div className="flex flex-col md:flex-row gap-8">
                 <div className="w-48 h-48 relative flex-shrink-0 mx-auto md:mx-0">
@@ -273,54 +289,56 @@ export default function Page() {
           </section>
         )}
 
-        {/* Project Categories */}
-        {projectData.map((category, categoryIndex) => (
-          <section key={category.title} className="container mx-auto px-4 py-16">
-            <h2 className="text-3xl font-bold mb-12 fade-in text-zinc-100">
-              {category.title}
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {category.projects.map((project, projectIndex) => (
-                <div
-                  key={project.title}
-                  className="group relative bg-zinc-950/30 backdrop-blur-sm rounded-lg overflow-hidden fade-in hover:scale-[1.02] transition-transform duration-300"
-                  style={{ animationDelay: `${(projectIndex + 1) * 0.2}s` }}
-                >
-                  <div className="aspect-video relative">
-                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/80 to-transparent z-10" />
-                    <Image
-                      src={project.image}
-                      alt={project.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold mb-2 group-hover:text-cyan-400 transition-colors">
-                      {project.title}
-                    </h3>
-                    <p className="text-sm text-zinc-400 mb-4">
-                      {project.dateRange}
-                    </p>
-                    <p className="text-zinc-300 mb-4">
-                      {project.description}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {project.tags.map(tag => (
-                        <span
-                          key={tag}
-                          className="px-2 py-1 text-xs rounded-full bg-zinc-800/50 text-zinc-300 backdrop-blur-sm"
-                        >
-                          {tag}
-                        </span>
-                      ))}
+        {/* Projects Sections */}
+        <div className={`transition-all duration-500 ease-out transform ${showAbout ? 'translate-y-8 opacity-95' : 'translate-y-0'}`}>
+          {projectData.map((category, index) => (
+            <section key={index} className="container mx-auto px-4 py-8">
+              <div className="max-w-4xl">
+                <h2 className="text-2xl font-bold mb-6 text-zinc-100">{category.title}</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {category.projects.map((project, projectIndex) => (
+                    <div
+                      key={project.title}
+                      className="group relative bg-zinc-950/30 backdrop-blur-sm rounded-lg overflow-hidden fade-in hover:scale-[1.02] transition-transform duration-300"
+                      style={{ animationDelay: `${(projectIndex + 1) * 0.2}s` }}
+                    >
+                      <div className="aspect-video relative">
+                        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/80 to-transparent z-10" />
+                        <Image
+                          src={project.image}
+                          alt={project.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="p-6">
+                        <h3 className="text-xl font-semibold mb-2 group-hover:text-cyan-400 transition-colors">
+                          {project.title}
+                        </h3>
+                        <p className="text-sm text-zinc-400 mb-4">
+                          {project.dateRange}
+                        </p>
+                        <p className="text-zinc-300 mb-4">
+                          {project.description}
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {project.tags.map(tag => (
+                            <span
+                              key={tag}
+                              className="px-2 py-1 text-xs rounded-full bg-zinc-800/50 text-zinc-300 backdrop-blur-sm"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </section>
-        ))}
+              </div>
+            </section>
+          ))}
+        </div>
       </div>
     </main>
   );
