@@ -118,7 +118,6 @@ const imageLoader = ({ src }: { src: string }) => {
 
 export default function Page() {
   const [showAbout, setShowAbout] = useState(false);
-  const [showResume, setShowResume] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const aboutSectionRef = useRef<HTMLElement>(null);
 
@@ -184,9 +183,21 @@ export default function Page() {
               <Button 
                 variant="outline" 
                 className="hover:bg-blue-500 hover:text-white transition-colors backdrop-blur-sm bg-zinc-950/30"
-                onClick={() => setShowResume(!showResume)}
+                asChild
               >
-                Resume
+                <a 
+                  href="/resume.pdf?v=1"
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="flex items-center gap-2"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  Resume
+                </a>
               </Button>
               <Button 
                 variant="outline" 
@@ -239,49 +250,6 @@ export default function Page() {
                       creating intuitive and engaging user experiences. I believe technology should enhance our natural 
                       creativity and enable new forms of expression.
                     </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Expandable Resume Section */}
-        {showResume && (
-          <section className="container mx-auto px-4 py-8 fade-in">
-            <div className="max-w-4xl bg-zinc-950/30 backdrop-blur-sm rounded-lg p-8">
-              <div className="flex justify-between items-start mb-6">
-                <h2 className="text-2xl font-bold text-zinc-100">Resume</h2>
-                <Button 
-                  variant="outline" 
-                  className="hover:bg-blue-500 hover:text-white transition-colors backdrop-blur-sm bg-zinc-950/30"
-                  asChild
-                >
-                  <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                      <polyline points="7 10 12 15 17 10"/>
-                      <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                    Download PDF
-                  </a>
-                </Button>
-              </div>
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-xl font-semibold text-cyan-400">Education</h3>
-                  <p className="text-zinc-300">NYU Tandon School of Engineering</p>
-                  <p className="text-zinc-400">B.S. Electrical Engineering, Minor in Computer Science</p>
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-cyan-400">Skills</h3>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {["Unity", "C#", "Python", "Machine Learning", "VR Development", "Physical Computing", 
-                      "Signal Processing", "Interactive Design", "MATLAB", "Git"].map(skill => (
-                      <span key={skill} className="px-2 py-1 text-sm rounded-full bg-zinc-800/50 text-zinc-300">
-                        {skill}
-                      </span>
-                    ))}
                   </div>
                 </div>
               </div>
