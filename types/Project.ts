@@ -12,9 +12,10 @@ export type ProjectLink = {
 
 // Add a new type for content sections
 type ContentSection = {
-  type: 'text' | 'video';
+  type: 'text' | 'video' | 'image';
   content: string;
   title?: string;
+  caption?: string;
 }
 
 export interface Project {
@@ -34,6 +35,7 @@ export interface Project {
   content?: ContentSection[];
   backgroundText?: string;  // Custom text for background animation
   backgroundFontSize?: number;  // Add font size option
+  backgroundSpacing?: number;  // Add spacing control
 }
 
 // Example usage:

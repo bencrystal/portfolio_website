@@ -133,13 +133,160 @@ export const projects: Project[] = [
       "Lyrics display and editing capabilities"
     ],
     category: ["VR", "Music", "Interactive", "Research"],
-    backgroundText: "  ♪  ",//ᯅ
-    backgroundFontSize: 15
+    backgroundText: "  ♪  ",
+    backgroundFontSize: 15,
+    backgroundSpacing: 35
   },
   {
     id: 'celicollector',
-    backgroundText: "⚡ ⭐ ⚡",
-    // ... rest of Celicollector data
+    title: "Celicollector: Scavenger VR Game",
+    description: "A VR game that lets players explore a suburban home from the perspective of a house cat",
+    thumbnail: "/projects/celicollector/outdoor-scene.jpg",
+    images: [
+      "/projects/celicollector/basic-interactions.jpg",
+      "/projects/celicollector/accessibility.jpg",
+      "/projects/celicollector/character-movement.jpg",
+      "/projects/celicollector/scene-management.jpg",
+      "/projects/celicollector/scene-build-goals.jpg",
+      "/projects/celicollector/three-scenes.jpg",
+      "/projects/celicollector/onboarding-scene.jpg",
+      "/projects/celicollector/outdoor-scene.jpg",
+      "/projects/celicollector/indoor-scene.jpg",
+      "/projects/celicollector/assets-1.jpg",
+      "/projects/celicollector/assets-2.jpg"
+    ],
+    techStack: [
+      { name: "Unity", color: "#000000" },
+      { name: "VR", color: "#1CA0F2" },
+      { name: "C#", color: "#178600" },
+      { name: "Cinema 4D", color: "#011A6A" }
+    ],
+    content: [
+      {
+        type: 'text',
+        title: 'Background',
+        content: "This was my first completed VR game. I set out with a few of my friends collaborating virtually to use this as an experience to explore as many aspects of Virtual Reality design as possible in a compact package."
+      },
+      {
+        type: 'text',
+        title: 'Objective',
+        content: "Create a scavenger hunt-based VR game that allows players to explore a suburban home from the perspective of a house cat."
+      },
+      {
+        type: 'video',
+        title: 'Demonstration',
+        content: 'https://youtu.be/qELDojpi6ZI'
+      },
+      {
+        type: 'text',
+        title: 'Basic Interactions',
+        content: "Basic interactions to navigate the world of Calicollector. There are also \"easter egg\" interactions, like a grabbable jetpack to allow faster outdoor exploration."
+      },
+      {
+        type: 'image',
+        content: "/projects/celicollector/basic-interactions.jpg"
+      },
+      {
+        type: 'text',
+        title: 'Accessibility Features',
+        content: "Key accessibility features kept in mind while developing the game to make it as enjoyable and inclusive as possible for the widest audience of potential users."
+      },
+      {
+        type: 'image',
+        content: "/projects/celicollector/accessibility.jpg"
+      },
+      {
+        type: 'text',
+        title: 'Controller Mappings',
+        content: "Controller mappings for interactions."
+      },
+      {
+        type: 'image',
+        content: "/projects/celicollector/character-movement.jpg"
+      },
+      {
+        type: 'text',
+        title: 'Scene Management',
+        content: "Scene management to allow game progress to be continuous when switching scenes."
+      },
+      {
+        type: 'image',
+        content: "/projects/celicollector/scene-management.jpg"
+      },
+      {
+        type: 'text',
+        title: 'Environment Design Goals',
+        content: "Key features emphasized when developing the game's three environments."
+      },
+      {
+        type: 'image',
+        content: "/projects/celicollector/scene-build-goals.jpg"
+      },
+      {
+        type: 'text',
+        title: 'Game Environments',
+        content: "In-game map visible in each environment."
+      },
+      {
+        type: 'image',
+        content: "/projects/celicollector/three-scenes.jpg"
+      },
+      {
+        type: 'text',
+        title: 'Game Scenes',
+        content: "The game features three main scenes:"
+      },
+      {
+        type: 'image',
+        content: "/projects/celicollector/onboarding-scene.jpg",
+        caption: "Onboarding scene."
+      },
+      {
+        type: 'image',
+        content: "/projects/celicollector/outdoor-scene.jpg",
+        caption: "Outdoor scene."
+      },
+      {
+        type: 'image',
+        content: "/projects/celicollector/indoor-scene.jpg",
+        caption: "Indoor scene."
+      },
+      {
+        type: 'text',
+        title: 'UI and Player Identity',
+        content: "Integration of visual UI and teammate's custom paws to give players a sense of identity."
+      },
+      {
+        type: 'image',
+        content: "/projects/celicollector/assets-1.jpg"
+      },
+      {
+        type: 'text',
+        title: 'Collectible Assets',
+        content: "Assets developed by teammates in Cinema 4D as collectibles."
+      },
+      {
+        type: 'image',
+        content: "/projects/celicollector/assets-2.jpg"
+      }
+    ],
+    links: [
+      { type: "demo", url: "https://youtu.be/qELDojpi6ZI" }
+    ],
+    featured: true,
+    startDate: new Date('2020-01'),
+    endDate: new Date('2020-05'),
+    highlights: [
+      "First-person VR exploration game",
+      "Multiple interactive environments",
+      "Custom asset integration",
+      "Accessibility-focused design",
+      "Collaborative development"
+    ],
+    category: ["VR", "Game Design", "Unity"],
+    backgroundText: "      ≽^•⩊•^≼      ",
+    backgroundFontSize: 15,
+    backgroundSpacing: 27
   },
   {
     id: 'panaudicon',

@@ -5,9 +5,10 @@ import { useEffect, useRef } from 'react';
 interface BackgroundProps {
   text?: string;  // Make text configurable
   fontSize?: number;  // Add font size prop
+  spacing?: number;  // Add spacing prop
 }
 
-const Background = ({ text = "^ ◡ ^", fontSize = 8 }: BackgroundProps) => {  // Default to original face and 8
+const Background = ({ text = "^ ◡ ^", fontSize = 10, spacing = 14 }: BackgroundProps) => {  // Default to original face and 8
   const containerRef = useRef<HTMLDivElement>(null);
   // Add refs for tracking mouse position globally
   const mouseXRef = useRef(0);
@@ -37,10 +38,15 @@ const Background = ({ text = "^ ◡ ^", fontSize = 8 }: BackgroundProps) => {  /
 
       const sketch = (p: any) => {
         const ROLL_MULTIPLIER = 0.6;
-        const spacing = 27;
-        const gridColor = p.color(87, 241, 255, 40);  // Cache color with lower opacity
-        const ringColor = p.color(87, 241, 255);  // Base color for rings, opacity set in draw
-        const noiseScale = 0.05;  // Cache noise scale
+        // Increase base spacing and use it as a multiplier
+        const baseSpacing = spacing || 27;
+        const gridSpacing = {
+          x: baseSpacing * 2.5, // Make horizontal spacing wider for the cat faces
+          y: baseSpacing * 1.5  // Adjust vertical spacing
+        };
+        const gridColor = p.color(87, 241, 255, 40);
+        const ringColor = p.color(87, 241, 255);
+        const noiseScale = 0.05;
         
         // Pre-calculate grid positions with more data to avoid calculations in draw loop
         let gridPositions: {
@@ -52,12 +58,12 @@ const Background = ({ text = "^ ◡ ^", fontSize = 8 }: BackgroundProps) => {  /
         
         const calculateGridPositions = () => {
           gridPositions = [];
-          for (let x = spacing; x < p.windowWidth; x += spacing) {
-            for (let y = spacing; y < p.windowHeight; y += spacing) {
+          // Use separate x and y spacing
+          for (let x = gridSpacing.x; x < p.windowWidth; x += gridSpacing.x) {
+            for (let y = gridSpacing.y; y < p.windowHeight; y += gridSpacing.y) {
               gridPositions.push({
                 x,
                 y,
-                // Pre-calculate noise offsets for each position
                 noiseOffsetX: x * noiseScale,
                 noiseOffsetY: y * noiseScale
               });
@@ -254,7 +260,7 @@ const Background = ({ text = "^ ◡ ^", fontSize = 8 }: BackgroundProps) => {  /
         }
       }
     };
-  }, [text, fontSize]); // Add text and fontSize to dependency array
+  }, [text, fontSize, spacing]); // Add text, fontSize, and spacing to dependency array
 
   return (
     <div

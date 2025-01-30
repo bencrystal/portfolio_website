@@ -28,7 +28,8 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
     <main className="min-h-screen bg-zinc-900 text-white relative">
       <Background 
         text={project.backgroundText} 
-        fontSize={project.backgroundFontSize} 
+        fontSize={project.backgroundFontSize}
+        spacing={project.backgroundSpacing}
       />
       <div className="relative z-30 max-w-4xl mx-auto p-8">
         <h1 className="text-5xl font-bold mb-8">{project.title}</h1>
@@ -58,7 +59,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
           }
         </div>
 
-        {/* Description */}
+        {/* Content Sections */}
         {project.content && (
           <div className="space-y-12">
             {project.content.map((section, index) => (
@@ -66,9 +67,12 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                 {section.title && (
                   <h2 className="text-2xl font-semibold mb-4">{section.title}</h2>
                 )}
-                {section.type === 'text' ? (
+                
+                {section.type === 'text' && (
                   <p className="text-zinc-300 whitespace-pre-wrap">{section.content}</p>
-                ) : (
+                )}
+
+                {section.type === 'video' && (
                   <div className="relative pt-[56.25%] bg-black rounded-lg overflow-hidden">
                     <iframe
                       className="absolute top-0 left-0 w-full h-full"
@@ -77,6 +81,19 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
                     />
+                  </div>
+                )}
+
+                {section.type === 'image' && (
+                  <div className="rounded-lg overflow-hidden shadow-lg">
+                    <img 
+                      src={section.content}
+                      alt={section.caption || "Project image"}
+                      className="w-full h-auto"
+                    />
+                    {section.caption && (
+                      <p className="text-sm text-zinc-400 mt-2">{section.caption}</p>
+                    )}
                   </div>
                 )}
               </div>
