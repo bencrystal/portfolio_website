@@ -2,11 +2,26 @@
 
 import { useEffect, useRef } from 'react';
 
-const Background = () => {
+interface BackgroundProps {
+  text?: string;  // Make text configurable
+}
+
+const Background = ({ text = "^ ◡ ^" }: BackgroundProps) => {  // Default to original face
   const containerRef = useRef<HTMLDivElement>(null);
+  // Add refs for tracking mouse position globally
+  const mouseXRef = useRef(0);
+  const mouseYRef = useRef(0);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+
+    // Add global mouse move listener
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseXRef.current = e.clientX;
+      mouseYRef.current = e.clientY;
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
 
     const loadP5 = async () => {
       const p5 = (await import('p5')).default;
@@ -103,8 +118,9 @@ const Background = () => {
         p.draw = () => {
           p.clear();
           
-          const inputX = isTouching ? touchX : p.mouseX;
-          const inputY = isTouching ? touchY : p.mouseY;
+          // Use the ref values instead of p.mouseX/Y
+          const inputX = isTouching ? touchX : mouseXRef.current;
+          const inputY = isTouching ? touchY : mouseYRef.current;
 
           if ((inputX < 0 || inputX > p.width || inputY < 0 || inputY > p.height) && !isTouching) {
             cursorX = -1000;
@@ -194,11 +210,11 @@ const Background = () => {
               const windX = p.map(p.noise(pos.noiseOffsetX + currentNoiseOffsetX, pos.y * noiseScale), 0, 1, -2, 2);
               const windY = p.map(p.noise(pos.x * noiseScale, pos.noiseOffsetY + currentNoiseOffsetY), 0, 1, -1, 1);
               
-              p.text("^ ◡ ^", pos.x - 2*offsetX + windX, pos.y - 2*offsetY + windY);
+              p.text(text, pos.x - 2*offsetX + windX, pos.y - 2*offsetY + windY);
             } else {
               const windX = p.map(p.noise(pos.noiseOffsetX + currentNoiseOffsetX, pos.y * noiseScale), 0, 1, -2, 2);
               const windY = p.map(p.noise(pos.x * noiseScale, pos.noiseOffsetY + currentNoiseOffsetY), 0, 1, -1, 1);
-              p.text("^ ◡ ^", pos.x + windX, pos.y + windY);
+              p.text(text, pos.x + windX, pos.y + windY);
             }
           }
         };
@@ -215,6 +231,7 @@ const Background = () => {
     loadP5();
 
     return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
       const currentContainer = containerRef.current;
       if (currentContainer) {
         while (currentContainer.firstChild) {
@@ -222,15 +239,16 @@ const Background = () => {
         }
       }
     };
-  }, []);
+  }, [text]); // Add text to dependency array
 
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 pointer-events-none"
+      className="fixed inset-0"
       style={{ 
         zIndex: 0,
-        background: 'rgb(9, 9, 11)'
+        background: 'rgb(9, 9, 11)',
+        pointerEvents: 'none'  // Allow clicks to pass through to content
       }}
     />
   );

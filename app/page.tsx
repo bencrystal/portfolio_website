@@ -5,15 +5,8 @@ import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import Background from "@/components/Background"
-
-interface Project {
-  title: string;
-  description: string;
-  image: string;
-  dateRange: string;
-  tags: string[];
-  link?: string;
-}
+import { ProjectCard } from '@/components/ProjectCard'
+import { Project } from '@/types/Project'
 
 interface ProjectCategory {
   title: string;
@@ -25,28 +18,64 @@ const projectData: ProjectCategory[] = [
     title: "VR Projects",
     projects: [
       {
+        id: 'space-jam-vr',
         title: "Space Jam: VR Vocal Performance Space",
         description: "An immersive virtual environment for vocal performance and musical expression",
-        image: "/projects/space-jam.jpg",
-        dateRange: "September 2020 - Present",
-        tags: ["VR", "music technology", "interaction design"],
-        link: "/projects/space-jam"
+        thumbnail: "/projects/space-jam.jpg",
+        images: ["/projects/space-jam.jpg"],
+        techStack: [
+          { name: "VR", color: "#1CA0F2" },
+          { name: "Unity", color: "#000000" },
+          { name: "C#", color: "#178600" }
+        ],
+        links: [
+          { type: "demo", url: "https://youtu.be/L_9KwXF9G6g" },
+          { type: "docs", url: "https://www.notion.so/VR-Vocal-Performance-Space-dffa59f27c6d4649b71c3bef6c298320" }
+        ],
+        featured: true,
+        startDate: new Date('2020-09'),
+        highlights: [
+          "Real-time vocal harmonization",
+          "Gesture-based controls",
+          "Automatic key and tempo matching"
+        ],
+        category: ["VR", "Music", "Interactive"]
       },
       {
+        id: 'celicollector',
         title: "Celicollector: Scavenger VR Game",
         description: "Interactive VR game focused on collection and exploration",
-        image: "/projects/celicollector.jpg",
-        dateRange: "September 2020 - Present",
-        tags: ["interaction design", "VR", "game design"],
-        link: "#"
+        thumbnail: "/projects/celicollector.jpg",
+        images: ["/projects/celicollector.jpg"],
+        techStack: [
+          { name: "VR", color: "#1CA0F2" },
+          { name: "Unity", color: "#000000" },
+          { name: "Game Design", color: "#E44D26" }
+        ],
+        links: [
+          { type: "github", url: "#" }
+        ],
+        featured: false,
+        startDate: new Date('2020-09'),
+        category: ["VR", "Game Design"]
       },
       {
+        id: 'panaudicon',
         title: "Panaudicon: The Audible Surveillance State",
         description: "An exploration of sound and surveillance in virtual reality",
-        image: "/projects/panaudicon.jpg",
-        dateRange: "September - December 2021",
-        tags: ["interaction design", "machine learning"],
-        link: "#"
+        thumbnail: "/projects/panaudicon.jpg",
+        images: ["/projects/panaudicon.jpg"],
+        techStack: [
+          { name: "VR", color: "#1CA0F2" },
+          { name: "ML", color: "#FF6F00" }
+        ],
+        links: [
+          { type: "demo", url: "#" }
+        ],
+        featured: false,
+        startDate: new Date('2021-09'),
+        endDate: new Date('2021-12'),
+        category: ["VR", "Machine Learning"]
       }
     ]
   },
@@ -54,59 +83,110 @@ const projectData: ProjectCategory[] = [
     title: "Design and Engineering Projects",
     projects: [
       {
+        id: 'vocal-harmonizer',
         title: "Vocal Harmonizer",
         description: "A handheld vocal harmony synthesizer with real-time processing",
-        image: "/projects/harmonizer.jpg",
-        dateRange: "2020 - 2021",
-        tags: ["electronics", "physical computing", "music technology"],
-        link: "#"
+        longDescription: "A portable device that enables real-time vocal harmonization...",
+        thumbnail: "/projects/harmonizer.jpg",
+        images: ["/projects/harmonizer.jpg"],
+        techStack: [
+          { name: "Electronics", color: "#00979D" },
+          { name: "Arduino", color: "#00979D" },
+          { name: "DSP", color: "#FF9900" }
+        ],
+        links: [
+          { type: "github", url: "#" },
+          { type: "demo", url: "#" }
+        ],
+        featured: true,
+        startDate: new Date('2020-01'),
+        endDate: new Date('2021-12'),
+        highlights: [
+          "Real-time audio processing",
+          "Custom PCB design",
+          "Intuitive physical controls"
+        ],
+        category: ["Hardware", "Music", "Electronics"]
       },
       {
+        id: 'ml-series',
         title: "Machine Learning Series",
         description: "Projects exploring sound classification and lyric generation",
-        image: "/projects/ml-series.jpg",
-        dateRange: "2021 - Present",
-        tags: ["machine learning", "natural language processing"],
-        link: "#"
+        longDescription: "A series of experiments in machine learning applications for music...",
+        thumbnail: "/projects/ml-series.jpg",
+        images: ["/projects/ml-series.jpg"],
+        techStack: [
+          { name: "Python", color: "#3776AB" },
+          { name: "TensorFlow", color: "#FF6F00" },
+          { name: "NLP", color: "#4B8BBE" }
+        ],
+        links: [
+          { type: "github", url: "#" },
+          { type: "docs", url: "#" }
+        ],
+        featured: true,
+        startDate: new Date('2021-01'),
+        highlights: [
+          "Sound classification models",
+          "Lyric generation using GPT",
+          "Real-time audio analysis"
+        ],
+        category: ["Machine Learning", "Music", "NLP"]
       },
       {
+        id: 'wrip-watch',
         title: "Wrip Watch Branding",
         description: "Brand design for a hypothetical smartwatch company",
-        image: "/projects/wrip.jpg",
-        dateRange: "2021",
-        tags: ["graphic design", "UX/UI"],
-        link: "#"
+        longDescription: "Complete brand identity design for an innovative smartwatch startup...",
+        thumbnail: "/projects/wrip.jpg",
+        images: ["/projects/wrip.jpg"],
+        techStack: [
+          { name: "Figma", color: "#F24E1E" },
+          { name: "Illustrator", color: "#FF9A00" },
+          { name: "UI/UX", color: "#4353FF" }
+        ],
+        links: [
+          { type: "live", url: "#" }
+        ],
+        featured: false,
+        startDate: new Date('2021-01'),
+        endDate: new Date('2021-12'),
+        highlights: [
+          "Brand identity system",
+          "UI/UX design",
+          "Marketing materials"
+        ],
+        category: ["Design", "Branding"]
       }
     ]
-
-    
   },
   {
     title: "Other Projects",
     projects: [
       {
+        id: 'music-portfolio',
         title: "Music",
-        description: "A handheld vocal harmony synthesizer with real-time processing",
-        image: "/projects/harmonizer.jpg",
-        dateRange: "2020 - 2021",
-        tags: ["electronics", "physical computing", "music technology"],
-        link: "#"
-      },
-      {
-        title: "Machine Learning Series",
-        description: "Projects exploring sound classification and lyric generation",
-        image: "/projects/ml-series.jpg",
-        dateRange: "2021 - Present",
-        tags: ["machine learning", "natural language processing"],
-        link: "#"
-      },
-      {
-        title: "Wrip Watch Branding",
-        description: "Brand design for a hypothetical smartwatch company",
-        image: "/projects/wrip.jpg",
-        dateRange: "2021",
-        tags: ["graphic design", "UX/UI"],
-        link: "#"
+        description: "Collection of original music and sound design work",
+        longDescription: "Portfolio of musical works spanning various genres and techniques...",
+        thumbnail: "/projects/harmonizer.jpg",
+        images: ["/projects/harmonizer.jpg"],
+        techStack: [
+          { name: "Ableton", color: "#00CF3F" },
+          { name: "Max/MSP", color: "#525252" },
+          { name: "Pro Tools", color: "#7ACB10" }
+        ],
+        links: [
+          { type: "demo", url: "#" },
+          { type: "live", url: "#" }
+        ],
+        featured: true,
+        startDate: new Date('2020-01'),
+        highlights: [
+          "Original compositions",
+          "Sound design",
+          "Live performances"
+        ],
+        category: ["Music", "Audio"]
       }
     ]
   }
@@ -186,7 +266,7 @@ export default function Page() {
                 asChild
               >
                 <a 
-                  href="/resume.pdf?v=1"
+                  href={`/resume.pdf?t=${Date.now()}`}
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="flex items-center gap-2"
@@ -264,43 +344,11 @@ export default function Page() {
               <div className="max-w-4xl">
                 <h2 className="text-2xl font-bold mb-6 text-zinc-100">{category.title}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {category.projects.map((project, projectIndex) => (
-                    <div
-                      key={project.title}
-                      className="group relative bg-zinc-950/30 backdrop-blur-sm rounded-lg overflow-hidden fade-in hover:scale-[1.02] transition-transform duration-300"
-                      style={{ animationDelay: `${(projectIndex + 1) * 0.2}s` }}
-                    >
-                      <div className="aspect-video relative">
-                        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/80 to-transparent z-10" />
-                        <Image
-                          src={project.image}
-                          alt={project.title}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <div className="p-6">
-                        <h3 className="text-xl font-semibold mb-2 group-hover:text-cyan-400 transition-colors">
-                          {project.title}
-                        </h3>
-                        <p className="text-sm text-zinc-400 mb-4">
-                          {project.dateRange}
-                        </p>
-                        <p className="text-zinc-300 mb-4">
-                          {project.description}
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {project.tags.map(tag => (
-                            <span
-                              key={tag}
-                              className="px-2 py-1 text-xs rounded-full bg-zinc-800/50 text-zinc-300 backdrop-blur-sm"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
+                  {category.projects.map((project) => (
+                    <ProjectCard 
+                      key={project.id}
+                      project={project}
+                    />
                   ))}
                 </div>
               </div>
