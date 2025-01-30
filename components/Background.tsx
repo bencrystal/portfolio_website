@@ -13,6 +13,8 @@ const Background = () => {
       if (!containerRef.current) return;
 
       const sketch = (p: any) => {
+        // ROLL_MULTIPLIER controls how fast the rings appear to revolve
+        const ROLL_MULTIPLIER = 0.5;
         let spacing = 27;
         let minWarpRadius = 50;
         let maxWarpRadius = 100;
@@ -27,6 +29,14 @@ const Background = () => {
         let isTouching = false;
         let touchX = 0;
         let touchY = 0;
+        let angle = 0;
+        let prevAngle = 0;
+        let rollAngle = 0;
+        let rollPhase = 0;
+        let tiltX = 0;
+        let tiltY = 0;
+        let rollX = 0;
+        let rollY = 0;
 
         p.setup = () => {
           const canvas = p.createCanvas(p.windowWidth, p.windowHeight);
@@ -81,6 +91,64 @@ const Background = () => {
           noiseOffsetX += 0.008;
           noiseOffsetY += 0.012;
 
+          // Draw the marble effect
+          if (cursorX > -900) {
+            let dx = cursorX - prevX;
+            let dy = cursorY - prevY;
+            let speed = Math.sqrt(dx * dx + dy * dy);
+            
+            if (speed > 0.1) {
+              // Calculate the direction of roll
+              let moveAngle = Math.atan2(dy, dx);
+              
+              // Update roll phase based on distance traveled
+              let circumference = Math.PI * warpRadius * 2;
+              // Add a factor of 0.5 to make it roll half as fast
+              rollPhase += (speed / circumference) * ROLL_MULTIPLIER;
+              
+              // Smoothly update roll angle
+              rollAngle = moveAngle;
+            }
+            
+            p.noFill();
+            
+            // Draw main circle (faint)
+            p.stroke(87, 241, 255, 10);
+            p.strokeWeight(2);
+            p.circle(cursorX, cursorY, warpRadius * 2);
+            
+            // Draw the rings
+            p.push();
+            p.translate(cursorX, cursorY);
+            
+            // Draw two perpendicular rings
+            for (let i = 0; i < 2; i++) {
+              p.push();
+              
+              // Calculate how visible each ring should be based on its current rotation
+              let phase = rollPhase + (i * Math.PI/2);
+              let visibility = Math.abs(Math.sin(phase)) * 40 + 20;
+              
+              // Calculate ring shape based on its current rotation
+              let w = warpRadius * 2;
+              let h = w * Math.abs(Math.sin(phase));
+              
+              p.stroke(87, 241, 255, visibility);
+              p.strokeWeight(3);
+              p.rotate(rollAngle + Math.PI/2);
+              p.ellipse(0, 0, w, h);
+              p.pop();
+            }
+            
+            p.pop();
+            
+            // Inner glow
+            p.stroke(87, 241, 255, 15);
+            p.strokeWeight(2);
+            p.circle(cursorX, cursorY, warpRadius * 1.7);
+            p.circle(cursorX, cursorY, warpRadius * 1.4);
+          }
+
           for (let x = spacing; x < p.width; x += spacing) {
             for (let y = spacing; y < p.height; y += spacing) {
               let d = p.dist(cursorX, cursorY, x, y);
@@ -102,6 +170,7 @@ const Background = () => {
               let windX = p.map(p.noise(x * 0.05 + noiseOffsetX, y * 0.05), 0, 1, -2, 2);
               let windY = p.map(p.noise(x * 0.05, y * 0.05 + noiseOffsetY), 0, 1, -1, 1);
               
+              // p.noStroke();
               p.fill(87, 241, 255, 100);
               p.text("^ ◡ ^", x - 2*dx + windX, y - 2*dy + windY);
             }
