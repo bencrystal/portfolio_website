@@ -33,6 +33,7 @@ export interface Project {
   category?: string[];     // Project categories (e.g., ['Web', 'Mobile'])
   content?: ContentSection[];
   backgroundText?: string;  // Custom text for background animation
+  backgroundFontSize?: number;  // Add font size option
 }
 
 // Example usage:

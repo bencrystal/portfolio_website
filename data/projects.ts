@@ -25,13 +25,24 @@ export const projects: Project[] = [
       'Mobile responsive'
     ],
     category: ['Web', 'Interactive'],
-    backgroundText: "^ ◡ ^"
+    backgroundText: "^ ◡ ^",
+    backgroundFontSize: 8
   },
   {
-    id: 'space-jam-vr',
-    title: "Space Jam: VR Vocal Performance Space",
+    id: 'virtual-audio-workstation',
+    title: "Virtual Audio Workstation",
     description: "An immersive virtual environment for vocal performance and musical expression",
     content: [
+      {
+        type: 'text',
+        title: 'Vision Pro Live Looper',
+        content: "I'm exploring how augmented and spatial reality tools can help people express themselves more freely than ever before. This \"pedalboard in the sky\" is my first prototype that feels easier to use than a lot of hardware interfaces I've tried. It's changed the way I want to play and perform and I'm excited to keep pushing it forward for myself and all of you~ ✨\n\nThis live looper was developed for the Apple Vision Pro, with earlier iterations on Meta Quest devices. It's still in its early stages, and I have plenty of ideas for future improvements and new features."
+      },
+      {
+        type: 'video',
+        title: 'Vision Pro Demo',
+        content: 'https://www.youtube.com/watch?v=Geu2tB6TieY'
+      },
       {
         type: 'text',
         title: 'Background',
@@ -100,7 +111,8 @@ export const projects: Project[] = [
       { name: "VR", color: "#1CA0F2" },
       { name: "Unity", color: "#000000" },
       { name: "C#", color: "#178600" },
-      { name: "Ableton Live", color: "#00CF3F" }
+      { name: "Ableton Live", color: "#00CF3F" },
+      { name: "visionOS", color: "#000000" }
     ],
     links: [
       { type: "demo", url: "https://youtu.be/L_9KwXF9G6g" },
@@ -121,7 +133,8 @@ export const projects: Project[] = [
       "Lyrics display and editing capabilities"
     ],
     category: ["VR", "Music", "Interactive", "Research"],
-    backgroundText: "♪ ♫ ♬"
+    backgroundText: "  ♪  ",//ᯅ
+    backgroundFontSize: 15
   },
   {
     id: 'celicollector',

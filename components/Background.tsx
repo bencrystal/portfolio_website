@@ -4,13 +4,15 @@ import { useEffect, useRef } from 'react';
 
 interface BackgroundProps {
   text?: string;  // Make text configurable
+  fontSize?: number;  // Add font size prop
 }
 
-const Background = ({ text = "^ ◡ ^" }: BackgroundProps) => {  // Default to original face
+const Background = ({ text = "^ ◡ ^", fontSize = 8 }: BackgroundProps) => {  // Default to original face and 8
   const containerRef = useRef<HTMLDivElement>(null);
   // Add refs for tracking mouse position globally
   const mouseXRef = useRef(0);
   const mouseYRef = useRef(0);
+  const p5InstanceRef = useRef<any>(null); // Track p5 instance
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -24,14 +26,20 @@ const Background = ({ text = "^ ◡ ^" }: BackgroundProps) => {  // Default to o
     window.addEventListener('mousemove', handleMouseMove);
 
     const loadP5 = async () => {
+      // Clean up any existing p5 instance
+      if (p5InstanceRef.current) {
+        p5InstanceRef.current.remove();
+        p5InstanceRef.current = null;
+      }
+
       const p5 = (await import('p5')).default;
       if (!containerRef.current) return;
 
       const sketch = (p: any) => {
         const ROLL_MULTIPLIER = 0.6;
         const spacing = 27;
-        const gridColor = p.color(87, 241, 255, 100);  // Cache color
-        const ringColor = p.color(87, 241, 255);  // Base color for rings
+        const gridColor = p.color(87, 241, 255, 40);  // Cache color with lower opacity
+        const ringColor = p.color(87, 241, 255);  // Base color for rings, opacity set in draw
         const noiseScale = 0.05;  // Cache noise scale
         
         // Pre-calculate grid positions with more data to avoid calculations in draw loop
@@ -81,7 +89,7 @@ const Background = ({ text = "^ ◡ ^" }: BackgroundProps) => {  // Default to o
           const canvas = p.createCanvas(p.windowWidth, p.windowHeight);
           canvas.position(0, 0);
           canvas.style('z-index', '-1');
-          p.textSize(12);
+          p.textSize(fontSize);
           p.noStroke();
 
           calculateGridPositions();
@@ -162,24 +170,25 @@ const Background = ({ text = "^ ◡ ^" }: BackgroundProps) => {  // Default to o
               rollPhase += (moveSpeed / circumference) * ROLL_MULTIPLIER;
             }
             
-            // Draw rings
+            // Draw rings with reduced opacity
             p.push();
             p.translate(cursorX, cursorY);
             
-            // Draw faint circle
+            // Reduce faint circle opacity from 40 to 20
             p.noFill();
-            p.stroke(ringColor.levels[0], ringColor.levels[1], ringColor.levels[2], 40);
+            p.stroke(ringColor.levels[0], ringColor.levels[1], ringColor.levels[2], 20);
             p.strokeWeight(2);
             p.circle(0, 0, warpRadius * 2);
             
-            // Draw rotating rings
+            // Draw rotating rings with reduced opacity
             const w = warpRadius * 2;
             for (let i = 0; i < 2; i++) {
               p.push();
               const phase = rollPhase + (i * Math.PI/2);
               const sinPhase = Math.abs(Math.sin(phase));
               
-              p.stroke(ringColor.levels[0], ringColor.levels[1], ringColor.levels[2], sinPhase * 40 + 20);
+              // Reduce ring opacity from (40 + 20) to (20 + 10)
+              p.stroke(ringColor.levels[0], ringColor.levels[1], ringColor.levels[2], sinPhase * 30 + 15);
               p.strokeWeight(3);
               p.rotate(rollAngle + Math.PI/2);
               p.ellipse(0, 0, w, w * sinPhase);
@@ -189,7 +198,7 @@ const Background = ({ text = "^ ◡ ^" }: BackgroundProps) => {  // Default to o
           }
 
           // Optimize grid drawing
-          p.textSize(8);  // Set default text size once
+          p.textSize(fontSize);
           p.fill(gridColor);
           
           const warpRadiusSq = warpRadius * warpRadius;
@@ -225,13 +234,19 @@ const Background = ({ text = "^ ◡ ^" }: BackgroundProps) => {  // Default to o
         };
       };
 
-      new p5(sketch, containerRef.current);
+      // Store the new instance
+      p5InstanceRef.current = new p5(sketch, containerRef.current);
     };
 
     loadP5();
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
+      // Clean up p5 instance on unmount
+      if (p5InstanceRef.current) {
+        p5InstanceRef.current.remove();
+        p5InstanceRef.current = null;
+      }
       const currentContainer = containerRef.current;
       if (currentContainer) {
         while (currentContainer.firstChild) {
@@ -239,7 +254,7 @@ const Background = ({ text = "^ ◡ ^" }: BackgroundProps) => {  // Default to o
         }
       }
     };
-  }, [text]); // Add text to dependency array
+  }, [text, fontSize]); // Add text and fontSize to dependency array
 
   return (
     <div

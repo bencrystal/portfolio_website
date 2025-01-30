@@ -12,8 +12,8 @@ export const ProjectCard = ({ project, variant = 'default' }: ProjectCardProps) 
       href={`/projects/${project.id}`}
       className="block group transition-transform hover:scale-[1.02]"
     >
-      <div className="bg-gray-800 rounded-lg overflow-hidden shadow-lg">
-        <div className="relative aspect-video overflow-hidden">
+      <div className="bg-gray-800 rounded-lg overflow-hidden shadow-lg h-[400px] flex flex-col">
+        <div className="relative aspect-video overflow-hidden flex-shrink-0">
           <img 
             src={project.thumbnail} 
             alt={project.title}
@@ -21,12 +21,12 @@ export const ProjectCard = ({ project, variant = 'default' }: ProjectCardProps) 
           />
         </div>
         
-        <div className="p-6">
-          <h3 className="text-xl font-bold mb-2">{project.title}</h3>
-          <p className="text-gray-300 mb-4">{project.description}</p>
+        <div className="p-6 flex flex-col flex-grow">
+          <h3 className="text-xl font-bold mb-2 line-clamp-1">{project.title}</h3>
+          <p className="text-gray-300 mb-4 line-clamp-2 flex-grow">{project.description}</p>
           
           {project.techStack && project.techStack.length > 0 && (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 mt-auto">
               {project.techStack.map(tech => (
                 <span 
                   key={tech.name}

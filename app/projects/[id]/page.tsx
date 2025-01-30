@@ -26,7 +26,10 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
 
   return (
     <main className="min-h-screen bg-zinc-900 text-white relative">
-      <Background text={project.backgroundText} />
+      <Background 
+        text={project.backgroundText} 
+        fontSize={project.backgroundFontSize} 
+      />
       <div className="relative z-30 max-w-4xl mx-auto p-8">
         <h1 className="text-5xl font-bold mb-8">{project.title}</h1>
 
