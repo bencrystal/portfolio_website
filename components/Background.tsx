@@ -19,9 +19,29 @@ const Background = () => {
         const ringColor = p.color(87, 241, 255);  // Base color for rings
         const noiseScale = 0.05;  // Cache noise scale
         
-        // Pre-calculate grid positions
-        let gridPositions: {x: number, y: number}[] = [];
+        // Pre-calculate grid positions with more data to avoid calculations in draw loop
+        let gridPositions: {
+          x: number, 
+          y: number, 
+          noiseOffsetX: number,
+          noiseOffsetY: number
+        }[] = [];
         
+        const calculateGridPositions = () => {
+          gridPositions = [];
+          for (let x = spacing; x < p.windowWidth; x += spacing) {
+            for (let y = spacing; y < p.windowHeight; y += spacing) {
+              gridPositions.push({
+                x,
+                y,
+                // Pre-calculate noise offsets for each position
+                noiseOffsetX: x * noiseScale,
+                noiseOffsetY: y * noiseScale
+              });
+            }
+          }
+        };
+
         let cursorX = 0;
         let cursorY = 0;
         let prevX = 0;
@@ -40,6 +60,8 @@ const Background = () => {
         let maxWarpRadius = 100;
         let warpRadius = minWarpRadius;
 
+        let frameCount = 0;
+
         p.setup = () => {
           const canvas = p.createCanvas(p.windowWidth, p.windowHeight);
           canvas.position(0, 0);
@@ -47,12 +69,7 @@ const Background = () => {
           p.textSize(12);
           p.noStroke();
 
-          // Pre-calculate grid positions
-          for (let x = spacing; x < p.windowWidth; x += spacing) {
-            for (let y = spacing; y < p.windowHeight; y += spacing) {
-              gridPositions.push({x, y});
-            }
-          }
+          calculateGridPositions();
 
           // Add touch event listeners
           canvas.touchStarted((event: TouchEvent) => {
@@ -98,13 +115,24 @@ const Background = () => {
           }
 
           let speed = getDistance(inputX, inputY, prevX, prevY);
-          warpRadius = p.lerp(warpRadius, p.map(speed, 0, 20, minWarpRadius, maxWarpRadius), 0.015);
+
+          // Update warp radius - allow shrinking even without movement
+          if (speed > 0.1) {
+            // Expand with movement
+            warpRadius = p.lerp(warpRadius, p.map(speed, 0, 20, minWarpRadius, maxWarpRadius), 0.015);
+          } else {
+            // Shrink when still
+            warpRadius = p.lerp(warpRadius, minWarpRadius, 0.015);
+          }
 
           prevX = inputX;
           prevY = inputY;
 
-          noiseOffsetX += 0.008;
-          noiseOffsetY += 0.012;
+          frameCount++;
+          if (frameCount % 2 === 0) { // Update every other frame
+            noiseOffsetX += 0.008;
+            noiseOffsetY += 0.012;
+          }
 
           // Draw the marble effect
           if (cursorX > -900) {
@@ -148,12 +176,14 @@ const Background = () => {
           p.textSize(8);  // Set default text size once
           p.fill(gridColor);
           
-          const warpRadiusSq = warpRadius * warpRadius;  // Cache squared radius for faster distance check
+          const warpRadiusSq = warpRadius * warpRadius;
+          const currentNoiseOffsetX = noiseOffsetX;
+          const currentNoiseOffsetY = noiseOffsetY;
           
           for (const pos of gridPositions) {
             const dx = cursorX - pos.x;
             const dy = cursorY - pos.y;
-            const distSq = dx * dx + dy * dy;  // Use squared distance to avoid sqrt
+            const distSq = dx * dx + dy * dy;
 
             if (distSq < warpRadiusSq) {
               const dist = Math.sqrt(distSq);
@@ -161,20 +191,13 @@ const Background = () => {
               const offsetX = dx * force * 0.4;
               const offsetY = dy * force * 0.4;
               
-              // Ensure text size changes are symmetrical
-              const textSize = p.map(force, 0, 1, 8, 6);
-              p.textSize(textSize);
-              p.textAlign(p.CENTER, p.CENTER);  // Center align text to prevent shift
-              
-              const windX = p.map(p.noise(pos.x * noiseScale + noiseOffsetX, pos.y * noiseScale), 0, 1, -2, 2);
-              const windY = p.map(p.noise(pos.x * noiseScale, pos.y * noiseScale + noiseOffsetY), 0, 1, -1, 1);
+              const windX = p.map(p.noise(pos.noiseOffsetX + currentNoiseOffsetX, pos.y * noiseScale), 0, 1, -2, 2);
+              const windY = p.map(p.noise(pos.x * noiseScale, pos.noiseOffsetY + currentNoiseOffsetY), 0, 1, -1, 1);
               
               p.text("^ ◡ ^", pos.x - 2*offsetX + windX, pos.y - 2*offsetY + windY);
             } else {
-              p.textSize(8);
-              p.textAlign(p.CENTER, p.CENTER);
-              const windX = p.map(p.noise(pos.x * noiseScale + noiseOffsetX, pos.y * noiseScale), 0, 1, -2, 2);
-              const windY = p.map(p.noise(pos.x * noiseScale, pos.y * noiseScale + noiseOffsetY), 0, 1, -1, 1);
+              const windX = p.map(p.noise(pos.noiseOffsetX + currentNoiseOffsetX, pos.y * noiseScale), 0, 1, -2, 2);
+              const windY = p.map(p.noise(pos.x * noiseScale, pos.noiseOffsetY + currentNoiseOffsetY), 0, 1, -1, 1);
               p.text("^ ◡ ^", pos.x + windX, pos.y + windY);
             }
           }
@@ -182,13 +205,7 @@ const Background = () => {
 
         p.windowResized = () => {
           p.resizeCanvas(p.windowWidth, p.windowHeight);
-          // Recalculate grid positions on resize
-          gridPositions = [];
-          for (let x = spacing; x < p.windowWidth; x += spacing) {
-            for (let y = spacing; y < p.windowHeight; y += spacing) {
-              gridPositions.push({x, y});
-            }
-          }
+          calculateGridPositions();
         };
       };
 
