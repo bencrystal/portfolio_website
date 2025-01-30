@@ -32,7 +32,7 @@ const Background = () => {
           const canvas = p.createCanvas(p.windowWidth, p.windowHeight);
           canvas.position(0, 0);
           canvas.style('z-index', '-1');
-          p.textSize(8);
+          p.textSize(12);
           p.noStroke();
 
           // Add touch event listeners
@@ -79,7 +79,7 @@ const Background = () => {
           prevY = inputY;
 
           noiseOffsetX += 0.008;
-          noiseOffsetY += 0.005;
+          noiseOffsetY += 0.012;
 
           for (let x = spacing; x < p.width; x += spacing) {
             for (let y = spacing; y < p.height; y += spacing) {
@@ -103,7 +103,7 @@ const Background = () => {
               let windY = p.map(p.noise(x * 0.05, y * 0.05 + noiseOffsetY), 0, 1, -1, 1);
               
               p.fill(87, 241, 255, 100);
-              p.text("^ ◡ ^", x + dx + windX, y + dy + windY);
+              p.text("^ ◡ ^", x - 2*dx + windX, y - 2*dy + windY);
             }
           }
         };

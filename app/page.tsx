@@ -30,7 +30,7 @@ const projectData: ProjectCategory[] = [
         image: "/projects/space-jam.jpg",
         dateRange: "September 2020 - Present",
         tags: ["VR", "music technology", "interaction design"],
-        link: "#"
+        link: "/projects/space-jam"
       },
       {
         title: "Celicollector: Scavenger VR Game",
