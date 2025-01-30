@@ -124,7 +124,7 @@ const Background = () => {
             
             // Draw faint circle
             p.noFill();
-            p.stroke(ringColor.levels[0], ringColor.levels[1], ringColor.levels[2], 10);
+            p.stroke(ringColor.levels[0], ringColor.levels[1], ringColor.levels[2], 40);
             p.strokeWeight(2);
             p.circle(0, 0, warpRadius * 2);
             
