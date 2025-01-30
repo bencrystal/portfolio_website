@@ -42,11 +42,11 @@ const projectData: ProjectCategory[] = [
         category: ["VR", "Music", "Interactive"]
       },
       {
-        id: 'celicollector',
-        title: "Celicollector: Scavenger VR Game",
+        id: 'calicollector',
+        title: "Calicollector: Scavenger VR Game",
         description: "Interactive VR game focused on collection and exploration",
-        thumbnail: "/projects/celicollector.jpg",
-        images: ["/projects/celicollector.jpg"],
+        thumbnail: "/projects/calicollector.jpg",
+        images: ["/projects/calicollector.jpg"],
         techStack: [
           { name: "VR", color: "#1CA0F2" },
           { name: "Unity", color: "#000000" },

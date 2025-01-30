@@ -138,22 +138,22 @@ export const projects: Project[] = [
     backgroundSpacing: 35
   },
   {
-    id: 'celicollector',
-    title: "Celicollector: Scavenger VR Game",
+    id: 'calicollector',
+    title: "Calicollector: Scavenger VR Game",
     description: "A VR game that lets players explore a suburban home from the perspective of a house cat",
-    thumbnail: "/projects/celicollector/outdoor-scene.jpg",
+    thumbnail: "/projects/calicollector/outdoor-scene.jpg",
     images: [
-      "/projects/celicollector/basic-interactions.jpg",
-      "/projects/celicollector/accessibility.jpg",
-      "/projects/celicollector/character-movement.jpg",
-      "/projects/celicollector/scene-management.jpg",
-      "/projects/celicollector/scene-build-goals.jpg",
-      "/projects/celicollector/three-scenes.jpg",
-      "/projects/celicollector/onboarding-scene.jpg",
-      "/projects/celicollector/outdoor-scene.jpg",
-      "/projects/celicollector/indoor-scene.jpg",
-      "/projects/celicollector/assets-1.jpg",
-      "/projects/celicollector/assets-2.jpg"
+      "/projects/calicollector/basic-interactions.jpg",
+      "/projects/calicollector/accessibility.jpg",
+      "/projects/calicollector/character-movement.jpg",
+      "/projects/calicollector/scene-management.jpg",
+      "/projects/calicollector/scene-build-goals.jpg",
+      "/projects/calicollector/three-scenes.jpg",
+      "/projects/calicollector/onboarding-scene.jpg",
+      "/projects/calicollector/outdoor-scene.jpg",
+      "/projects/calicollector/indoor-scene.jpg",
+      "/projects/calicollector/assets-1.jpg",
+      "/projects/calicollector/assets-2.jpg"
     ],
     techStack: [
       { name: "Unity", color: "#000000" },
@@ -184,7 +184,7 @@ export const projects: Project[] = [
       },
       {
         type: 'image',
-        content: "/projects/celicollector/basic-interactions.jpg"
+        content: "/projects/calicollector/basic-interactions.jpg"
       },
       {
         type: 'text',
@@ -193,7 +193,7 @@ export const projects: Project[] = [
       },
       {
         type: 'image',
-        content: "/projects/celicollector/accessibility.jpg"
+        content: "/projects/calicollector/accessibility.jpg"
       },
       {
         type: 'text',
@@ -202,7 +202,7 @@ export const projects: Project[] = [
       },
       {
         type: 'image',
-        content: "/projects/celicollector/character-movement.jpg"
+        content: "/projects/calicollector/character-movement.jpg"
       },
       {
         type: 'text',
@@ -211,7 +211,7 @@ export const projects: Project[] = [
       },
       {
         type: 'image',
-        content: "/projects/celicollector/scene-management.jpg"
+        content: "/projects/calicollector/scene-management.jpg"
       },
       {
         type: 'text',
@@ -220,7 +220,7 @@ export const projects: Project[] = [
       },
       {
         type: 'image',
-        content: "/projects/celicollector/scene-build-goals.jpg"
+        content: "/projects/calicollector/scene-build-goals.jpg"
       },
       {
         type: 'text',
@@ -229,7 +229,7 @@ export const projects: Project[] = [
       },
       {
         type: 'image',
-        content: "/projects/celicollector/three-scenes.jpg"
+        content: "/projects/calicollector/three-scenes.jpg"
       },
       {
         type: 'text',
@@ -238,17 +238,17 @@ export const projects: Project[] = [
       },
       {
         type: 'image',
-        content: "/projects/celicollector/onboarding-scene.jpg",
+        content: "/projects/calicollector/onboarding-scene.jpg",
         caption: "Onboarding scene."
       },
       {
         type: 'image',
-        content: "/projects/celicollector/outdoor-scene.jpg",
+        content: "/projects/calicollector/outdoor-scene.jpg",
         caption: "Outdoor scene."
       },
       {
         type: 'image',
-        content: "/projects/celicollector/indoor-scene.jpg",
+        content: "/projects/calicollector/indoor-scene.jpg",
         caption: "Indoor scene."
       },
       {
@@ -258,7 +258,7 @@ export const projects: Project[] = [
       },
       {
         type: 'image',
-        content: "/projects/celicollector/assets-1.jpg"
+        content: "/projects/calicollector/assets-1.jpg"
       },
       {
         type: 'text',
@@ -267,7 +267,7 @@ export const projects: Project[] = [
       },
       {
         type: 'image',
-        content: "/projects/celicollector/assets-2.jpg"
+        content: "/projects/calicollector/assets-2.jpg"
       }
     ],
     links: [
