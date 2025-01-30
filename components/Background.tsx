@@ -156,20 +156,23 @@ const Background = () => {
             const distSq = dx * dx + dy * dy;  // Use squared distance to avoid sqrt
 
             if (distSq < warpRadiusSq) {
-              const dist = Math.sqrt(distSq);  // Only calculate sqrt when needed
+              const dist = Math.sqrt(distSq);
               const force = p.pow((warpRadius - dist) / warpRadius, 1.5);
               const offsetX = dx * force * 0.4;
               const offsetY = dy * force * 0.4;
               
-              if (force > 0.1) {  // Only change text size if significant
-                p.textSize(p.map(force, 0, 1, 8, 6));
-              }
+              // Ensure text size changes are symmetrical
+              const textSize = p.map(force, 0, 1, 8, 6);
+              p.textSize(textSize);
+              p.textAlign(p.CENTER, p.CENTER);  // Center align text to prevent shift
               
               const windX = p.map(p.noise(pos.x * noiseScale + noiseOffsetX, pos.y * noiseScale), 0, 1, -2, 2);
               const windY = p.map(p.noise(pos.x * noiseScale, pos.y * noiseScale + noiseOffsetY), 0, 1, -1, 1);
               
               p.text("^ ◡ ^", pos.x - 2*offsetX + windX, pos.y - 2*offsetY + windY);
             } else {
+              p.textSize(8);
+              p.textAlign(p.CENTER, p.CENTER);
               const windX = p.map(p.noise(pos.x * noiseScale + noiseOffsetX, pos.y * noiseScale), 0, 1, -2, 2);
               const windY = p.map(p.noise(pos.x * noiseScale, pos.y * noiseScale + noiseOffsetY), 0, 1, -1, 1);
               p.text("^ ◡ ^", pos.x + windX, pos.y + windY);
