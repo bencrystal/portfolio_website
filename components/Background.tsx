@@ -13,30 +13,32 @@ const Background = () => {
       if (!containerRef.current) return;
 
       const sketch = (p: any) => {
-        // ROLL_MULTIPLIER controls how fast the rings appear to revolve
-        const ROLL_MULTIPLIER = 0.5;
-        let spacing = 27;
-        let minWarpRadius = 50;
-        let maxWarpRadius = 100;
+        const ROLL_MULTIPLIER = 0.6;
+        const spacing = 27;
+        const gridColor = p.color(87, 241, 255, 100);  // Cache color
+        const ringColor = p.color(87, 241, 255);  // Base color for rings
+        const noiseScale = 0.05;  // Cache noise scale
+        
+        // Pre-calculate grid positions
+        let gridPositions: {x: number, y: number}[] = [];
+        
         let cursorX = 0;
         let cursorY = 0;
         let prevX = 0;
         let prevY = 0;
-        let easing = 0.06;
-        let warpRadius = minWarpRadius;
+        const easing = 0.06;
         let noiseOffsetX = 0;
         let noiseOffsetY = 10000;
         let isTouching = false;
         let touchX = 0;
         let touchY = 0;
-        let angle = 0;
-        let prevAngle = 0;
         let rollAngle = 0;
         let rollPhase = 0;
-        let tiltX = 0;
-        let tiltY = 0;
-        let rollX = 0;
-        let rollY = 0;
+        
+        // Keep the dynamic warp radius
+        let minWarpRadius = 50;
+        let maxWarpRadius = 100;
+        let warpRadius = minWarpRadius;
 
         p.setup = () => {
           const canvas = p.createCanvas(p.windowWidth, p.windowHeight);
@@ -44,6 +46,13 @@ const Background = () => {
           canvas.style('z-index', '-1');
           p.textSize(12);
           p.noStroke();
+
+          // Pre-calculate grid positions
+          for (let x = spacing; x < p.windowWidth; x += spacing) {
+            for (let y = spacing; y < p.windowHeight; y += spacing) {
+              gridPositions.push({x, y});
+            }
+          }
 
           // Add touch event listeners
           canvas.touchStarted((event: TouchEvent) => {
@@ -67,10 +76,16 @@ const Background = () => {
           });
         };
 
+        // Cache distance calculations
+        const getDistance = (x1: number, y1: number, x2: number, y2: number) => {
+          const dx = x2 - x1;
+          const dy = y2 - y1;
+          return Math.sqrt(dx * dx + dy * dy);
+        };
+
         p.draw = () => {
           p.clear();
           
-          // Handle both mouse and touch input
           const inputX = isTouching ? touchX : p.mouseX;
           const inputY = isTouching ? touchY : p.mouseY;
 
@@ -82,8 +97,8 @@ const Background = () => {
             cursorY += (inputY - cursorY) * easing;
           }
 
-          let speed = p.dist(inputX, inputY, prevX, prevY);
-          warpRadius = p.lerp(warpRadius, p.map(speed, 0, 20, minWarpRadius, maxWarpRadius), .02);
+          let speed = getDistance(inputX, inputY, prevX, prevY);
+          warpRadius = p.lerp(warpRadius, p.map(speed, 0, 20, minWarpRadius, maxWarpRadius), 0.015);
 
           prevX = inputX;
           prevY = inputY;
@@ -93,92 +108,84 @@ const Background = () => {
 
           // Draw the marble effect
           if (cursorX > -900) {
-            let dx = cursorX - prevX;
-            let dy = cursorY - prevY;
-            let speed = Math.sqrt(dx * dx + dy * dy);
+            const dx = cursorX - prevX;
+            const dy = cursorY - prevY;
+            const moveSpeed = Math.sqrt(dx * dx + dy * dy);
             
-            if (speed > 0.1) {
-              // Calculate the direction of roll
-              let moveAngle = Math.atan2(dy, dx);
-              
-              // Update roll phase based on distance traveled
-              let circumference = Math.PI * warpRadius * 2;
-              // Add a factor of 0.5 to make it roll half as fast
-              rollPhase += (speed / circumference) * ROLL_MULTIPLIER;
-              
-              // Smoothly update roll angle
-              rollAngle = moveAngle;
+            if (moveSpeed > 0.1) {
+              rollAngle = Math.atan2(dy, dx);
+              const circumference = Math.PI * warpRadius * 2;
+              rollPhase += (moveSpeed / circumference) * ROLL_MULTIPLIER;
             }
             
-            p.noFill();
-            
-            // Draw main circle (faint)
-            p.stroke(87, 241, 255, 10);
-            p.strokeWeight(2);
-            p.circle(cursorX, cursorY, warpRadius * 2);
-            
-            // Draw the rings
+            // Draw rings
             p.push();
             p.translate(cursorX, cursorY);
             
-            // Draw two perpendicular rings
+            // Draw faint circle
+            p.noFill();
+            p.stroke(ringColor.levels[0], ringColor.levels[1], ringColor.levels[2], 10);
+            p.strokeWeight(2);
+            p.circle(0, 0, warpRadius * 2);
+            
+            // Draw rotating rings
+            const w = warpRadius * 2;
             for (let i = 0; i < 2; i++) {
               p.push();
+              const phase = rollPhase + (i * Math.PI/2);
+              const sinPhase = Math.abs(Math.sin(phase));
               
-              // Calculate how visible each ring should be based on its current rotation
-              let phase = rollPhase + (i * Math.PI/2);
-              let visibility = Math.abs(Math.sin(phase)) * 40 + 20;
-              
-              // Calculate ring shape based on its current rotation
-              let w = warpRadius * 2;
-              let h = w * Math.abs(Math.sin(phase));
-              
-              p.stroke(87, 241, 255, visibility);
+              p.stroke(ringColor.levels[0], ringColor.levels[1], ringColor.levels[2], sinPhase * 40 + 20);
               p.strokeWeight(3);
               p.rotate(rollAngle + Math.PI/2);
-              p.ellipse(0, 0, w, h);
+              p.ellipse(0, 0, w, w * sinPhase);
               p.pop();
             }
-            
             p.pop();
-            
-            // Inner glow
-            p.stroke(87, 241, 255, 15);
-            p.strokeWeight(2);
-            p.circle(cursorX, cursorY, warpRadius * 1.7);
-            p.circle(cursorX, cursorY, warpRadius * 1.4);
           }
 
-          for (let x = spacing; x < p.width; x += spacing) {
-            for (let y = spacing; y < p.height; y += spacing) {
-              let d = p.dist(cursorX, cursorY, x, y);
+          // Optimize grid drawing
+          p.textSize(8);  // Set default text size once
+          p.fill(gridColor);
+          
+          const warpRadiusSq = warpRadius * warpRadius;  // Cache squared radius for faster distance check
+          
+          for (const pos of gridPositions) {
+            const dx = cursorX - pos.x;
+            const dy = cursorY - pos.y;
+            const distSq = dx * dx + dy * dy;  // Use squared distance to avoid sqrt
 
-              let dx = 0;
-              let dy = 0;
-              if (d < warpRadius) {
-                let force = p.pow((warpRadius - d) / warpRadius, 1.5);
-                dx = (cursorX - x) * force * 0.4;
-                dy = (cursorY - y) * force * 0.4;
-                let baseSize = 8;
-                let minSize = 6;
-                let newSize = p.map(force, 0, 1, baseSize, minSize);
-                p.textSize(newSize);
-              } else {
-                p.textSize(8);
-              }
-
-              let windX = p.map(p.noise(x * 0.05 + noiseOffsetX, y * 0.05), 0, 1, -2, 2);
-              let windY = p.map(p.noise(x * 0.05, y * 0.05 + noiseOffsetY), 0, 1, -1, 1);
+            if (distSq < warpRadiusSq) {
+              const dist = Math.sqrt(distSq);  // Only calculate sqrt when needed
+              const force = p.pow((warpRadius - dist) / warpRadius, 1.5);
+              const offsetX = dx * force * 0.4;
+              const offsetY = dy * force * 0.4;
               
-              // p.noStroke();
-              p.fill(87, 241, 255, 100);
-              p.text("^ ◡ ^", x - 2*dx + windX, y - 2*dy + windY);
+              if (force > 0.1) {  // Only change text size if significant
+                p.textSize(p.map(force, 0, 1, 8, 6));
+              }
+              
+              const windX = p.map(p.noise(pos.x * noiseScale + noiseOffsetX, pos.y * noiseScale), 0, 1, -2, 2);
+              const windY = p.map(p.noise(pos.x * noiseScale, pos.y * noiseScale + noiseOffsetY), 0, 1, -1, 1);
+              
+              p.text("^ ◡ ^", pos.x - 2*offsetX + windX, pos.y - 2*offsetY + windY);
+            } else {
+              const windX = p.map(p.noise(pos.x * noiseScale + noiseOffsetX, pos.y * noiseScale), 0, 1, -2, 2);
+              const windY = p.map(p.noise(pos.x * noiseScale, pos.y * noiseScale + noiseOffsetY), 0, 1, -1, 1);
+              p.text("^ ◡ ^", pos.x + windX, pos.y + windY);
             }
           }
         };
 
         p.windowResized = () => {
           p.resizeCanvas(p.windowWidth, p.windowHeight);
+          // Recalculate grid positions on resize
+          gridPositions = [];
+          for (let x = spacing; x < p.windowWidth; x += spacing) {
+            for (let y = spacing; y < p.windowHeight; y += spacing) {
+              gridPositions.push({x, y});
+            }
+          }
         };
       };
 
