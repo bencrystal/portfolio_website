@@ -12,10 +12,11 @@ export type ProjectLink = {
 
 // Add a new type for content sections
 type ContentSection = {
-  type: 'text' | 'video' | 'image';
+  type: 'text' | 'video' | 'image' | 'download';
   content: string;
   title?: string;
   caption?: string;
+  url?: string;
 }
 
 export interface Project {

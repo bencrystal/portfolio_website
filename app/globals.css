@@ -109,3 +109,21 @@
   background-color: theme('colors.cyan.500');
   color: white;
 }
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.image-grid img {
+  width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  transition: transform 0.2s ease;
+}
+
+.image-grid img:hover {
+  transform: scale(1.02);
+}

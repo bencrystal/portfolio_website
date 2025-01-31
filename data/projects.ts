@@ -164,6 +164,16 @@ export const projects: Project[] = [
     content: [
       {
         type: 'text',
+        content: "This scavenger hunt-styled VR game is my first completed virtual experience. You play as Cali, a mother cat, and need to explore your house and backyard to find food and toys to entertain your kittens. This game was made in collaboration with four 3D modelers, while I developed the environment, physics, UX, and UI."
+      },
+      {
+        type: 'download',
+        title: "Download Game",
+        content: "Click here to download the Oculus Quest compatible APK.",
+        url: "https://www.dropbox.com/scl/fi/4ag6bf2mlanf0yw7xy9ri/Calicollector.apk?rlkey=4lfcnmajjnv0o5177h2j6kams&e=1&dl=0"
+      },
+      {
+        type: 'text',
         title: 'Background',
         content: "This was my first completed VR game. I set out with a few of my friends collaborating virtually to use this as an experience to explore as many aspects of Virtual Reality design as possible in a compact package."
       },
@@ -179,95 +189,73 @@ export const projects: Project[] = [
       },
       {
         type: 'text',
-        title: 'Basic Interactions',
-        content: "Basic interactions to navigate the world of Calicollector. There are also \"easter egg\" interactions, like a grabbable jetpack to allow faster outdoor exploration."
+        title: 'Core Features',
+        content: "Basic interactions and accessibility were key priorities in development."
       },
       {
         type: 'image',
-        content: "/calicollector/calibasicinteractions.jpeg"
+        content: "/calicollector/calibasicinteractions.jpeg",
+        caption: "Core game interactions"
+      },
+      {
+        type: 'image',
+        content: "/calicollector/caliaccessibility.jpeg",
+        caption: "Accessibility features"
       },
       {
         type: 'text',
-        title: 'Accessibility Features',
-        content: "Key accessibility features kept in mind while developing the game to make it as enjoyable and inclusive as possible for the widest audience of potential users."
+        title: 'Environment Design',
+        content: "The game features multiple carefully designed environments for exploration."
       },
       {
         type: 'image',
-        content: "/calicollector/caliaccessibility.jpeg"
-      },
-      {
-        type: 'text',
-        title: 'Controller Mappings',
-        content: "Controller mappings for interactions."
+        content: "/calicollector/caliscenebuildgoals.jpeg",
+        caption: "Environment design goals"
       },
       {
         type: 'image',
-        content: "/calicollector/calicharactermovement.jpeg"
-      },
-      {
-        type: 'text',
-        title: 'Scene Management',
-        content: "Scene management to allow game progress to be continuous when switching scenes."
+        content: "/calicollector/caliscenemanagement.jpeg",
+        caption: "Scene management system"
       },
       {
         type: 'image',
-        content: "/calicollector/caliscenemanagement.jpeg"
-      },
-      {
-        type: 'text',
-        title: 'Environment Design Goals',
-        content: "Key features emphasized when developing the game's three environments."
-      },
-      {
-        type: 'image',
-        content: "/calicollector/caliscenebuildgoals.jpeg"
+        content: "/calicollector/calithreescenes.jpeg",
+        caption: "Overview of game environments"
       },
       {
         type: 'text',
         title: 'Game Environments',
-        content: "In-game map visible in each environment."
-      },
-      {
-        type: 'image',
-        content: "/calicollector/calithreescenes.jpeg"
-      },
-      {
-        type: 'text',
-        title: 'Game Scenes',
-        content: "The game features three main scenes:"
+        content: "Players can explore three distinct areas:"
       },
       {
         type: 'image',
         content: "/calicollector/calionboardingscene.jpeg",
-        caption: "Onboarding scene."
+        caption: "Tutorial Area"
       },
       {
         type: 'image',
         content: "/calicollector/calioutdoorscene.jpeg",
-        caption: "Outdoor scene."
+        caption: "Outdoor Environment"
       },
       {
         type: 'image',
         content: "/calicollector/caliindoorscene.jpeg",
-        caption: "Indoor scene."
+        caption: "Indoor Environment"
       },
       {
         type: 'text',
-        title: 'UI and Player Identity',
-        content: "Integration of visual UI and teammate's custom paws to give players a sense of identity."
+        title: 'Asset Design',
+        content: "Custom assets and UI elements enhance the player experience."
       },
       {
         type: 'image',
-        content: "/calicollector/caliassets1.jpeg"
-      },
-      {
-        type: 'text',
-        title: 'Collectible Assets',
-        content: "Assets developed by teammates in Cinema 4D as collectibles."
+        content: "/calicollector/caliassets1.jpeg",
+        caption: "UI and player elements"
       },
       {
         type: 'image',
-        content: "/calicollector/caliassets2.jpeg"
+        content: "/calicollector/caliassets2.jpeg",
+        caption: "Collectible items"
       }
     ],
     links: [

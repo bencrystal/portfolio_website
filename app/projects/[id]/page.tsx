@@ -86,14 +86,73 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
 
                 {section.type === 'image' && (
                   <div className="rounded-lg overflow-hidden shadow-lg">
-                    <img 
-                      src={section.content}
-                      alt={section.caption || "Project image"}
-                      className="w-full h-auto"
-                    />
-                    {section.caption && (
-                      <p className="text-sm text-zinc-400 mt-2">{section.caption}</p>
+                    {/* Check if this is the start of an image group and hasn't been rendered yet */}
+                    {index > 0 && 
+                     project.content[index - 1]?.type === 'text' && 
+                     project.content[index + 1]?.type === 'image' ? (
+                      <div className="image-grid">
+                        {(() => {
+                          // Find the end of this image group
+                          let endIndex = index;
+                          while (
+                            endIndex < project.content.length && 
+                            project.content[endIndex].type === 'image'
+                          ) {
+                            endIndex++;
+                          }
+                          
+                          // Render only this group of images
+                          return project.content
+                            .slice(index, endIndex)
+                            .map((imgSection, i) => (
+                              <div key={i} className="group">
+                                <div className="rounded-lg overflow-hidden">
+                                  <img 
+                                    src={imgSection.content}
+                                    alt={imgSection.caption || "Project image"}
+                                    className="w-full h-auto transition-transform duration-300 group-hover:scale-105"
+                                  />
+                                </div>
+                                {imgSection.caption && (
+                                  <p className="text-sm text-zinc-400 mt-2">{imgSection.caption}</p>
+                                )}
+                              </div>
+                            ));
+                        })()}
+                      </div>
+                    ) : (
+                      // Only render single images if they're not part of a group
+                      !project.content[index - 1]?.type === 'image' && (
+                        <div className="group">
+                          <div className="rounded-lg overflow-hidden">
+                            <img 
+                              src={section.content}
+                              alt={section.caption || "Project image"}
+                              className="w-full h-auto transition-transform duration-300 group-hover:scale-105"
+                            />
+                          </div>
+                          {section.caption && (
+                            <p className="text-sm text-zinc-400 mt-2">{section.caption}</p>
+                          )}
+                        </div>
+                      )
                     )}
+                  </div>
+                )}
+
+                {section.type === 'download' && (
+                  <div className="bg-cyan-500/10 rounded-lg p-6 mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="text-2xl">🎮</div>
+                      <a 
+                        href={section.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-cyan-400 hover:text-cyan-300 transition-colors"
+                      >
+                        {section.content}
+                      </a>
+                    </div>
                   </div>
                 )}
               </div>
