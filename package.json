@@ -1,11 +1,11 @@
 {
-  "name": "my-app",
+  "name": "landingpage",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 3001 --hostname 0.0.0.0",
+    "dev": "next dev",
     "build": "next build",
-    "start": "next start --port 3001 --hostname 0.0.0.0",
+    "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
@@ -16,7 +16,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.446.0",
-    "next": "14.2.4",
+    "next": "^14.0.0",
     "p5": "^1.11.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
