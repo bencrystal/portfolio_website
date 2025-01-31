@@ -110,6 +110,14 @@
   color: white;
 }
 
+.image-container {
+  overflow: visible;
+}
+
+.image-grid-wrapper {
+  overflow: visible;
+}
+
 .image-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -117,13 +125,33 @@
   margin: 1.5rem 0;
 }
 
-.image-grid img {
-  width: 100%;
-  height: auto;
-  border-radius: 0.5rem;
-  transition: transform 0.2s ease;
+.image-item {
+  overflow: visible;
 }
 
-.image-grid img:hover {
-  transform: scale(1.02);
+.transform-wrapper {
+  transform-origin: center center;
+  backface-visibility: hidden;
+}
+
+.transform-wrapper:hover {
+  z-index: 10;
+}
+
+.group {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+.overflow-hidden {
+  overflow: hidden;
 }

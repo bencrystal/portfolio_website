@@ -85,57 +85,45 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                 )}
 
                 {section.type === 'image' && (
-                  <div className="rounded-lg overflow-hidden shadow-lg">
-                    {/* Check if this is the start of an image group and hasn't been rendered yet */}
-                    {index > 0 && 
-                     project.content[index - 1]?.type === 'text' && 
-                     project.content[index + 1]?.type === 'image' ? (
-                      <div className="image-grid">
+                  <div className="mb-8">
+                    {index > 0 && project.content[index - 1]?.type === 'image' ? (
+                      null
+                    ) : (
+                      <div className="p-4 -m-4">
                         {(() => {
-                          // Find the end of this image group
-                          let endIndex = index;
-                          while (
-                            endIndex < project.content.length && 
-                            project.content[endIndex].type === 'image'
-                          ) {
-                            endIndex++;
-                          }
+                          let imageGroup = [];
+                          let currentIndex = index;
                           
-                          // Render only this group of images
-                          return project.content
-                            .slice(index, endIndex)
-                            .map((imgSection, i) => (
-                              <div key={i} className="group">
-                                <div className="rounded-lg overflow-hidden">
-                                  <img 
-                                    src={imgSection.content}
-                                    alt={imgSection.caption || "Project image"}
-                                    className="w-full h-auto transition-transform duration-300 group-hover:scale-105"
-                                  />
+                          while (
+                            currentIndex < project.content.length && 
+                            project.content[currentIndex].type === 'image'
+                          ) {
+                            imageGroup.push(project.content[currentIndex]);
+                            currentIndex++;
+                          }
+
+                          return (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              {imageGroup.map((imgSection, i) => (
+                                <div key={i} className="group">
+                                  <div className="rounded-lg overflow-hidden bg-zinc-800">
+                                    <div className="transform transition-all duration-300 group-hover:scale-105">
+                                      <img 
+                                        src={imgSection.content}
+                                        alt={imgSection.caption || "Project image"}
+                                        className="w-full h-auto"
+                                      />
+                                      {imgSection.caption && (
+                                        <p className="text-sm text-zinc-400 p-3">{imgSection.caption}</p>
+                                      )}
+                                    </div>
+                                  </div>
                                 </div>
-                                {imgSection.caption && (
-                                  <p className="text-sm text-zinc-400 mt-2">{imgSection.caption}</p>
-                                )}
-                              </div>
-                            ));
+                              ))}
+                            </div>
+                          );
                         })()}
                       </div>
-                    ) : (
-                      // Only render single images if they're not part of a group
-                      !project.content[index - 1]?.type === 'image' && (
-                        <div className="group">
-                          <div className="rounded-lg overflow-hidden">
-                            <img 
-                              src={section.content}
-                              alt={section.caption || "Project image"}
-                              className="w-full h-auto transition-transform duration-300 group-hover:scale-105"
-                            />
-                          </div>
-                          {section.caption && (
-                            <p className="text-sm text-zinc-400 mt-2">{section.caption}</p>
-                          )}
-                        </div>
-                      )
                     )}
                   </div>
                 )}
