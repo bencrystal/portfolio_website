@@ -143,7 +143,7 @@ export const projects: Project[] = [
     description: "A VR game that lets players explore a suburban home from the perspective of a house cat",
     thumbnail: "/projects/calicollector/outdoor-scene.jpg",
     images: [
-      "/projects/calicollector/basic-interactions.jpg",
+      "/calicollector/caliaccessibility.jpeg",
       "/projects/calicollector/accessibility.jpg",
       "/projects/calicollector/character-movement.jpg",
       "/projects/calicollector/scene-management.jpg",
@@ -184,7 +184,7 @@ export const projects: Project[] = [
       },
       {
         type: 'image',
-        content: "/projects/calicollector/basic-interactions.jpg"
+        content: "/calicollector/calibasicinteractions.jpeg"
       },
       {
         type: 'text',
@@ -193,7 +193,7 @@ export const projects: Project[] = [
       },
       {
         type: 'image',
-        content: "/projects/calicollector/accessibility.jpg"
+        content: "/calicollector/caliaccessibility.jpeg"
       },
       {
         type: 'text',
@@ -202,7 +202,7 @@ export const projects: Project[] = [
       },
       {
         type: 'image',
-        content: "/projects/calicollector/character-movement.jpg"
+        content: "/calicollector/calicharactermovement.jpeg"
       },
       {
         type: 'text',
@@ -211,7 +211,7 @@ export const projects: Project[] = [
       },
       {
         type: 'image',
-        content: "/projects/calicollector/scene-management.jpg"
+        content: "/calicollector/caliscenemanagement.jpeg"
       },
       {
         type: 'text',
@@ -220,7 +220,7 @@ export const projects: Project[] = [
       },
       {
         type: 'image',
-        content: "/projects/calicollector/scene-build-goals.jpg"
+        content: "/calicollector/caliscenebuildgoals.jpeg"
       },
       {
         type: 'text',
@@ -229,7 +229,7 @@ export const projects: Project[] = [
       },
       {
         type: 'image',
-        content: "/projects/calicollector/three-scenes.jpg"
+        content: "/calicollector/calithreescenes.jpeg"
       },
       {
         type: 'text',
@@ -238,17 +238,17 @@ export const projects: Project[] = [
       },
       {
         type: 'image',
-        content: "/projects/calicollector/onboarding-scene.jpg",
+        content: "/calicollector/calionboardingscene.jpeg",
         caption: "Onboarding scene."
       },
       {
         type: 'image',
-        content: "/projects/calicollector/outdoor-scene.jpg",
+        content: "/calicollector/calioutdoorscene.jpeg",
         caption: "Outdoor scene."
       },
       {
         type: 'image',
-        content: "/projects/calicollector/indoor-scene.jpg",
+        content: "/calicollector/caliindoorscene.jpeg",
         caption: "Indoor scene."
       },
       {
@@ -258,7 +258,7 @@ export const projects: Project[] = [
       },
       {
         type: 'image',
-        content: "/projects/calicollector/assets-1.jpg"
+        content: "/calicollector/caliassets1.jpeg"
       },
       {
         type: 'text',
@@ -267,7 +267,7 @@ export const projects: Project[] = [
       },
       {
         type: 'image',
-        content: "/projects/calicollector/assets-2.jpg"
+        content: "/calicollector/caliassets2.jpeg"
       }
     ],
     links: [

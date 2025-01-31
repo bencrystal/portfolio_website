@@ -46,7 +46,10 @@ const projectData: ProjectCategory[] = [
         title: "Calicollector: Scavenger VR Game",
         description: "Interactive VR game focused on collection and exploration",
         thumbnail: "/projects/calicollector.jpg",
-        images: ["/projects/calicollector.jpg"],
+        images: [
+          "/projects/calicollector.jpg",
+          "/calicollector/accessibility.jpg"
+        ],
         techStack: [
           { name: "VR", color: "#1CA0F2" },
           { name: "Unity", color: "#000000" },
@@ -57,7 +60,14 @@ const projectData: ProjectCategory[] = [
         ],
         featured: false,
         startDate: new Date('2020-09'),
-        category: ["VR", "Game Design"]
+        category: ["VR", "Game Design"],
+        highlights: [
+          "Progressive difficulty levels",
+          "Motion sickness reduction",
+          "Teleportation options",
+          "Adaptive height settings",
+          "3D spatial audio cues"
+        ]
       },
       {
         id: 'panaudicon',
