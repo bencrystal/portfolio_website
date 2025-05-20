@@ -1,6 +1,8 @@
 import { projects } from '@/data/projects';
 import { notFound } from 'next/navigation';
 import Background from '@/components/Background';
+import Image from 'next/image';
+import type { Project } from '@/types/Project';
 
 export async function generateStaticParams() {
   return projects.map((project) => ({
@@ -24,6 +26,22 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
   const demoVideo = project.links.find(link => link.type === "demo");
   const youtubeId = demoVideo ? getYoutubeId(demoVideo.url) : null;
 
+  // Function to get image sections
+  const getImageGroup = (content: Project['content'], startIndex: number) => {
+    if (!content) return [];
+    let imageGroup = [];
+    let currentIndex = startIndex;
+    
+    while (
+      currentIndex < content.length && 
+      content[currentIndex].type === 'image'
+    ) {
+      imageGroup.push(content[currentIndex]);
+      currentIndex++;
+    }
+    return imageGroup;
+  };
+
   return (
     <main className="min-h-screen bg-zinc-900 text-white relative">
       <Background 
@@ -35,16 +53,18 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
         <h1 className="text-5xl font-bold mb-8">{project.title}</h1>
 
         {/* Tags Section */}
-        <div className="flex gap-2 mb-6">
-          {project.category.map((tag) => (
-            <span 
-              key={tag} 
-              className="px-3 py-1 bg-zinc-800 rounded-full text-sm"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
+        {project.category && project.category.length > 0 && (
+          <div className="flex gap-2 mb-6">
+            {project.category.map((tag) => (
+              <span 
+                key={tag} 
+                className="px-3 py-1 bg-zinc-800 rounded-full text-sm"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
 
         {/* Timeframe */}
         <div className="text-zinc-400 mb-8">
@@ -60,7 +80,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
         </div>
 
         {/* Content Sections */}
-        {project.content && (
+        {project.content && project.content.length > 0 && (
           <div className="space-y-12">
             {project.content.map((section, index) => (
               <div key={index} className="mb-12">
@@ -86,49 +106,36 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
 
                 {section.type === 'image' && (
                   <div className="mb-8">
-                    {index > 0 && project.content[index - 1]?.type === 'image' ? (
+                    {index > 0 && project.content?.[index - 1]?.type === 'image' ? (
                       null
                     ) : (
                       <div className="p-4 -m-4">
-                        {(() => {
-                          let imageGroup = [];
-                          let currentIndex = index;
-                          
-                          while (
-                            currentIndex < project.content.length && 
-                            project.content[currentIndex].type === 'image'
-                          ) {
-                            imageGroup.push(project.content[currentIndex]);
-                            currentIndex++;
-                          }
-
-                          return (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                              {imageGroup.map((imgSection, i) => (
-                                <div key={i} className="group">
-                                  <div className="rounded-lg overflow-hidden bg-zinc-800">
-                                    <div className="transform transition-all duration-300 group-hover:scale-105">
-                                      <img 
-                                        src={imgSection.content}
-                                        alt={imgSection.caption || "Project image"}
-                                        className="w-full h-auto"
-                                      />
-                                      {imgSection.caption && (
-                                        <p className="text-sm text-zinc-400 p-3">{imgSection.caption}</p>
-                                      )}
-                                    </div>
-                                  </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {getImageGroup(project.content, index).map((imgSection, i) => (
+                            <div key={i} className="group">
+                              <div className="rounded-lg overflow-hidden bg-zinc-800">
+                                <div className="transform transition-all duration-300 group-hover:scale-105">
+                                  <Image 
+                                    src={imgSection.content}
+                                    alt={imgSection.caption || "Project image"}
+                                    width={800}
+                                    height={450}
+                                    className="w-full h-auto"
+                                  />
+                                  {imgSection.caption && (
+                                    <p className="text-sm text-zinc-400 p-3">{imgSection.caption}</p>
+                                  )}
                                 </div>
-                              ))}
+                              </div>
                             </div>
-                          );
-                        })()}
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
                 )}
 
-                {section.type === 'download' && (
+                {section.type === 'download' && section.url && (
                   <div className="bg-cyan-500/10 rounded-lg p-6 mb-6">
                     <div className="flex items-center gap-3">
                       <div className="text-2xl">🎮</div>
@@ -149,7 +156,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
         )}
 
         {/* Key Features */}
-        {project.highlights && (
+        {project.highlights && project.highlights.length > 0 && (
           <div className="mb-12">
             <h2 className="text-2xl font-semibold mb-4">Key Features</h2>
             <ul className="list-disc pl-5 space-y-2 text-zinc-300">

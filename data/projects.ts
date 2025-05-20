@@ -278,8 +278,20 @@ export const projects: Project[] = [
   },
   {
     id: 'panaudicon',
-    backgroundText: "👁 👂 👁",
-    // ... rest of Panaudicon data
+    title: "Panaudicon",
+    description: "A spatial audio visualization and interaction system",
+    thumbnail: "/projects/panaudicon.jpg",
+    techStack: [
+      { name: "Unity", color: "#000000" },
+      { name: "C#", color: "#178600" },
+      { name: "Audio DSP", color: "#FF0000" }
+    ],
+    links: [
+      { type: "github", url: "https://github.com/bencrystal/panaudicon" }
+    ],
+    featured: false,
+    startDate: new Date('2023-01'),
+    backgroundText: "👁 👂 👁"
   },
   // ... other projects with their custom background text
 ]; 

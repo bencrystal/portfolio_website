@@ -11,7 +11,7 @@ export type ProjectLink = {
 }
 
 // Add a new type for content sections
-type ContentSection = {
+export type ContentSection = {
   type: 'text' | 'video' | 'image' | 'download';
   content: string;
   title?: string;

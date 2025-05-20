@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { NextReactP5Wrapper } from "@p5-wrapper/next";
-import type { Sketch } from "@p5-wrapper/react";
+import type { P5CanvasInstance, Sketch } from "@p5-wrapper/react";
 
 interface BackgroundProps {
   text?: string;
@@ -13,7 +13,7 @@ interface BackgroundProps {
 const Background = ({ text = "^ ◡ ^", fontSize = 10, spacing = 14 }: BackgroundProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const sketch: Sketch = (p) => {
+  const sketch: Sketch = (p: P5CanvasInstance) => {
     const ROLL_MULTIPLIER = 0.6;
     const baseSpacing = spacing || 27;
     const gridSpacing = {
