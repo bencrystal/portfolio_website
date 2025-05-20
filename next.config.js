@@ -21,6 +21,20 @@ const nextConfig = {
   // Add this to help with the build process
   experimental: {
     esmExternals: 'loose'
+  },
+  // Add cache control
+  headers: async () => {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store',
+          },
+        ],
+      },
+    ]
   }
 }
 
