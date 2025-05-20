@@ -1,5 +1,6 @@
 import { Project } from '@/types/Project';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface ProjectCardProps {
   project: Project;
@@ -14,9 +15,11 @@ export const ProjectCard = ({ project, variant = 'default' }: ProjectCardProps) 
     >
       <div className="bg-gray-800 rounded-lg overflow-hidden shadow-lg h-[400px] flex flex-col">
         <div className="relative aspect-video overflow-hidden flex-shrink-0">
-          <img 
+          <Image 
             src={project.thumbnail} 
             alt={project.title}
+            width={640}
+            height={360}
             className="w-full h-full object-cover transition-transform group-hover:scale-105"
           />
         </div>
