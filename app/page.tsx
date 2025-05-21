@@ -21,8 +21,8 @@ const projectData: ProjectCategory[] = [
         id: 'space-jam-vr',
         title: "Space Jam: VR Vocal Performance Space",
         description: "An immersive virtual environment for vocal performance and musical expression",
-        thumbnail: "/projects/space-jam.jpg",
-        images: ["/projects/space-jam.jpg"],
+        thumbnail: "/projects/Space Jam/29.png",
+        images: ["/projects/Space Jam/29.png"],
         techStack: [
           { name: "VR", color: "#1CA0F2" },
           { name: "Unity", color: "#000000" },
@@ -45,10 +45,10 @@ const projectData: ProjectCategory[] = [
         id: 'calicollector',
         title: "Calicollector: Scavenger VR Game",
         description: "Interactive VR game focused on collection and exploration",
-        thumbnail: "/projects/calicollector.jpg",
+        thumbnail: "/projects/Calicollector Scavenger VR Game/cali_outdoor_scene.jpeg",
         images: [
-          "/projects/calicollector.jpg",
-          "/calicollector/accessibility.jpg"
+          "/projects/Calicollector Scavenger VR Game/cali_outdoor_scene.jpeg",
+          "/projects/Calicollector Scavenger VR Game/cali_accessibility.jpeg"
         ],
         techStack: [
           { name: "VR", color: "#1CA0F2" },
@@ -73,8 +73,8 @@ const projectData: ProjectCategory[] = [
         id: 'panaudicon',
         title: "Panaudicon: The Audible Surveillance State",
         description: "An exploration of sound and surveillance in virtual reality",
-        thumbnail: "/projects/panaudicon.jpg",
-        images: ["/projects/panaudicon.jpg"],
+        thumbnail: "/projects/Panaudicon/Screen_Shot_2022-04-22_at_5.41.38_PM.png",
+        images: ["/projects/Panaudicon/Screen_Shot_2022-04-22_at_5.41.38_PM.png"],
         techStack: [
           { name: "VR", color: "#1CA0F2" },
           { name: "ML", color: "#FF6F00" }
@@ -97,8 +97,8 @@ const projectData: ProjectCategory[] = [
         title: "Vocal Harmonizer",
         description: "A handheld vocal harmony synthesizer with real-time processing",
         longDescription: "A portable device that enables real-time vocal harmonization...",
-        thumbnail: "/projects/harmonizer.jpg",
-        images: ["/projects/harmonizer.jpg"],
+        thumbnail: "/projects/Vocal Harmonizer/VocalSynthPic-02.png",
+        images: ["/projects/Vocal Harmonizer/VocalSynthPic-02.png"],
         techStack: [
           { name: "Electronics", color: "#00979D" },
           { name: "Arduino", color: "#00979D" },
@@ -123,8 +123,8 @@ const projectData: ProjectCategory[] = [
         title: "Machine Learning Series",
         description: "Projects exploring sound classification and lyric generation",
         longDescription: "A series of experiments in machine learning applications for music...",
-        thumbnail: "/projects/ml-series.jpg",
-        images: ["/projects/ml-series.jpg"],
+        thumbnail: "/projects/machine_learning_title-13.png",
+        images: ["/projects/machine_learning_title-13.png"],
         techStack: [
           { name: "Python", color: "#3776AB" },
           { name: "TensorFlow", color: "#FF6F00" },
@@ -148,8 +148,8 @@ const projectData: ProjectCategory[] = [
         title: "Wrip Watch Branding",
         description: "Brand design for a hypothetical smartwatch company",
         longDescription: "Complete brand identity design for an innovative smartwatch startup...",
-        thumbnail: "/projects/wrip.jpg",
-        images: ["/projects/wrip.jpg"],
+        thumbnail: "/projects/wrip Watch Branding/wrip_cover-14.png",
+        images: ["/projects/wrip Watch Branding/wrip_cover-14.png"],
         techStack: [
           { name: "Figma", color: "#F24E1E" },
           { name: "Illustrator", color: "#FF9A00" },
@@ -178,8 +178,8 @@ const projectData: ProjectCategory[] = [
         title: "Music",
         description: "Collection of original music and sound design work",
         longDescription: "Portfolio of musical works spanning various genres and techniques...",
-        thumbnail: "/projects/harmonizer.jpg",
-        images: ["/projects/harmonizer.jpg"],
+        thumbnail: "/projects/music_logo_portfolio.png",
+        images: ["/projects/music_logo_portfolio.png"],
         techStack: [
           { name: "Ableton", color: "#00CF3F" },
           { name: "Max/MSP", color: "#525252" },
