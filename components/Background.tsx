@@ -33,8 +33,8 @@ const Background = ({ text = "^ ◡ ^", fontSize = 10, spacing = 14 }: Backgroun
     
     const calculateGridPositions = () => {
       gridPositions = [];
-      for (let x = gridSpacing.x; x < window.innerWidth; x += gridSpacing.x) {
-        for (let y = gridSpacing.y; y < window.innerHeight; y += gridSpacing.y) {
+      for (let x = 0; x < window.innerWidth; x += gridSpacing.x) {
+        for (let y = 0; y < window.innerHeight; y += gridSpacing.y) {
           gridPositions.push({
             x,
             y,
