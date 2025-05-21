@@ -202,10 +202,6 @@ const projectData: ProjectCategory[] = [
   }
 ];
 
-const imageLoader = ({ src }: { src: string }) => {
-  return src;
-};
-
 export default function Page() {
   const [showAbout, setShowAbout] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -322,7 +318,6 @@ export default function Page() {
                     alt="Ben Crystal"
                     width={192}
                     height={192}
-                    loader={imageLoader}
                     priority
                     className="object-cover rounded-lg"
                   />
