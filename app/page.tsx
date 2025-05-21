@@ -327,11 +327,11 @@ export default function Page() {
                   <div className="prose prose-invert max-w-none">
                     <p className="text-zinc-300">
                       I&apos;m a creative technologist and electrical engineer with a passion for building immersive experiences 
-                      that blend the physical and digital worlds. With a background in music, engineering, and interactive design, 
+                      that blend the physical and digital worlds. With a background in music, engineering, and interaction design, 
                       I create tools and experiences that help people express themselves in new and meaningful ways.
                     </p>
                     <p className="text-zinc-300 mt-4">
-                      My work spans virtual reality, machine learning, and physical computing, always with a focus on 
+                      My work spans virtual and augmented reality, machine learning, and physical computing, always with a focus on 
                       creating intuitive and engaging user experiences. I believe technology should enhance our natural 
                       creativity and enable new forms of expression.
                     </p>

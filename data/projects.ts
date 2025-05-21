@@ -278,20 +278,78 @@ export const projects: Project[] = [
   },
   {
     id: 'panaudicon',
-    title: "Panaudicon",
-    description: "A spatial audio visualization and interaction system",
+    title: "Panaudicon: The Audible Surveillance State",
+    description: "An exploration of sound and surveillance in virtual reality, examining how audio technology shapes modern surveillance systems",
     thumbnail: "/projects/panaudicon.jpg",
+    content: [
+      {
+        type: 'video',
+        title: 'Project Overview',
+        content: 'https://youtu.be/cf3efmv-DIY'
+      },
+      {
+        type: 'text',
+        title: 'On the State of Audio Surveillance',
+        content: "As technology evolves, it offers novel ways to improve our lives. However, in a rapidly evolving world, institutions of power use new technologies to perpetually monitor and create self-governing order in society. Michel Foucault introduced the infrastructural idea of the panopticon to represent a system in which all members are potentially under a constant state of surveillance. In this system, all individuals are capable of being observed by a large portion of other individuals at any given point in time, and by constantly being monitored, it inflicts a sense of obligation to follow the system's morals and expectations as to be viewed as a functioning member of said system. The name 'panopticon' essentially derives its roots from the idea of a constantly seen system, but this paper will investigate the motivations and infrastructure that is in place to create a 'panaudicon', where those within the system are under a constant state of being heard and influenced through the ambient sound of life."
+      },
+      {
+        type: 'text',
+        title: 'Sound as Information',
+        content: "First we will open up a framework for how one can think about sound as a medium for information transfer. Don Ihde compares conscious observance visually and audibly. In the optical world, so long as there is light, all materialized objects can be defined by features like their shape, shininess, and motion. However in the auditory realm, their default state is often mute. The visual, observable state of a fly, for example, can be walking, flying, or remaining immobile. Immobility is a state relational to walking, flying, etc., just as mute is a state relational to the lack of sound an object can produce. However, this is not always at a visible level.\n\nIn daily life, we train our ears to become accustomed to and to recognize sounds as quickly as having heard them once to be able to ease our minds and make sense of our world more passively. Ihde references the differentiation between hearing a car and a truck drive by, as well as a story about hearing a snail shell crack and recognizing the same sound a few weeks later.\n\nDifferent objects make different sounds as well. Not only do different objects oscillate and reproduce sounds with different timbres when struck, but they also interact differently with their environment. Ihde references playing a game where one has to guess whether a box contains a die or a marble, and how the sounds produced by rolling, sliding, flopping, and bouncing are easily distinguishable even if the contained components are of the same material and relative size."
+      },
+      {
+        type: 'text',
+        title: 'Perception and Reality',
+        content: "Ihde also discusses the idea of having difficulty syncing our audible and visual reality. For example, an ornithologist noted that many of his students could not tell the differences between several different types of warblers' calls until they were explicitly explained what to listen for, at which point the students' understanding of blame of why it was so difficult to distinguish shifted from the objects being too similar to the inadequate rigor of their prior observations.\n\nIn this way, as we live with an empirical understanding of the world and the mind is capable of vastly filling in the gaps between what we comprehend, it is possible that many learnt correlations between the physical and audible world are falsehoods. There are many adults who believe that the sound of a snap is caused by the friction between fingers rubbing together, rather than the crack of hitting the palm.\n\nJ.M. Heaton noted that one frequent case of the mind filling in understanding with sensory assumptions is that when individuals who are blind undergo a medical procedure to gain sight, \"at first colours are not localized in space and are seen in much the same way as we smell odours.\" (Ihde, 1976) The process of learning that previous notions about the world can be jarring, or even painful, whereas it is not an addition to one's understanding of the world but a massive reshaping. It was also noted in a few studies that not only did vision reshape their understanding of how things looked and fit together with their sonic conception of the world, but also that once they acquired sight, they began to shift from listening attentively omnidirectionally to being more forward-focused."
+      },
+      {
+        type: 'text',
+        title: 'The Evolution of Radio and Control',
+        content: "The way one empirically experiences the world changes how they focus their attention. Unlike the cases above, the majority of the time, a paradigm shift in the purpose of a medium more often comes extrinsically than from oneself. Berland argues that radio began to take a backseat to and become a more passive form of media from the 1950s to the 1980s. Although music is viewed as a form of unity and universal language of sorts, college and private radio stations in the US were almost nonexistent until the 1960s, and began to take off globally in the late 1980s.\n\nThe 5 largest record labels in the US (appropriately named the \"Big 5\"), in combination with private advertising firms, could easily control massive portions of national and international radio media, as there simply weren't other options to listen to. This normalized a reality of radio-worthy \"good music\", and the \"reliable brands\" that supported the station, being enforced as a standard to be looked up to.\n\nPeople often think about what was capable of being on the radio as being a standard for \"good music\", but in a sense, this highly controlled environment was less of a utopian \"global village\", as McLuhan called the state of coexistence through widespread media, and rather as a form of global technological imperialism."
+      },
+      {
+        type: 'text',
+        title: 'Muzak and Social Control',
+        content: "An additional example of audible establishments creating a sense of complacency in the listener is Muzak, which is the eponym for a wide variety of \"easy listening\" music. This company was one of the most affordable ways to bring high fidelity music to business and homes in over 20 countries, from 1934 even up until the 1990s.\n\nThe two primary audiences that this functional music applied to were customers/clients, and workers doing repetitive tasks. For businesses, there were channels that played soothing or stripped down covers of popular music, which was already \"little more than 'social cement', reinforcing existing social relations and power structures, and entertainment as containment… to communicate a sense of calm and predictability to the listening subject.\" Muzak shifted the focus of listening to music to creating an auditory environment that was \"socially acceptable and controllable within a disciplined setting\" (Husch, 1984).\n\nAdditionally, for workers, there were even some stations that would intentionally cycle through songs to increase worker output. Short playlist-like cycles would start with slow songs and gradually ramp up the speed to keep workers engaged without feeling jarring or making them realize they are tired. When discussing the Panopticon, Foucault talks about training and viewing bodies as machines in a factory setting, and in this sense, this particular Muzak channel was employed explicitly to \"facilitate productivity through economy and efficiency of movement and a controlled increase in the utility of the body.\" (Jones and Schumacher, 1992)"
+      },
+      {
+        type: 'text',
+        title: 'Modern Audio Surveillance',
+        content: "It has become increasingly common to be aware of the perpetually activated microphones in cell phones and smart speakers, ready to activate Apple's Siri or Amazon Alexa at any moment. These devices can eavesdrop to collect transcriptions and data based on who asks what and when. However, there is already a network of audio communications established throughout society that many are unaware of, as they transmit information at an ultrasonic frequency. \"There could be a signal coming through that television that's ultrasonic or near ultrasonic in most cases, that you can't hear. That sound can be picked up by your microphone, processed by the app, and then communicate with a server on the internet so that advertisers can gain data about what you're watching and potentially where you are.\" (Taylor, 2018)\n\nInformation at this frequency range is imperceivable by the human ear, and is being used in all sorts of public spaces to incentivize buyers, provide services, and data mine. A company called Shopkick created an app that can be used to let stores know what clothing people are stopping in front of the most to tell what might be working about their textures or displays, even if people don't necessarily buy that particular item."
+      },
+      {
+        type: 'text',
+        title: 'The Future of Audio Privacy',
+        content: "We are approaching the panaudicon-- entering an unprecedented era of ubiquitous audio surveillance, where the expectation will be that everything said and heard might be recorded, and people will act accordingly. Although some uses of ultrasonic tracking can have positive effects on society with ethical information transferring, the technology is often evolving faster than the morals and laws can keep up."
+      },
+      {
+        type: 'text',
+        title: 'References',
+        content: "• Berland, Jody. 1993. \"Contradicting Media: Toward a Political Phenomenology of Listening,\" in Radiotext(e) (ed. Neil Strauss). New York: Semiotext(e), pp. 38-55.\n\n• Ihde, Don. 1976. \"The Auditory Dimension\" and \"The Shapes of Sound\" in Listening and Voice: A Phenomenology of Sound. Athens: Ohio University Press, pp. 49-71.\n\n• Jones and Schumacher. 1992. \"Muzak: On functional music and power,\" in Critical Studies in Mass Communication, pp. 156-169.\n\n• Taylor, Dallas. 2018. \"Ultrasonic Tracking\" (No. 41). In Twenty Thousand Hertz. Defacto Sound.\n\n• Leppert, Richard. 2004. \"The Social Discipline of Listening,\" in Aural Cultures (ed. Jim Drobnick). Toronto: YYZ Books, pp. 19-35.\n\n• Foucault, Michael. 1977. \"Panopticism,\" in Discipline & Punish, pp. 195-230."
+      }
+    ],
     techStack: [
       { name: "Unity", color: "#000000" },
       { name: "C#", color: "#178600" },
-      { name: "Audio DSP", color: "#FF0000" }
+      { name: "Audio DSP", color: "#FF0000" },
+      { name: "Research", color: "#9C27B0" }
     ],
     links: [
       { type: "github", url: "https://github.com/bencrystal/panaudicon" }
     ],
-    featured: false,
+    featured: true,
     startDate: new Date('2023-01'),
-    backgroundText: "👁 👂 👁"
+    highlights: [
+      "Research on audio surveillance systems",
+      "Analysis of ultrasonic tracking",
+      "Investigation of privacy implications",
+      "Study of audio-based monitoring",
+      "Historical analysis of audio control systems"
+    ],
+    category: ["Research", "Audio", "Privacy", "Technology", "Philosophy"],
+    backgroundText: "👁 👂 👁",
+    backgroundFontSize: 15,
+    backgroundSpacing: 30
   },
   // ... other projects with their custom background text
 ]; 
