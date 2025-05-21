@@ -29,9 +29,9 @@ export const projects: Project[] = [
     backgroundFontSize: 8
   },
   {
-    id: 'virtual-audio-workstation',
-    title: "Virtual Audio Workstation",
-    description: "An immersive virtual environment for vocal performance and musical expression",
+    id: 'space-jam-vr',
+    title: "Space Jam: VR Vocal Performance Space",
+    description: "An immersive spatial computing environment for vocal performance and musical expression using eye tracking andgesture-controlled effects",
     content: [
       {
         type: 'text',
@@ -103,6 +103,11 @@ export const projects: Project[] = [
         type: 'text',
         title: 'Design Phase 6: Next Steps',
         content: 'After rigorous user testing, I have learned about the successes of my design (primarily translating meaningful gestures into functional audio controls) and the shortcomings (primarily an excess of menu diving and non-modular setup options), and have received a lot of feedback prompting me to redesign towards an advanced karaoke system. I am currently in the process of building a scanner that scrapes lyrics from Genius.com and pipes audio from Spotify and Youtube into a collaborative performance environment. In this space, the software will automatically match the key and tempo of audio effects to the songs being queued, and everyone will be able to manipulate their own voice freely.'
+      },
+      {
+        type: 'text',
+        title: 'Outcome & Reflections',
+        content: 'This multi-year research project has evolved through careful iteration and extensive user testing, generating valuable insights about embodied interaction in virtual environments. By reimagining how musicians and performers can engage with audio processing tools in three-dimensional space, Space Jam challenges conventional interfaces and explores more intuitive and expressive modes of sonic creation.\n\nThe project has significantly expanded my technical expertise in spatial audio, real-time DSP implementation, gesture recognition systems, and cross-platform VR development. Perhaps more importantly, it has deepened my understanding of how technology can enhance creative expression through thoughtful design that prioritizes human movement and natural interaction patterns.\n\nAs immersive technologies continue to evolve, the insights from Space Jam will inform future work in creating more embodied, intuitive tools for musical expression across different realities.'
       }
     ],
     thumbnail: "/projects/space-jam.jpg",
@@ -140,7 +145,7 @@ export const projects: Project[] = [
   {
     id: 'calicollector',
     title: "Calicollector: Scavenger VR Game",
-    description: "A VR game that lets players explore a suburban home from the perspective of a house cat",
+    description: "A VR exploration game that invites players to experience environmental interaction through the unique perspective of a house cat, emphasizing accessibility and intuitive game design",
     thumbnail: "/projects/calicollector/outdoor-scene.jpg",
     images: [
       "/calicollector/caliaccessibility.jpeg",
@@ -348,6 +353,128 @@ export const projects: Project[] = [
     ],
     category: ["Research", "Audio", "Privacy", "Technology", "Philosophy"],
     backgroundText: "👁 👂 👁",
+    backgroundFontSize: 15,
+    backgroundSpacing: 30
+  },
+  {
+    id: 'wrip-watch',
+    title: "Wrip Watch Branding",
+    description: "Brand identity design for a conceptual wearable MIDI controller that transforms movement into musical expression",
+    content: [
+      {
+        type: 'text',
+        title: 'Background',
+        content: "I've always been fascinated by the intersection of physical movement, wearable technology, and sound design. This project emerged from my desire to conceptualize how musicians might control sonic parameters through natural gestures. While I had created various experimental interfaces, I had yet to develop a cohesive brand narrative around these innovations. The Wrip Watch project became my canvas for exploring how to position a wearable MIDI controller within the professional music production ecosystem."
+      },
+      {
+        type: 'text',
+        title: 'Objective',
+        content: "Create a distinct brand identity representing the wrip watch."
+      },
+      {
+        type: 'text',
+        title: 'Design Phase 1: Brand Strategy & Visual Language',
+        content: "The first phase involved researching the competitive landscape, identifying audience segments, and developing a strategic framework for the brand positioning. I created comprehensive mood boards to define the visual language and tonal attributes that would differentiate Wrip in the market."
+      },
+      {
+        type: 'image',
+        content: "/projects/wrip Watch Branding/1_wrip_brand_hi_res-16.jpeg",
+        caption: "3 DOF Motion-to-MIDI mapping concept showing how physical gestures translate to parameter control during live performance."
+      },
+      {
+        type: 'image',
+        content: "/projects/wrip Watch Branding/2_wrip_brand_hi_res-17.jpeg",
+        caption: "Brand positioning and color palette derived from audio visualization principles and electronic music culture."
+      },
+      {
+        type: 'image',
+        content: "/projects/wrip Watch Branding/3_wrip_brand_hi_res-21.jpeg",
+        caption: "Audience-focused mood board targeting electronic musicians, performance artists, and live production professionals."
+      },
+      {
+        type: 'text',
+        title: 'Design Phase 2: Logo Development & Iteration',
+        content: "The logo development process was methodical and iterative, beginning with conceptual sketches that explored various visual metaphors for musical control, motion, and wearable technology. After generating numerous concepts, I refined selected directions through multiple iterations, focusing on geometric precision, scalability, and recognition."
+      },
+      {
+        type: 'image',
+        content: "/projects/wrip Watch Branding/4_wrip_brand_hi_res-20.jpeg",
+        caption: "Initial thumbnail concept sketches exploring visual metaphors including oscillation patterns, waveforms, and gestural representations."
+      },
+      {
+        type: 'image',
+        content: "/projects/wrip Watch Branding/5_wrip_brand_planning-18.jpeg",
+        caption: "Logo evolution showing progressive refinement through systematic iterations and user feedback integration."
+      },
+      {
+        type: 'image',
+        content: "/projects/wrip Watch Branding/6_wrip_brand_hi_res-19.jpeg",
+        caption: "Final logomark variants with color applications optimized for different media contexts and user touchpoints."
+      },
+      {
+        type: 'text',
+        title: 'Design Phase 3: Public Interfaces',
+        content: "The following display how the public would interact with the brand via custom letterheads and a custom website."
+      },
+      {
+        type: 'image',
+        content: "/projects/wrip Watch Branding/7_wrip_stationary_system-22.jpeg",
+        caption: "Corporate identity system including business cards with conductive ink elements and custom envelope designs."
+      },
+      {
+        type: 'image',
+        content: "/projects/wrip Watch Branding/8_wrip_letterheads-18.jpeg",
+        caption: "Letterheads."
+      },
+      {
+        type: 'image',
+        content: "/projects/wrip Watch Branding/9_wrip_brand_hi_res-23.jpeg",
+        caption: "Website homepage."
+      },
+      {
+        type: 'image',
+        content: "/projects/wrip Watch Branding/10_wrip_brand_hi_res-24.jpeg",
+        caption: "Website product sales page."
+      },
+      {
+        type: 'image',
+        content: "/projects/wrip Watch Branding/11_wrip_brand_hi_res-25.jpeg",
+        caption: "Website support page."
+      },
+      {
+        type: 'image',
+        content: "/projects/wrip Watch Branding/12_wrip_website_new_text-26.jpeg",
+        caption: "Mobile layouts."
+      }
+    ],
+    thumbnail: "/projects/wrip Watch Branding/wrip_cover-14.png",
+    images: [
+      "/projects/wrip Watch Branding/wrip_cover-14.png",
+      "/projects/wrip Watch Branding/1_wrip_brand_hi_res-16.jpeg",
+      "/projects/wrip Watch Branding/2_wrip_brand_hi_res-17.jpeg"
+    ],
+    techStack: [
+      { name: "Figma", color: "#F24E1E" },
+      { name: "Adobe Illustrator", color: "#FF9A00" },
+      { name: "Adobe Photoshop", color: "#31A8FF" },
+      { name: "UI/UX", color: "#4353FF" },
+      { name: "Brand Strategy", color: "#9C27B0" }
+    ],
+    links: [
+      { type: "live", url: "https://www.bencrystal.me/projects/wrip-watch" }
+    ],
+    featured: false,
+    startDate: new Date('2021-01'),
+    endDate: new Date('2021-04'),
+    highlights: [
+      "Complete brand identity system",
+      "Marketing and promotional materials",
+      "Product packaging design",
+      "Website and digital presence",
+      "Brand guidelines documentation"
+    ],
+    category: ["Design", "Branding", "UI/UX"],
+    backgroundText: "⌚ ♫ ⌚",
     backgroundFontSize: 15,
     backgroundSpacing: 30
   },
