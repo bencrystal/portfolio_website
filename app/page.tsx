@@ -45,7 +45,7 @@ const projectData: ProjectCategory[] = [
         id: 'calicollector',
         title: "Calicollector: Scavenger VR Game",
         description: "Interactive VR game focused on collection and exploration",
-        thumbnail: "/projects/Calicollector Scavenger VR Game/cali_outdoor_scene.jpeg",
+        thumbnail: "/projects/Calicollector Scavenger VR Game/FileCover-1.png",
         images: [
           "/projects/Calicollector Scavenger VR Game/cali_outdoor_scene.jpeg",
           "/projects/Calicollector Scavenger VR Game/cali_accessibility.jpeg"
