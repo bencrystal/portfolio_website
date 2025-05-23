@@ -695,5 +695,115 @@ export const projects: Project[] = [
     backgroundText: " 📱 ✍️ 💆 ",
     backgroundFontSize: 16,
     backgroundSpacing: 28
+  },
+  {
+    id: 'ml-series',
+    title: "Machine Learning Series",
+    description: "A collection of three machine learning projects exploring computer vision, natural language processing, and audio classification techniques",
+    content: [
+      {
+        type: 'text',
+        title: 'Project Overview',
+        content: "This series represents my exploration into different domains of machine learning, from computer vision and robotics to natural language processing and audio analysis. Each project tackles unique challenges and demonstrates different ML approaches and techniques."
+      },
+      {
+        type: 'image',
+        content: "/projects/machine_learning_title-13.png",
+        caption: "Machine Learning Series - exploring computer vision, NLP, and audio processing"
+      },
+      {
+        type: 'text',
+        title: 'Project 1: Dexterous Tree',
+        content: "The \"Dexterous Tree\" robot is a segmented pillar with a neural network that developed using evolutionary techniques to dodge objects in its environment when falling. This project explores how evolutionary algorithms can train neural networks for dynamic obstacle avoidance and adaptive movement in robotic systems."
+      },
+      {
+        type: 'image',
+        content: "/projects/Dexterous Tree/fling2.png",
+        caption: "Dexterous manipulation system demonstrating advanced robotic interaction capabilities"
+      },
+      {
+        type: 'download',
+        title: 'Project Documentation',
+        content: 'Download detailed documentation for the Dexterous Tree project',
+        url: '/projects/Dexterous Tree/Dexterous_Tree_Documentation.pdf'
+      },
+      {
+        type: 'text',
+        title: 'Project 2: Sound Classification',
+        content: "This sound classification algorithm utilizes a convolutional neural network to distinguish the source and environment of sampled audio clips. The system demonstrates the application of deep learning to acoustic pattern recognition, enabling automatic identification and categorization of different audio signals based on their contextual characteristics."
+      },
+      {
+        type: 'image',
+        content: "/projects/Sound Classification/cnnarchtest1-05.png",
+        caption: "CNN architecture design for audio classification showing feature extraction and classification layers"
+      },
+      {
+        type: 'download',
+        title: 'Project Documentation',
+        content: 'Download detailed documentation for the Sound Classification project',
+        url: '/projects/Sound Classification/SoundClassificationDocumentation.pdf'
+      },
+      {
+        type: 'text',
+        title: 'Project 3: Lyric Generation (GAN)',
+        content: "A natural language processing project that uses bidirectional LSTMs to learn an artist's style from their most popular work and reproduce a new set of lyrics for the user. This system analyzes patterns in creative writing and generates coherent, stylistically consistent text that mimics the learned artistic style."
+      },
+      {
+        type: 'image',
+        content: "/projects/Lyric Generation/outputperepoch.png",
+        caption: "Training progression showing output quality improvement across epochs in the lyric generation GAN"
+      },
+      {
+        type: 'download',
+        title: 'Project Documentation',
+        content: 'Download detailed documentation for the Lyric GAN project',
+        url: '/projects/Lyric Generation/Lyric_GAN_Documentation.pdf'
+      },
+      {
+        type: 'text',
+        title: 'Technical Approach',
+        content: "Each project represents a different branch of machine learning: computer vision for robotic manipulation, generative models for creative content, and signal processing for audio classification. Together, they demonstrate the versatility and wide-ranging applications of modern ML techniques."
+      },
+      {
+        type: 'text',
+        title: 'Key Learning Outcomes',
+        content: "This series provided hands-on experience with multiple ML frameworks, data preprocessing techniques, model architecture design, and performance optimization. The projects also highlighted the importance of domain-specific considerations when applying machine learning to real-world problems."
+      }
+    ],
+    thumbnail: "/projects/machine_learning_title-13.png",
+    images: [
+      "/projects/machine_learning_title-13.png",
+      "/projects/Dexterous Tree/fling2.png",
+      "/projects/Lyric Generation/outputperepoch.png",
+      "/projects/Sound Classification/cnnarchtest1-05.png"
+    ],
+    techStack: [
+      { name: "Python", color: "#3776AB" },
+      { name: "TensorFlow", color: "#FF6F00" },
+      { name: "PyTorch", color: "#EE4C2C" },
+      { name: "Computer Vision", color: "#00D2FF" },
+      { name: "NLP", color: "#4CAF50" },
+      { name: "Audio Processing", color: "#9C27B0" },
+      { name: "GANs", color: "#FF5722" },
+      { name: "CNNs", color: "#2196F3" }
+    ],
+    links: [
+      { type: "github", url: "https://github.com/bencrystal/ml-series" }
+    ],
+    featured: true,
+    startDate: new Date('2021-09'),
+    endDate: new Date('2022-05'),
+    highlights: [
+      "Three distinct ML domains explored",
+      "Computer vision for robotic manipulation",
+      "GAN-based creative text generation",
+      "Audio classification using CNNs",
+      "Cross-domain ML technique comparison",
+      "End-to-end project development"
+    ],
+    category: ["Machine Learning", "Computer Vision", "NLP", "Audio"],
+    backgroundText: "🤖 📊 🧠",
+    backgroundFontSize: 16,
+    backgroundSpacing: 30
   }
 ]; 
