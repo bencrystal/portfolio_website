@@ -110,10 +110,10 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                       null
                     ) : (
                       <div className="p-4 -m-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 auto-rows-fr">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:auto-rows-fr">
                           {getImageGroup(project.content, index).map((imgSection, i) => (
-                            <div key={i} className="group h-full">
-                              <div className="rounded-lg overflow-hidden bg-zinc-800 flex flex-col h-full">
+                            <div key={i} className="group md:h-full">
+                              <div className="rounded-lg overflow-hidden bg-zinc-800 flex flex-col md:h-full">
                                 <div className="transform transition-all duration-300 group-hover:scale-105 flex items-start justify-center">
                                   <Image 
                                     src={imgSection.content}
@@ -126,7 +126,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                                 {imgSection.caption && (
                                   <p className="text-sm text-zinc-400 p-3 flex-shrink-0">{imgSection.caption}</p>
                                 )}
-                                <div className="flex-grow"></div>
+                                <div className="md:flex-grow"></div>
                               </div>
                             </div>
                           ))}
