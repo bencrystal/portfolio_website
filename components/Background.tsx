@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { NextReactP5Wrapper } from "@p5-wrapper/next";
 import type { P5CanvasInstance, Sketch } from "@p5-wrapper/react";
 
@@ -12,6 +12,37 @@ interface BackgroundProps {
 
 const Background = ({ text = "^ ◡ ^", fontSize = 10, spacing = 14 }: BackgroundProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Check for emojis and apply mobile CSS fix
+  useEffect(() => {
+    // Generic emoji detection
+    const hasEmojis = (() => {
+      for (let i = 0; i < text.length; i++) {
+        const char = text.charCodeAt(i);
+        if (
+          (char >= 0x1F600 && char <= 0x1F64F) || // Emoticons
+          (char >= 0x1F300 && char <= 0x1F5FF) || // Misc Symbols and Pictographs
+          (char >= 0x1F680 && char <= 0x1F6FF) || // Transport and Map
+          (char >= 0x2600 && char <= 0x26FF) ||   // Misc symbols
+          (char >= 0x2700 && char <= 0x27BF) ||   // Dingbats
+          (char >= 0x1F900 && char <= 0x1F9FF)    // Supplemental Symbols
+        ) {
+          return true;
+        }
+      }
+      return false;
+    })();
+
+    const isMobile = window.innerWidth < 768;
+    
+    if (hasEmojis && isMobile && containerRef.current) {
+      // Apply CSS opacity to the canvas on mobile for emojis
+      const canvas = containerRef.current.querySelector('canvas');
+      if (canvas) {
+        canvas.style.opacity = '0.15';
+      }
+    }
+  }, [text]);
 
   const sketch: Sketch = (p: P5CanvasInstance) => {
     const ROLL_MULTIPLIER = 0.6;
