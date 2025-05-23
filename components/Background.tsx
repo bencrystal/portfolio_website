@@ -136,6 +136,37 @@ const Background = ({ text = "^ ◡ ^", fontSize = 10, spacing = 14 }: Backgroun
         noiseOffsetY += 0.012;
       }
 
+      // Draw text first (background layer)
+      p.textSize(fontSize);
+      p.fill(gridColor);
+      
+      const warpRadiusSq = warpRadius * warpRadius;
+      const currentNoiseOffsetX = noiseOffsetX;
+      const currentNoiseOffsetY = noiseOffsetY;
+      
+      for (const pos of gridPositions) {
+        const dx = cursorX - pos.x;
+        const dy = cursorY - pos.y;
+        const distSq = dx * dx + dy * dy;
+
+        if (distSq < warpRadiusSq) {
+          const dist = Math.sqrt(distSq);
+          const force = p.pow((warpRadius - dist) / warpRadius, 1.5);
+          const offsetX = dx * force * 0.4;
+          const offsetY = dy * force * 0.4;
+          
+          const windX = p.map(p.noise(pos.noiseOffsetX + currentNoiseOffsetX, pos.y * noiseScale), 0, 1, -2, 2);
+          const windY = p.map(p.noise(pos.x * noiseScale, pos.noiseOffsetY + currentNoiseOffsetY), 0, 1, -1, 1);
+          
+          p.text(text, pos.x - 2*offsetX + windX, pos.y - 2*offsetY + windY);
+        } else {
+          const windX = p.map(p.noise(pos.noiseOffsetX + currentNoiseOffsetX, pos.y * noiseScale), 0, 1, -2, 2);
+          const windY = p.map(p.noise(pos.x * noiseScale, pos.noiseOffsetY + currentNoiseOffsetY), 0, 1, -1, 1);
+          p.text(text, pos.x + windX, pos.y + windY);
+        }
+      }
+
+      // Draw rolling ball on top (foreground layer)
       if (cursorX > -900) {
         const dx = cursorX - prevX;
         const dy = cursorY - prevY;
@@ -170,35 +201,6 @@ const Background = ({ text = "^ ◡ ^", fontSize = 10, spacing = 14 }: Backgroun
           p.pop();
         }
         p.pop();
-      }
-
-      p.textSize(fontSize);
-      p.fill(gridColor);
-      
-      const warpRadiusSq = warpRadius * warpRadius;
-      const currentNoiseOffsetX = noiseOffsetX;
-      const currentNoiseOffsetY = noiseOffsetY;
-      
-      for (const pos of gridPositions) {
-        const dx = cursorX - pos.x;
-        const dy = cursorY - pos.y;
-        const distSq = dx * dx + dy * dy;
-
-        if (distSq < warpRadiusSq) {
-          const dist = Math.sqrt(distSq);
-          const force = p.pow((warpRadius - dist) / warpRadius, 1.5);
-          const offsetX = dx * force * 0.4;
-          const offsetY = dy * force * 0.4;
-          
-          const windX = p.map(p.noise(pos.noiseOffsetX + currentNoiseOffsetX, pos.y * noiseScale), 0, 1, -2, 2);
-          const windY = p.map(p.noise(pos.x * noiseScale, pos.noiseOffsetY + currentNoiseOffsetY), 0, 1, -1, 1);
-          
-          p.text(text, pos.x - 2*offsetX + windX, pos.y - 2*offsetY + windY);
-        } else {
-          const windX = p.map(p.noise(pos.noiseOffsetX + currentNoiseOffsetX, pos.y * noiseScale), 0, 1, -2, 2);
-          const windY = p.map(p.noise(pos.x * noiseScale, pos.noiseOffsetY + currentNoiseOffsetY), 0, 1, -1, 1);
-          p.text(text, pos.x + windX, pos.y + windY);
-        }
       }
     };
 

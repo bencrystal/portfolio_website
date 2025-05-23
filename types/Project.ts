@@ -12,7 +12,7 @@ export type ProjectLink = {
 
 // Add a new type for content sections
 export type ContentSection = {
-  type: 'text' | 'video' | 'image' | 'download';
+  type: 'text' | 'video' | 'image' | 'download' | 'figma';
   content: string;
   title?: string;
   caption?: string;

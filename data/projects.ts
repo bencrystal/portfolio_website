@@ -617,5 +617,83 @@ export const projects: Project[] = [
     backgroundFontSize: 18,
     backgroundSpacing: 25
   },
-  // ... other projects with their custom background text
+  {
+    id: 'affectimer',
+    title: "Affectimer: Holistic Productivity App",
+    description: "A positive habit tracking app that rewards efficiency and meaningful device usage, moving beyond stress-inducing productivity techniques",
+    content: [
+      {
+        type: 'text',
+        title: 'Background',
+        content: "The \"pomodoro timer\" technique of working in short, focused intervals in combination with app-specific time limits have been the two greatest innovations I've incorporated into my own personal workflow. However, they both center their effectiveness around inducing stress surrounding failure rather than relieving users around the success of reworking their priorities."
+      },
+      {
+        type: 'text',
+        title: 'Objective',
+        content: "Create the UI for a habit tracking productivity app to keep track of efficiency and wasted time in a positive manner."
+      },
+      {
+        type: 'text',
+        title: 'Design Phase 1: Research and Concept Generation',
+        content: "I've used a handful of tools for habit tracking, journaling, and focusing techniques. Many have significantly improved my quality of work and life, but I spent time looking through various apps, interfaces, and journaling techniques that I've used in the past to figure out what works best for me and what's been most successful for the general public. Additionally, I conducted a survey amongst my peers to figure out what the most enticing distractions were when working in an attempt to mitigate the negative features. I realized that the majority of people using social media were using one information stream as a gateway to getting lost in other information streams. With Instagram for example, many users had a fear of missing messages in that section, but once they already had the app open, it was then easy to get into the endlessness of feeds, lives, and stories. As such, I set off to design an app that not only incorporated positive reinforcement, but also accounted for the individual users' value in each section of information feed individually."
+      },
+      {
+        type: 'image',
+        title: 'Research Documentation',
+        content: '/projects/Affectimer Holistic Productivity App/research_documentation.png',
+        caption: 'Complete research documentation and design process showing user surveys, competitive analysis, and iterative design approach.'
+      },
+      {
+        type: 'text',
+        title: 'Design Phase 2: Prototyping',
+        content: "From here, I iterated through a few designs in Figma to create an all-in-one productivity app. The goal was to reward users for reducing time wasted on social media applications, and to make the time that they do spend engaged with their mobile devices more meaningful."
+      },
+      {
+        type: 'figma',
+        title: 'Interactive Prototype',
+        content: 'https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Ffile%2FEL0GKDIqkDPQoGaBcR8lBk%2FAnti-Pomodoro-Timer%3Fnode-id%3D0%253A1'
+      },
+      {
+        type: 'text',
+        title: 'Key Design Principles',
+        content: "The app was designed around three core principles: positive reinforcement over punishment, individual customization of social media value, and meaningful engagement metrics. Rather than shaming users for time spent on devices, Affectimer celebrates productive achievements and helps users understand their own usage patterns in a constructive way."
+      },
+      {
+        type: 'text',
+        title: 'Research Insights',
+        content: "Through peer surveys and user research, I discovered that traditional productivity apps often fail because they create anxiety around \"failure\" rather than celebrating small wins. Users reported feeling discouraged by pomodoro timers that made them feel guilty for breaks, and app limits that felt punitive. Affectimer addresses this by reframing productivity as a positive practice rather than a restriction."
+      },
+      {
+        type: 'text',
+        title: 'Outcome & Reflections',
+        content: "This project represents a fundamental rethinking of how productivity apps approach user motivation. By focusing on positive psychology principles and user-centered research, Affectimer offers a more sustainable approach to digital wellness. The research phase revealed critical insights about social media usage patterns that informed a more nuanced design approach, moving beyond simple time limits to address the underlying psychological needs that drive distraction."
+      }
+    ],
+    thumbnail: "/projects/Affectimer Holistic Productivity App/Affectimer_Logo.png",
+    images: ["/projects/Affectimer Holistic Productivity App/Affectimer_Logo.png"],
+    techStack: [
+      { name: "Figma", color: "#F24E1E" },
+      { name: "UI/UX", color: "#4353FF" },
+      { name: "User Research", color: "#4ECDC4" },
+      { name: "Product Design", color: "#FF6B6B" }
+    ],
+    links: [
+      { type: "live", url: "https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Ffile%2FEL0GKDIqkDPQoGaBcR8lBk%2FAnti-Pomodoro-Timer%3Fnode-id%3D0%253A1" },
+      { type: "docs", url: "/projects/Affectimer Holistic Productivity App/research_documentation.png" }
+    ],
+    featured: true,
+    startDate: new Date('2022-01'),
+    endDate: new Date('2022-05'),
+    highlights: [
+      "User research on social media distraction patterns",
+      "Anti-pomodoro timer concept development",
+      "Positive reinforcement over stress-based productivity",
+      "All-in-one productivity app design",
+      "Individual social media value assessment"
+    ],
+    category: ["UI/UX", "Product Design", "User Research"],
+    backgroundText: " 📱 ✍️ 💆 ",
+    backgroundFontSize: 16,
+    backgroundSpacing: 28
+  }
 ]; 

@@ -104,6 +104,17 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                   </div>
                 )}
 
+                {section.type === 'figma' && (
+                  <div className="relative pt-[75%] bg-zinc-800 rounded-lg overflow-hidden">
+                    <iframe
+                      className="absolute top-0 left-0 w-full h-full"
+                      src={section.content}
+                      title="Figma Prototype"
+                      allowFullScreen
+                    />
+                  </div>
+                )}
+
                 {section.type === 'image' && (
                   <div className="mb-8">
                     {index > 0 && project.content?.[index - 1]?.type === 'image' ? (

@@ -90,7 +90,7 @@ const projectData: ProjectCategory[] = [
     ]
   },
   {
-    title: "Design and Engineering Projects",
+    title: "Engineering Projects",
     projects: [
       {
         id: 'vocal-harmonizer',
@@ -142,6 +142,38 @@ const projectData: ProjectCategory[] = [
           "Real-time audio analysis"
         ],
         category: ["Machine Learning", "Music", "NLP"]
+      }
+    ]
+  },
+  {
+    title: "UI/UX Design Projects",
+    projects: [
+      {
+        id: 'affectimer',
+        title: "Affectimer: Holistic Productivity App",
+        description: "A positive habit tracking app that rewards efficiency and meaningful device usage, moving beyond stress-inducing productivity techniques",
+        longDescription: "A comprehensive productivity app that reimagines traditional pomodoro timers and app limits by focusing on positive reinforcement rather than failure-based stress. Through user research and peer surveys, the app addresses how people get lost in social media information streams and creates meaningful engagement with mobile devices.",
+        thumbnail: "/projects/Affectimer Holistic Productivity App/Affectimer_Logo.png",
+        images: ["/projects/Affectimer Holistic Productivity App/Affectimer_Logo.png"],
+        techStack: [
+          { name: "Figma", color: "#F24E1E" },
+          { name: "UI/UX", color: "#4353FF" },
+          { name: "User Research", color: "#4ECDC4" }
+        ],
+        links: [
+          { type: "live", url: "https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Ffile%2FEL0GKDIqkDPQoGaBcR8lBk%2FAnti-Pomodoro-Timer%3Fnode-id%3D0%253A1" },
+          { type: "docs", url: "/projects/Affectimer Holistic Productivity App/new_doc_2022-05-16_16.03.14.pdf" }
+        ],
+        featured: true,
+        startDate: new Date('2022-01'),
+        endDate: new Date('2022-05'),
+        highlights: [
+          "User research on social media distraction patterns",
+          "Positive reinforcement over stress-based productivity",
+          "All-in-one productivity app design",
+          "Anti-pomodoro timer concept development"
+        ],
+        category: ["UI/UX", "Product Design", "User Research"]
       },
       {
         id: 'wrip-watch',
