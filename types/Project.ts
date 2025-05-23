@@ -16,7 +16,7 @@ export type ContentSection = {
   content: string;
   title?: string;
   caption?: string;
-  url?: string;
+  url?: string; // Can be used for clickable images or download links
 }
 
 export interface Project {

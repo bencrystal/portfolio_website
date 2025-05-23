@@ -699,7 +699,7 @@ export const projects: Project[] = [
   {
     id: 'ml-series',
     title: "Machine Learning Series",
-    description: "A collection of three machine learning projects exploring computer vision, natural language processing, and audio classification techniques",
+    description: "A collection of three machine learning projects exploring evolutionary algorithms, natural language processing, and audio classification techniques",
     content: [
       {
         type: 'text',
@@ -719,13 +719,8 @@ export const projects: Project[] = [
       {
         type: 'image',
         content: "/projects/Dexterous Tree/fling2.png",
-        caption: "Dexterous manipulation system demonstrating advanced robotic interaction capabilities"
-      },
-      {
-        type: 'download',
-        title: 'Project Documentation',
-        content: 'Download detailed documentation for the Dexterous Tree project',
-        url: '/projects/Dexterous Tree/Dexterous_Tree_Documentation.pdf'
+        caption: "Click to view documentation\n\nDexterous manipulation system demonstrating advanced robotic interaction capabilities.",
+        url: '/projects/dexterous-tree'
       },
       {
         type: 'text',
@@ -735,13 +730,8 @@ export const projects: Project[] = [
       {
         type: 'image',
         content: "/projects/Sound Classification/cnnarchtest1-05.png",
-        caption: "CNN architecture design for audio classification showing feature extraction and classification layers"
-      },
-      {
-        type: 'download',
-        title: 'Project Documentation',
-        content: 'Download detailed documentation for the Sound Classification project',
-        url: '/projects/Sound Classification/SoundClassificationDocumentation.pdf'
+        caption: "Click to view documentation\n\nCNN architecture design for audio classification showing feature extraction and classification layers",
+        url: '/projects/sound-classification'
       },
       {
         type: 'text',
@@ -751,13 +741,8 @@ export const projects: Project[] = [
       {
         type: 'image',
         content: "/projects/Lyric Generation/outputperepoch.png",
-        caption: "Training progression showing output quality improvement across epochs in the lyric generation GAN"
-      },
-      {
-        type: 'download',
-        title: 'Project Documentation',
-        content: 'Download detailed documentation for the Lyric GAN project',
-        url: '/projects/Lyric Generation/Lyric_GAN_Documentation.pdf'
+        caption: "Click to view documentation\n\nTraining progression showing output quality improvement across epochs in the lyric generation GAN",
+        url: '/projects/lyric-generation'
       },
       {
         type: 'text',
@@ -803,6 +788,135 @@ export const projects: Project[] = [
     ],
     category: ["Machine Learning", "Computer Vision", "NLP", "Audio"],
     backgroundText: "🤖 📊 🧠",
+    backgroundFontSize: 16,
+    backgroundSpacing: 30
+  },
+  {
+    id: 'dexterous-tree',
+    title: "Dexterous Tree",
+    description: "A segmented pillar robot with neural networks developed using evolutionary techniques for dynamic obstacle avoidance",
+    content: [
+      {
+        type: 'text',
+        title: 'Project Overview',
+        content: "The \"Dexterous Tree\" robot is a segmented pillar with a neural network that developed using evolutionary techniques to dodge objects in its environment when falling. This project explores how evolutionary algorithms can train neural networks for dynamic obstacle avoidance and adaptive movement in robotic systems."
+      },
+      {
+        type: 'download',
+        title: 'Project Documentation',
+        content: 'Download detailed documentation for the Dexterous Tree project',
+        url: '/projects/Dexterous Tree/Dexterous_Tree_Documentation.pdf'
+      }
+    ],
+    thumbnail: "/projects/Dexterous Tree/fling2.png",
+    images: ["/projects/Dexterous Tree/fling2.png"],
+    techStack: [
+      { name: "Python", color: "#3776AB" },
+      { name: "Evolutionary Algorithms", color: "#FF5722" },
+      { name: "Neural Networks", color: "#4CAF50" },
+      { name: "Computer Vision", color: "#00D2FF" },
+      { name: "Robotics", color: "#9C27B0" }
+    ],
+    links: [
+      { type: "docs", url: "/projects/Dexterous Tree/Dexterous_Tree_Documentation.pdf" }
+    ],
+    featured: false,
+    startDate: new Date('2021-09'),
+    endDate: new Date('2022-01'),
+    highlights: [
+      "Evolutionary neural network training",
+      "Dynamic obstacle avoidance",
+      "Segmented robotic design",
+      "Real-time adaptive movement"
+    ],
+    category: ["Machine Learning", "Robotics", "Computer Vision"],
+    backgroundText: "🤖 🌳 📊",
+    backgroundFontSize: 16,
+    backgroundSpacing: 30
+  },
+  {
+    id: 'sound-classification',
+    title: "Sound Classification",
+    description: "CNN-based audio classification system for distinguishing sound sources and environments",
+    content: [
+      {
+        type: 'text',
+        title: 'Project Overview',
+        content: "This sound classification algorithm utilizes a convolutional neural network to distinguish the source and environment of sampled audio clips. The system demonstrates the application of deep learning to acoustic pattern recognition, enabling automatic identification and categorization of different audio signals based on their contextual characteristics."
+      },
+      {
+        type: 'download',
+        title: 'Project Documentation',
+        content: 'Download detailed documentation for the Sound Classification project',
+        url: '/projects/Sound Classification/SoundClassificationDocumentation.pdf'
+      }
+    ],
+    thumbnail: "/projects/Sound Classification/cnnarchtest1-05.png",
+    images: ["/projects/Sound Classification/cnnarchtest1-05.png"],
+    techStack: [
+      { name: "Python", color: "#3776AB" },
+      { name: "TensorFlow", color: "#FF6F00" },
+      { name: "CNNs", color: "#2196F3" },
+      { name: "Audio Processing", color: "#9C27B0" },
+      { name: "Signal Processing", color: "#FF5722" }
+    ],
+    links: [
+      { type: "docs", url: "/projects/Sound Classification/SoundClassificationDocumentation.pdf" }
+    ],
+    featured: false,
+    startDate: new Date('2021-11'),
+    endDate: new Date('2022-03'),
+    highlights: [
+      "CNN architecture for audio",
+      "Source and environment classification",
+      "Feature extraction layers",
+      "Real-time audio processing"
+    ],
+    category: ["Machine Learning", "Audio", "Deep Learning"],
+    backgroundText: "🔊 📊 🧠",
+    backgroundFontSize: 16,
+    backgroundSpacing: 30
+  },
+  {
+    id: 'lyric-generation',
+    title: "Lyric Generation",
+    description: "Bidirectional LSTM system for learning artist styles and generating original lyrics",
+    content: [
+      {
+        type: 'text',
+        title: 'Project Overview',
+        content: "A natural language processing project that uses bidirectional LSTMs to learn an artist's style from their most popular work and reproduce a new set of lyrics for the user. This system analyzes patterns in creative writing and generates coherent, stylistically consistent text that mimics the learned artistic style."
+      },
+      {
+        type: 'download',
+        title: 'Project Documentation',
+        content: 'Download detailed documentation for the Lyric GAN project',
+        url: '/projects/Lyric Generation/Lyric_GAN_Documentation.pdf'
+      }
+    ],
+    thumbnail: "/projects/Lyric Generation/outputperepoch.png",
+    images: ["/projects/Lyric Generation/outputperepoch.png"],
+    techStack: [
+      { name: "Python", color: "#3776AB" },
+      { name: "PyTorch", color: "#EE4C2C" },
+      { name: "LSTMs", color: "#4CAF50" },
+      { name: "NLP", color: "#2196F3" },
+      { name: "Text Generation", color: "#FF5722" }
+    ],
+    links: [
+      { type: "docs", url: "/projects/Lyric Generation/Lyric_GAN_Documentation.pdf" }
+    ],
+    featured: false,
+    startDate: new Date('2022-01'),
+    endDate: new Date('2022-05'),
+    highlights: [
+      "Bidirectional LSTM architecture",
+      "Artist style learning",
+      "Creative text generation",
+      "Pattern recognition in lyrics"
+    ],
+    category: ["Machine Learning", "NLP", "Text Generation"],
+    backgroundText: "🎵 📝 🧠",
     backgroundFontSize: 16,
     backgroundSpacing: 30
   }

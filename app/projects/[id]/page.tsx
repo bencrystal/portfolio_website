@@ -2,6 +2,7 @@ import { projects } from '@/data/projects';
 import { notFound } from 'next/navigation';
 import Background from '@/components/Background';
 import Image from 'next/image';
+import Link from 'next/link';
 import type { Project } from '@/types/Project';
 
 export async function generateStaticParams() {
@@ -125,17 +126,37 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                           {getImageGroup(project.content, index).map((imgSection, i) => (
                             <div key={i} className="group md:h-full">
                               <div className="rounded-lg overflow-hidden bg-zinc-800/75 flex flex-col md:h-full">
-                                <div className="transform transition-all duration-300 group-hover:scale-105 flex items-start justify-center">
-                                  <Image 
-                                    src={imgSection.content}
-                                    alt={imgSection.caption || "Project image"}
-                                    width={800}
-                                    height={450}
-                                    className="max-w-full max-h-full object-contain"
-                                  />
+                                <div className="flex items-start justify-center">
+                                  {imgSection.url ? (
+                                    <Link 
+                                      href={imgSection.url}
+                                      className="relative group cursor-pointer"
+                                    >
+                                      <Image 
+                                        src={imgSection.content}
+                                        alt={imgSection.caption || "Project image"}
+                                        width={800}
+                                        height={450}
+                                        className="max-w-full max-h-full object-contain transition-opacity group-hover:opacity-30"
+                                      />
+                                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded">
+                                        <span className="text-white text-lg font-semibold">
+                                          Click to view full documentation
+                                        </span>
+                                      </div>
+                                    </Link>
+                                  ) : (
+                                    <Image 
+                                      src={imgSection.content}
+                                      alt={imgSection.caption || "Project image"}
+                                      width={800}
+                                      height={450}
+                                      className="max-w-full max-h-full object-contain"
+                                    />
+                                  )}
                                 </div>
                                 {imgSection.caption && (
-                                  <p className="text-sm text-zinc-300 p-3 flex-shrink-0">{imgSection.caption}</p>
+                                  <p className="text-sm text-zinc-300 p-3 flex-shrink-0 whitespace-pre-wrap">{imgSection.caption}</p>
                                 )}
                                 <div className="md:flex-grow"></div>
                               </div>
