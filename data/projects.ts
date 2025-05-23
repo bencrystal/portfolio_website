@@ -478,5 +478,144 @@ export const projects: Project[] = [
     backgroundFontSize: 15,
     backgroundSpacing: 30
   },
+  {
+    id: 'vocal-harmonizer',
+    title: "Vocal Harmonizer",
+    description: "A compact vocal harmonization system enabling musicians to create multi-layered vocal harmonies in real-time during performances",
+    content: [
+      {
+        type: 'text',
+        title: 'Project Overview',
+        content: "Vocal harmonies are a highly sought after effect in the music industry. There is currently no commercially ready method that allows solo-artists to self-harmonize in real time. The goal was to create a method for all vocalists to be able to play their voice as a variety of chords using an interface that is both intuitive and non-intrusive in a live performance setting."
+      },
+      {
+        type: 'text',
+        title: 'Objective',
+        content: "Create a compact vocal harmonization pedal that allowed singers deliberate control without limiting stage presence."
+      },
+      {
+        type: 'text',
+        title: 'Design Phase 1: Concept Generation and Wireframing',
+        content: "After interviewing dozens of industry professionals and musicians, I led three teammates in the creation of a competitive analysis using a \"House of Quality\". Using the tradeoffs and market gaps found, we designed preliminary sketches of different ways the system could function and evaluated them accordingly."
+      },
+      {
+        type: 'image',
+        content: "/projects/Vocal Harmonizer/house_of_quality-27.jpg",
+        caption: "House of Quality analysis mapping user requirements to technical specifications and identifying market gaps in existing solutions."
+      },
+      {
+        type: 'image',
+        content: "/projects/Vocal Harmonizer/vocal_synth_sketches-09.png",
+        caption: "\"All-in-one\" approach, where reading the user's chord input and processing the audio would be completed on the same microcontroller held by the performer."
+      },
+      {
+        type: 'image',
+        content: "/projects/Vocal Harmonizer/vocal_synth_sketches-06.png",
+        caption: "Software-based approach design. It would have the cheapest reproduction cost, but offered the least mobility and freedom to the performer."
+      },
+      {
+        type: 'image',
+        content: "/projects/Vocal Harmonizer/vocal_synth_sketches-07.png",
+        caption: "This concept employed the ability for performers to control the chords played from the microphone itself, not limiting their range of use to being near a computer."
+      },
+      {
+        type: 'image',
+        content: "/projects/Vocal Harmonizer/vocal_synth_sketches-08.png",
+        caption: "This concept introduced the idea of a \"frequency modulation box\" (FMB), eliminating the risks associated with bringing a computer to a performance."
+      },
+      {
+        type: 'image',
+        content: "/projects/Vocal Harmonizer/vocal_synth_sketches-11.png",
+        caption: "Primary depiction of the \"all-in-one\" device. It would wrap around nearly all stage microphones using a Velcro strap and a hinge for different shapes and angles of microphone handles."
+      },
+      {
+        type: 'image',
+        content: "/projects/Vocal Harmonizer/vocal_synth_sketches-12.png",
+        caption: "Final approach selected: a disjointed system allowing musicians to maintain full mobility while providing room for a larger battery, circuit board, and ergonomic flexibility."
+      },
+      {
+        type: 'text',
+        title: 'Design Phase 2: Prototyping',
+        content: "After deciding on the architecture, we moved to prototyping both the signal processing system and the physical controller. This involved designing both the audio processing algorithm and the hardware components that would make up the system."
+      },
+      {
+        type: 'image',
+        content: "/projects/Vocal Harmonizer/vocal_synth_dsp_long-30.jpg",
+        caption: "Flow chart depicting each step that the audio signal goes through during its conversion into a restructured chord."
+      },
+      {
+        type: 'image',
+        content: "/projects/Vocal Harmonizer/vocal_synth_electronics-28.jpg",
+        caption: "We created the Frequency Modulation Box (FMB) to alter the audio to a desired chord structure, as well as a remote to control the selection. We opted to use a Raspberry Pi 3B+ with a high fidelity hat as the FMB."
+      },
+      {
+        type: 'image',
+        content: "/projects/Vocal Harmonizer/vocal_synth_electronics-29.jpg",
+        caption: "Custom PCB for an ESP32 microcontroller in the remote to communicate with the FMB via Bluetooth. The PCB connected the microcontroller to four buttons representing 16 combinations, a power switch, a multi-functional LED, and an internal, rechargeable battery."
+      },
+      {
+        type: 'text',
+        title: 'Design Phase 3: Final Controller Design and Spectral Analysis',
+        content: "The final phase involved completing the hardware assembly, verifying the system's performance through spectral analysis, and ensuring the output matched our theoretical models."
+      },
+      {
+        type: 'image',
+        content: "/projects/Vocal Harmonizer/vocal_synth_hardware-31.jpg",
+        caption: "Final hardware assembly of the Vocal Harmonizer system showing the compact controller design."
+      },
+      {
+        type: 'image',
+        content: "/projects/Vocal Harmonizer/vocal_synthesizer_16ChordOverlay.png",
+        caption: "Overlay displaying the idealized output that should be generated by the instrument when a user selects each chord given an input frequency of 500 Hz."
+      },
+      {
+        type: 'image',
+        content: "/projects/Vocal Harmonizer/NOVERLAY3.png",
+        caption: "Custom spectrogram of the actual results of each chord type produced from a recorded 500 Hz sine wave."
+      },
+      {
+        type: 'image',
+        content: "/projects/Vocal Harmonizer/NOVERLAY5.png",
+        caption: "The idealized outputs and measured frequencies overlain, demonstrating direct alignment between theoretical and actual results."
+      },
+      {
+        type: 'text',
+        title: 'Outcomes & Impact',
+        content: "The final Vocal Harmonizer system successfully achieved its core objective, creating a device that enables vocalists to generate rich harmonies in real-time without sacrificing mobility or requiring extensive technical knowledge. By taking a user-centered approach from the beginning, we created a solution that addressed the specific needs of performing musicians.\n\nThis project represented a significant technical achievement in combining embedded hardware design, real-time audio processing, and intuitive user interface development. The system's ability to accurately generate harmonies with minimal latency demonstrated the feasibility of complex audio processing in compact, portable form factors suitable for live performance contexts."
+      }
+    ],
+    thumbnail: "/projects/Vocal Harmonizer/VocalSynthPic-02.png",
+    images: [
+      "/projects/Vocal Harmonizer/VocalSynthPic-02.png",
+      "/projects/Vocal Harmonizer/vocal_synth_dsp_long-30.jpg",
+      "/projects/Vocal Harmonizer/vocal_synth_hardware-31.jpg"
+    ],
+    techStack: [
+      { name: "Electronics", color: "#00979D" },
+      { name: "Raspberry Pi", color: "#C51A4A" },
+      { name: "ESP32", color: "#E7352C" },
+      { name: "DSP", color: "#FF9900" },
+      { name: "PCB Design", color: "#E83E8C" }
+    ],
+    links: [
+      { type: "github", url: "https://github.com/bencrystal/vocal-harmonizer" },
+      { type: "demo", url: "https://youtu.be/example-video-id" }
+    ],
+    featured: true,
+    startDate: new Date('2020-01'),
+    endDate: new Date('2021-12'),
+    highlights: [
+      "Real-time vocal harmonization system",
+      "Custom PCB design for compact controller",
+      "Bluetooth communication between controller and processing unit",
+      "16 distinct chord combinations",
+      "Spectral analysis confirming theoretical models",
+      "Team leadership and user research integration"
+    ],
+    category: ["Hardware", "Music", "Electronics", "DSP"],
+    backgroundText: "♪ ♫ ♬",
+    backgroundFontSize: 18,
+    backgroundSpacing: 25
+  },
   // ... other projects with their custom background text
 ]; 

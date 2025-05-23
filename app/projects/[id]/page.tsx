@@ -110,22 +110,23 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                       null
                     ) : (
                       <div className="p-4 -m-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 auto-rows-fr">
                           {getImageGroup(project.content, index).map((imgSection, i) => (
-                            <div key={i} className="group">
-                              <div className="rounded-lg overflow-hidden bg-zinc-800">
-                                <div className="transform transition-all duration-300 group-hover:scale-105">
+                            <div key={i} className="group h-full">
+                              <div className="rounded-lg overflow-hidden bg-zinc-800 flex flex-col h-full">
+                                <div className="transform transition-all duration-300 group-hover:scale-105 flex items-start justify-center">
                                   <Image 
                                     src={imgSection.content}
                                     alt={imgSection.caption || "Project image"}
                                     width={800}
                                     height={450}
-                                    className="w-full h-auto"
+                                    className="max-w-full max-h-full object-contain"
                                   />
-                                  {imgSection.caption && (
-                                    <p className="text-sm text-zinc-400 p-3">{imgSection.caption}</p>
-                                  )}
                                 </div>
+                                {imgSection.caption && (
+                                  <p className="text-sm text-zinc-400 p-3 flex-shrink-0">{imgSection.caption}</p>
+                                )}
+                                <div className="flex-grow"></div>
                               </div>
                             </div>
                           ))}

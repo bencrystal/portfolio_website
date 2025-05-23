@@ -11,9 +11,9 @@ export const ProjectCard = ({ project, variant = 'default' }: ProjectCardProps) 
   return (
     <Link 
       href={`/projects/${project.id}`}
-      className="block group transition-transform hover:scale-[1.02]"
+      className="block group transition-transform hover:scale-[1.02] h-full"
     >
-      <div className="bg-gray-800 rounded-lg overflow-hidden shadow-lg h-[400px] flex flex-col">
+      <div className="bg-gray-800 rounded-lg overflow-hidden shadow-lg flex flex-col h-full">
         <div className="relative aspect-video overflow-hidden flex-shrink-0">
           <Image 
             src={project.thumbnail} 
