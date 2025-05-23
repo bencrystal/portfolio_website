@@ -248,7 +248,7 @@ export default function Page() {
       <div className="relative z-10">
         {/* Hero Section */}
         <section className="container mx-auto px-4 pt-12 pb-6">
-          <div className="max-w-4xl">
+          <div className="max-w-4xl mx-auto">
             <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text">
               Welcome to Ben Crystal&apos;s website! ✨
             </h1>
@@ -310,7 +310,7 @@ export default function Page() {
         {/* Expandable About Section */}
         {showAbout && (
           <section ref={aboutSectionRef} className="container mx-auto px-4 fade-in transition-all duration-500 ease-out">
-            <div className="max-w-4xl bg-zinc-950/30 backdrop-blur-sm rounded-lg p-6 mb-0">
+            <div className="max-w-4xl mx-auto bg-zinc-950/30 backdrop-blur-sm rounded-lg p-6 mb-0">
               <div className="flex flex-col md:flex-row gap-8">
                 <div className="w-64 h-64 md:w-80 md:h-80 relative flex-shrink-0 mx-auto md:mx-0">
                   <Image
@@ -346,7 +346,7 @@ export default function Page() {
         <div className={`transition-all duration-500 ease-out transform ${showAbout ? 'translate-y-8 opacity-95' : 'translate-y-0'}`}>
           {projectData.map((category, index) => (
             <section key={index} className="container mx-auto px-4 py-8">
-              <div className="max-w-4xl">
+              <div className="max-w-4xl mx-auto">
                 <h2 className="text-2xl font-bold mb-6 text-zinc-100">{category.title}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
                   {category.projects.map((project) => (
