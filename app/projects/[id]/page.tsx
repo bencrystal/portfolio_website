@@ -81,9 +81,9 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
 
         {/* Content Sections */}
         {project.content && project.content.length > 0 && (
-          <div className="space-y-12">
+          <div className="space-y-8">
             {project.content.map((section, index) => (
-              <div key={index} className="mb-12">
+              <div key={index} className={`${section.title ? 'bg-zinc-800/75 rounded-lg p-6' : ''}`}>
                 {section.title && (
                   <h2 className="text-2xl font-semibold mb-4">{section.title}</h2>
                 )}
@@ -116,7 +116,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                 )}
 
                 {section.type === 'image' && (
-                  <div className="mb-8">
+                  <div className="mb-4">
                     {index > 0 && project.content?.[index - 1]?.type === 'image' ? (
                       null
                     ) : (
@@ -124,7 +124,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:auto-rows-fr">
                           {getImageGroup(project.content, index).map((imgSection, i) => (
                             <div key={i} className="group md:h-full">
-                              <div className="rounded-lg overflow-hidden bg-zinc-800 flex flex-col md:h-full">
+                              <div className="rounded-lg overflow-hidden bg-zinc-800/75 flex flex-col md:h-full">
                                 <div className="transform transition-all duration-300 group-hover:scale-105 flex items-start justify-center">
                                   <Image 
                                     src={imgSection.content}
@@ -135,7 +135,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                                   />
                                 </div>
                                 {imgSection.caption && (
-                                  <p className="text-sm text-zinc-400 p-3 flex-shrink-0">{imgSection.caption}</p>
+                                  <p className="text-sm text-zinc-300 p-3 flex-shrink-0">{imgSection.caption}</p>
                                 )}
                                 <div className="md:flex-grow"></div>
                               </div>
@@ -148,7 +148,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                 )}
 
                 {section.type === 'download' && section.url && (
-                  <div className="bg-cyan-500/10 rounded-lg p-6 mb-6">
+                  <div className="bg-cyan-500/10 rounded-lg p-6">
                     <div className="flex items-center gap-3">
                       <div className="text-2xl">🎮</div>
                       <a 
@@ -169,7 +169,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
 
         {/* Key Features */}
         {project.highlights && project.highlights.length > 0 && (
-          <div className="mb-12">
+          <div className="bg-zinc-800/75 rounded-lg p-6 mb-8">
             <h2 className="text-2xl font-semibold mb-4">Key Features</h2>
             <ul className="list-disc pl-5 space-y-2 text-zinc-300">
               {project.highlights.map((highlight, index) => (
@@ -180,13 +180,13 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
         )}
 
         {/* Tech Stack */}
-        <div className="mb-12">
+        <div className="bg-zinc-800/75 rounded-lg p-6 mb-8">
           <h2 className="text-2xl font-semibold mb-4">Tech Stack</h2>
           <div className="flex flex-wrap gap-2">
             {project.techStack.map((tech) => (
               <span 
                 key={tech.name}
-                className="px-3 py-1 bg-zinc-800 rounded-full text-sm"
+                className="px-3 py-1 bg-zinc-700 rounded-full text-sm"
                 style={{ color: tech.color }}
               >
                 {tech.name}
@@ -196,7 +196,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
         </div>
 
         {/* Links */}
-        <div>
+        <div className="bg-zinc-800/75 rounded-lg p-6">
           <h2 className="text-2xl font-semibold mb-4">Links</h2>
           <div className="space-y-2">
             {project.links.map((link) => (
@@ -205,7 +205,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block px-4 py-2 bg-zinc-800 rounded-lg hover:bg-zinc-700 transition-colors"
+                className="block px-4 py-2 bg-zinc-700 rounded-lg hover:bg-zinc-600 transition-colors"
               >
                 {link.type.charAt(0).toUpperCase() + link.type.slice(1)}
               </a>
