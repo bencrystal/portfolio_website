@@ -258,7 +258,7 @@ export default function Page() {
             <p className="text-xl text-zinc-300 mb-8">
               My dream is to help people express themselves in ways they&apos;ve never imagined.
             </p>
-            <div className="flex gap-4">
+            <div className="grid grid-cols-2 gap-4 sm:flex sm:gap-4">
               <Button 
                 variant="outline" 
                 className="hover:bg-cyan-500 hover:text-white transition-colors backdrop-blur-sm bg-zinc-950/30"
