@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import { NextReactP5Wrapper } from "@p5-wrapper/next";
 import type { P5CanvasInstance, Sketch } from "@p5-wrapper/react";
 
@@ -13,36 +13,14 @@ interface BackgroundProps {
 const Background = ({ text = "^ ◡ ^", fontSize = 10, spacing = 14 }: BackgroundProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Check for emojis and apply mobile CSS fix
-  useEffect(() => {
-    // Generic emoji detection
-    const hasEmojis = (() => {
-      for (let i = 0; i < text.length; i++) {
-        const char = text.charCodeAt(i);
-        if (
-          (char >= 0x1F600 && char <= 0x1F64F) || // Emoticons
-          (char >= 0x1F300 && char <= 0x1F5FF) || // Misc Symbols and Pictographs
-          (char >= 0x1F680 && char <= 0x1F6FF) || // Transport and Map
-          (char >= 0x2600 && char <= 0x26FF) ||   // Misc symbols
-          (char >= 0x2700 && char <= 0x27BF) ||   // Dingbats
-          (char >= 0x1F900 && char <= 0x1F9FF)    // Supplemental Symbols
-        ) {
-          return true;
-        }
-      }
-      return false;
-    })();
+  // Detect if we're on mobile
+  const isMobile = typeof window !== 'undefined' && (
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+    window.innerWidth < 768
+  );
 
-    const isMobile = window.innerWidth < 768;
-    
-    if (hasEmojis && isMobile && containerRef.current) {
-      // Apply CSS opacity to the canvas on mobile for emojis
-      const canvas = containerRef.current.querySelector('canvas');
-      if (canvas) {
-        canvas.style.opacity = '0.15';
-      }
-    }
-  }, [text]);
+  // Detect if text contains emojis
+  const hasEmojis = /[\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|[\u1F300-\u1F6FF]|[\u1F1E0-\u1F1FF]/.test(text);
 
   const sketch: Sketch = (p: P5CanvasInstance) => {
     const ROLL_MULTIPLIER = 0.6;
@@ -99,6 +77,12 @@ const Background = ({ text = "^ ◡ ^", fontSize = 10, spacing = 14 }: Backgroun
       const canvas = p.createCanvas(window.innerWidth, window.innerHeight);
       canvas.position(0, 0);
       canvas.style('z-index', '-1');
+      
+      // Apply CSS opacity to canvas on mobile with emojis
+      if (isMobile && hasEmojis) {
+        canvas.style('opacity', '0.15');
+      }
+      
       p.textSize(fontSize);
       p.noStroke();
 
@@ -178,7 +162,9 @@ const Background = ({ text = "^ ◡ ^", fontSize = 10, spacing = 14 }: Backgroun
         p.translate(cursorX, cursorY);
         
         p.noFill();
-        p.stroke(p.red(ringColor), p.green(ringColor), p.blue(ringColor), 20);
+        // Adjust ring opacity on mobile to compensate for CSS opacity
+        const ringOpacity = (isMobile && hasEmojis) ? 130 : 20;
+        p.stroke(p.red(ringColor), p.green(ringColor), p.blue(ringColor), ringOpacity);
         p.strokeWeight(2);
         p.circle(0, 0, warpRadius * 2);
         
@@ -188,7 +174,9 @@ const Background = ({ text = "^ ◡ ^", fontSize = 10, spacing = 14 }: Backgroun
           const phase = rollPhase + (i * Math.PI/2);
           const sinPhase = Math.abs(Math.sin(phase));
           
-          p.stroke(p.red(ringColor), p.green(ringColor), p.blue(ringColor), sinPhase * 30 + 15);
+          // Adjust ellipse opacity on mobile
+          const ellipseOpacity = (isMobile && hasEmojis) ? (sinPhase * 200 + 100) : (sinPhase * 30 + 15);
+          p.stroke(p.red(ringColor), p.green(ringColor), p.blue(ringColor), ellipseOpacity);
           p.strokeWeight(3);
           p.rotate(rollAngle + Math.PI/2);
           p.ellipse(0, 0, w, w * sinPhase);
