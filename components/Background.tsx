@@ -13,15 +13,6 @@ interface BackgroundProps {
 const Background = ({ text = "^ ◡ ^", fontSize = 10, spacing = 14 }: BackgroundProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Detect if we're on mobile
-  const isMobile = typeof window !== 'undefined' && (
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-    window.innerWidth < 768
-  );
-
-  // Detect if text contains emojis
-  const hasEmojis = /[\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|[\u1F300-\u1F6FF]|[\u1F1E0-\u1F1FF]/.test(text);
-
   const sketch: Sketch = (p: P5CanvasInstance) => {
     const ROLL_MULTIPLIER = 0.6;
     const baseSpacing = spacing || 27;
@@ -29,7 +20,7 @@ const Background = ({ text = "^ ◡ ^", fontSize = 10, spacing = 14 }: Backgroun
       x: baseSpacing * 2.5,
       y: baseSpacing * 1.5
     };
-    const gridColor = p.color(87, 241, 255, 40);
+    const gridColor = p.color(87, 241, 255, 255);
     const ringColor = p.color(87, 241, 255);
     const noiseScale = 0.05;
     
@@ -78,10 +69,8 @@ const Background = ({ text = "^ ◡ ^", fontSize = 10, spacing = 14 }: Backgroun
       canvas.position(0, 0);
       canvas.style('z-index', '-1');
       
-      // Apply CSS opacity to canvas on mobile with emojis
-      if (isMobile && hasEmojis) {
-        canvas.style('opacity', '0.15');
-      }
+      // Apply CSS opacity to canvas universally for text transparency
+      canvas.style('opacity', '0.15');
       
       p.textSize(fontSize);
       p.noStroke();
@@ -162,9 +151,8 @@ const Background = ({ text = "^ ◡ ^", fontSize = 10, spacing = 14 }: Backgroun
         p.translate(cursorX, cursorY);
         
         p.noFill();
-        // Adjust ring opacity on mobile to compensate for CSS opacity
-        const ringOpacity = (isMobile && hasEmojis) ? 130 : 20;
-        p.stroke(p.red(ringColor), p.green(ringColor), p.blue(ringColor), ringOpacity);
+        // Compensate ring opacity for universal CSS opacity (0.15)
+        p.stroke(p.red(ringColor), p.green(ringColor), p.blue(ringColor), 130);
         p.strokeWeight(2);
         p.circle(0, 0, warpRadius * 2);
         
@@ -174,9 +162,8 @@ const Background = ({ text = "^ ◡ ^", fontSize = 10, spacing = 14 }: Backgroun
           const phase = rollPhase + (i * Math.PI/2);
           const sinPhase = Math.abs(Math.sin(phase));
           
-          // Adjust ellipse opacity on mobile
-          const ellipseOpacity = (isMobile && hasEmojis) ? (sinPhase * 200 + 100) : (sinPhase * 30 + 15);
-          p.stroke(p.red(ringColor), p.green(ringColor), p.blue(ringColor), ellipseOpacity);
+          // Compensate ellipse opacity for universal CSS opacity (0.15)
+          p.stroke(p.red(ringColor), p.green(ringColor), p.blue(ringColor), sinPhase * 200 + 100);
           p.strokeWeight(3);
           p.rotate(rollAngle + Math.PI/2);
           p.ellipse(0, 0, w, w * sinPhase);
