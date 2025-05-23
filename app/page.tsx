@@ -247,7 +247,7 @@ export default function Page() {
       
       <div className="relative z-10">
         {/* Hero Section */}
-        <section className="container mx-auto px-4 py-24">
+        <section className="container mx-auto px-4 pt-12 pb-6">
           <div className="max-w-4xl">
             <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text">
               Welcome to Ben Crystal&apos;s website! ✨
@@ -309,8 +309,8 @@ export default function Page() {
 
         {/* Expandable About Section */}
         {showAbout && (
-          <section ref={aboutSectionRef} className="container mx-auto px-4 py-4 fade-in transition-all duration-500 ease-out">
-            <div className="max-w-4xl bg-zinc-950/30 backdrop-blur-sm rounded-lg p-6">
+          <section ref={aboutSectionRef} className="container mx-auto px-4 fade-in transition-all duration-500 ease-out">
+            <div className="max-w-4xl bg-zinc-950/30 backdrop-blur-sm rounded-lg p-6 mb-0">
               <div className="flex flex-col md:flex-row gap-8">
                 <div className="w-64 h-64 md:w-80 md:h-80 relative flex-shrink-0 mx-auto md:mx-0">
                   <Image
