@@ -309,15 +309,15 @@ export default function Page() {
 
         {/* Expandable About Section */}
         {showAbout && (
-          <section ref={aboutSectionRef} className="container mx-auto px-4 py-8 fade-in transition-all duration-500 ease-out">
-            <div className="max-w-4xl bg-zinc-950/30 backdrop-blur-sm rounded-lg p-8">
+          <section ref={aboutSectionRef} className="container mx-auto px-4 py-4 fade-in transition-all duration-500 ease-out">
+            <div className="max-w-4xl bg-zinc-950/30 backdrop-blur-sm rounded-lg p-6">
               <div className="flex flex-col md:flex-row gap-8">
-                <div className="w-48 h-48 relative flex-shrink-0 mx-auto md:mx-0">
+                <div className="w-64 h-64 md:w-80 md:h-80 relative flex-shrink-0 mx-auto md:mx-0">
                   <Image
                     src="/headshot.jpg"
                     alt="Ben Crystal"
-                    width={192}
-                    height={192}
+                    width={320}
+                    height={320}
                     priority
                     className="object-cover rounded-lg"
                   />
