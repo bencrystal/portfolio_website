@@ -13,29 +13,6 @@ interface BackgroundProps {
 const Background = ({ text = "^ ◡ ^", fontSize = 10, spacing = 14 }: BackgroundProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Generic emoji detection function
-  const hasEmojis = (() => {
-    for (let i = 0; i < text.length; i++) {
-      const char = text.charCodeAt(i);
-      // Check for emoji ranges (covers most common emoji blocks)
-      if (
-        (char >= 0x1F600 && char <= 0x1F64F) || // Emoticons
-        (char >= 0x1F300 && char <= 0x1F5FF) || // Misc Symbols and Pictographs
-        (char >= 0x1F680 && char <= 0x1F6FF) || // Transport and Map
-        (char >= 0x1F1E0 && char <= 0x1F1FF) || // Regional indicators
-        (char >= 0x2600 && char <= 0x26FF) ||   // Misc symbols
-        (char >= 0x2700 && char <= 0x27BF) ||   // Dingbats
-        (char >= 0xFE00 && char <= 0xFE0F) ||   // Variation selectors
-        (char >= 0x1F900 && char <= 0x1F9FF)    // Supplemental Symbols
-      ) {
-        return true;
-      }
-    }
-    return false;
-  })();
-  
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-
   const sketch: Sketch = (p: P5CanvasInstance) => {
     const ROLL_MULTIPLIER = 0.6;
     const baseSpacing = spacing || 27;
@@ -43,9 +20,7 @@ const Background = ({ text = "^ ◡ ^", fontSize = 10, spacing = 14 }: Backgroun
       x: baseSpacing * 2.5,
       y: baseSpacing * 1.5
     };
-    // Use reduced opacity for mobile emojis specifically
-    const alphaValue = (hasEmojis && isMobile) ? 25 : 40;
-    const gridColor = p.color(87, 241, 255, alphaValue);
+    const gridColor = p.color(87, 241, 255, 40);
     const ringColor = p.color(87, 241, 255);
     const noiseScale = 0.05;
     
