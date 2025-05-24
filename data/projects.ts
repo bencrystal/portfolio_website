@@ -45,8 +45,8 @@ export const projects: Project[] = [
         content: "My work at MLB represented a significant step forward in sports technology, demonstrating how immersive experiences can enhance fan engagement and bring new audiences to baseball. The platforms I helped develop reached thousands of users and set new standards for sports-related AR/VR applications."
       }
     ],
-    thumbnail: "/projects/Major League Baseball/mlb-logo.png",
-    images: ["/projects/Major League Baseball/mlb-logo.png"],
+    thumbnail: "/projects/Major League Baseball/mlb-logo.svg",
+    images: ["/projects/Major League Baseball/mlb-logo.svg"],
     techStack: [
       { name: "Unity", color: "#000000" },
       { name: "AR/VR", color: "#1CA0F2" },
