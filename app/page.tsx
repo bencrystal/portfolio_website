@@ -29,7 +29,7 @@ const getProjectsByCategory = (): ProjectCategory[] => {
   
   // For Funsies: Affectimer and others
   const funProjects = projects.filter(p => 
-    p.id === 'affectimer' || p.id === 'interactive-background' ||
+    p.id === 'affectimer' ||
     (!flagshipProjects.find(fp => fp.id === p.id) && 
      !substantialProjects.find(sp => sp.id === p.id) &&
      !['dexterous-tree', 'sound-classification', 'lyric-generation'].includes(p.id))

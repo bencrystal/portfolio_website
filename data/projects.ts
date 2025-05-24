@@ -1,33 +1,33 @@
 import { Project } from '../types/Project';
 
 export const projects: Project[] = [
-  {
-    id: 'interactive-background',
-    title: 'Interactive Background',
-    description: 'A responsive p5.js background with physics-based interactions',
-    longDescription: 'A detailed exploration of creative coding using p5.js...',
-    thumbnail: '/images/background-thumb.png',
-    images: ['/images/background-full.png'],
-    techStack: [
-      { name: 'TypeScript', icon: 'typescript', color: '#007ACC' },
-      { name: 'React', icon: 'react', color: '#61DAFB' },
-      { name: 'p5.js', icon: 'p5js' }
-    ],
-    links: [
-      { type: 'github', url: 'https://github.com/...' },
-      { type: 'live', url: 'https://...' }
-    ],
-    featured: true,
-    startDate: new Date('2024-01'),
-    highlights: [
-      'Physics-based interactions',
-      'Optimized performance',
-      'Mobile responsive'
-    ],
-    category: ['Web', 'Interactive'],
-    backgroundText: "^ ◡ ^",
-    backgroundFontSize: 8
-  },
+  // {
+  //   id: 'interactive-background',
+  //   title: 'Interactive Background',
+  //   description: 'A responsive p5.js background with physics-based interactions',
+  //   longDescription: 'A detailed exploration of creative coding using p5.js...',
+  //   thumbnail: '/images/background-thumb.png',
+  //   images: ['/images/background-full.png'],
+  //   techStack: [
+  //     { name: 'TypeScript', icon: 'typescript', color: '#007ACC' },
+  //     { name: 'React', icon: 'react', color: '#61DAFB' },
+  //     { name: 'p5.js', icon: 'p5js' }
+  //   ],
+  //   links: [
+  //     { type: 'github', url: 'https://github.com/...' },
+  //     { type: 'live', url: 'https://...' }
+  //   ],
+  //   featured: true,
+  //   startDate: new Date('2024-01'),
+  //   highlights: [
+  //     'Physics-based interactions',
+  //     'Optimized performance',
+  //     'Mobile responsive'
+  //   ],
+  //   category: ['Web', 'Interactive'],
+  //   backgroundText: "^ ◡ ^",
+  //   backgroundFontSize: 8
+  // },
   {
     id: 'space-jam-vr',
     title: "Virtual Audio Workstation",
