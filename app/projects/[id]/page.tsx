@@ -48,24 +48,9 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
         spacing={project.backgroundSpacing}
       />
       
-      {/* Sticky Navigation */}
-      <nav className="sticky top-0 z-40 bg-zinc-900/80 backdrop-blur-xl border-b border-white/10">
-        <div className="max-w-6xl mx-auto px-8 py-4">
-          <Link 
-            href="/"
-            className="inline-flex items-center gap-3 text-zinc-300 hover:text-white transition-colors group"
-          >
-            <svg className="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            <span className="font-medium">Back to Portfolio</span>
-          </Link>
-        </div>
-      </nav>
-
       <div className="relative z-30">
         {/* Hero Section */}
-        <section className="max-w-6xl mx-auto px-8 pt-16 pb-24">
+        <section className="max-w-6xl mx-auto px-8 pt-8 pb-24">
           <div className="max-w-4xl">
             {/* Project Categories */}
             {project.category && project.category.length > 0 && (
