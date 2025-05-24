@@ -55,8 +55,9 @@ export const projects: Project[] = [
       },
       {
         type: 'video',
-        title: 'Demo of Current Iteration',
-        content: 'https://youtu.be/L_9KwXF9G6g'
+        title: 'Final Quest Iteration\n(Click for Masters Thesis Documentation)',
+        content: 'https://youtu.be/L_9KwXF9G6g',
+        url: '/projects/Space Jam/Ben Crystal - IDM Thesis.pdf'
       },
       {
         type: 'text',
@@ -119,14 +120,7 @@ export const projects: Project[] = [
       { name: "Ableton Live", color: "#00CF3F" },
       { name: "visionOS", color: "#000000" }
     ],
-    links: [
-      { type: "demo", url: "https://youtu.be/L_9KwXF9G6g" },
-      { type: "docs", url: "https://www.notion.so/VR-Vocal-Performance-Space-dffa59f27c6d4649b71c3bef6c298320" },
-      { type: "demo", url: "https://www.youtube.com/watch?v=5ucxN-jtAyo" },
-      { type: "demo", url: "https://www.youtube.com/watch?v=IiTDK8TEyhQ" },
-      { type: "demo", url: "https://www.youtube.com/watch?v=OYLVuafBDoE" },
-      { type: "demo", url: "https://youtu.be/hquJ52XpiNU" }
-    ],
+    links: [],
     featured: true,
     startDate: new Date('2020-09'),
     highlights: [
@@ -460,9 +454,7 @@ export const projects: Project[] = [
       { name: "UI/UX", color: "#4353FF" },
       { name: "Brand Strategy", color: "#9C27B0" }
     ],
-    links: [
-      { type: "live", url: "https://www.bencrystal.me/projects/wrip-watch" }
-    ],
+    links: [],
     featured: false,
     startDate: new Date('2021-01'),
     endDate: new Date('2021-04'),
@@ -500,88 +492,34 @@ export const projects: Project[] = [
       },
       {
         type: 'image',
-        content: "/projects/Vocal Harmonizer/house_of_quality-27.jpg",
-        caption: "House of Quality analysis mapping user requirements to technical specifications and identifying market gaps in existing solutions."
-      },
-      {
-        type: 'image',
-        content: "/projects/Vocal Harmonizer/vocal_synth_sketches-09.png",
-        caption: "\"All-in-one\" approach, where reading the user's chord input and processing the audio would be completed on the same microcontroller held by the performer."
-      },
-      {
-        type: 'image',
-        content: "/projects/Vocal Harmonizer/vocal_synth_sketches-06.png",
-        caption: "Software-based approach design. It would have the cheapest reproduction cost, but offered the least mobility and freedom to the performer."
-      },
-      {
-        type: 'image',
-        content: "/projects/Vocal Harmonizer/vocal_synth_sketches-07.png",
-        caption: "This concept employed the ability for performers to control the chords played from the microphone itself, not limiting their range of use to being near a computer."
-      },
-      {
-        type: 'image',
-        content: "/projects/Vocal Harmonizer/vocal_synth_sketches-08.png",
-        caption: "This concept introduced the idea of a \"frequency modulation box\" (FMB), eliminating the risks associated with bringing a computer to a performance."
-      },
-      {
-        type: 'image',
-        content: "/projects/Vocal Harmonizer/vocal_synth_sketches-11.png",
-        caption: "Primary depiction of the \"all-in-one\" device. It would wrap around nearly all stage microphones using a Velcro strap and a hinge for different shapes and angles of microphone handles."
-      },
-      {
-        type: 'image',
-        content: "/projects/Vocal Harmonizer/vocal_synth_sketches-12.png",
-        caption: "Final approach selected: a disjointed system allowing musicians to maintain full mobility while providing room for a larger battery, circuit board, and ergonomic flexibility."
+        title: 'Research Documentation',
+        content: '/projects/Vocal Harmonizer/house_of_quality-27.jpg',
+        caption: 'Complete research documentation and design process showing user surveys, competitive analysis, and iterative design approach.'
       },
       {
         type: 'text',
         title: 'Design Phase 2: Prototyping',
-        content: "After deciding on the architecture, we moved to prototyping both the signal processing system and the physical controller. This involved designing both the audio processing algorithm and the hardware components that would make up the system."
+        content: "From here, I iterated through a few designs in Figma to create an all-in-one productivity app. The goal was to reward users for reducing time wasted on social media applications, and to make the time that they do spend engaged with their mobile devices more meaningful."
       },
       {
-        type: 'image',
-        content: "/projects/Vocal Harmonizer/vocal_synth_dsp_long-30.jpg",
-        caption: "Flow chart depicting each step that the audio signal goes through during its conversion into a restructured chord."
-      },
-      {
-        type: 'image',
-        content: "/projects/Vocal Harmonizer/vocal_synth_electronics-28.jpg",
-        caption: "We created the Frequency Modulation Box (FMB) to alter the audio to a desired chord structure, as well as a remote to control the selection. We opted to use a Raspberry Pi 3B+ with a high fidelity hat as the FMB."
-      },
-      {
-        type: 'image',
-        content: "/projects/Vocal Harmonizer/vocal_synth_electronics-29.jpg",
-        caption: "Custom PCB for an ESP32 microcontroller in the remote to communicate with the FMB via Bluetooth. The PCB connected the microcontroller to four buttons representing 16 combinations, a power switch, a multi-functional LED, and an internal, rechargeable battery."
+        type: 'figma',
+        title: 'Interactive Prototype',
+        content: 'https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Ffile%2FEL0GKDIqkDPQoGaBcR8lBk%2FAnti-Pomodoro-Timer%3Fnode-id%3D0%253A1'
       },
       {
         type: 'text',
-        title: 'Design Phase 3: Final Controller Design and Spectral Analysis',
-        content: "The final phase involved completing the hardware assembly, verifying the system's performance through spectral analysis, and ensuring the output matched our theoretical models."
-      },
-      {
-        type: 'image',
-        content: "/projects/Vocal Harmonizer/vocal_synth_hardware-31.jpg",
-        caption: "Final hardware assembly of the Vocal Harmonizer system showing the compact controller design."
-      },
-      {
-        type: 'image',
-        content: "/projects/Vocal Harmonizer/vocal_synthesizer_16ChordOverlay.png",
-        caption: "Overlay displaying the idealized output that should be generated by the instrument when a user selects each chord given an input frequency of 500 Hz."
-      },
-      {
-        type: 'image',
-        content: "/projects/Vocal Harmonizer/NOVERLAY3.png",
-        caption: "Custom spectrogram of the actual results of each chord type produced from a recorded 500 Hz sine wave."
-      },
-      {
-        type: 'image',
-        content: "/projects/Vocal Harmonizer/NOVERLAY5.png",
-        caption: "The idealized outputs and measured frequencies overlain, demonstrating direct alignment between theoretical and actual results."
+        title: 'Key Design Principles',
+        content: "The app was designed around three core principles: positive reinforcement over punishment, individual customization of social media value, and meaningful engagement metrics. Rather than shaming users for time spent on devices, Affectimer celebrates productive achievements and helps users understand their own usage patterns in a constructive way."
       },
       {
         type: 'text',
-        title: 'Outcomes & Impact',
-        content: "The final Vocal Harmonizer system successfully achieved its core objective, creating a device that enables vocalists to generate rich harmonies in real-time without sacrificing mobility or requiring extensive technical knowledge. By taking a user-centered approach from the beginning, we created a solution that addressed the specific needs of performing musicians.\n\nThis project represented a significant technical achievement in combining embedded hardware design, real-time audio processing, and intuitive user interface development. The system's ability to accurately generate harmonies with minimal latency demonstrated the feasibility of complex audio processing in compact, portable form factors suitable for live performance contexts."
+        title: 'Research Insights',
+        content: "Through peer surveys and user research, I discovered that traditional productivity apps often fail because they create anxiety around \"failure\" rather than celebrating small wins. Users reported feeling discouraged by pomodoro timers that made them feel guilty for breaks, and app limits that felt punitive. Affectimer addresses this by reframing productivity as a positive practice rather than a restriction."
+      },
+      {
+        type: 'text',
+        title: 'Outcome & Reflections',
+        content: "This project represents a fundamental rethinking of how productivity apps approach user motivation. By focusing on positive psychology principles and user-centered research, Affectimer offers a more sustainable approach to digital wellness. The research phase revealed critical insights about social media usage patterns that informed a more nuanced design approach, moving beyond simple time limits to address the underlying psychological needs that drive distraction."
       }
     ],
     thumbnail: "/projects/Vocal Harmonizer/VocalSynthPic-02.png",

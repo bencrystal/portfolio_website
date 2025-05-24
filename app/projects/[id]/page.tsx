@@ -164,9 +164,22 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                     <div className="bg-zinc-800/70 backdrop-blur-xl border border-white/10 rounded-2xl p-8">
                       {section.title && (
                         <header className="mb-8">
-                          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white tracking-tight">
-                            {section.title}
-                          </h2>
+                          {section.items[0]?.url ? (
+                            <Link 
+                              href={section.items[0].url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="group"
+                            >
+                              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white tracking-tight group-hover:text-cyan-400 transition-colors duration-200 whitespace-pre-line">
+                                {section.title}
+                              </h2>
+                            </Link>
+                          ) : (
+                            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white tracking-tight whitespace-pre-line">
+                              {section.title}
+                            </h2>
+                          )}
                         </header>
                       )}
                       
