@@ -6,8 +6,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Software Composer LP - Cursor Template",
-  description: "Create stunning landing pages in minutes with just 3 prompts. Save thousands on design and development with our Cursor-powered template.",
+  title: "Ben Crystal - Creative Technologist",
+  description: "Portfolio of Ben Crystal, XR creative technologist and electrical engineer based in Brooklyn, NY. Specializing in immersive AR/VR experiences, machine learning, and innovative interface design.",
 };
 
 export default function RootLayout({
