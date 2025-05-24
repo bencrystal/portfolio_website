@@ -7,232 +7,61 @@ import Image from "next/image"
 import Background from "@/components/Background"
 import { ProjectCard } from '@/components/ProjectCard'
 import { Project } from '@/types/Project'
+import { projects } from '@/data/projects'
 
 interface ProjectCategory {
   title: string;
   projects: Project[];
 }
 
-const projectData: ProjectCategory[] = [
-  {
-    title: "VR Projects",
-    projects: [
-      {
-        id: 'space-jam-vr',
-        title: "Space Jam: VR Vocal Performance Space",
-        description: "An immersive virtual environment for vocal performance and musical expression",
-        thumbnail: "/projects/Space Jam/29.png",
-        images: ["/projects/Space Jam/29.png"],
-        techStack: [
-          { name: "VR", color: "#1CA0F2" },
-          { name: "Unity", color: "#000000" },
-          { name: "C#", color: "#178600" }
-        ],
-        links: [
-          { type: "demo", url: "https://youtu.be/L_9KwXF9G6g" },
-          { type: "docs", url: "https://www.notion.so/VR-Vocal-Performance-Space-dffa59f27c6d4649b71c3bef6c298320" }
-        ],
-        featured: true,
-        startDate: new Date('2020-09'),
-        highlights: [
-          "Real-time vocal harmonization",
-          "Gesture-based controls",
-          "Automatic key and tempo matching"
-        ],
-        category: ["VR", "Music", "Interactive"]
-      },
-      {
-        id: 'calicollector',
-        title: "Calicollector: Scavenger VR Game",
-        description: "Interactive VR game focused on collection and exploration",
-        thumbnail: "/projects/Calicollector Scavenger VR Game/FileCover-1.png",
-        images: [
-          "/projects/Calicollector Scavenger VR Game/cali_outdoor_scene.jpeg",
-          "/projects/Calicollector Scavenger VR Game/cali_accessibility.jpeg"
-        ],
-        techStack: [
-          { name: "VR", color: "#1CA0F2" },
-          { name: "Unity", color: "#000000" },
-          { name: "Game Design", color: "#E44D26" }
-        ],
-        links: [
-          { type: "github", url: "#" }
-        ],
-        featured: false,
-        startDate: new Date('2020-09'),
-        category: ["VR", "Game Design"],
-        highlights: [
-          "Progressive difficulty levels",
-          "Motion sickness reduction",
-          "Teleportation options",
-          "Adaptive height settings",
-          "3D spatial audio cues"
-        ]
-      },
-      {
-        id: 'panaudicon',
-        title: "Panaudicon: The Audible Surveillance State",
-        description: "An exploration of sound and surveillance in virtual reality",
-        thumbnail: "/projects/Panaudicon/Screen_Shot_2022-04-22_at_5.41.38_PM.png",
-        images: ["/projects/Panaudicon/Screen_Shot_2022-04-22_at_5.41.38_PM.png"],
-        techStack: [
-          { name: "VR", color: "#1CA0F2" },
-          { name: "ML", color: "#FF6F00" }
-        ],
-        links: [
-          { type: "demo", url: "#" }
-        ],
-        featured: false,
-        startDate: new Date('2021-09'),
-        endDate: new Date('2021-12'),
-        category: ["VR", "Machine Learning"]
-      }
-    ]
-  },
-  {
-    title: "Engineering Projects",
-    projects: [
-      {
-        id: 'vocal-harmonizer',
-        title: "Vocal Harmonizer",
-        description: "A handheld vocal harmony synthesizer with real-time processing",
-        longDescription: "A portable device that enables real-time vocal harmonization...",
-        thumbnail: "/projects/Vocal Harmonizer/VocalSynthPic-02.png",
-        images: ["/projects/Vocal Harmonizer/VocalSynthPic-02.png"],
-        techStack: [
-          { name: "Electronics", color: "#00979D" },
-          { name: "Arduino", color: "#00979D" },
-          { name: "DSP", color: "#FF9900" }
-        ],
-        links: [
-          { type: "github", url: "#" },
-          { type: "demo", url: "#" }
-        ],
-        featured: true,
-        startDate: new Date('2020-01'),
-        endDate: new Date('2021-12'),
-        highlights: [
-          "Real-time audio processing",
-          "Custom PCB design",
-          "Intuitive physical controls"
-        ],
-        category: ["Hardware", "Music", "Electronics"]
-      },
-      {
-        id: 'ml-series',
-        title: "Machine Learning Series",
-        description: "Projects exploring sound classification and lyric generation",
-        longDescription: "A series of experiments in machine learning applications for music...",
-        thumbnail: "/projects/machine_learning_title-13.png",
-        images: ["/projects/machine_learning_title-13.png"],
-        techStack: [
-          { name: "Python", color: "#3776AB" },
-          { name: "TensorFlow", color: "#FF6F00" },
-          { name: "NLP", color: "#4B8BBE" }
-        ],
-        links: [
-          { type: "github", url: "#" },
-          { type: "docs", url: "#" }
-        ],
-        featured: true,
-        startDate: new Date('2021-01'),
-        highlights: [
-          "Sound classification models",
-          "Lyric generation using GPT",
-          "Real-time audio analysis"
-        ],
-        category: ["Machine Learning", "Music", "NLP"]
-      }
-    ]
-  },
-  {
-    title: "UI/UX Design Projects",
-    projects: [
-      {
-        id: 'affectimer',
-        title: "Affectimer: Holistic Productivity App",
-        description: "A positive habit tracking app that rewards efficiency and meaningful device usage, moving beyond stress-inducing productivity techniques",
-        longDescription: "A comprehensive productivity app that reimagines traditional pomodoro timers and app limits by focusing on positive reinforcement rather than failure-based stress. Through user research and peer surveys, the app addresses how people get lost in social media information streams and creates meaningful engagement with mobile devices.",
-        thumbnail: "/projects/Affectimer Holistic Productivity App/Affectimer_Logo.png",
-        images: ["/projects/Affectimer Holistic Productivity App/Affectimer_Logo.png"],
-        techStack: [
-          { name: "Figma", color: "#F24E1E" },
-          { name: "UI/UX", color: "#4353FF" },
-          { name: "User Research", color: "#4ECDC4" }
-        ],
-        links: [
-          { type: "live", url: "https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Ffile%2FEL0GKDIqkDPQoGaBcR8lBk%2FAnti-Pomodoro-Timer%3Fnode-id%3D0%253A1" },
-          { type: "docs", url: "/projects/Affectimer Holistic Productivity App/new_doc_2022-05-16_16.03.14.pdf" }
-        ],
-        featured: true,
-        startDate: new Date('2022-01'),
-        endDate: new Date('2022-05'),
-        highlights: [
-          "User research on social media distraction patterns",
-          "Positive reinforcement over stress-based productivity",
-          "All-in-one productivity app design",
-          "Anti-pomodoro timer concept development"
-        ],
-        category: ["UI/UX", "Product Design", "User Research"]
-      },
-      {
-        id: 'wrip-watch',
-        title: "Wrip Watch Branding",
-        description: "Brand design for a hypothetical smartwatch company",
-        longDescription: "Complete brand identity design for an innovative smartwatch startup...",
-        thumbnail: "/projects/wrip Watch Branding/wrip_cover-14.png",
-        images: ["/projects/wrip Watch Branding/wrip_cover-14.png"],
-        techStack: [
-          { name: "Figma", color: "#F24E1E" },
-          { name: "Illustrator", color: "#FF9A00" },
-          { name: "UI/UX", color: "#4353FF" }
-        ],
-        links: [
-          { type: "live", url: "#" }
-        ],
-        featured: false,
-        startDate: new Date('2021-01'),
-        endDate: new Date('2021-12'),
-        highlights: [
-          "Brand identity system",
-          "UI/UX design",
-          "Marketing materials"
-        ],
-        category: ["Design", "Branding"]
-      }
-    ]
-  },
-  {
-    title: "Other Projects",
-    projects: [
-      {
-        id: 'music-portfolio',
-        title: "Music",
-        description: "Collection of original music and sound design work",
-        longDescription: "Portfolio of musical works spanning various genres and techniques...",
-        thumbnail: "/projects/music_logo_portfolio.png",
-        images: ["/projects/music_logo_portfolio.png"],
-        techStack: [
-          { name: "Ableton", color: "#00CF3F" },
-          { name: "Max/MSP", color: "#525252" },
-          { name: "Pro Tools", color: "#7ACB10" }
-        ],
-        links: [
-          { type: "demo", url: "#" },
-          { type: "live", url: "#" }
-        ],
-        featured: true,
-        startDate: new Date('2020-01'),
-        highlights: [
-          "Original compositions",
-          "Sound design",
-          "Live performances"
-        ],
-        category: ["Music", "Audio"]
-      }
-    ]
+// Organize projects by the new three-tier system
+const getProjectsByCategory = (): ProjectCategory[] => {
+  // Flagship: Space Jam, Vocal Harmonizer
+  const flagshipProjects = projects.filter(p => 
+    p.id === 'space-jam-vr' || p.id === 'vocal-harmonizer'
+  );
+  
+  // Substantial: Calicollector, ML Series, Panaudicon, Wrip Watch
+  const substantialProjects = projects.filter(p => 
+    p.id === 'calicollector' || p.id === 'ml-series' || 
+    p.id === 'panaudicon' || p.id === 'wrip-watch'
+  );
+  
+  // For Funsies: Affectimer and others
+  const funProjects = projects.filter(p => 
+    p.id === 'affectimer' || p.id === 'interactive-background' ||
+    (!flagshipProjects.find(fp => fp.id === p.id) && 
+     !substantialProjects.find(sp => sp.id === p.id) &&
+     !['dexterous-tree', 'sound-classification', 'lyric-generation'].includes(p.id))
+  );
+  
+  const categories: ProjectCategory[] = [];
+  
+  if (flagshipProjects.length > 0) {
+    categories.push({
+      title: "Flagship",
+      projects: flagshipProjects.sort((a, b) => b.startDate.getTime() - a.startDate.getTime())
+    });
   }
-];
+  
+  if (substantialProjects.length > 0) {
+    categories.push({
+      title: "Substantial",
+      projects: substantialProjects.sort((a, b) => b.startDate.getTime() - a.startDate.getTime())
+    });
+  }
+  
+  if (funProjects.length > 0) {
+    categories.push({
+      title: "For Funsies :)",
+      projects: funProjects.sort((a, b) => b.startDate.getTime() - a.startDate.getTime())
+    });
+  }
+  
+  return categories;
+};
+
+const projectData = getProjectsByCategory();
 
 export default function Page() {
   const [showAbout, setShowAbout] = useState(false);
@@ -278,29 +107,31 @@ export default function Page() {
       <Background />
       
       <div className="relative z-10">
-        {/* Hero Section */}
-        <section className="container mx-auto px-4 pt-12 pb-6">
-          <div className="max-w-4xl mx-auto">
-            <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text">
+        {/* Hero Section - Apple-like refinements */}
+        <section className="container mx-auto px-6 pt-16 pb-12">
+          <div className="max-w-5xl mx-auto">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text leading-tight tracking-tight">
               Welcome to Ben Crystal&apos;s website! ✨
             </h1>
-            <p className="text-xl text-zinc-300 mb-4">
-              I&apos;m an XR creative technologist and electrical engineer based in Brooklyn, NY.
-            </p>
-            <p className="text-xl text-zinc-300 mb-8">
-              My dream is to help people express themselves in ways they&apos;ve never imagined.
-            </p>
-            <div className="grid grid-cols-2 gap-4 sm:flex sm:gap-4">
+            <div className="space-y-6 mb-12">
+              <p className="text-xl md:text-2xl text-zinc-300 font-medium leading-relaxed">
+                I&apos;m an XR creative technologist and electrical engineer based in Brooklyn, NY.
+              </p>
+              <p className="text-xl md:text-2xl text-zinc-300 leading-relaxed">
+                My dream is to help people express themselves in ways they&apos;ve never imagined.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-4">
               <Button 
                 variant="outline" 
-                className="hover:bg-cyan-500 hover:text-white transition-colors backdrop-blur-sm bg-zinc-950/30"
+                className="px-6 py-3 rounded-xl bg-white/10 backdrop-blur-xl border border-white/20 hover:bg-white/20 hover:border-white/30 transition-all duration-200 ease-out text-sm font-medium"
                 onClick={() => setShowAbout(!showAbout)}
               >
                 About Me
               </Button>
               <Button 
                 variant="outline" 
-                className="hover:bg-blue-500 hover:text-white transition-colors backdrop-blur-sm bg-zinc-950/30"
+                className="px-6 py-3 rounded-xl bg-white/10 backdrop-blur-xl border border-white/20 hover:bg-blue-500/20 hover:border-blue-400/30 transition-all duration-200 ease-out text-sm font-medium"
                 asChild
               >
                 <a 
@@ -319,7 +150,7 @@ export default function Page() {
               </Button>
               <Button 
                 variant="outline" 
-                className="hover:bg-purple-500 hover:text-white transition-colors backdrop-blur-sm bg-zinc-950/30"
+                className="px-6 py-3 rounded-xl bg-white/10 backdrop-blur-xl border border-white/20 hover:bg-purple-500/20 hover:border-purple-400/30 transition-all duration-200 ease-out text-sm font-medium"
                 asChild
               >
                 <a href="https://www.linkedin.com/in/ben-crystal/" target="_blank" rel="noopener noreferrer">
@@ -328,7 +159,7 @@ export default function Page() {
               </Button>
               <Button 
                 variant="outline" 
-                className="hover:bg-green-500 hover:text-white transition-colors backdrop-blur-sm bg-zinc-950/30"
+                className="px-6 py-3 rounded-xl bg-white/10 backdrop-blur-xl border border-white/20 hover:bg-green-500/20 hover:border-green-400/30 transition-all duration-200 ease-out text-sm font-medium"
                 asChild
               >
                 <a href="https://github.com/bencrystal" target="_blank" rel="noopener noreferrer">
@@ -339,30 +170,30 @@ export default function Page() {
           </div>
         </section>
 
-        {/* Expandable About Section */}
+        {/* Expandable About Section - Apple-like refinements */}
         {showAbout && (
-          <section ref={aboutSectionRef} className="container mx-auto px-4 fade-in transition-all duration-500 ease-out">
-            <div className="max-w-4xl mx-auto bg-zinc-950/30 backdrop-blur-sm rounded-lg p-6 mb-0">
-              <div className="flex flex-col md:flex-row gap-8">
-                <div className="w-64 h-64 md:w-80 md:h-80 relative flex-shrink-0 mx-auto md:mx-0">
+          <section ref={aboutSectionRef} className="container mx-auto px-6 fade-in transition-all duration-300 ease-out">
+            <div className="max-w-5xl mx-auto bg-zinc-950/40 backdrop-blur-xl border border-white/10 rounded-2xl p-8 mb-8">
+              <div className="flex flex-col lg:flex-row gap-10">
+                <div className="w-72 h-72 lg:w-80 lg:h-80 relative flex-shrink-0 mx-auto lg:mx-0">
                   <Image
                     src="/headshot.jpg"
                     alt="Ben Crystal"
                     width={320}
                     height={320}
                     priority
-                    className="object-cover rounded-lg"
+                    className="object-cover rounded-2xl"
                   />
                 </div>
-                <div>
-                  <h2 className="text-2xl font-bold mb-4 text-zinc-100">About Me</h2>
-                  <div className="prose prose-invert max-w-none">
-                    <p className="text-zinc-300">
+                <div className="flex-1">
+                  <h2 className="text-3xl font-bold mb-6 text-zinc-100 tracking-tight">About Me</h2>
+                  <div className="space-y-6 text-zinc-300 leading-relaxed">
+                    <p className="text-lg">
                       I&apos;m a creative technologist and electrical engineer with a passion for building immersive experiences 
                       that blend the physical and digital worlds. With a background in music, engineering, and interaction design, 
                       I create tools and experiences that help people express themselves in new and meaningful ways.
                     </p>
-                    <p className="text-zinc-300 mt-4">
+                    <p className="text-lg">
                       My work spans virtual and augmented reality, machine learning, and physical computing, always with a focus on 
                       creating intuitive and engaging user experiences. I believe technology should enhance our natural 
                       creativity and enable new forms of expression.
@@ -374,13 +205,15 @@ export default function Page() {
           </section>
         )}
 
-        {/* Projects Sections */}
-        <div className={`transition-all duration-500 ease-out transform ${showAbout ? 'translate-y-8 opacity-95' : 'translate-y-0'}`}>
+        {/* Projects Sections - Apple-like spacing and typography */}
+        <div className={`transition-all duration-300 ease-out ${showAbout ? 'pt-4' : 'pt-0'}`}>
           {projectData.map((category, index) => (
-            <section key={index} className="container mx-auto px-4 py-8">
-              <div className="max-w-4xl mx-auto">
-                <h2 className="text-2xl font-bold mb-6 text-zinc-100">{category.title}</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
+            <section key={index} className="container mx-auto px-6 py-12">
+              <div className="max-w-5xl mx-auto">
+                <h2 className="text-3xl md:text-4xl font-bold mb-10 text-zinc-100 tracking-tight">
+                  {category.title}
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 auto-rows-fr">
                   {category.projects.map((project) => (
                     <ProjectCard 
                       key={project.id}

@@ -30,7 +30,7 @@ export const projects: Project[] = [
   },
   {
     id: 'space-jam-vr',
-    title: "Space Jam: VR Vocal Performance Space",
+    title: "Virtual Audio Workstation",
     description: "An immersive spatial computing environment for vocal performance and musical expression using eye tracking andgesture-controlled effects",
     content: [
       {
@@ -110,8 +110,8 @@ export const projects: Project[] = [
         content: 'This multi-year research project has evolved through careful iteration and extensive user testing, generating valuable insights about embodied interaction in virtual environments. By reimagining how musicians and performers can engage with audio processing tools in three-dimensional space, Space Jam challenges conventional interfaces and explores more intuitive and expressive modes of sonic creation.\n\nThe project has significantly expanded my technical expertise in spatial audio, real-time DSP implementation, gesture recognition systems, and cross-platform VR development. Perhaps more importantly, it has deepened my understanding of how technology can enhance creative expression through thoughtful design that prioritizes human movement and natural interaction patterns.\n\nAs immersive technologies continue to evolve, the insights from Space Jam will inform future work in creating more embodied, intuitive tools for musical expression across different realities.'
       }
     ],
-    thumbnail: "/projects/space-jam.jpg",
-    images: ["/projects/space-jam.jpg"],
+    thumbnail: "/projects/Space Jam/29.png",
+    images: ["/projects/Space Jam/29.png"],
     techStack: [
       { name: "VR", color: "#1CA0F2" },
       { name: "Unity", color: "#000000" },
@@ -146,7 +146,7 @@ export const projects: Project[] = [
     id: 'calicollector',
     title: "Calicollector: Scavenger VR Game",
     description: "A VR exploration game that invites players to experience environmental interaction through the unique perspective of a house cat, emphasizing accessibility and intuitive game design",
-    thumbnail: "/projects/calicollector/outdoor-scene.jpg",
+    thumbnail: "/projects/Calicollector Scavenger VR Game/FileCover-1.png",
     images: [
       "/calicollector/caliaccessibility.jpeg",
       "/projects/calicollector/accessibility.jpg",
@@ -285,7 +285,7 @@ export const projects: Project[] = [
     id: 'panaudicon',
     title: "Panaudicon: The Audible Surveillance State",
     description: "An exploration of sound and surveillance in virtual reality, examining how audio technology shapes modern surveillance systems",
-    thumbnail: "/projects/panaudicon.jpg",
+    thumbnail: "/projects/Panaudicon/Screen_Shot_2022-04-22_at_5.41.38_PM.png",
     content: [
       {
         type: 'video',
