@@ -40,6 +40,30 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
     return imageGroup;
   };
 
+  // Function to parse markdown links and return JSX
+  const parseMarkdownLinks = (text: string) => {
+    const parts = text.split(/(\[([^\]]+)\]\(([^)]+)\))/g);
+    
+    return parts.map((part, index) => {
+      const linkMatch = part.match(/\[([^\]]+)\]\(([^)]+)\)/);
+      if (linkMatch) {
+        const [, linkText, url] = linkMatch;
+        return (
+          <a
+            key={index}
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50 hover:decoration-blue-300 underline-offset-2 transition-colors duration-200 font-medium"
+          >
+            {linkText}
+          </a>
+        );
+      }
+      return part;
+    });
+  };
+
   return (
     <main className="min-h-screen bg-zinc-900 text-white relative">
       <Background 
@@ -193,8 +217,28 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                           return (
                             <div key={itemIndex}>
                               {item.type === 'text' && (
-                                <div className="text-lg text-zinc-300 leading-relaxed whitespace-pre-wrap">
-                                  {item.content}
+                                <div className="space-y-6">
+                                  <div className="text-lg text-zinc-300 leading-relaxed whitespace-pre-wrap">
+                                    {parseMarkdownLinks(item.content)}
+                                  </div>
+                                  {item.buttons && item.buttons.length > 0 && (
+                                    <div className="flex flex-wrap gap-3 pt-2">
+                                      {item.buttons.map((button, buttonIndex) => (
+                                        <a
+                                          key={buttonIndex}
+                                          href={button.url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="inline-flex items-center px-4 py-2 bg-blue-600/10 hover:bg-blue-600/20 border border-blue-500/30 hover:border-blue-400/50 rounded-lg text-blue-400 hover:text-blue-300 text-sm font-medium transition-all duration-200 ease-out backdrop-blur-sm"
+                                        >
+                                          {button.text}
+                                          <svg className="ml-2 w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                          </svg>
+                                        </a>
+                                      ))}
+                                    </div>
+                                  )}
                                 </div>
                               )}
 

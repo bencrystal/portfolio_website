@@ -17,6 +17,7 @@ export type ContentSection = {
   title?: string;
   caption?: string;
   url?: string; // Can be used for clickable images or download links
+  buttons?: Array<{ text: string; url: string }>; // Apple-style contextual buttons
 }
 
 export interface Project {

@@ -9,17 +9,25 @@ export const projects: Project[] = [
       {
         type: 'text',
         title: 'Role Overview',
-        content: "As Creative Technologist at Major League Baseball (2022-2024), I developed and provided technical and artistic consultation for cutting-edge XR experiences that brought fans closer to America's pastime. My work spanned mobile AR platforms, VR gaming experiences, and cross-platform integrations that reached thousands of users at flagship MLB events."
+        content: "As Creative Technologist at Major League Baseball, I developed and provided technical and artistic consultation for cutting-edge XR experiences that brought fans closer to America's pastime. My work spanned mobile AR platforms, VR gaming experiences, and cross-platform integrations that reached thousands of users at flagship MLB events."
       },
       {
         type: 'text',
         title: 'MLB Next Mobile AR Platform',
-        content: "Developed and provided technical and artistic consultation for the MLB Next mobile AR platform, reaching 10,000+ iOS/Android users at flagship events. This platform delivered real-time gameplay insights, on-demand AR content, and interactive 3D field visualizations that enhanced the live baseball experience for fans attending games."
+        content: "Developed and provided technical and artistic consultation for the MLB Next mobile AR platform, reaching 10,000+ iOS/Android users at flagship events. This platform delivered real-time gameplay insights, on-demand AR content, and interactive 3D field visualizations that enhanced the live baseball experience for fans attending games.",
+        buttons: [
+          { text: "View MLB Next App", url: "https://www.mlb.com/apps/mlb-next" }
+        ]
       },
       {
         type: 'text',
         title: 'VR Experience Optimization',
-        content: "Optimized performance and user experience for MLB VR and Home Run Derby VR through cross-team collaboration. This involved fine-tuning gameplay mechanics, improving rendering performance, and ensuring seamless user interactions across multiple VR platforms including Meta Quest and Steam VR."
+        content: "Optimized performance and user experience for MLB VR and Home Run Derby VR through cross-team collaboration. This involved fine-tuning gameplay mechanics, improving rendering performance, and ensuring seamless user interactions across multiple VR platforms including Meta Quest and Steam VR.",
+        buttons: [
+          { text: "MLB VR (Meta Quest)", url: "https://www.meta.com/experiences/mlb/2873640696088444/" },
+          { text: "MLB (Apple Vision Pro)", url: "https://apps.apple.com/us/app/mlb/id493619333?platform=vision" },
+          { text: "Home Run Derby VR", url: "https://www.mlb.com/apps/home-run-derby-vr" }
+        ]
       },
       {
         type: 'text',
@@ -37,8 +45,8 @@ export const projects: Project[] = [
         content: "My work at MLB represented a significant step forward in sports technology, demonstrating how immersive experiences can enhance fan engagement and bring new audiences to baseball. The platforms I helped develop reached thousands of users and set new standards for sports-related AR/VR applications."
       }
     ],
-    thumbnail: "/projects/mlb/mlb-dashboard-preview.png",
-    images: ["/projects/mlb/mlb-dashboard-preview.png"],
+    thumbnail: "/projects/Major League Baseball/mlb-logo.png",
+    images: ["/projects/Major League Baseball/mlb-logo.png"],
     techStack: [
       { name: "Unity", color: "#000000" },
       { name: "AR/VR", color: "#1CA0F2" },
@@ -49,12 +57,7 @@ export const projects: Project[] = [
       { name: "Apple Vision Pro", color: "#000000" },
       { name: "Cross-Platform", color: "#FF6B6B" }
     ],
-    links: [
-      { type: "live", url: "https://www.mlb.com/apps/mlb-next" },
-      { type: "live", url: "https://www.meta.com/experiences/mlb/2873640696088444/?srsltid=AfmBOooCw8q_XSewM63atMUkYm_0aPdHAq5MJBj5KXS5v9LZUlAV_09A" },
-      { type: "live", url: "https://apps.apple.com/us/app/mlb/id493619333?platform=vision" },
-      { type: "live", url: "https://www.mlb.com/apps/home-run-derby-vr" }
-    ],
+    links: [],
     featured: true,
     startDate: new Date('2022-03'),
     endDate: new Date('2024-11'),
