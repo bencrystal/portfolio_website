@@ -24,9 +24,6 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
     return match ? match[1] : null;
   };
 
-  const demoVideo = project.links.find(link => link.type === "demo");
-  const youtubeId = demoVideo ? getYoutubeId(demoVideo.url) : null;
-
   // Function to get image sections
   const getImageGroup = (content: Project['content'], startIndex: number) => {
     if (!content) return [];
@@ -50,189 +47,266 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
         fontSize={project.backgroundFontSize}
         spacing={project.backgroundSpacing}
       />
-      <div className="relative z-30 max-w-4xl mx-auto p-8">
-        <h1 className="text-5xl font-bold mb-8">{project.title}</h1>
-
-        {/* Tags Section */}
-        {project.category && project.category.length > 0 && (
-          <div className="flex gap-2 mb-6">
-            {project.category.map((tag) => (
-              <span 
-                key={tag} 
-                className="px-3 py-1 bg-zinc-800 rounded-full text-sm"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {/* Timeframe */}
-        <div className="text-zinc-400 mb-8">
-          {project.startDate.toLocaleDateString('en-US', { 
-            month: 'long', 
-            year: 'numeric' 
-          })} - {
-            project.endDate ? project.endDate.toLocaleDateString('en-US', { 
-              month: 'long', 
-              year: 'numeric' 
-            }) : 'Present'
-          }
+      
+      {/* Sticky Navigation */}
+      <nav className="sticky top-0 z-40 bg-zinc-900/80 backdrop-blur-xl border-b border-white/10">
+        <div className="max-w-6xl mx-auto px-8 py-4">
+          <Link 
+            href="/"
+            className="inline-flex items-center gap-3 text-zinc-300 hover:text-white transition-colors group"
+          >
+            <svg className="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            <span className="font-medium">Back to Portfolio</span>
+          </Link>
         </div>
+      </nav>
+
+      <div className="relative z-30">
+        {/* Hero Section */}
+        <section className="max-w-6xl mx-auto px-8 pt-16 pb-24">
+          <div className="max-w-4xl">
+            {/* Project Categories */}
+            {project.category && project.category.length > 0 && (
+              <div className="flex flex-wrap gap-3 mb-8">
+                {project.category.map((tag) => (
+                  <span 
+                    key={tag} 
+                    className="px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/10 rounded-lg text-sm font-medium text-zinc-300"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Project Title */}
+            <h1 className="text-5xl md:text-6xl font-bold mb-8 text-white tracking-tight">
+              {project.title}
+            </h1>
+
+            {/* Project Description */}
+            <p className="text-xl md:text-2xl text-zinc-300 leading-relaxed mb-12 max-w-3xl">
+              {project.description}
+            </p>
+
+            {/* Project Meta */}
+            <div className="flex flex-wrap items-center gap-8 text-zinc-400 mb-16">
+              <div>
+                <span className="text-sm font-medium text-zinc-500 uppercase tracking-wide">Timeline</span>
+                <p className="text-lg text-zinc-300 mt-1">
+                  {project.startDate.toLocaleDateString('en-US', { 
+                    month: 'long', 
+                    year: 'numeric' 
+                  })} - {
+                    project.endDate ? project.endDate.toLocaleDateString('en-US', { 
+                      month: 'long', 
+                      year: 'numeric' 
+                    }) : 'Present'
+                  }
+                </p>
+              </div>
+              
+              {/* Tech Stack Preview */}
+              <div>
+                <span className="text-sm font-medium text-zinc-500 uppercase tracking-wide">Technologies</span>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {project.techStack.slice(0, 3).map((tech) => (
+                    <span 
+                      key={tech.name}
+                      className="px-3 py-1 bg-zinc-800/50 rounded-lg text-sm font-medium"
+                      style={{ color: tech.color || '#d4d4d8' }}
+                    >
+                      {tech.name}
+                    </span>
+                  ))}
+                  {project.techStack.length > 3 && (
+                    <span className="px-3 py-1 bg-zinc-800/50 rounded-lg text-sm font-medium text-zinc-400">
+                      +{project.techStack.length - 3}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Links */}
+            <div className="flex flex-wrap gap-4">
+              {project.links.map((link) => (
+                <a
+                  key={link.url}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-6 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl hover:bg-white/20 hover:border-white/30 transition-all duration-200 ease-out font-medium"
+                >
+                  {link.type.charAt(0).toUpperCase() + link.type.slice(1)}
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
 
         {/* Content Sections */}
         {project.content && project.content.length > 0 && (
-          <div className="space-y-8">
-            {project.content.map((section, index) => (
-              <div key={index} className={`${section.title ? 'bg-zinc-800/75 rounded-lg p-6' : ''}`}>
-                {section.title && (
-                  <h2 className="text-2xl font-semibold mb-4">{section.title}</h2>
-                )}
-                
-                {section.type === 'text' && (
-                  <p className="text-zinc-300 whitespace-pre-wrap">{section.content}</p>
-                )}
+          <section className="max-w-6xl mx-auto px-8 pb-24">
+            <div className="space-y-12">
+              {project.content.map((section, index) => {
+                // Skip rendering if this is a subsequent image in a group
+                if (section.type === 'image' && index > 0 && project.content?.[index - 1]?.type === 'image') {
+                  return null;
+                }
 
-                {section.type === 'video' && (
-                  <div className="relative pt-[56.25%] bg-black rounded-lg overflow-hidden">
-                    <iframe
-                      className="absolute top-0 left-0 w-full h-full"
-                      src={`https://www.youtube.com/embed/${getYoutubeId(section.content)}`}
-                      title="Video"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  </div>
-                )}
+                return (
+                  <article key={index} className="max-w-4xl mx-auto">
+                    <div className="bg-zinc-800/70 backdrop-blur-xl border border-white/10 rounded-2xl p-8">
+                      {section.title && (
+                        <header className="mb-8">
+                          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white tracking-tight">
+                            {section.title}
+                          </h2>
+                        </header>
+                      )}
+                      
+                      {section.type === 'text' && (
+                        <div className="text-lg text-zinc-300 leading-relaxed whitespace-pre-wrap">
+                          {section.content}
+                        </div>
+                      )}
 
-                {section.type === 'figma' && (
-                  <div className="relative pt-[75%] bg-zinc-800 rounded-lg overflow-hidden">
-                    <iframe
-                      className="absolute top-0 left-0 w-full h-full"
-                      src={section.content}
-                      title="Figma Prototype"
-                      allowFullScreen
-                    />
-                  </div>
-                )}
+                      {section.type === 'video' && (
+                        <div className="relative pt-[56.25%] bg-zinc-950/50 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
+                          <iframe
+                            className="absolute top-0 left-0 w-full h-full"
+                            src={`https://www.youtube.com/embed/${getYoutubeId(section.content)}`}
+                            title="Video"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        </div>
+                      )}
 
-                {section.type === 'image' && (
-                  <div className="mb-4">
-                    {index > 0 && project.content?.[index - 1]?.type === 'image' ? (
-                      null
-                    ) : (
-                      <div className="p-4 -m-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:auto-rows-fr">
-                          {getImageGroup(project.content, index).map((imgSection, i) => (
-                            <div key={i} className="group md:h-full">
-                              <div className="rounded-lg overflow-hidden bg-zinc-800/75 flex flex-col md:h-full">
-                                <div className="flex items-start justify-center">
-                                  {imgSection.url ? (
-                                    <Link 
-                                      href={imgSection.url}
-                                      className="relative group cursor-pointer"
-                                    >
+                      {section.type === 'figma' && (
+                        <div className="relative pt-[75%] bg-zinc-950/50 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
+                          <iframe
+                            className="absolute top-0 left-0 w-full h-full"
+                            src={section.content}
+                            title="Figma Prototype"
+                            allowFullScreen
+                          />
+                        </div>
+                      )}
+
+                      {section.type === 'image' && (
+                        <div className="mb-8">
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            {getImageGroup(project.content, index).map((imgSection, i) => (
+                              <figure key={i} className="group h-full">
+                                <div className="bg-zinc-950/50 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden h-full flex flex-col">
+                                  <div className="relative flex-shrink-0">
+                                    {imgSection.url ? (
+                                      <Link 
+                                        href={imgSection.url}
+                                        className="block relative group/link"
+                                      >
+                                        <Image 
+                                          src={imgSection.content}
+                                          alt={imgSection.caption || "Project image"}
+                                          width={800}
+                                          height={450}
+                                          className="w-full h-auto object-cover transition-transform duration-500 group-hover/link:scale-105"
+                                        />
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/link:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                          <span className="text-white font-medium">
+                                            View Documentation
+                                          </span>
+                                        </div>
+                                      </Link>
+                                    ) : (
                                       <Image 
                                         src={imgSection.content}
                                         alt={imgSection.caption || "Project image"}
                                         width={800}
                                         height={450}
-                                        className="max-w-full max-h-full object-contain transition-opacity group-hover:opacity-30"
+                                        className="w-full h-auto object-cover"
                                       />
-                                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded">
-                                        <span className="text-white text-lg font-semibold">
-                                          Click to view full documentation
-                                        </span>
-                                      </div>
-                                    </Link>
-                                  ) : (
-                                    <Image 
-                                      src={imgSection.content}
-                                      alt={imgSection.caption || "Project image"}
-                                      width={800}
-                                      height={450}
-                                      className="max-w-full max-h-full object-contain"
-                                    />
+                                    )}
+                                  </div>
+                                  {imgSection.caption && (
+                                    <figcaption className="p-6 flex-grow flex items-end">
+                                      <p className="text-sm text-zinc-400 leading-relaxed whitespace-pre-wrap">
+                                        {imgSection.caption}
+                                      </p>
+                                    </figcaption>
                                   )}
                                 </div>
-                                {imgSection.caption && (
-                                  <p className="text-sm text-zinc-300 p-3 flex-shrink-0 whitespace-pre-wrap">{imgSection.caption}</p>
-                                )}
-                                <div className="md:flex-grow"></div>
-                              </div>
-                            </div>
-                          ))}
+                              </figure>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                )}
+                      )}
 
-                {section.type === 'download' && section.url && (
-                  <div className="bg-cyan-500/10 rounded-lg p-6">
-                    <div className="flex items-center gap-3">
-                      <div className="text-2xl">🎮</div>
-                      <a 
-                        href={section.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-cyan-400 hover:text-cyan-300 transition-colors"
-                      >
-                        {section.content}
-                      </a>
+                      {section.type === 'download' && section.url && (
+                        <div className="bg-cyan-500/10 backdrop-blur-xl border border-cyan-500/20 rounded-2xl p-8">
+                          <div className="flex items-center gap-4">
+                            <div className="text-3xl">🎮</div>
+                            <div>
+                              <h3 className="text-lg font-semibold text-white mb-2">{section.title}</h3>
+                              <a 
+                                href={section.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-cyan-400 hover:text-cyan-300 transition-colors font-medium"
+                              >
+                                {section.content}
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                )}
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* Project Details Sidebar */}
+        <section className="max-w-6xl mx-auto px-8 pb-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Key Features */}
+            {project.highlights && project.highlights.length > 0 && (
+              <div className="bg-zinc-950/50 backdrop-blur-xl border border-white/10 rounded-2xl p-8">
+                <h3 className="text-2xl font-bold mb-6 text-white">Key Features</h3>
+                <ul className="space-y-4">
+                  {project.highlights.map((highlight, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2 flex-shrink-0" />
+                      <span className="text-zinc-300 leading-relaxed">{highlight}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            ))}
-          </div>
-        )}
+            )}
 
-        {/* Key Features */}
-        {project.highlights && project.highlights.length > 0 && (
-          <div className="bg-zinc-800/75 rounded-lg p-6 mb-8">
-            <h2 className="text-2xl font-semibold mb-4">Key Features</h2>
-            <ul className="list-disc pl-5 space-y-2 text-zinc-300">
-              {project.highlights.map((highlight, index) => (
-                <li key={index}>{highlight}</li>
-              ))}
-            </ul>
+            {/* Complete Tech Stack */}
+            <div className="bg-zinc-950/50 backdrop-blur-xl border border-white/10 rounded-2xl p-8">
+              <h3 className="text-2xl font-bold mb-6 text-white">Tech Stack</h3>
+              <div className="grid grid-cols-2 gap-3">
+                {project.techStack.map((tech) => (
+                  <div
+                    key={tech.name}
+                    className="px-4 py-3 bg-zinc-800/50 rounded-lg text-sm font-medium text-center"
+                    style={{ color: tech.color || '#d4d4d8' }}
+                  >
+                    {tech.name}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-        )}
-
-        {/* Tech Stack */}
-        <div className="bg-zinc-800/75 rounded-lg p-6 mb-8">
-          <h2 className="text-2xl font-semibold mb-4">Tech Stack</h2>
-          <div className="flex flex-wrap gap-2">
-            {project.techStack.map((tech) => (
-              <span 
-                key={tech.name}
-                className="px-3 py-1 bg-zinc-700 rounded-full text-sm"
-                style={{ color: tech.color }}
-              >
-                {tech.name}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Links */}
-        <div className="bg-zinc-800/75 rounded-lg p-6">
-          <h2 className="text-2xl font-semibold mb-4">Links</h2>
-          <div className="space-y-2">
-            {project.links.map((link) => (
-              <a
-                key={link.url}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block px-4 py-2 bg-zinc-700 rounded-lg hover:bg-zinc-600 transition-colors"
-              >
-                {link.type.charAt(0).toUpperCase() + link.type.slice(1)}
-              </a>
-            ))}
-          </div>
-        </div>
+        </section>
       </div>
     </main>
   );
