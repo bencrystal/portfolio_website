@@ -24,17 +24,17 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
     return match ? match[1] : null;
   };
 
-  // Function to get image sections
-  const getImageGroup = (content: Project['content'], startIndex: number) => {
-    if (!content) return [];
+  // Function to get image sections within a specific items array
+  const getImageGroupInSection = (items: typeof project.content, startIndex: number) => {
+    if (!items) return [];
     let imageGroup = [];
     let currentIndex = startIndex;
     
     while (
-      currentIndex < content.length && 
-      content[currentIndex].type === 'image'
+      currentIndex < items.length && 
+      items[currentIndex].type === 'image'
     ) {
-      imageGroup.push(content[currentIndex]);
+      imageGroup.push(items[currentIndex]);
       currentIndex++;
     }
     return imageGroup;
@@ -136,14 +136,31 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
         {project.content && project.content.length > 0 && (
           <section className="max-w-6xl mx-auto px-8 pb-24">
             <div className="space-y-12">
-              {project.content.map((section, index) => {
-                // Skip rendering if this is a subsequent image in a group
-                if (section.type === 'image' && index > 0 && project.content?.[index - 1]?.type === 'image') {
-                  return null;
+              {(() => {
+                // Group content by sections (title + following content)
+                const sections: Array<{ title?: string; items: typeof project.content }> = [];
+                let currentSection: { title?: string; items: typeof project.content } = { items: [] };
+                
+                project.content.forEach((item, index) => {
+                  if (item.title) {
+                    // Start a new section
+                    if (currentSection.items.length > 0) {
+                      sections.push(currentSection);
+                    }
+                    currentSection = { title: item.title, items: [item] };
+                  } else {
+                    // Add to current section
+                    currentSection.items.push(item);
+                  }
+                });
+                
+                // Don't forget the last section
+                if (currentSection.items.length > 0) {
+                  sections.push(currentSection);
                 }
-
-                return (
-                  <article key={index} className="max-w-4xl mx-auto">
+                
+                return sections.map((section, sectionIndex) => (
+                  <article key={sectionIndex} className="max-w-4xl mx-auto">
                     <div className="bg-zinc-800/70 backdrop-blur-xl border border-white/10 rounded-2xl p-8">
                       {section.title && (
                         <header className="mb-8">
@@ -153,106 +170,117 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                         </header>
                       )}
                       
-                      {section.type === 'text' && (
-                        <div className="text-lg text-zinc-300 leading-relaxed whitespace-pre-wrap">
-                          {section.content}
-                        </div>
-                      )}
+                      <div className="space-y-8">
+                        {section.items.map((item, itemIndex) => {
+                          // Skip rendering if this is a subsequent image in a group
+                          if (item.type === 'image' && itemIndex > 0 && section.items[itemIndex - 1]?.type === 'image') {
+                            return null;
+                          }
 
-                      {section.type === 'video' && (
-                        <div className="relative pt-[56.25%] bg-zinc-950/50 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
-                          <iframe
-                            className="absolute top-0 left-0 w-full h-full"
-                            src={`https://www.youtube.com/embed/${getYoutubeId(section.content)}`}
-                            title="Video"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                          />
-                        </div>
-                      )}
-
-                      {section.type === 'figma' && (
-                        <div className="relative pt-[75%] bg-zinc-950/50 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
-                          <iframe
-                            className="absolute top-0 left-0 w-full h-full"
-                            src={section.content}
-                            title="Figma Prototype"
-                            allowFullScreen
-                          />
-                        </div>
-                      )}
-
-                      {section.type === 'image' && (
-                        <div className="mb-8">
-                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            {getImageGroup(project.content, index).map((imgSection, i) => (
-                              <figure key={i} className="group h-full">
-                                <div className="bg-zinc-950/50 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden h-full flex flex-col">
-                                  <div className="relative flex-shrink-0">
-                                    {imgSection.url ? (
-                                      <Link 
-                                        href={imgSection.url}
-                                        className="block relative group/link"
-                                      >
-                                        <Image 
-                                          src={imgSection.content}
-                                          alt={imgSection.caption || "Project image"}
-                                          width={800}
-                                          height={450}
-                                          className="w-full h-auto object-cover transition-transform duration-500 group-hover/link:scale-105"
-                                        />
-                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/link:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                          <span className="text-white font-medium">
-                                            View Documentation
-                                          </span>
-                                        </div>
-                                      </Link>
-                                    ) : (
-                                      <Image 
-                                        src={imgSection.content}
-                                        alt={imgSection.caption || "Project image"}
-                                        width={800}
-                                        height={450}
-                                        className="w-full h-auto object-cover"
-                                      />
-                                    )}
-                                  </div>
-                                  {imgSection.caption && (
-                                    <figcaption className="p-6 flex-grow flex items-end">
-                                      <p className="text-sm text-zinc-400 leading-relaxed whitespace-pre-wrap">
-                                        {imgSection.caption}
-                                      </p>
-                                    </figcaption>
-                                  )}
+                          return (
+                            <div key={itemIndex}>
+                              {item.type === 'text' && (
+                                <div className="text-lg text-zinc-300 leading-relaxed whitespace-pre-wrap">
+                                  {item.content}
                                 </div>
-                              </figure>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                              )}
 
-                      {section.type === 'download' && section.url && (
-                        <div className="bg-cyan-500/10 backdrop-blur-xl border border-cyan-500/20 rounded-2xl p-8">
-                          <div className="flex items-center gap-4">
-                            <div className="text-3xl">🎮</div>
-                            <div>
-                              <h3 className="text-lg font-semibold text-white mb-2">{section.title}</h3>
-                              <a 
-                                href={section.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-cyan-400 hover:text-cyan-300 transition-colors font-medium"
-                              >
-                                {section.content}
-                              </a>
+                              {item.type === 'video' && (
+                                <div className="relative pt-[56.25%] bg-zinc-950/50 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
+                                  <iframe
+                                    className="absolute top-0 left-0 w-full h-full"
+                                    src={`https://www.youtube.com/embed/${getYoutubeId(item.content)}`}
+                                    title="Video"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                  />
+                                </div>
+                              )}
+
+                              {item.type === 'figma' && (
+                                <div className="relative pt-[75%] bg-zinc-950/50 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
+                                  <iframe
+                                    className="absolute top-0 left-0 w-full h-full"
+                                    src={item.content}
+                                    title="Figma Prototype"
+                                    allowFullScreen
+                                  />
+                                </div>
+                              )}
+
+                              {item.type === 'image' && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                                  {getImageGroupInSection(section.items, itemIndex).map((imgSection, i) => (
+                                    <figure key={i} className="group h-full">
+                                      <div className="bg-zinc-950/50 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden h-full flex flex-col">
+                                        <div className="relative flex-shrink-0">
+                                          {imgSection.url ? (
+                                            <Link 
+                                              href={imgSection.url}
+                                              className="block relative group/link"
+                                            >
+                                              <Image 
+                                                src={imgSection.content}
+                                                alt={imgSection.caption || "Project image"}
+                                                width={800}
+                                                height={450}
+                                                className="w-full h-auto object-cover transition-transform duration-500 group-hover/link:scale-105"
+                                              />
+                                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/link:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                                <span className="text-white font-medium">
+                                                  View Documentation
+                                                </span>
+                                              </div>
+                                            </Link>
+                                          ) : (
+                                            <Image 
+                                              src={imgSection.content}
+                                              alt={imgSection.caption || "Project image"}
+                                              width={800}
+                                              height={450}
+                                              className="w-full h-auto object-cover"
+                                            />
+                                          )}
+                                        </div>
+                                        {imgSection.caption && (
+                                          <figcaption className="p-6 flex-grow flex items-end">
+                                            <p className="text-sm text-zinc-400 leading-relaxed whitespace-pre-wrap">
+                                              {imgSection.caption}
+                                            </p>
+                                          </figcaption>
+                                        )}
+                                      </div>
+                                    </figure>
+                                  ))}
+                                </div>
+                              )}
+
+                              {item.type === 'download' && item.url && (
+                                <div className="bg-cyan-500/10 backdrop-blur-xl border border-cyan-500/20 rounded-2xl p-8">
+                                  <div className="flex items-center gap-4">
+                                    <div className="text-3xl">🎮</div>
+                                    <div>
+                                      <h3 className="text-lg font-semibold text-white mb-2">{item.title}</h3>
+                                      <a 
+                                        href={item.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-cyan-400 hover:text-cyan-300 transition-colors font-medium"
+                                      >
+                                        {item.content}
+                                      </a>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
                             </div>
-                          </div>
-                        </div>
-                      )}
+                          );
+                        })}
+                      </div>
                     </div>
                   </article>
-                );
-              })}
+                ));
+              })()}
             </div>
           </section>
         )}
