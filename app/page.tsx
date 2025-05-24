@@ -16,23 +16,21 @@ interface ProjectCategory {
 
 // Organize projects by the new three-tier system
 const getProjectsByCategory = (): ProjectCategory[] => {
-  // Flagship: Space Jam, Vocal Harmonizer
+  // Flagship: Projects with "Flagship" category
   const flagshipProjects = projects.filter(p => 
-    p.id === 'space-jam-vr' || p.id === 'vocal-harmonizer'
+    p.category?.includes('Flagship')
   );
   
-  // Substantial: Calicollector, ML Series, Panaudicon, Wrip Watch
+  // Substantial: Projects with "Substantial" category
   const substantialProjects = projects.filter(p => 
-    p.id === 'calicollector' || p.id === 'ml-series' || 
-    p.id === 'panaudicon' || p.id === 'wrip-watch'
+    p.category?.includes('Substantial')
   );
   
-  // For Funsies: Affectimer and others
+  // For Funsies: Everything else
   const funProjects = projects.filter(p => 
-    p.id === 'affectimer' ||
-    (!flagshipProjects.find(fp => fp.id === p.id) && 
-     !substantialProjects.find(sp => sp.id === p.id) &&
-     !['dexterous-tree', 'sound-classification', 'lyric-generation'].includes(p.id))
+    !p.category?.includes('Flagship') && 
+    !p.category?.includes('Substantial') &&
+    !['dexterous-tree', 'sound-classification', 'lyric-generation'].includes(p.id)
   );
   
   const categories: ProjectCategory[] = [];

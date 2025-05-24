@@ -1,6 +1,78 @@
 import { Project } from '../types/Project';
 
 export const projects: Project[] = [
+  {
+    id: 'major-league-baseball',
+    title: "Major League Baseball",
+    description: "Creative Technologist developing immersive AR/VR experiences and mobile platforms for Major League Baseball's digital initiatives",
+    content: [
+      {
+        type: 'text',
+        title: 'Role Overview',
+        content: "As Creative Technologist at Major League Baseball (2022-2024), I developed and provided technical and artistic consultation for cutting-edge XR experiences that brought fans closer to America's pastime. My work spanned mobile AR platforms, VR gaming experiences, and cross-platform integrations that reached thousands of users at flagship MLB events."
+      },
+      {
+        type: 'text',
+        title: 'MLB Next Mobile AR Platform',
+        content: "Developed and provided technical and artistic consultation for the MLB Next mobile AR platform, reaching 10,000+ iOS/Android users at flagship events. This platform delivered real-time gameplay insights, on-demand AR content, and interactive 3D field visualizations that enhanced the live baseball experience for fans attending games."
+      },
+      {
+        type: 'text',
+        title: 'VR Experience Optimization',
+        content: "Optimized performance and user experience for MLB VR and Home Run Derby VR through cross-team collaboration. This involved fine-tuning gameplay mechanics, improving rendering performance, and ensuring seamless user interactions across multiple VR platforms including Meta Quest and Steam VR."
+      },
+      {
+        type: 'text',
+        title: 'Cross-Platform XR Development',
+        content: "Implemented cross-platform XR experiences integrating physical computing and custom hardware interfaces. These projects bridged the gap between digital experiences and physical baseball environments, creating innovative ways for fans to interact with live game data and statistics."
+      },
+      {
+        type: 'text',
+        title: 'Industry Collaboration',
+        content: "Collaborated with stakeholders from Google, Unity, and T-Mobile on in-production AR experiences. This cross-industry partnership brought together cutting-edge technology partners to deliver world-class immersive experiences for MLB's diverse fanbase."
+      },
+      {
+        type: 'text',
+        title: 'Impact & Innovation',
+        content: "My work at MLB represented a significant step forward in sports technology, demonstrating how immersive experiences can enhance fan engagement and bring new audiences to baseball. The platforms I helped develop reached thousands of users and set new standards for sports-related AR/VR applications."
+      }
+    ],
+    thumbnail: "/projects/mlb/mlb-dashboard-preview.png",
+    images: ["/projects/mlb/mlb-dashboard-preview.png"],
+    techStack: [
+      { name: "Unity", color: "#000000" },
+      { name: "AR/VR", color: "#1CA0F2" },
+      { name: "iOS", color: "#007AFF" },
+      { name: "Android", color: "#3DDC84" },
+      { name: "C#", color: "#178600" },
+      { name: "Meta Quest", color: "#0467DF" },
+      { name: "Apple Vision Pro", color: "#000000" },
+      { name: "Cross-Platform", color: "#FF6B6B" }
+    ],
+    links: [
+      { type: "live", url: "https://www.mlb.com/apps/mlb-next" },
+      { type: "live", url: "https://www.meta.com/experiences/mlb/2873640696088444/?srsltid=AfmBOooCw8q_XSewM63atMUkYm_0aPdHAq5MJBj5KXS5v9LZUlAV_09A" },
+      { type: "live", url: "https://apps.apple.com/us/app/mlb/id493619333?platform=vision" },
+      { type: "live", url: "https://www.mlb.com/apps/home-run-derby-vr" }
+    ],
+    featured: true,
+    startDate: new Date('2022-03'),
+    endDate: new Date('2024-11'),
+    highlights: [
+      "MLB Next AR platform reaching 10,000+ users",
+      "Cross-platform XR experience development",
+      "MLB VR and Home Run Derby VR optimization",
+      "Collaboration with Google, Unity, and T-Mobile",
+      "Technical and artistic consultation role",
+      "Physical computing and hardware integration",
+      "iOS/Android mobile platform development",
+      "Real-time gameplay insights and AR content"
+    ],
+    category: ["Flagship"],
+    backgroundText: "⚾ 📱 🥽",
+    backgroundFontSize: 16,
+    backgroundSpacing: 30
+  },
   // {
   //   id: 'interactive-background',
   //   title: 'Interactive Background',
@@ -131,7 +203,7 @@ export const projects: Project[] = [
       "Collaborative performance environment",
       "Lyrics display and editing capabilities"
     ],
-    category: ["VR", "Music", "Interactive", "Research"],
+    category: ["Flagship"],
     backgroundText: "  ♪  ",
     backgroundFontSize: 15,
     backgroundSpacing: 35
@@ -270,7 +342,7 @@ export const projects: Project[] = [
       "Accessibility-focused design",
       "Collaborative development"
     ],
-    category: ["VR", "Game Design", "Unity"],
+    category: ["Substantial"],
     backgroundText: "      ≽^•⩊•^≼      ",
     backgroundFontSize: 15,
     backgroundSpacing: 27
@@ -345,7 +417,7 @@ export const projects: Project[] = [
       "Study of audio-based monitoring",
       "Historical analysis of audio control systems"
     ],
-    category: ["Research", "Audio", "Privacy", "Technology", "Philosophy"],
+    category: ["Substantial"],
     backgroundText: "👁 👂 👁",
     backgroundFontSize: 15,
     backgroundSpacing: 30
@@ -465,7 +537,7 @@ export const projects: Project[] = [
       "Website and digital presence",
       "Brand guidelines documentation"
     ],
-    category: ["Design", "Branding", "UI/UX"],
+    category: ["Substantial"],
     backgroundText: "⌚ ♫ ⌚",
     backgroundFontSize: 15,
     backgroundSpacing: 30
@@ -550,7 +622,7 @@ export const projects: Project[] = [
       "Spectral analysis confirming theoretical models",
       "Team leadership and user research integration"
     ],
-    category: ["Hardware", "Music", "Electronics", "DSP"],
+    category: ["Flagship"],
     backgroundText: "♪ ♫ ♬",
     backgroundFontSize: 18,
     backgroundSpacing: 25
@@ -629,7 +701,7 @@ export const projects: Project[] = [
       "All-in-one productivity app design",
       "Individual social media value assessment"
     ],
-    category: ["UI/UX", "Product Design", "User Research"],
+    category: ["For Funsies"],
     backgroundText: " 📱 ✍️ 💆 ",
     backgroundFontSize: 16,
     backgroundSpacing: 28
@@ -724,7 +796,7 @@ export const projects: Project[] = [
       "Cross-domain ML technique comparison",
       "End-to-end project development"
     ],
-    category: ["Machine Learning", "Computer Vision", "NLP", "Audio"],
+    category: ["Substantial"],
     backgroundText: "🤖 📊 🧠",
     backgroundFontSize: 16,
     backgroundSpacing: 30
