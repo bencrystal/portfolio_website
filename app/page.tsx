@@ -122,7 +122,7 @@ export default function Page() {
   }, [showAbout]);
 
   return (
-    <main className="min-h-screen relative">
+    <main className="min-h-screen min-h-dvh bg-zinc-950 relative">
       <Background />
       
       {/* Floating Navigation Dots - Apple style */}

@@ -68,12 +68,32 @@
   * {
     @apply border-border;
   }
-  body {
-    @apply bg-background text-foreground;
+  html {
     /* Apple-like smooth scrolling */
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Ensure full background coverage */
+    background-color: rgb(9, 9, 11);
+    min-height: 100%;
+  }
+  body {
+    @apply bg-background text-foreground;
+    /* Ensure full background coverage and prevent white bars */
+    background-color: rgb(9, 9, 11);
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for mobile */
+    /* Prevent overscroll bounce on iOS */
+    overscroll-behavior: none;
+    /* Ensure background extends beyond viewport */
+    background-attachment: fixed;
+  }
+  
+  /* Ensure root element covers full viewport */
+  #__next {
+    min-height: 100vh;
+    min-height: 100dvh;
+    background-color: rgb(9, 9, 11);
   }
 }
 

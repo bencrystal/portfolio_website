@@ -211,7 +211,7 @@ const Background = memo(({ text = "^ ◡ ^", fontSize = 10, spacing = 14 }: Back
   };
 
   return (
-    <div ref={containerRef} className="fixed inset-0" style={{ zIndex: 0, background: 'rgb(9, 9, 11)', pointerEvents: 'none' }}>
+    <div ref={containerRef} className="fixed inset-0 w-full h-full min-h-screen min-h-dvh" style={{ zIndex: 0, background: 'rgb(9, 9, 11)', pointerEvents: 'none' }}>
       <NextReactP5Wrapper sketch={sketch} />
     </div>
   );
