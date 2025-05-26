@@ -42,7 +42,6 @@ export const ProjectCard = ({ project, variant = 'default' }: ProjectCardProps) 
                 <span 
                   key={tech.name}
                   className="tag px-3 py-1.5 bg-white/8 backdrop-blur-sm rounded-full text-xs font-medium text-zinc-300"
-                  style={{ color: tech.color || '#d4d4d8' }}
                 >
                   {tech.name}
                 </span>
