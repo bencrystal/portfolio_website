@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, memo } from 'react';
 import { NextReactP5Wrapper } from "@p5-wrapper/next";
 import type { P5CanvasInstance, Sketch } from "@p5-wrapper/react";
 
@@ -10,7 +10,7 @@ interface BackgroundProps {
   spacing?: number;
 }
 
-const Background = ({ text = "^ ◡ ^", fontSize = 10, spacing = 14 }: BackgroundProps) => {
+const Background = memo(({ text = "^ ◡ ^", fontSize = 10, spacing = 14 }: BackgroundProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const sketch: Sketch = (p: P5CanvasInstance) => {
@@ -215,6 +215,9 @@ const Background = ({ text = "^ ◡ ^", fontSize = 10, spacing = 14 }: Backgroun
       <NextReactP5Wrapper sketch={sketch} />
     </div>
   );
-};
+});
+
+// Add display name for debugging
+Background.displayName = 'Background';
 
 export default Background; 

@@ -70,14 +70,18 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Apple-like smooth scrolling */
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-/* Custom Animations */
-@keyframes fadeIn {
+/* Apple-inspired Custom Animations */
+@keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -85,33 +89,145 @@
   }
 }
 
-.fade-in {
-  opacity: 0;
-  animation: fadeIn 0.8s ease-out forwards;
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
-/* Project Card Hover Effects */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Elegant fade-in animation */
+.fade-in {
+  opacity: 0;
+  animation: fadeInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Apple-like section animations */
+.fade-in-section {
+  transition: all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Apple-style glowing effects */
+.apple-glow {
+  position: relative;
+  overflow: visible;
+}
+
+.apple-glow::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(45deg, 
+    transparent, 
+    rgba(6, 182, 212, 0.1), 
+    rgba(59, 130, 246, 0.1), 
+    transparent
+  );
+  z-index: -1;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+}
+
+.apple-glow:hover::before {
+  opacity: 1;
+}
+
+/* Enhanced Project Card Effects */
 .project-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform-origin: center;
+  will-change: transform, box-shadow;
 }
 
 .project-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.2),
+    0 0 40px rgba(6, 182, 212, 0.1);
 }
 
-/* Tag Animation */
+/* Apple-like text shimmer effect */
+.text-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite ease-in-out;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Refined tag styling */
 .tag {
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .tag:hover {
-  background-color: theme('colors.cyan.500');
+  background: linear-gradient(135deg, 
+    rgba(6, 182, 212, 0.8), 
+    rgba(59, 130, 246, 0.8)
+  );
+  border-color: rgba(6, 182, 212, 0.3);
   color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
 }
 
+/* Apple-style button effects */
+.apple-button {
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.apple-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.1), 
+    transparent, 
+    rgba(255, 255, 255, 0.05)
+  );
+  transition: opacity 0.3s ease;
+  opacity: 0;
+}
+
+.apple-button:hover::before {
+  opacity: 1;
+}
+
+.apple-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Enhanced image container effects */
 .image-container {
   overflow: visible;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .image-grid-wrapper {
@@ -127,17 +243,26 @@
 
 .image-item {
   overflow: visible;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.image-item:hover {
+  transform: scale(1.05) translateY(-5px);
+  z-index: 10;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
 }
 
 .transform-wrapper {
   transform-origin: center center;
   backface-visibility: hidden;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .transform-wrapper:hover {
   z-index: 10;
 }
 
+/* Apple-inspired layout styles */
 .group {
   transform-style: preserve-3d;
   perspective: 1000px;
@@ -154,4 +279,99 @@
 
 .overflow-hidden {
   overflow: hidden;
+}
+
+/* Apple-like gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, 
+    #ffffff 0%, 
+    #e4e4e7 50%, 
+    #a1a1aa 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-accent {
+  background: linear-gradient(135deg, 
+    #06b6d4 0%, 
+    #3b82f6 50%, 
+    #6366f1 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Smooth section dividers */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(6, 182, 212, 0.5), 
+    transparent
+  );
+  margin: 2rem auto;
+  max-width: 64px;
+}
+
+/* Apple-style scroll indicator */
+@keyframes scrollBounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.scroll-indicator {
+  animation: scrollBounce 2s infinite;
+}
+
+/* Floating navigation dots */
+.nav-dot {
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.nav-dot:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+}
+
+.nav-dot.active {
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+}
+
+/* Enhanced scroll behavior */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Apple-like content peek effect */
+.content-peek {
+  position: relative;
+}
+
+.content-peek::after {
+  content: '';
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 20px;
+  background: linear-gradient(to bottom, 
+    rgba(0, 0, 0, 0.1), 
+    transparent
+  );
+  border-radius: 50px;
+  opacity: 0.5;
 }
