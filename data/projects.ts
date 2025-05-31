@@ -115,6 +115,11 @@ export const projects: Project[] = [
       },
       {
         type: 'video',
+        title: 'Latest Feature Demo',
+        content: 'https://youtu.be/Bk72dr6mq3k'
+      },
+      {
+        type: 'video',
         title: 'Vision Pro Demo',
         content: 'https://www.youtube.com/watch?v=Geu2tB6TieY'
       },
