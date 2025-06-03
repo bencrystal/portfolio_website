@@ -113,7 +113,7 @@ export const projects: Project[] = [
       "Real-time gameplay insights and AR content"
     ],
     category: ["Flagship"],
-    backgroundText: "⚾ 📱 🥽",
+    backgroundText: "⚾ 📱 ᯅ",
     backgroundFontSize: 16,
     backgroundSpacing: 30
   },
