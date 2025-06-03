@@ -24,6 +24,11 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
     return match ? match[1] : null;
   };
 
+  // Check if video is a local MP4 file
+  const isLocalVideo = (url: string) => {
+    return url.startsWith('/') || url.includes('.mp4');
+  };
+
   // Function to get image sections within a specific items array
   const getImageGroupInSection = (items: typeof project.content, startIndex: number) => {
     if (!items) return [];
@@ -267,15 +272,47 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
 
                               {item.type === 'video' && (
                                 <div className="max-w-5xl mx-auto">
-                                  <div className="relative pt-[56.25%] bg-zinc-900/80 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
-                                    <iframe
-                                      className="absolute top-0 left-0 w-full h-full"
-                                      src={`https://www.youtube.com/embed/${getYoutubeId(item.content)}`}
-                                      title="Video"
-                                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                      allowFullScreen
-                                    />
-                                  </div>
+                                  {isLocalVideo(item.content) ? (
+                                    // Local MP4 video - autoplay and loop like a GIF
+                                    <div className="bg-zinc-900/40 backdrop-blur-xl border border-white/8 rounded-2xl overflow-hidden shadow-xl">
+                                      <video
+                                        autoPlay
+                                        loop
+                                        muted
+                                        playsInline
+                                        className="w-full h-auto"
+                                        preload="metadata"
+                                      >
+                                        <source src={item.content} type="video/mp4" />
+                                        Your browser does not support the video tag.
+                                      </video>
+                                      {item.title && (
+                                        <div className="px-6 py-4">
+                                          <p className="text-sm text-zinc-400 font-medium">
+                                            {item.title}
+                                          </p>
+                                        </div>
+                                      )}
+                                    </div>
+                                  ) : (
+                                    // YouTube video - iframe embed
+                                    <div className="relative pt-[56.25%] bg-zinc-900/40 backdrop-blur-xl border border-white/8 rounded-3xl overflow-hidden shadow-2xl">
+                                      {item.title && (
+                                        <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-black/60 to-transparent p-6 z-10">
+                                          <h3 className="text-lg font-semibold text-white">
+                                            {item.title}
+                                          </h3>
+                                        </div>
+                                      )}
+                                      <iframe
+                                        className="absolute top-0 left-0 w-full h-full"
+                                        src={`https://www.youtube.com/embed/${getYoutubeId(item.content)}`}
+                                        title={item.title || "Video"}
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                      />
+                                    </div>
+                                  )}
                                 </div>
                               )}
 

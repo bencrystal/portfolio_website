@@ -30,7 +30,7 @@ export default function RootLayout({
               {/* Navigation Links */}
               <nav className="flex items-center gap-6">
                 <a
-                  href="/resume.pdf"
+                  href="/Resume_BenCrystal.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-zinc-300 hover:text-white transition-colors"

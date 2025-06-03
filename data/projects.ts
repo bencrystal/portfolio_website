@@ -20,6 +20,47 @@ export const projects: Project[] = [
         ]
       },
       {
+        type: 'image',
+        content: '/projects/Major League Baseball/MLB_NEXT_Hero_Assets_1-1.jpg',
+        caption: 'MLB Next mobile AR platform interface showcasing real-time gameplay insights and interactive features for enhanced fan experience.'
+      },
+      {
+        type: 'image',
+        content: '/projects/Major League Baseball/MLB_NEXT_Features.jpg',
+        caption: 'Key features of the MLB Next platform including AR visualizations, real-time data, and interactive content delivery.'
+      },
+      {
+        type: 'video',
+        content: '/projects/Major League Baseball/MLB_NEXT_Field_View_16_9-1-1.mp4'
+      },
+      {
+        type: 'video',
+        content: '/projects/Major League Baseball/MLB_NEXT_Statcast_AR_2_16_9-1.mp4'
+      },
+      {
+        type: 'image',
+        content: '/projects/Major League Baseball/MLB_NEXT_Hero_Assets_8-1.jpg',
+        caption: 'MLB Next AR interface demonstrating immersive baseball statistics and player tracking visualization.'
+      },
+      {
+        type: 'image',
+        content: '/projects/Major League Baseball/MLB_NEXT_Hero_Assets_10-1.jpg',
+        caption: 'Advanced AR features showing 3D field overlays and real-time game analytics for enhanced fan engagement.'
+      },
+      {
+        type: 'video',
+        content: '/projects/Major League Baseball/MLB_NEXT_Strike_Zone_16_9.mp4'
+      },
+      {
+        type: 'video',
+        content: '/projects/Major League Baseball/MLB_NEXT_Contextual_Cards_16_9.mp4'
+      },
+      {
+        type: 'image',
+        content: '/projects/Major League Baseball/MLBNext_Tmobile_LIVEAR_062723-1-1-1.jpg',
+        caption: 'MLB Next T-Mobile Live AR integration showcasing collaborative partnership and enhanced mobile AR capabilities.'
+      },
+      {
         type: 'text',
         title: 'VR Experience Optimization',
         content: "Optimized performance and user experience for MLB VR and Home Run Derby VR through cross-team collaboration. This involved fine-tuning gameplay mechanics, improving rendering performance, and ensuring seamless user interactions across multiple VR platforms including Meta Quest and Steam VR.",
