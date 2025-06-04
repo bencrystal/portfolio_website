@@ -20,6 +20,26 @@ export const projects: Project[] = [
         ]
       },
       {
+        type: 'video',
+        content: '/projects/Major League Baseball/MLB_NEXT_Field_View_16_9-1-1.mp4',
+        caption: 'Simulated tabletop replays to see the full context of exciting plays'
+      },
+      {
+        type: 'video',
+        content: '/projects/Major League Baseball/MLB_NEXT_Statcast_AR_2_16_9-1.mp4',
+        caption: 'In-stadium AR overlays with real-time ball trails and contextual player data'
+      },
+      {
+        type: 'video',
+        content: '/projects/Major League Baseball/MLB_NEXT_Strike_Zone_16_9.mp4',
+        caption: 'Detailed 3D strikezone replays'
+      },
+      {
+        type: 'video',
+        content: '/projects/Major League Baseball/MLB_NEXT_Contextual_Cards_16_9.mp4',
+        caption: 'Real-time contextual player cards to predict how batters and pitchers will fair'
+      },
+      {
         type: 'image',
         content: '/projects/Major League Baseball/MLB_NEXT_Hero_Assets_1-1.jpg',
         caption: 'MLB Next mobile AR platform interface showcasing real-time gameplay insights and interactive features for enhanced fan experience.'
@@ -30,14 +50,6 @@ export const projects: Project[] = [
         caption: 'Key features of the MLB Next platform including AR visualizations, real-time data, and interactive content delivery.'
       },
       {
-        type: 'video',
-        content: '/projects/Major League Baseball/MLB_NEXT_Field_View_16_9-1-1.mp4'
-      },
-      {
-        type: 'video',
-        content: '/projects/Major League Baseball/MLB_NEXT_Statcast_AR_2_16_9-1.mp4'
-      },
-      {
         type: 'image',
         content: '/projects/Major League Baseball/MLB_NEXT_Hero_Assets_8-1.jpg',
         caption: 'MLB Next AR interface demonstrating immersive baseball statistics and player tracking visualization.'
@@ -46,14 +58,6 @@ export const projects: Project[] = [
         type: 'image',
         content: '/projects/Major League Baseball/MLB_NEXT_Hero_Assets_10-1.jpg',
         caption: 'Advanced AR features showing 3D field overlays and real-time game analytics for enhanced fan engagement.'
-      },
-      {
-        type: 'video',
-        content: '/projects/Major League Baseball/MLB_NEXT_Strike_Zone_16_9.mp4'
-      },
-      {
-        type: 'video',
-        content: '/projects/Major League Baseball/MLB_NEXT_Contextual_Cards_16_9.mp4'
       },
       {
         type: 'image',

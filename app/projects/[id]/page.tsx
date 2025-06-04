@@ -286,10 +286,10 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                                         <source src={item.content} type="video/mp4" />
                                         Your browser does not support the video tag.
                                       </video>
-                                      {item.title && (
+                                      {(item.title || item.caption) && (
                                         <div className="px-6 py-4">
                                           <p className="text-sm text-zinc-400 font-medium">
-                                            {item.title}
+                                            {item.title || item.caption}
                                           </p>
                                         </div>
                                       )}
