@@ -141,7 +141,7 @@ export default function Page() {
       
       <div className="relative z-10">
         {/* Hero Section - Adjusted height to show content peeking */}
-        <section ref={heroRef} className="min-h-[75vh] flex items-center justify-center relative">
+        <section ref={heroRef} className="min-h-[60vh] flex items-center justify-center relative">
           <div className="max-w-4xl mx-auto text-center px-6">
             {/* Main Headline - Apple-style emphasis */}
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 tracking-tight">
@@ -235,19 +235,19 @@ export default function Page() {
           {projectData.map((category, index) => (
             <section 
               key={index} 
-              className="py-16 first:pt-8"
+              className="py-20 first:pt-8"
             >
-              <div className="max-w-5xl mx-auto px-6">
+              <div className="max-w-6xl mx-auto px-6">
                 {/* Section Header - Always visible */}
-                <div className="text-center mb-12">
+                <div className="text-center mb-16">
                   <h2 className="text-3xl md:text-4xl font-semibold mb-6 text-white tracking-tight">
                     {category.title}
                   </h2>
                   <div className="w-20 h-0.5 bg-gradient-to-r from-transparent via-cyan-500 to-transparent mx-auto opacity-80" />
                 </div>
                 
-                {/* Project Grid - Animated */}
-                <div className="fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 auto-rows-fr">
+                {/* Project Grid - 2 Column Layout for Larger Cards */}
+                <div className="fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out grid grid-cols-1 lg:grid-cols-2 gap-10 auto-rows-fr">
                   {category.projects.map((project, projectIndex) => (
                     <div 
                       key={project.id}
