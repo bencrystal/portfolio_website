@@ -590,7 +590,7 @@ export const projects: Project[] = [
       "Website and digital presence",
       "Brand guidelines documentation"
     ],
-    category: ["Substantial"],
+    category: [],
     backgroundText: "⌚ ♫ ⌚",
     backgroundFontSize: 15,
     backgroundSpacing: 30
@@ -728,7 +728,7 @@ export const projects: Project[] = [
       "Spectral analysis confirming theoretical models",
       "Team leadership and user research integration"
     ],
-    category: ["Flagship"],
+    category: ["Substantial"],
     backgroundText: "♪ ♫ ♬",
     backgroundFontSize: 18,
     backgroundSpacing: 25
