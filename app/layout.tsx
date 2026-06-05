@@ -29,6 +29,15 @@ export default function RootLayout({
               
               {/* Navigation Links */}
               <nav className="flex items-center gap-6">
+                <Link
+                  href="/music"
+                  className="flex items-center gap-2 text-zinc-300 hover:text-white transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.657-1.79 3-4 3s-4-1.343-4-3 1.79-3 4-3 4 1.343 4 3zm12-3c0 1.657-1.79 3-4 3s-4-1.343-4-3 1.79-3 4-3 4 1.343 4 3z" />
+                  </svg>
+                  <span>Music</span>
+                </Link>
                 <a
                   href="/Resume_BenCrystal.pdf"
                   target="_blank"
