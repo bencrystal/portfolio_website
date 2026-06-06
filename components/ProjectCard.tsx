@@ -1,6 +1,7 @@
 import { Project } from '@/types/Project';
 import Link from 'next/link';
 import Image from 'next/image';
+import { GlassCard } from '@/components/ui/GlassCard';
 
 interface ProjectCardProps {
   project: Project;
@@ -9,11 +10,11 @@ interface ProjectCardProps {
 
 export const ProjectCard = ({ project, variant = 'default' }: ProjectCardProps) => {
   return (
-    <Link 
+    <Link
       href={`/projects/${project.id}`}
       className="block group h-full"
     >
-      <div className="project-card apple-glow bg-zinc-950/60 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden hover:border-white/20 hover:bg-zinc-950/70 flex flex-col h-full transition-all duration-500 hover:scale-[1.02]">
+      <GlassCard className="project-card apple-glow overflow-hidden hover:border-white/20 hover:bg-zinc-950/70 flex flex-col h-full transition-all duration-500 hover:scale-[1.02]">
         <div className="relative aspect-video overflow-hidden flex-shrink-0">
           <Image 
             src={project.thumbnail} 
@@ -66,7 +67,7 @@ export const ProjectCard = ({ project, variant = 'default' }: ProjectCardProps) 
             </div>
           )}
         </div>
-      </div>
+      </GlassCard>
     </Link>
   );
-}; 
+};

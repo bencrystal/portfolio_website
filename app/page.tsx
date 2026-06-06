@@ -1,7 +1,5 @@
 'use client'
 
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import Background from "@/components/Background"
