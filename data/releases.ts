@@ -5,9 +5,7 @@ export const releases: Release[] = [
     id: 'featherbrain',
     title: 'Featherbrain',
     artist: 'Ben Crystal',
-    // To replace the gradient placeholder, drop a square image at
-    // public/music/featherbrain.jpg and uncomment the line below.
-    // cover: '/music/featherbrain.jpg',
+    cover: '/featherbrain_albumart_3k.jpg',
     releaseDate: '2026-06-19',
     status: 'upcoming',
     presaveUrl: 'https://distrokid.com/hyperfollow/bencrystal/featherbrain',
