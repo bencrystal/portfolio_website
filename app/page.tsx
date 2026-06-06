@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import Image from 'next/image'
 import Background from '@/components/Background'
 import { ProjectCard } from '@/components/ProjectCard'
 import { HeroAbout } from '@/components/landing/HeroAbout'
@@ -15,7 +16,6 @@ interface ProjectCategory {
 }
 
 const FUNSIES_EXCLUDE = new Set(['dexterous-tree', 'sound-classification', 'lyric-generation'])
-
 const byNewest = (a: Project, b: Project) => b.startDate.getTime() - a.startDate.getTime()
 
 const buildCategories = (): ProjectCategory[] => {
@@ -46,21 +46,18 @@ export default function Page() {
 
   const projectData = useMemo(buildCategories, [])
 
-  // Smooth-scroll into the about panel when it opens.
   useEffect(() => {
     if (showAbout) {
       aboutRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
   }, [showAbout])
 
-  // Track whether we've scrolled past the hero (for nav-dot highlighting).
   useEffect(() => {
     const onScroll = () => setScrolledPastHero(window.scrollY >= 400)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Fade-in sections as they enter the viewport.
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -74,7 +71,6 @@ export default function Page() {
       },
       { threshold: 0.05, rootMargin: '100px' }
     )
-
     document.querySelectorAll('.fade-in-section').forEach((el) => observer.observe(el))
     return () => observer.disconnect()
   }, [])
@@ -108,51 +104,52 @@ export default function Page() {
       </div>
 
       <div className="relative z-10">
-        {/* Hero */}
+        {/* Editorial hero */}
         <section
           ref={heroRef}
-          className="min-h-[60vh] flex items-center justify-center px-6 py-20 sm:py-24"
+          className="min-h-[80vh] px-6 sm:px-10 py-20 sm:py-24 flex items-center"
         >
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-8 tracking-tight leading-[1.05]">
-              <span className="bg-gradient-to-r from-white via-zinc-100 to-zinc-300 text-transparent bg-clip-text">
-                Creating immersive
-              </span>
-              <br />
-              <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 text-transparent bg-clip-text">
-                experiences
-              </span>
-            </h1>
+          <div className="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-12 lg:gap-20 items-center">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-400 mb-6">
+                Brooklyn · XR · Creative Technology
+              </p>
 
-            <p className="text-lg sm:text-xl md:text-2xl text-zinc-400 mb-12 max-w-2xl mx-auto leading-relaxed font-light">
-              XR creative technologist helping people express themselves
-              in ways they&apos;ve never imagined.
-            </p>
+              <h1 className="text-5xl sm:text-6xl lg:text-[5.5rem] font-bold tracking-tight leading-[0.95] mb-8 text-white">
+                Building tools for
+                <br />
+                new ways to
+                <br />
+                <span className="italic font-light text-cyan-300/90">express yourself.</span>
+              </h1>
 
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
-              <PillButton onClick={() => setShowAbout((v) => !v)} variant="gradient" size="md">
-                {showAbout ? 'Hide bio' : 'Learn more about me'}
-              </PillButton>
+              <p className="text-lg sm:text-xl text-zinc-400 leading-relaxed font-light mb-10 max-w-xl">
+                I&apos;m Ben Crystal — a creative technologist working at the
+                intersection of music, engineering, and immersive interaction.
+              </p>
 
-              <button
-                onClick={scrollToProjects}
-                className="group flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-cyan-300 transition-all duration-300"
-              >
-                <span>View my work</span>
-                <svg
-                  className="w-4 h-4 transform group-hover:translate-y-1 transition-transform duration-300"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                  />
-                </svg>
-              </button>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                <PillButton variant="gradient" size="md" onClick={scrollToProjects}>
+                  View selected work
+                </PillButton>
+                <PillButton variant="ghost" size="md" onClick={() => setShowAbout((v) => !v)}>
+                  {showAbout ? 'Hide bio' : 'About me'}
+                </PillButton>
+              </div>
+            </div>
+
+            <div className="relative aspect-[4/5] w-full max-w-sm justify-self-center lg:justify-self-end">
+              <div className="absolute -inset-3 bg-gradient-to-br from-cyan-500/30 to-blue-600/30 rounded-3xl blur-2xl opacity-60" />
+              <div className="relative rounded-3xl overflow-hidden border border-white/10 aspect-[4/5]">
+                <Image
+                  src="/headshot.jpg"
+                  alt="Ben Crystal"
+                  fill
+                  sizes="(min-width: 1024px) 24rem, 80vw"
+                  className="object-cover"
+                  priority
+                />
+              </div>
             </div>
           </div>
         </section>

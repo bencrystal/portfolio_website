@@ -12,7 +12,7 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
 
   return (
     <Link href={`/projects/${project.id}`} className="block group h-full">
-      <GlassCard className="project-card apple-glow overflow-hidden flex flex-col h-full transition-all duration-500 hover:border-white/20 hover:bg-zinc-950/70 hover:scale-[1.02]">
+      <GlassCard className="project-card apple-glow overflow-hidden flex flex-col h-full transition-all duration-500 hover:border-white/20 hover:bg-zinc-950/70">
         <div className="relative aspect-video overflow-hidden flex-shrink-0">
           <Image
             src={project.thumbnail}

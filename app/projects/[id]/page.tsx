@@ -43,23 +43,16 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
         <section className="max-w-7xl mx-auto px-6 pt-16 pb-32">
           <div className="max-w-4xl">
             {project.category && project.category.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-12">
-                {project.category.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-4 py-2 bg-white/[0.08] backdrop-blur-xl border border-white/[0.12] rounded-full text-sm font-medium text-zinc-300 hover:bg-white/[0.12] transition-colors duration-300"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-400 mb-8">
+                {project.category.join(' · ')} · {formatMonthYear(project.startDate)}
+              </p>
             )}
 
-            <h1 className="text-6xl md:text-7xl lg:text-8xl font-semibold mb-8 text-white tracking-tight leading-[0.9] bg-gradient-to-b from-white to-zinc-300 text-transparent bg-clip-text">
+            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold mb-8 text-white tracking-tight leading-[0.95]">
               {project.title}
             </h1>
 
-            <p className="text-2xl md:text-3xl text-zinc-400 leading-relaxed mb-16 max-w-4xl font-light">
+            <p className="text-xl sm:text-2xl md:text-3xl text-zinc-400 leading-relaxed mb-16 max-w-4xl font-light italic">
               {project.description}
             </p>
 
