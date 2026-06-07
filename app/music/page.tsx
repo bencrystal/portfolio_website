@@ -8,7 +8,7 @@ export default function MusicPage() {
   const others = releases.filter((r) => r.id !== featuredRelease.id)
 
   return (
-    <main className="min-h-screen min-h-dvh text-white relative">
+    <main className="min-h-screen min-h-dvh text-white relative overflow-x-hidden">
       <Background text="♪ ♫" fontSize={16} spacing={22} />
 
       <div className="relative z-10">

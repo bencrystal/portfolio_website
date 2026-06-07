@@ -57,7 +57,7 @@ export const ReleaseHero = ({ release }: { release: Release }) => {
             {upcoming ? 'New Single' : 'Out Now'} · {formatReleaseDate(release.releaseDate)}
           </p>
 
-          <h1 className="font-black tracking-[-0.04em] uppercase leading-[0.85] mb-6 text-[14vw] sm:text-[9vw] lg:text-[7rem]">
+          <h1 className="font-black tracking-[-0.04em] uppercase leading-[0.85] mb-6 text-5xl sm:text-6xl md:text-7xl lg:text-8xl break-words">
             {release.title}
           </h1>
 
