@@ -14,25 +14,15 @@ interface ProjectCategory {
   projects: Project[]
 }
 
-const FUNSIES_EXCLUDE = new Set(['dexterous-tree', 'sound-classification', 'lyric-generation'])
 const byNewest = (a: Project, b: Project) => b.startDate.getTime() - a.startDate.getTime()
 
 const buildCategories = (): ProjectCategory[] => {
   const flagship = projects.filter((p) => p.category?.includes('Flagship')).sort(byNewest)
   const substantial = projects.filter((p) => p.category?.includes('Substantial')).sort(byNewest)
-  const funsies = projects
-    .filter(
-      (p) =>
-        !p.category?.includes('Flagship') &&
-        !p.category?.includes('Substantial') &&
-        !FUNSIES_EXCLUDE.has(p.id)
-    )
-    .sort(byNewest)
 
   return [
     { title: 'Flagship', projects: flagship },
     { title: 'Substantial', projects: substantial },
-    { title: 'For Funsies', projects: funsies },
   ].filter((c) => c.projects.length > 0)
 }
 
