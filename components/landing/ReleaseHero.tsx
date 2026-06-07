@@ -57,9 +57,14 @@ export const ReleaseHero = ({ release }: { release: Release }) => {
             {upcoming ? 'New Single' : 'Out Now'} · {formatReleaseDate(release.releaseDate)}
           </p>
 
-          <h1 className="font-black tracking-[-0.04em] uppercase leading-[0.85] mb-6 text-5xl sm:text-6xl md:text-7xl lg:text-8xl break-words">
-            {release.title}
-          </h1>
+          <div style={{ containerType: 'inline-size' }} className="mb-6">
+            <h1
+              className="font-black tracking-[-0.04em] uppercase leading-[0.85] whitespace-nowrap"
+              style={{ fontSize: 'min(14cqw, 7rem)' }}
+            >
+              {release.title}
+            </h1>
+          </div>
 
           <p className="text-xl sm:text-2xl text-white/70 font-light mb-8">
             {release.artist}
