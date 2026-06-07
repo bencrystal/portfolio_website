@@ -1,14 +1,13 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import Image from 'next/image'
 import Background from '@/components/Background'
 import { ProjectCard } from '@/components/ProjectCard'
 import { HeroAbout } from '@/components/landing/HeroAbout'
-import { SectionHeader } from '@/components/ui/SectionHeader'
-import { PillButton } from '@/components/ui/PillButton'
 import type { Project } from '@/types/Project'
 import { projects } from '@/data/projects'
+
+const ACCENT = '#57f1ff'
 
 interface ProjectCategory {
   title: string
@@ -37,11 +36,18 @@ const buildCategories = (): ProjectCategory[] => {
   ].filter((c) => c.projects.length > 0)
 }
 
+const MARQUEE_ITEMS = [
+  'XR / VR / AR',
+  'Music tech',
+  'Realtime graphics',
+  'Audio DSP',
+  'Creative coding',
+  'Immersive design',
+]
+
 export default function Page() {
   const [showAbout, setShowAbout] = useState(false)
-  const [scrolledPastHero, setScrolledPastHero] = useState(false)
   const aboutRef = useRef<HTMLElement>(null)
-  const heroRef = useRef<HTMLElement>(null)
   const projectsRef = useRef<HTMLDivElement>(null)
 
   const projectData = useMemo(buildCategories, [])
@@ -51,12 +57,6 @@ export default function Page() {
       aboutRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
   }, [showAbout])
-
-  useEffect(() => {
-    const onScroll = () => setScrolledPastHero(window.scrollY >= 400)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -78,99 +78,97 @@ export default function Page() {
   const scrollToProjects = () =>
     projectsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 
-  const scrollToHero = () =>
-    heroRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-
   return (
-    <main className="min-h-screen min-h-dvh bg-zinc-950 relative">
-      <Background />
-
-      {/* Floating navigation dots (desktop only) */}
-      <div className="fixed right-6 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col gap-3">
-        <button
-          onClick={scrollToHero}
-          aria-label="Go to top"
-          className={`w-2 h-2 rounded-full transition-all duration-300 ${
-            !scrolledPastHero ? 'bg-cyan-400 scale-125' : 'bg-white/30 hover:bg-white/60'
-          }`}
-        />
-        <button
-          onClick={scrollToProjects}
-          aria-label="Go to projects"
-          className={`w-2 h-2 rounded-full transition-all duration-300 ${
-            scrolledPastHero ? 'bg-cyan-400 scale-125' : 'bg-white/30 hover:bg-white/60'
-          }`}
-        />
-      </div>
+    <main className="min-h-screen min-h-dvh bg-black relative overflow-x-hidden">
+      <Background maskHero />
 
       <div className="relative z-10">
-        {/* Editorial hero */}
-        <section
-          ref={heroRef}
-          className="min-h-[80vh] px-6 sm:px-10 py-20 sm:py-24 flex items-center"
-        >
-          <div className="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-12 lg:gap-20 items-center">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-400 mb-6">
-                Brooklyn · XR · Creative Technology
+        {/* Hero */}
+        <section className="px-6 pt-12 sm:pt-20 pb-10">
+          <div className="max-w-7xl mx-auto">
+            <p className="text-xs font-bold uppercase tracking-[0.3em] text-white/50 mb-8 sm:mb-12">
+              Creative Technologist / Brooklyn / Available 2026
+            </p>
+
+            <h1 className="font-black tracking-[-0.04em] leading-[0.85] uppercase">
+              <span className="block text-[14vw] sm:text-[11vw] lg:text-[9rem]">
+                Create
+              </span>
+              <span
+                className="block text-[14vw] sm:text-[11vw] lg:text-[9rem]"
+                style={{ color: ACCENT }}
+              >
+                Unreal
+              </span>
+              <span className="block text-[14vw] sm:text-[11vw] lg:text-[9rem]">
+                Things.
+              </span>
+            </h1>
+
+            <div className="mt-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
+              <p className="md:col-span-7 text-base sm:text-lg text-white/75 leading-snug font-medium max-w-2xl">
+                I&apos;m Ben Crystal — building instruments for new ways to express yourself across XR, audio, and the web.
               </p>
-
-              <h1 className="text-5xl sm:text-6xl lg:text-[5.5rem] font-bold tracking-tight leading-[0.95] mb-8 text-white">
-                Building tools for
-                <br />
-                new ways to
-                <br />
-                <span className="italic font-light text-cyan-300/90">express yourself.</span>
-              </h1>
-
-              <p className="text-lg sm:text-xl text-zinc-400 leading-relaxed font-light mb-10 max-w-xl">
-                I&apos;m Ben Crystal — a creative technologist working at the
-                intersection of music, engineering, and immersive interaction.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <PillButton variant="gradient" size="md" onClick={scrollToProjects}>
-                  View selected work
-                </PillButton>
-                <PillButton variant="ghost" size="md" onClick={() => setShowAbout((v) => !v)}>
-                  {showAbout ? 'Hide bio' : 'About me'}
-                </PillButton>
-              </div>
-            </div>
-
-            <div className="relative aspect-[4/5] w-full max-w-sm justify-self-center lg:justify-self-end">
-              <div className="absolute -inset-3 bg-gradient-to-br from-cyan-500/30 to-blue-600/30 rounded-3xl blur-2xl opacity-60" />
-              <div className="relative rounded-3xl overflow-hidden border border-white/10 aspect-[4/5]">
-                <Image
-                  src="/headshot.jpg"
-                  alt="Ben Crystal"
-                  fill
-                  sizes="(min-width: 1024px) 24rem, 80vw"
-                  className="object-cover"
-                  priority
-                />
+              <div className="md:col-span-4 md:col-start-9 flex gap-3">
+                <button
+                  onClick={scrollToProjects}
+                  className="flex-1 text-center px-5 py-3 font-bold uppercase tracking-widest text-xs text-black transition-transform hover:-translate-y-0.5"
+                  style={{ backgroundColor: ACCENT }}
+                >
+                  Work →
+                </button>
+                <button
+                  onClick={() => setShowAbout((v) => !v)}
+                  className="flex-1 text-center px-5 py-3 font-bold uppercase tracking-widest text-xs text-white border border-white/30 hover:border-white transition-colors"
+                >
+                  {showAbout ? 'Hide' : 'About'}
+                </button>
               </div>
             </div>
           </div>
         </section>
 
+        {/* Marquee strip */}
+        <div
+          className="border-y border-white/20 py-3 overflow-hidden whitespace-nowrap"
+          style={{ backgroundColor: ACCENT }}
+        >
+          <div className="marquee-track inline-flex text-black font-black uppercase tracking-tighter text-xl gap-10 px-6">
+            {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
+              <span key={i} className="inline-flex items-center gap-10">
+                {item}
+                <span aria-hidden>●</span>
+              </span>
+            ))}
+          </div>
+        </div>
+
         <HeroAbout show={showAbout} sectionRef={aboutRef} />
 
         {/* Projects */}
-        <div ref={projectsRef} id="projects" className="pt-8">
-          {projectData.map((category) => (
-            <section key={category.title} className="py-20 first:pt-8">
-              <div className="max-w-6xl mx-auto px-6">
-                <div className="mb-16">
-                  <SectionHeader>{category.title}</SectionHeader>
+        <div ref={projectsRef} id="projects">
+          {projectData.map((category, ci) => (
+            <section
+              key={category.title}
+              className={`border-b border-white/10 ${ci === 0 ? 'pt-12' : 'pt-16'} pb-16`}
+            >
+              <div className="max-w-7xl mx-auto px-6">
+                <div className="flex items-baseline justify-between mb-10">
+                  <h2 className="text-4xl sm:text-6xl font-black tracking-tighter uppercase">
+                    {category.title}
+                    <span style={{ color: ACCENT }}>.</span>
+                  </h2>
+                  <span className="text-xs uppercase tracking-[0.3em] text-white/50">
+                    {String(category.projects.length).padStart(2, '0')} selected
+                  </span>
                 </div>
 
-                <div className="fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out grid grid-cols-1 lg:grid-cols-2 gap-10 auto-rows-fr">
+                <div className="fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out grid grid-cols-1 lg:grid-cols-2 gap-6 auto-rows-fr">
                   {category.projects.map((project, i) => (
                     <div
                       key={project.id}
                       className="fade-in"
-                      style={{ animationDelay: `${i * 100}ms` }}
+                      style={{ animationDelay: `${i * 80}ms` }}
                     >
                       <ProjectCard project={project} />
                     </div>
@@ -180,6 +178,11 @@ export default function Page() {
             </section>
           ))}
         </div>
+
+        <footer className="px-6 py-8 flex items-center justify-between text-xs uppercase tracking-[0.3em] text-white/50">
+          <span>BK / NY</span>
+          <span style={{ color: ACCENT }}>● BC 2026</span>
+        </footer>
       </div>
     </main>
   )
