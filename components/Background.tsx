@@ -8,9 +8,11 @@ interface BackgroundProps {
   text?: string;
   fontSize?: number;
   spacing?: number;
+  /** When true, applies a top-anchored mask that fades the sketch out below the hero. */
+  maskHero?: boolean;
 }
 
-const Background = memo(({ text = "^ ◡ ^", fontSize = 10, spacing = 14 }: BackgroundProps) => {
+const Background = memo(({ text = "^ ◡ ^", fontSize = 10, spacing = 14, maskHero = false }: BackgroundProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const sketch: Sketch = (p: P5CanvasInstance) => {
@@ -210,8 +212,19 @@ const Background = memo(({ text = "^ ◡ ^", fontSize = 10, spacing = 14 }: Back
     };
   };
 
+  const maskStyle = maskHero
+    ? {
+        WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 55%, transparent 85%)',
+        maskImage: 'linear-gradient(to bottom, black 0%, black 55%, transparent 85%)',
+      }
+    : {}
+
   return (
-    <div ref={containerRef} className="fixed inset-0 w-full h-full min-h-screen min-h-dvh" style={{ zIndex: 0, background: 'rgb(9, 9, 11)', pointerEvents: 'none' }}>
+    <div
+      ref={containerRef}
+      className="fixed inset-0 w-full h-full min-h-screen min-h-dvh"
+      style={{ zIndex: 0, background: 'rgb(9, 9, 11)', pointerEvents: 'none', ...maskStyle }}
+    >
       <NextReactP5Wrapper sketch={sketch} />
     </div>
   );

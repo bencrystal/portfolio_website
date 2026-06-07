@@ -48,8 +48,8 @@ const NAV_ITEMS: NavItem[] = [
 
 const NavLink = ({ item, active }: { item: NavItem; active: boolean }) => {
   const className = cn(
-    'flex items-center gap-2 text-sm transition-colors',
-    active ? 'text-white' : 'text-zinc-300 hover:text-white'
+    'flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-bold transition-colors',
+    active ? 'text-[#57f1ff]' : 'text-zinc-400 hover:text-white'
   )
   const inner = (
     <>
@@ -77,16 +77,17 @@ export const SiteHeader = () => {
   const pathname = usePathname()
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-zinc-900/90 backdrop-blur-xl border-b border-white/10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-black/85 backdrop-blur-sm border-b border-white/10">
+      <div className="px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between">
           <Link
             href="/"
-            className={cn(
-              'text-lg sm:text-xl font-bold transition-colors',
-              pathname === '/' ? 'text-white' : 'text-white hover:text-cyan-400'
-            )}
+            className="flex items-center gap-2 text-xs sm:text-sm font-bold uppercase tracking-[0.3em] text-white transition-colors hover:text-[#57f1ff]"
           >
+            <span
+              className="inline-block w-2 h-2 rounded-full"
+              style={{ backgroundColor: '#57f1ff' }}
+            />
             Ben Crystal
           </Link>
 

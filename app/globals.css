@@ -30,6 +30,9 @@
     --input: 240 3.7% 15.9%;
     --ring: 240 4.9% 83.9%;
     --radius: 0.5rem;
+
+    /* Brand accent — same cyan used in the p5 sketch */
+    --accent-cyan: #57f1ff;
   }
 }
 
@@ -41,12 +44,12 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: rgb(9, 9, 11);
+    background-color: #000;
     min-height: 100%;
   }
   body {
     @apply bg-background text-foreground;
-    background-color: rgb(9, 9, 11);
+    background-color: #000;
     min-height: 100vh;
     min-height: 100dvh;
     overscroll-behavior: none;
@@ -75,58 +78,24 @@
   transition: all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* Subtle outer glow for cards */
-.apple-glow {
-  position: relative;
-  overflow: visible;
-}
-
-.apple-glow::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: inherit;
-  background: linear-gradient(45deg,
-    transparent,
-    rgba(6, 182, 212, 0.1),
-    rgba(59, 130, 246, 0.1),
-    transparent
-  );
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.apple-glow:hover::before {
-  opacity: 1;
-}
-
-/* Project card hover — restrained editorial lift */
+/* Project card — flat lift on hover, no glow */
 .project-card {
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  transform-origin: center;
-  will-change: transform, box-shadow;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    border-color 0.3s ease;
+  will-change: transform;
 }
 
 .project-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transform: translateY(-3px);
 }
 
-/* Tag pill */
-.tag {
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+/* Marquee strip on landing — horizontal scroll */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
-.tag:hover {
-  background: linear-gradient(135deg,
-    rgba(6, 182, 212, 0.8),
-    rgba(59, 130, 246, 0.8)
-  );
-  border-color: rgba(6, 182, 212, 0.3);
-  color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
+.marquee-track {
+  animation: marquee 40s linear infinite;
+  will-change: transform;
 }
