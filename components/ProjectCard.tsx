@@ -1,7 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Project } from '@/types/Project'
-import { GlassCard } from '@/components/ui/GlassCard'
+
+const ACCENT = '#57f1ff'
 
 interface ProjectCardProps {
   project: Project
@@ -12,46 +13,54 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
 
   return (
     <Link href={`/projects/${project.id}`} className="block group h-full">
-      <GlassCard className="project-card apple-glow overflow-hidden flex flex-col h-full transition-all duration-500 hover:border-white/20 hover:bg-zinc-950/70">
-        <div className="relative aspect-video overflow-hidden flex-shrink-0">
+      <article className="project-card relative h-full flex flex-col bg-zinc-950 border border-white/10 hover:border-white/30 transition-colors overflow-hidden">
+        <div className="relative aspect-video overflow-hidden flex-shrink-0 border-b border-white/10">
           <Image
             src={project.thumbnail}
             alt={project.title}
             width={800}
             height={450}
             sizes="(min-width: 1024px) 50vw, 100vw"
-            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out" />
-        </div>
-
-        <div className="p-6 lg:p-8 flex flex-col flex-grow">
-          <h3 className="text-xl lg:text-2xl font-semibold mb-3 text-white tracking-tight leading-tight line-clamp-2 group-hover:text-cyan-300 transition-colors duration-300">
-            {project.title}
-          </h3>
-          <p className="text-sm lg:text-base text-zinc-300 mb-6 leading-relaxed font-light line-clamp-3 flex-grow">
-            {project.description}
-          </p>
-
-          {project.techStack.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-auto">
-              {project.techStack.slice(0, 4).map((tech) => (
-                <span
-                  key={tech.name}
-                  className="tag px-3 py-1.5 bg-white/[0.08] backdrop-blur-sm rounded-full text-xs font-medium text-zinc-300"
-                >
-                  {tech.name}
-                </span>
-              ))}
-              {extraTech > 0 && (
-                <span className="tag px-3 py-1.5 bg-white/5 rounded-full text-xs font-medium text-zinc-400">
-                  +{extraTech}
-                </span>
-              )}
+          {project.category && project.category.length > 0 && (
+            <div
+              className="absolute top-3 left-3 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-black"
+              style={{ backgroundColor: ACCENT }}
+            >
+              {project.category[0]}
             </div>
           )}
         </div>
-      </GlassCard>
+
+        <div className="p-6 lg:p-8 flex flex-col flex-grow">
+          <h3 className="text-2xl lg:text-3xl font-black uppercase tracking-tighter leading-[0.95] mb-4 line-clamp-2">
+            {project.title}
+          </h3>
+          <p className="text-sm lg:text-base text-zinc-400 mb-6 leading-relaxed line-clamp-3 flex-grow">
+            {project.description}
+          </p>
+
+          <div className="mt-auto flex items-end justify-between gap-4">
+            {project.techStack.length > 0 ? (
+              <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] font-medium text-white/60 uppercase tracking-widest">
+                {project.techStack.slice(0, 4).map((tech) => (
+                  <span key={tech.name}>{tech.name}</span>
+                ))}
+                {extraTech > 0 && <span>+{extraTech}</span>}
+              </div>
+            ) : (
+              <span />
+            )}
+            <span
+              className="text-xs font-bold uppercase tracking-widest group-hover:translate-x-1 transition-transform flex-shrink-0"
+              style={{ color: ACCENT }}
+            >
+              Open →
+            </span>
+          </div>
+        </div>
+      </article>
     </Link>
   )
 }
