@@ -3,8 +3,8 @@
 import Image from 'next/image'
 import { useState } from 'react'
 import type { Release } from '@/types/Release'
-import { PillLink } from '@/components/ui/PillButton'
-import { GlassCard } from '@/components/ui/GlassCard'
+
+const ACCENT = '#57f1ff'
 
 const formatReleaseDate = (iso: string) =>
   new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
@@ -14,12 +14,14 @@ const CoverArt = ({ release }: { release: Release }) => {
   const showPlaceholder = !release.cover || errored
 
   return (
-    <div className="relative aspect-square w-full max-w-md mx-auto">
-      <div className="absolute -inset-4 bg-gradient-to-br from-cyan-500/30 to-blue-600/30 rounded-3xl blur-2xl opacity-60" />
-      <div className="relative aspect-square rounded-3xl overflow-hidden border border-white/10 bg-zinc-900">
+    <div className="relative aspect-square w-full max-w-md mx-auto lg:mx-0">
+      <div className="relative aspect-square overflow-hidden border border-white/10 bg-zinc-950">
         {showPlaceholder ? (
-          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/40 via-blue-600/30 to-indigo-600/40 flex items-center justify-center">
-            <span className="text-zinc-100/80 text-lg font-light tracking-widest uppercase">
+          <div
+            className="absolute inset-0 flex items-center justify-center"
+            style={{ backgroundColor: ACCENT }}
+          >
+            <span className="text-black text-2xl font-black uppercase tracking-tighter">
               {release.title}
             </span>
           </div>
@@ -43,31 +45,42 @@ export const ReleaseHero = ({ release }: { release: Release }) => {
   const upcoming = release.status === 'upcoming'
 
   return (
-    <section className="px-6 py-16 sm:py-24">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+    <section className="border-b border-white/10">
+      <div className="max-w-7xl mx-auto px-6 py-16 sm:py-20 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
         <CoverArt release={release} />
 
-        <div className="text-center lg:text-left">
-          <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-cyan-400 mb-4">
+        <div>
+          <p
+            className="text-xs font-bold uppercase tracking-[0.3em] mb-6"
+            style={{ color: ACCENT }}
+          >
             {upcoming ? 'New Single' : 'Out Now'} · {formatReleaseDate(release.releaseDate)}
           </p>
 
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05] mb-4 bg-gradient-to-r from-white via-zinc-100 to-zinc-300 text-transparent bg-clip-text">
+          <h1 className="font-black tracking-[-0.04em] uppercase leading-[0.85] mb-6 text-[14vw] sm:text-[9vw] lg:text-[7rem]">
             {release.title}
           </h1>
 
-          <p className="text-xl sm:text-2xl text-zinc-400 font-light mb-8">{release.artist}</p>
+          <p className="text-xl sm:text-2xl text-white/70 font-light mb-8">
+            {release.artist}
+          </p>
 
           {release.about && (
-            <p className="text-base sm:text-lg text-zinc-300 leading-relaxed font-light mb-10 max-w-xl mx-auto lg:mx-0">
+            <p className="text-base sm:text-lg text-white/80 leading-relaxed mb-10 max-w-xl">
               {release.about}
             </p>
           )}
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center">
+          <div className="flex flex-col sm:flex-row gap-3">
             {upcoming && release.presaveUrl && (
-              <PillLink href={release.presaveUrl} external variant="gradient" size="lg">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <a
+                href={release.presaveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 font-bold uppercase tracking-widest text-xs text-black transition-transform hover:-translate-y-0.5"
+                style={{ backgroundColor: ACCENT }}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -75,13 +88,19 @@ export const ReleaseHero = ({ release }: { release: Release }) => {
                     d="M9 19V6l12-3v13M9 19c0 1.657-1.79 3-4 3s-4-1.343-4-3 1.79-3 4-3 4 1.343 4 3zm12-3c0 1.657-1.79 3-4 3s-4-1.343-4-3 1.79-3 4-3 4 1.343 4 3z"
                   />
                 </svg>
-                <span>Presave {release.title}</span>
-              </PillLink>
+                <span>Presave {release.title} →</span>
+              </a>
             )}
             {release.links?.map((link) => (
-              <PillLink key={link.url} href={link.url} external variant="ghost" size="md">
-                {link.label}
-              </PillLink>
+              <a
+                key={link.url}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center px-6 py-3 font-bold uppercase tracking-widest text-xs text-white border border-white/30 hover:border-white transition-colors"
+              >
+                {link.label} →
+              </a>
             ))}
           </div>
         </div>
@@ -92,8 +111,8 @@ export const ReleaseHero = ({ release }: { release: Release }) => {
 
 /** Compact list item for upcoming/past releases beyond the headline track. */
 export const ReleaseListItem = ({ release }: { release: Release }) => (
-  <GlassCard className="p-6 flex items-center gap-5">
-    <div className="relative w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-cyan-500/30 to-blue-600/30">
+  <article className="flex items-center gap-5 p-5 border border-white/10 hover:border-white/30 transition-colors bg-zinc-950">
+    <div className="relative w-16 h-16 overflow-hidden flex-shrink-0 bg-zinc-900">
       {release.cover && (
         <Image
           src={release.cover}
@@ -105,15 +124,26 @@ export const ReleaseListItem = ({ release }: { release: Release }) => (
       )}
     </div>
     <div className="flex-1 min-w-0">
-      <p className="text-xs font-semibold uppercase tracking-wider text-cyan-400">
+      <p
+        className="text-[11px] font-bold uppercase tracking-[0.3em] mb-1"
+        style={{ color: ACCENT }}
+      >
         {release.status === 'upcoming' ? 'Upcoming' : 'Released'} · {formatReleaseDate(release.releaseDate)}
       </p>
-      <h3 className="text-lg font-semibold text-white truncate">{release.title}</h3>
+      <h3 className="text-lg font-black uppercase tracking-tight text-white truncate">
+        {release.title}
+      </h3>
     </div>
     {release.presaveUrl && release.status === 'upcoming' && (
-      <PillLink href={release.presaveUrl} external variant="ghost" size="sm">
-        Presave
-      </PillLink>
+      <a
+        href={release.presaveUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="px-4 py-2 font-bold uppercase tracking-widest text-[11px] text-black transition-transform hover:-translate-y-0.5 flex-shrink-0"
+        style={{ backgroundColor: ACCENT }}
+      >
+        Presave →
+      </a>
     )}
-  </GlassCard>
+  </article>
 )
