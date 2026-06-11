@@ -7,7 +7,7 @@ import { SlangPanel } from '@/components/define/SlangPanel'
 import { PanelSkeleton } from '@/components/define/PanelSkeleton'
 import { NsfwNotice } from '@/components/define/NsfwNotice'
 import { LocaleSelect } from '@/components/define/LocaleSelect'
-import { useLocale } from '@/lib/i18n'
+import { LocaleProvider, useLocale } from '@/lib/i18n'
 import type { DefineResponse } from '@/lib/define/types'
 
 const ACCENT = '#57f1ff'
@@ -19,6 +19,14 @@ interface DefineClientProps {
 type Status = 'idle' | 'loading' | 'ok' | 'error'
 
 export const DefineClient = ({ initialQuery }: DefineClientProps) => {
+  return (
+    <LocaleProvider>
+      <DefineInner initialQuery={initialQuery} />
+    </LocaleProvider>
+  )
+}
+
+const DefineInner = ({ initialQuery }: DefineClientProps) => {
   const { t } = useLocale()
   const [query, setQuery] = useState(initialQuery)
   const [status, setStatus] = useState<Status>(initialQuery ? 'loading' : 'idle')

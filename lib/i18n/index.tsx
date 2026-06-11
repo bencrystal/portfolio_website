@@ -1,6 +1,14 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react'
 import { dictionaries, LOCALES, type Locale, type DictKey } from './dictionaries'
 
 const STORAGE_KEY = 'define_locale'
@@ -16,7 +24,15 @@ const detectInitialLocale = (): Locale => {
   return isLocale(nav) ? nav : 'en'
 }
 
-export const useLocale = () => {
+interface LocaleContextValue {
+  locale: Locale
+  setLocale: (next: Locale) => void
+  t: (key: DictKey) => string
+}
+
+const LocaleContext = createContext<LocaleContextValue | null>(null)
+
+export const LocaleProvider = ({ children }: { children: ReactNode }) => {
   // Always start with 'en' on first render so server and client agree.
   // After hydration, switch to the detected locale.
   const [locale, setLocaleState] = useState<Locale>('en')
@@ -32,12 +48,24 @@ export const useLocale = () => {
     }
   }, [])
 
-  const t = useCallback(
-    (key: DictKey) => dictionaries[locale][key] ?? dictionaries.en[key],
-    [locale]
+  const value = useMemo<LocaleContextValue>(
+    () => ({
+      locale,
+      setLocale,
+      t: (key: DictKey) => dictionaries[locale][key] ?? dictionaries.en[key],
+    }),
+    [locale, setLocale]
   )
 
-  return { locale, setLocale, t }
+  return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>
+}
+
+export const useLocale = (): LocaleContextValue => {
+  const ctx = useContext(LocaleContext)
+  if (!ctx) {
+    throw new Error('useLocale must be used inside a <LocaleProvider>')
+  }
+  return ctx
 }
 
 export { LOCALES }
