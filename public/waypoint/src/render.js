@@ -139,7 +139,7 @@ function drawPins(heading, stale, tiltFade) {
     // Y band by distance: closer = lower & larger (PRD §5.1).
     const t = Math.min(w.distance / CONFIG.RADIUS_M, 1); // 0 near .. 1 far
     const y = 40 + (1 - t) * 220;
-    const scale = (1.2 - 0.4 * t) * (w.id === state.focusedId ? 1.2 : 1);
+    const scale = (1.4 - 0.8 * t) * (w.id === state.focusedId ? 1.2 : 1);
 
     slot.el.style.display = '';
     slot.el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) scale(${scale.toFixed(2)})`;

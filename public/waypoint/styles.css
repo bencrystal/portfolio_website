@@ -115,7 +115,6 @@ html, body {
 .pin-dist {
   font-size: 16px;
   color: var(--cyan);
-  visibility: hidden;
 }
 .pin.lv-green .pin-glyph { border-color: var(--green); }
 .pin.lv-amber .pin-glyph { border-color: var(--amber); }
@@ -124,7 +123,7 @@ html, body {
 .pin.focused .pin-glyph {
   box-shadow: 0 0 14px 3px rgba(43, 233, 255, 0.6);
 }
-.pin.focused .pin-dist { visibility: visible; }
+.pin.focused .pin-dist { font-weight: 700; }
 .pin.stale { opacity: 0.4; }
 
 /* ---------- Chevrons ---------- */
