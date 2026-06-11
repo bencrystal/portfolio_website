@@ -104,7 +104,7 @@ const DefineInner = ({ initialQuery }: DefineClientProps) => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
               <div>
                 <p
-                  className="text-xs font-bold uppercase tracking-[0.3em] mb-6 pb-3 border-b border-white/10"
+                  className="text-sm sm:text-base font-bold uppercase tracking-[0.3em] mb-6 pb-3 border-b border-white/10"
                   style={{ color: ACCENT }}
                 >
                   {t('formal_label')}
@@ -118,7 +118,7 @@ const DefineInner = ({ initialQuery }: DefineClientProps) => {
 
               <div>
                 <p
-                  className="text-xs font-bold uppercase tracking-[0.3em] mb-6 pb-3 border-b border-white/10"
+                  className="text-sm sm:text-base font-bold uppercase tracking-[0.3em] mb-6 pb-3 border-b border-white/10"
                   style={{ color: ACCENT }}
                 >
                   {t('slang_label')}
