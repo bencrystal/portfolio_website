@@ -102,6 +102,17 @@ function boot() {
   if (!isGlasses) {
     document.body.classList.add('harness');
     document.getElementById('debug-strip').hidden = false;
+    // The width=600 viewport meta is for the glasses runtime; on phones it
+    // overflows. Switch to device-width and scale the 600x600 frame to fit.
+    document.querySelector('meta[name="viewport"]')
+      .setAttribute('content', 'width=device-width, initial-scale=1, user-scalable=no');
+    const app = document.getElementById('app');
+    const fit = () => {
+      const z = Math.min(window.innerWidth / 600, (window.innerHeight - 36) / 600, 1);
+      app.style.zoom = z;
+    };
+    fit();
+    window.addEventListener('resize', fit);
   }
 
   const btn = document.getElementById('start-btn');

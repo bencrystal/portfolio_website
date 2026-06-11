@@ -41,23 +41,24 @@
       <div id="toast" hidden></div>
     </div>
 
-    <!-- Dev harness chrome (hidden on glasses) -->
-    <div id="debug-strip" hidden>
-      <span>raw <b id="dbg-raw">–</b></span>
-      <span>flt <b id="dbg-flt">–</b></span>
-      <span>gps <b id="dbg-gps">–</b></span>
-      <span>evt <b id="dbg-rate">–</b>Hz</span>
-      <span>fetch <b id="dbg-fetch">–</b>s</span>
+  </div>
+
+  <!-- Dev harness chrome (outside the 600x600 frame; hidden on glasses) -->
+  <div id="debug-strip" hidden>
+    <span>raw <b id="dbg-raw">–</b></span>
+    <span>flt <b id="dbg-flt">–</b></span>
+    <span>gps <b id="dbg-gps">–</b></span>
+    <span>evt <b id="dbg-rate">–</b>Hz</span>
+    <span>fetch <b id="dbg-fetch">–</b>s</span>
+  </div>
+  <div id="dpad" hidden>
+    <button data-key="ArrowUp">&#9650;</button>
+    <div class="dpad-mid">
+      <button data-key="ArrowLeft">&#9664;</button>
+      <button data-key="Enter">&#9679;</button>
+      <button data-key="ArrowRight">&#9654;</button>
     </div>
-    <div id="dpad" hidden>
-      <button data-key="ArrowUp">&#9650;</button>
-      <div class="dpad-mid">
-        <button data-key="ArrowLeft">&#9664;</button>
-        <button data-key="Enter">&#9679;</button>
-        <button data-key="ArrowRight">&#9654;</button>
-      </div>
-      <button data-key="ArrowDown">&#9660;</button>
-    </div>
+    <button data-key="ArrowDown">&#9660;</button>
   </div>
   <script type="module" src="src/main.js"></script>
 </body>

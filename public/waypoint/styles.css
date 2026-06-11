@@ -216,24 +216,27 @@ html, body {
 /* ---------- Dev harness ---------- */
 body.harness #app {
   border: 1px solid #222; /* visualize the 600x600 frame */
+  /* Scaled to fit the screen via style.zoom set in main.js */
 }
 #debug-strip {
-  position: absolute;
-  top: 600px;
+  position: fixed;
+  bottom: 0;
   left: 0;
-  width: 600px;
+  width: 100%;
   display: flex;
+  flex-wrap: wrap;
   gap: 14px;
   justify-content: center;
-  padding: 6px 0;
+  padding: 6px 0 max(6px, env(safe-area-inset-bottom));
   font: 12px/1.4 ui-monospace, Menlo, monospace;
   color: #888;
+  background: rgba(0, 0, 0, 0.8);
 }
 #debug-strip b { color: #ddd; font-weight: 600; }
 #dpad {
   position: fixed;
   right: 16px;
-  bottom: 16px;
+  bottom: max(48px, calc(env(safe-area-inset-bottom) + 40px));
   display: flex;
   flex-direction: column;
   align-items: center;
