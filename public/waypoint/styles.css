@@ -1,0 +1,254 @@
+/* Waypoint AR — 600x600 HUD on additive waveguide.
+   Pure black = transparent. Bright strokes >= 2px. No large bright fills. */
+
+:root {
+  --green: #2bff6f;
+  --cyan: #2be9ff;
+  --amber: #ffb52b;
+  --red: #ff4d4d;
+  --dim: #5a5a5a;
+  --white: #ffffff;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  background: #000;
+  color: var(--white);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#app {
+  position: relative;
+  width: 600px;
+  height: 600px;
+  margin: 0 auto;
+  overflow: hidden;
+  background: #000;
+}
+
+/* ---------- Start screen ---------- */
+#start-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.start-title { font-size: 32px; letter-spacing: 6px; color: var(--cyan); }
+.start-sub { font-size: 18px; letter-spacing: 4px; color: var(--white); opacity: 0.8; }
+#start-btn {
+  min-width: 200px;
+  min-height: 88px; /* Meta 88px tap target */
+  font-size: 24px;
+  letter-spacing: 4px;
+  color: var(--green);
+  background: transparent;
+  border: 2px solid var(--green);
+  border-radius: 12px;
+  cursor: pointer;
+}
+#start-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(43, 255, 111, 0.5);
+}
+.start-hint { font-size: 16px; color: var(--dim); }
+
+/* ---------- Ribbon ---------- */
+#ribbon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 600px;
+  height: 60px;
+}
+
+/* ---------- Pin field ---------- */
+#pin-field {
+  position: absolute;
+  top: 60px;
+  left: 0;
+  width: 600px;
+  height: 420px;
+}
+.pin {
+  position: absolute;
+  top: 0;
+  left: -60px; /* positioned via transform only (compositor-friendly) */
+  width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  will-change: transform;
+  transition: opacity 0.15s linear;
+}
+.pin-glyph {
+  width: 44px;
+  height: 44px;
+  border: 3px solid var(--green);
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pin-count {
+  transform: rotate(45deg);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--white);
+}
+.pin-label {
+  font-size: 16px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--white);
+  opacity: 0.85;
+}
+.pin-dist {
+  font-size: 16px;
+  color: var(--cyan);
+  visibility: hidden;
+}
+.pin.lv-green .pin-glyph { border-color: var(--green); }
+.pin.lv-amber .pin-glyph { border-color: var(--amber); }
+.pin.lv-red .pin-glyph { border-color: var(--red); opacity: 0.7; }
+.pin.focused { transform-origin: center bottom; }
+.pin.focused .pin-glyph {
+  box-shadow: 0 0 14px 3px rgba(43, 233, 255, 0.6);
+}
+.pin.focused .pin-dist { visibility: visible; }
+.pin.stale { opacity: 0.4; }
+
+/* ---------- Chevrons ---------- */
+.chevron {
+  position: absolute;
+  top: 260px;
+  font-size: 28px;
+  color: var(--cyan);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+#chevron-left { left: 8px; }
+#chevron-right { right: 8px; }
+.chev-deg { font-size: 18px; color: var(--white); }
+
+/* ---------- Status row ---------- */
+#status-row {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 600px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  font-size: 16px;
+  letter-spacing: 2px;
+}
+#status-mode { color: var(--green); font-weight: 700; font-size: 20px; }
+#status-mode.dock { color: var(--cyan); }
+#status-gps { color: var(--amber); }
+#status-stale { color: var(--amber); border: 2px solid var(--amber); padding: 2px 8px; border-radius: 6px; }
+#status-age { color: var(--dim); }
+
+/* ---------- Calibration ---------- */
+#calibration-banner {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 20px;
+  color: var(--amber);
+  border: 2px solid var(--amber);
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* ---------- Detail card ---------- */
+#detail-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 340px;
+  padding: 24px;
+  background: rgba(10, 20, 16, 0.88);
+  border: 2px solid var(--green);
+  border-radius: 14px;
+  text-align: center;
+}
+#detail-name {
+  font-size: 22px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  color: var(--green);
+}
+.detail-row { font-size: 20px; margin: 6px 0; }
+.detail-hint { font-size: 16px; color: var(--dim); margin-top: 12px; }
+
+/* ---------- Toast ---------- */
+#toast {
+  position: absolute;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 18px;
+  color: var(--amber);
+  background: rgba(0, 0, 0, 0.85);
+  border: 2px solid var(--amber);
+  padding: 6px 14px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+/* ---------- Dev harness ---------- */
+body.harness #app {
+  border: 1px solid #222; /* visualize the 600x600 frame */
+}
+#debug-strip {
+  position: absolute;
+  top: 600px;
+  left: 0;
+  width: 600px;
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  padding: 6px 0;
+  font: 12px/1.4 ui-monospace, Menlo, monospace;
+  color: #888;
+}
+#debug-strip b { color: #ddd; font-weight: 600; }
+#dpad {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  z-index: 10;
+}
+.dpad-mid { display: flex; gap: 4px; }
+#dpad button {
+  width: 56px;
+  height: 56px;
+  font-size: 20px;
+  color: #ccc;
+  background: rgba(40, 40, 40, 0.8);
+  border: 1px solid #555;
+  border-radius: 10px;
+}
+#dpad button:active { background: #333; }

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=600, height=600, initial-scale=1, user-scalable=no">
+  <meta name="mrbd-web-app-capable" content="yes">
+  <meta name="description" content="Live Citi Bike stations as direction-anchored waypoint pins in your HUD — bikes, docks, and distance at a glance.">
+  <title>Waypoint AR — Citi Bike</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Start screen: permission gesture gate -->
+    <div id="start-screen">
+      <div class="start-title">WAYPOINT AR</div>
+      <div class="start-sub">CITI BIKE</div>
+      <button id="start-btn" class="focusable">START</button>
+      <div class="start-hint">Enter to begin &middot; grants motion + location</div>
+    </div>
+
+    <!-- HUD -->
+    <div id="hud" hidden>
+      <canvas id="ribbon" width="600" height="60"></canvas>
+      <div id="pin-field"></div>
+      <div id="chevron-left" class="chevron" hidden>&#9664;<span class="chev-deg"></span></div>
+      <div id="chevron-right" class="chevron" hidden><span class="chev-deg"></span>&#9654;</div>
+      <div id="status-row">
+        <span id="status-mode">BIKES</span>
+        <span id="status-gps" hidden>GPS &plusmn;<span id="gps-acc"></span>m</span>
+        <span id="status-stale" hidden>STALE</span>
+        <span id="status-age"></span>
+      </div>
+      <div id="calibration-banner" hidden>CALIBRATE &#9664;&#9654; offset <span id="cal-offset">0</span>&deg;</div>
+      <div id="detail-card" hidden>
+        <div id="detail-name"></div>
+        <div class="detail-row"><span id="detail-bikes"></span> bikes &middot; <span id="detail-ebikes"></span> e-bikes</div>
+        <div class="detail-row"><span id="detail-docks"></span> docks free</div>
+        <div class="detail-row"><span id="detail-dist"></span> &middot; data <span id="detail-age"></span></div>
+        <div class="detail-hint">Enter to close</div>
+      </div>
+      <div id="toast" hidden></div>
+    </div>
+
+    <!-- Dev harness chrome (hidden on glasses) -->
+    <div id="debug-strip" hidden>
+      <span>raw <b id="dbg-raw">–</b></span>
+      <span>flt <b id="dbg-flt">–</b></span>
+      <span>gps <b id="dbg-gps">–</b></span>
+      <span>evt <b id="dbg-rate">–</b>Hz</span>
+      <span>fetch <b id="dbg-fetch">–</b>s</span>
+    </div>
+    <div id="dpad" hidden>
+      <button data-key="ArrowUp">&#9650;</button>
+      <div class="dpad-mid">
+        <button data-key="ArrowLeft">&#9664;</button>
+        <button data-key="Enter">&#9679;</button>
+        <button data-key="ArrowRight">&#9654;</button>
+      </div>
+      <button data-key="ArrowDown">&#9660;</button>
+    </div>
+  </div>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
