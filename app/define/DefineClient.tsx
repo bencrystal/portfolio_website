@@ -68,20 +68,18 @@ const DefineInner = ({ initialQuery }: DefineClientProps) => {
       dir={dir}
       className="min-h-screen min-h-dvh bg-black text-white relative overflow-x-hidden"
     >
-      {/* Page header row — controls only; the hero h1 below carries the page identity. */}
-      <div className="border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-end gap-3">
-          {query && status === 'ok' && <ShareButton word={query} />}
-          <LocaleSelect />
-        </div>
-      </div>
-
-      {/* Hero + search */}
+      {/* Hero header — title sits inline with the controls to reclaim vertical space. */}
       <section className="border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-6 pt-12 sm:pt-16 pb-12">
-          <h1 className="font-black tracking-[-0.04em] uppercase leading-[0.85] mb-10 text-[16vw] sm:text-[12vw] lg:text-[10rem]">
-            Define<span style={{ color: ACCENT }}>.</span>
-          </h1>
+        <div className="max-w-7xl mx-auto px-6 py-8 sm:py-10">
+          <div className="flex items-center justify-between gap-4 mb-8">
+            <h1 className="font-black tracking-[-0.04em] uppercase leading-none text-4xl sm:text-5xl lg:text-6xl">
+              Define<span style={{ color: ACCENT }}>.</span>
+            </h1>
+            <div className="flex items-center gap-3">
+              {query && status === 'ok' && <ShareButton word={query} />}
+              <LocaleSelect />
+            </div>
+          </div>
 
           <SearchInput
             initialValue={query}
