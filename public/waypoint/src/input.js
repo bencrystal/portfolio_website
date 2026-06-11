@@ -10,6 +10,7 @@
 import { state, markActivity } from './state.js';
 import { setCalibrationOffset } from './heading.js';
 import { cycleFocus, toast } from './render.js';
+import { toggleCamera } from './camera.js';
 
 export function handleKey(key) {
   markActivity();
@@ -49,12 +50,15 @@ export function handleKey(key) {
       state.calibrating = true;
       toast('AIM AT A KNOWN STATION, NUDGE ◀▶');
       break;
+    case 'v': // dev harness only: camera passthrough
+      toggleCamera();
+      break;
   }
 }
 
 export function initInput({ showDpad }) {
   window.addEventListener('keydown', (e) => {
-    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'c'].includes(e.key)) {
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'c', 'v'].includes(e.key)) {
       e.preventDefault();
       handleKey(e.key);
     }

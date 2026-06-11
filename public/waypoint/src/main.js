@@ -10,6 +10,7 @@ import {
 import { loadStationInfo, startPolling } from './citibike.js';
 import { initRenderer, startLoop, toast } from './render.js';
 import { initInput } from './input.js';
+import { initCameraButton } from './camera.js';
 
 const filter = new HeadingFilter();
 state.calibrationOffset = getCalibrationOffset();
@@ -102,6 +103,7 @@ function boot() {
   if (!isGlasses) {
     document.body.classList.add('harness');
     document.getElementById('debug-strip').hidden = false;
+    initCameraButton();
     // The width=600 viewport meta is for the glasses runtime; on phones it
     // overflows. Switch to device-width and scale the 600x600 frame to fit.
     document.querySelector('meta[name="viewport"]')

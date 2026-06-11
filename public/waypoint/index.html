@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <video id="cam" autoplay playsinline muted hidden></video>
   <div id="app">
     <!-- Start screen: permission gesture gate -->
     <div id="start-screen">
@@ -51,6 +52,7 @@
     <span>evt <b id="dbg-rate">–</b>Hz</span>
     <span>fetch <b id="dbg-fetch">–</b>s</span>
   </div>
+  <button id="cam-btn" hidden>CAM</button>
   <div id="dpad" hidden>
     <button data-key="ArrowUp">&#9650;</button>
     <div class="dpad-mid">
