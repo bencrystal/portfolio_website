@@ -29,7 +29,7 @@ export function initRenderer(filter) {
     'hud', 'pin-field', 'ribbon', 'status-mode', 'status-gps', 'gps-acc',
     'status-stale', 'status-age', 'calibration-banner', 'cal-offset',
     'detail-card', 'detail-name', 'detail-bikes', 'detail-ebikes',
-    'detail-docks', 'detail-dist', 'detail-age', 'chevron-left',
+    'detail-docks', 'detail-dist', 'detail-age', 'best-turn', 'chevron-left',
     'chevron-right', 'toast', 'debug-strip', 'dbg-raw', 'dbg-flt', 'dbg-gps',
     'dbg-rate', 'dbg-fetch',
   ]) {
@@ -183,10 +183,12 @@ function drawRibbon(heading, stale) {
   ctx.clearRect(0, 0, W, H);
   if (heading === null) return;
 
-  // Ribbon spans 360° => 600px wide window centered on heading shows ±90°
-  // around gaze for legibility; ticks outside wrap to edges via clamping.
-  const SPAN = 180; // degrees represented across the ribbon width
-  const degToX = (delta) => W / 2 + (delta / (SPAN / 2)) * (W / 2);
+  // Fisheye mapping over the full 360°: degrees near gaze get more pixels,
+  // behind-you compresses toward the edges (still ordered, still glanceable).
+  const degToX = (delta) => {
+    const t = Math.pow(Math.abs(delta) / 180, CONFIG.RIBBON_GAMMA);
+    return W / 2 + Math.sign(delta) * (W / 2 - 8) * t;
+  };
 
   // FOV window highlight
   ctx.fillStyle = 'rgba(43, 233, 255, 0.18)';
@@ -201,16 +203,13 @@ function drawRibbon(heading, stale) {
   ctx.font = '14px -apple-system, sans-serif';
   ctx.textAlign = 'center';
   for (const [deg, name] of [[0, 'N'], [90, 'E'], [180, 'S'], [270, 'W']]) {
-    const d = normDelta(deg - heading);
-    if (Math.abs(d) > SPAN / 2) continue;
-    ctx.fillText(name, degToX(d), 56);
+    ctx.fillText(name, degToX(normDelta(deg - heading)), 56);
   }
 
-  // Station ticks
+  // Station ticks (full 360° now fits)
   for (const w of state.nearby) {
     const d = normDelta(w.bearing - heading);
-    const clamped = Math.max(-SPAN / 2, Math.min(SPAN / 2, d));
-    const x = degToX(clamped);
+    const x = degToX(d);
     const n = countFor(w);
     const focused = w.id === state.focusedId;
     ctx.strokeStyle = stale ? '#5a5a5a'
@@ -221,6 +220,39 @@ function drawRibbon(heading, stale) {
     ctx.moveTo(x, MID + 8 - h);
     ctx.lineTo(x, MID + 8);
     ctx.stroke();
+  }
+}
+
+// Nearest station with a healthy count for the current mode (>=3, falling
+// back to >=1). state.nearby is already distance-sorted.
+function bestWaypoint() {
+  let fallback = null;
+  for (const w of state.nearby) {
+    const n = countFor(w);
+    if (n >= CONFIG.BEST_MIN_COUNT) return w;
+    if (n >= 1 && !fallback) fallback = w;
+  }
+  return fallback;
+}
+
+// "Turn this way for your best option" — double chevron under the ribbon,
+// shown only when the best station is outside the FOV.
+function drawBestTurn(heading) {
+  const el = els['best-turn'];
+  const w = bestWaypoint();
+  if (!w || heading === null || state.detailOpen) { el.hidden = true; return; }
+  const delta = normDelta(w.bearing - heading);
+  if (Math.abs(delta) <= HALF_FOV + CONFIG.FOV_PAD_DEG) { el.hidden = true; return; }
+  el.hidden = false;
+  const deg = Math.round(Math.abs(delta));
+  if (delta < 0) {
+    el.textContent = `\u00AB ${deg}\u00B0 BEST`;
+    el.style.left = '12px';
+    el.style.right = 'auto';
+  } else {
+    el.textContent = `BEST ${deg}\u00B0 \u00BB`;
+    el.style.right = '12px';
+    el.style.left = 'auto';
   }
 }
 
@@ -338,6 +370,7 @@ export function startLoop() {
     drawPins(heading, stale, tiltFade);
     drawRibbon(heading, stale);
     drawChevrons(heading);
+    drawBestTurn(heading);
   }
   requestAnimationFrame(frame);
 }

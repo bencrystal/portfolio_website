@@ -7,6 +7,8 @@ export const CONFIG = {
   PIN_FIELD_HEIGHT: 420,
 
   RADIUS_M: 500,          // station search radius
+  RIBBON_GAMMA: 0.6,      // fisheye exponent: <1 expands center, compresses edges
+  BEST_MIN_COUNT: 3,      // "best" station = nearest with at least this many
   MAX_STATIONS: 40,       // cap per-frame work
 
   SMOOTH_ALPHA: 0.2,      // exponential smoothing on raw heading (tune 0.15–0.3)

@@ -84,6 +84,19 @@ body.cam-on #app { background: transparent; }
   height: 60px;
 }
 
+/* Best-option turn hint, just under the ribbon */
+#best-turn {
+  position: absolute;
+  top: 64px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--green);
+  background: rgba(0, 0, 0, 0.7);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
 /* ---------- Pin field ---------- */
 #pin-field {
   position: absolute;
