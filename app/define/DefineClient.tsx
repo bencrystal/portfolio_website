@@ -28,7 +28,8 @@ export const DefineClient = ({ initialQuery }: DefineClientProps) => {
 }
 
 const DefineInner = ({ initialQuery }: DefineClientProps) => {
-  const { t } = useLocale()
+  const { t, locale } = useLocale()
+  const dir: 'ltr' | 'rtl' = locale === 'ar' || locale === 'he' ? 'rtl' : 'ltr'
   const [query, setQuery] = useState(initialQuery)
   const [status, setStatus] = useState<Status>(initialQuery ? 'loading' : 'idle')
   const [data, setData] = useState<DefineResponse | null>(null)
@@ -63,7 +64,10 @@ const DefineInner = ({ initialQuery }: DefineClientProps) => {
   const showPanels = status === 'loading' || status === 'ok'
 
   return (
-    <main className="min-h-screen min-h-dvh bg-black text-white relative overflow-x-hidden">
+    <main
+      dir={dir}
+      className="min-h-screen min-h-dvh bg-black text-white relative overflow-x-hidden"
+    >
       {/* Page header row */}
       <div className="border-b border-white/10">
         <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">

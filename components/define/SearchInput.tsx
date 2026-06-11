@@ -62,6 +62,7 @@ export const SearchInput = ({
         autoCapitalize="off"
         autoCorrect="off"
         spellCheck={false}
+        dir="ltr"
         className="w-full bg-transparent border-b-2 border-white/20 focus:border-[#57f1ff] outline-none text-3xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tighter py-4 placeholder:text-white/20 caret-[#57f1ff] transition-colors"
       />
     </form>

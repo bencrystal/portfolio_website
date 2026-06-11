@@ -15,7 +15,7 @@ export const LocaleSelect = () => {
         aria-label={t('language')}
       >
         {LOCALES.map((l) => (
-          <option key={l.code} value={l.code} className="bg-black">
+          <option key={l.code} value={l.code} lang={l.code} className="bg-black">
             {l.label}
           </option>
         ))}

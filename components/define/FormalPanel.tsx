@@ -86,7 +86,11 @@ const Entry = ({ entry, playLabel }: { entry: FormalEntry; playLabel: string }) 
           </span>
         )}
         {entry.pronunciation && (
-          <span className="text-base text-white/70 font-mono">
+          <span
+            className="text-base text-white/70 font-mono"
+            translate="no"
+            dir="ltr"
+          >
             \{entry.pronunciation}\
           </span>
         )}
@@ -120,7 +124,10 @@ const Entry = ({ entry, playLabel }: { entry: FormalEntry; playLabel: string }) 
       )}
 
       {entry.etymology && (
-        <p className="text-xs text-white/40 italic leading-relaxed pl-4">
+        <p
+          className="text-xs text-white/40 italic leading-relaxed pl-4"
+          translate="no"
+        >
           {entry.etymology}
         </p>
       )}
