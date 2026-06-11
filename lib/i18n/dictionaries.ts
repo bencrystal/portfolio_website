@@ -59,6 +59,8 @@ export type DictKey =
   | 'open_on_ud'
   | 'language'
   | 'mw_rate_limited'
+  | 'share'
+  | 'share_copied'
 
 type Dictionary = Record<DictKey, string>
 
@@ -79,6 +81,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
     open_on_ud: 'Open on Urban Dictionary',
     language: 'Language',
     mw_rate_limited: 'Daily Merriam-Webster limit reached — formal definitions will be back tomorrow.',
+    share: 'Share',
+    share_copied: 'Copied!',
   },
   es: {
     placeholder: 'Busca una palabra…',
@@ -96,6 +100,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
     open_on_ud: 'Abrir en Urban Dictionary',
     language: 'Idioma',
     mw_rate_limited: 'Límite diario de Merriam-Webster alcanzado — las definiciones formales volverán mañana.',
+    share: 'Compartir',
+    share_copied: '¡Copiado!',
   },
   fr: {
     placeholder: 'Cherchez un mot…',
@@ -113,6 +119,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
     open_on_ud: 'Ouvrir sur Urban Dictionary',
     language: 'Langue',
     mw_rate_limited: 'Limite quotidienne de Merriam-Webster atteinte — les définitions formelles reviennent demain.',
+    share: 'Partager',
+    share_copied: 'Copié\u00a0!',
   },
   de: {
     placeholder: 'Wort nachschlagen…',
@@ -130,6 +138,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
     open_on_ud: 'Auf Urban Dictionary öffnen',
     language: 'Sprache',
     mw_rate_limited: 'Tägliches Merriam-Webster-Limit erreicht — formelle Definitionen sind morgen wieder da.',
+    share: 'Teilen',
+    share_copied: 'Kopiert!',
   },
   it: {
     placeholder: 'Cerca una parola…',
@@ -147,6 +157,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
     open_on_ud: 'Apri su Urban Dictionary',
     language: 'Lingua',
     mw_rate_limited: 'Limite giornaliero di Merriam-Webster raggiunto — le definizioni formali torneranno domani.',
+    share: 'Condividi',
+    share_copied: 'Copiato!',
   },
   pt: {
     placeholder: 'Procure uma palavra…',
@@ -164,6 +176,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
     open_on_ud: 'Abrir no Urban Dictionary',
     language: 'Idioma',
     mw_rate_limited: 'Limite diário do Merriam-Webster atingido — as definições formais voltam amanhã.',
+    share: 'Compartilhar',
+    share_copied: 'Copiado!',
   },
   nl: {
     placeholder: 'Zoek een woord op…',
@@ -181,6 +195,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
     open_on_ud: 'Openen op Urban Dictionary',
     language: 'Taal',
     mw_rate_limited: 'Dagelijkse Merriam-Webster-limiet bereikt — formele definities zijn morgen weer beschikbaar.',
+    share: 'Delen',
+    share_copied: 'Gekopieerd!',
   },
   pl: {
     placeholder: 'Wyszukaj słowo…',
@@ -198,6 +214,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
     open_on_ud: 'Otwórz w Urban Dictionary',
     language: 'Język',
     mw_rate_limited: 'Osiągnięto dzienny limit Merriam-Webster — formalne definicje wrócą jutro.',
+    share: 'Udostępnij',
+    share_copied: 'Skopiowano!',
   },
   ru: {
     placeholder: 'Найдите слово…',
@@ -215,6 +233,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
     open_on_ud: 'Открыть в Urban Dictionary',
     language: 'Язык',
     mw_rate_limited: 'Дневной лимит Merriam-Webster исчерпан — формальные определения вернутся завтра.',
+    share: 'Поделиться',
+    share_copied: 'Скопировано!',
   },
   tr: {
     placeholder: 'Bir kelime ara…',
@@ -232,6 +252,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
     open_on_ud: 'Urban Dictionary\u2019de aç',
     language: 'Dil',
     mw_rate_limited: 'Günlük Merriam-Webster sınırına ulaşıldı — resmî tanımlar yarın geri gelecek.',
+    share: 'Paylaş',
+    share_copied: 'Kopyalandı!',
   },
   ar: {
     placeholder: 'ابحث عن كلمة…',
@@ -249,6 +271,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
     open_on_ud: 'فتح في Urban Dictionary',
     language: 'اللغة',
     mw_rate_limited: 'تم بلوغ الحد اليومي لـ Merriam-Webster — ستعود التعريفات الرسمية غداً.',
+    share: 'مشاركة',
+    share_copied: 'تم النسخ!',
   },
   he: {
     placeholder: 'חפש מילה…',
@@ -266,6 +290,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
     open_on_ud: 'פתח ב-Urban Dictionary',
     language: 'שפה',
     mw_rate_limited: 'המכסה היומית של Merriam-Webster נוצלה — ההגדרות הפורמליות יחזרו מחר.',
+    share: 'שתף',
+    share_copied: 'הועתק!',
   },
   hi: {
     placeholder: 'कोई शब्द खोजें…',
@@ -283,6 +309,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
     open_on_ud: 'Urban Dictionary पर खोलें',
     language: 'भाषा',
     mw_rate_limited: 'Merriam-Webster की दैनिक सीमा पूरी हो गई — औपचारिक परिभाषाएँ कल वापस आएँगी.',
+    share: 'शेयर',
+    share_copied: 'कॉपी हो गया!',
   },
   id: {
     placeholder: 'Cari sebuah kata…',
@@ -300,6 +328,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
     open_on_ud: 'Buka di Urban Dictionary',
     language: 'Bahasa',
     mw_rate_limited: 'Batas harian Merriam-Webster tercapai — definisi formal akan kembali besok.',
+    share: 'Bagikan',
+    share_copied: 'Tersalin!',
   },
   ja: {
     placeholder: '単語を調べる…',
@@ -317,6 +347,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
     open_on_ud: 'Urban Dictionary で開く',
     language: '言語',
     mw_rate_limited: 'Merriam-Webster の1日の上限に達しました — 正式な定義は明日復旧します。',
+    share: '共有',
+    share_copied: 'コピーしました',
   },
   ko: {
     placeholder: '단어 찾기…',
@@ -334,6 +366,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
     open_on_ud: 'Urban Dictionary에서 열기',
     language: '언어',
     mw_rate_limited: 'Merriam-Webster 일일 한도에 도달했습니다 — 공식 정의는 내일 다시 제공됩니다.',
+    share: '공유',
+    share_copied: '복사됨!',
   },
   th: {
     placeholder: 'ค้นหาคำ…',
@@ -351,6 +385,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
     open_on_ud: 'เปิดใน Urban Dictionary',
     language: 'ภาษา',
     mw_rate_limited: 'ถึงขีดจำกัดรายวันของ Merriam-Webster — คำนิยามทางการจะกลับมาในวันพรุ่งนี้',
+    share: 'แชร์',
+    share_copied: 'คัดลอกแล้ว!',
   },
   vi: {
     placeholder: 'Tra cứu một từ…',
@@ -368,6 +404,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
     open_on_ud: 'Mở trên Urban Dictionary',
     language: 'Ngôn ngữ',
     mw_rate_limited: 'Đã đạt giới hạn Merriam-Webster hằng ngày — định nghĩa trang trọng sẽ trở lại vào ngày mai.',
+    share: 'Chia sẻ',
+    share_copied: 'Đã sao chép!',
   },
   zh: {
     placeholder: '查一个词…',
@@ -385,5 +423,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     open_on_ud: '在 Urban Dictionary 中打开',
     language: '语言',
     mw_rate_limited: '今日韦氏词典调用次数已达上限 —— 正式释义将于明日恢复。',
+    share: '分享',
+    share_copied: '已复制！',
   },
 }

@@ -1,12 +1,8 @@
-import type { FormalPanel } from './types'
+import type { FormalEntry, FormalPanel } from './types'
 
 const EMPTY: FormalPanel = {
   found: false,
-  pos: null,
-  pronunciation: null,
-  audio: null,
-  senses: [],
-  example: null,
+  entries: [],
   suggestions: [],
   rateLimited: false,
 }
@@ -77,6 +73,27 @@ const findExample = (entry: MwEntry): string | null => {
   return walk(entry.def)
 }
 
+const toFormalEntry = (entry: MwEntry): FormalEntry => {
+  const prs = entry.hwi?.prs?.[0]
+  return {
+    pos: entry.fl ?? null,
+    pronunciation: prs?.mw ?? null,
+    audio: prs?.sound?.audio ? audioUrl(prs.sound.audio) : null,
+    senses: (entry.shortdef ?? []).slice(0, 3),
+    example: findExample(entry),
+  }
+}
+
+/**
+ * Decide whether two MW entries are distinct enough to show side-by-side.
+ * Same POS + same first sense is redundant (MW often lists tiny variants);
+ * different POS (noun vs verb) is the case we actually want to surface.
+ */
+const isMeaningfullyDistinct = (a: FormalEntry, b: FormalEntry): boolean => {
+  if (a.pos !== b.pos) return true
+  return (a.senses[0] ?? '') !== (b.senses[0] ?? '')
+}
+
 export const fetchMW = async (word: string): Promise<FormalPanel> => {
   const key = process.env.MW_API_KEY
   if (!key) return EMPTY
@@ -112,17 +129,21 @@ export const fetchMW = async (word: string): Promise<FormalPanel> => {
       return { ...EMPTY, suggestions: (data as string[]).slice(0, 6) }
     }
 
-    const entry = data[0] as MwEntry
-    const prs = entry.hwi?.prs?.[0]
-    const audio = prs?.sound?.audio ? audioUrl(prs.sound.audio) : null
+    // Build up to 3 distinct entries.
+    const entries: FormalEntry[] = []
+    for (const raw of data as MwEntry[]) {
+      const candidate = toFormalEntry(raw)
+      if (candidate.senses.length === 0) continue
+      const isDuplicate = entries.some((e) => !isMeaningfullyDistinct(e, candidate))
+      if (!isDuplicate) entries.push(candidate)
+      if (entries.length === 3) break
+    }
+
+    if (entries.length === 0) return EMPTY
 
     return {
       found: true,
-      pos: entry.fl ?? null,
-      pronunciation: prs?.mw ?? null,
-      audio,
-      senses: (entry.shortdef ?? []).slice(0, 3),
-      example: findExample(entry),
+      entries,
       suggestions: [],
       rateLimited: false,
     }

@@ -7,6 +7,7 @@ import { SlangPanel } from '@/components/define/SlangPanel'
 import { PanelSkeleton } from '@/components/define/PanelSkeleton'
 import { NsfwNotice } from '@/components/define/NsfwNotice'
 import { LocaleSelect } from '@/components/define/LocaleSelect'
+import { ShareButton } from '@/components/define/ShareButton'
 import { LocaleProvider, useLocale } from '@/lib/i18n'
 import type { DefineResponse } from '@/lib/define/types'
 
@@ -72,7 +73,10 @@ const DefineInner = ({ initialQuery }: DefineClientProps) => {
           >
             Define
           </p>
-          <LocaleSelect />
+          <div className="flex items-center gap-3">
+            {query && status === 'ok' && <ShareButton word={query} />}
+            <LocaleSelect />
+          </div>
         </div>
       </div>
 
