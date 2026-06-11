@@ -13,8 +13,6 @@ export interface FormalPanel {
 export interface SlangEntry {
   definition: string
   example: string
-  up: number
-  down: number
   permalink: string
 }
 

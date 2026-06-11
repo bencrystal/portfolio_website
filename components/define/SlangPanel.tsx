@@ -21,17 +21,11 @@ export const SlangPanel = ({ data }: SlangPanelProps) => {
       {data.map((entry, i) => (
         <article key={i} className="space-y-3">
           <div className="flex items-baseline gap-3">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-white/40">
-              {String(i + 1).padStart(2, '0')}
-            </span>
             <span
               className="text-xs font-bold uppercase tracking-[0.3em]"
               style={{ color: ACCENT }}
             >
-              ▲ {entry.up.toLocaleString()}
-            </span>
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-white/40">
-              ▼ {entry.down.toLocaleString()}
+              {String(i + 1).padStart(2, '0')}
             </span>
           </div>
 
