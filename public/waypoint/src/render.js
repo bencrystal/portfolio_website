@@ -13,6 +13,15 @@ const els = {};
 const pinPool = [];
 let ribbonCtx = null;
 let headingFilter = null;
+let viewW = CONFIG.VIEW_PX;  // measured; 600 on glasses, screen width on harness
+let fieldH = 420;
+
+export function measure() {
+  const app = document.getElementById('app');
+  viewW = app.clientWidth || CONFIG.VIEW_PX;
+  fieldH = Math.max((app.clientHeight || CONFIG.VIEW_PX) - 120, 200);
+  els['ribbon'].width = viewW; // canvas backing store must match
+}
 
 export function initRenderer(filter) {
   headingFilter = filter;
@@ -27,6 +36,8 @@ export function initRenderer(filter) {
     els[id] = document.getElementById(id);
   }
   ribbonCtx = els['ribbon'].getContext('2d');
+  measure();
+  window.addEventListener('resize', measure);
 
   for (let i = 0; i < POOL_SIZE; i++) {
     const pin = document.createElement('div');
@@ -136,10 +147,10 @@ function drawPins(heading, stale, tiltFade) {
       continue;
     }
     const { w, delta } = item;
-    const x = CONFIG.VIEW_PX / 2 + (delta / HALF_FOV) * (CONFIG.VIEW_PX / 2);
+    const x = viewW / 2 + (delta / HALF_FOV) * (viewW / 2);
     // Y band by distance: closer = lower & larger (PRD §5.1).
     const t = Math.min(w.distance / CONFIG.RADIUS_M, 1); // 0 near .. 1 far
-    const y = 40 + (1 - t) * 220;
+    const y = 0.08 * fieldH + (1 - t) * 0.5 * fieldH;
     const scale = (1.4 - 0.8 * t) * (w.id === state.focusedId ? 1.2 : 1);
 
     slot.el.style.display = '';
@@ -168,7 +179,7 @@ function refreshPinText() {
 
 function drawRibbon(heading, stale) {
   const ctx = ribbonCtx;
-  const W = CONFIG.VIEW_PX, H = 60, MID = 36;
+  const W = viewW, H = 60, MID = 36;
   ctx.clearRect(0, 0, W, H);
   if (heading === null) return;
 

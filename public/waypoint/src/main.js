@@ -97,24 +97,21 @@ async function start() {
 }
 
 function boot() {
+  // Platform-adaptive layout: glasses keep the fixed 600x600 viewport; the
+  // harness goes full-bleed. Class must be set before the renderer measures.
+  if (!isGlasses) {
+    document.body.classList.add('harness');
+    // The width=600 viewport meta is for the glasses runtime only.
+    document.querySelector('meta[name="viewport"]')
+      .setAttribute('content', 'width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no');
+  }
+
   initRenderer(filter);
   initInput({ showDpad: isTouch });
 
   if (!isGlasses) {
-    document.body.classList.add('harness');
     document.getElementById('debug-strip').hidden = false;
     initCameraButton();
-    // The width=600 viewport meta is for the glasses runtime; on phones it
-    // overflows. Switch to device-width and scale the 600x600 frame to fit.
-    document.querySelector('meta[name="viewport"]')
-      .setAttribute('content', 'width=device-width, initial-scale=1, user-scalable=no');
-    const app = document.getElementById('app');
-    const fit = () => {
-      const z = Math.min(window.innerWidth / 600, (window.innerHeight - 36) / 600, 1);
-      app.style.zoom = z;
-    };
-    fit();
-    window.addEventListener('resize', fit);
   }
 
   const btn = document.getElementById('start-btn');
