@@ -68,19 +68,11 @@ const DefineInner = ({ initialQuery }: DefineClientProps) => {
       dir={dir}
       className="min-h-screen min-h-dvh bg-black text-white relative overflow-x-hidden"
     >
-      {/* Page header row */}
+      {/* Page header row — controls only; the hero h1 below carries the page identity. */}
       <div className="border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
-          <p
-            className="text-xs font-bold uppercase tracking-[0.3em]"
-            style={{ color: ACCENT }}
-          >
-            Define
-          </p>
-          <div className="flex items-center gap-3">
-            {query && status === 'ok' && <ShareButton word={query} />}
-            <LocaleSelect />
-          </div>
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-end gap-3">
+          {query && status === 'ok' && <ShareButton word={query} />}
+          <LocaleSelect />
         </div>
       </div>
 
