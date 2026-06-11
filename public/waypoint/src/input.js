@@ -12,6 +12,15 @@ import { setCalibrationOffset } from './heading.js';
 import { cycleFocus, toast } from './render.js';
 import { toggleCamera } from './camera.js';
 
+const MODES = ['bike', 'ebike', 'dock'];
+const MODE_TOAST = { bike: 'ALL BIKES', ebike: 'E-BIKES', dock: 'DOCKS' };
+
+export function cycleMode(dir) {
+  const i = MODES.indexOf(state.mode);
+  state.mode = MODES[(i + dir + MODES.length) % MODES.length];
+  toast(MODE_TOAST[state.mode]);
+}
+
 export function handleKey(key) {
   markActivity();
 
@@ -31,10 +40,10 @@ export function handleKey(key) {
 
   switch (key) {
     case 'ArrowUp':
-      if (state.mode !== 'bike') { state.mode = 'bike'; toast('BIKE MODE'); }
+      cycleMode(-1);
       break;
     case 'ArrowDown':
-      if (state.mode !== 'dock') { state.mode = 'dock'; toast('DOCK MODE'); }
+      cycleMode(1);
       break;
     case 'ArrowLeft':
       if (!state.detailOpen) cycleFocus(-1);
@@ -58,10 +67,18 @@ export function handleKey(key) {
 
 export function initInput({ showDpad }) {
   window.addEventListener('keydown', (e) => {
+    // Let the start screen's native button handle Enter.
+    if (!document.getElementById('start-screen').hidden) return;
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'c', 'v'].includes(e.key)) {
       e.preventDefault();
       handleKey(e.key);
     }
+  });
+
+  // Mode chip in the status row doubles as a tap/click toggle.
+  document.getElementById('status-mode').addEventListener('click', () => {
+    markActivity();
+    cycleMode(1);
   });
 
   if (showDpad) {

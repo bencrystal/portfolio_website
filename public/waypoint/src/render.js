@@ -83,6 +83,7 @@ export function focusedWaypoint() {
 
 // ---------- helpers ----------
 function countFor(w) {
+  if (state.mode === 'ebike') return w.meta.ebikes;
   return state.mode === 'bike' ? w.meta.bikes : w.meta.docks;
 }
 
@@ -234,7 +235,9 @@ function refreshChrome() {
   const age = state.lastFetchOk ? now - state.lastFetchOk : Infinity;
   const stale = age > CONFIG.STALE_AFTER_MS;
 
-  els['status-mode'].textContent = state.mode === 'bike' ? 'BIKES' : 'DOCKS';
+  els['status-mode'].textContent =
+    state.mode === 'bike' ? 'BIKES' : state.mode === 'ebike' ? 'E-BIKES' : 'DOCKS';
+  els['status-mode'].classList.toggle('ebike', state.mode === 'ebike');
   els['status-mode'].classList.toggle('dock', state.mode === 'dock');
   els['status-stale'].hidden = !stale;
   els['status-age'].textContent = state.lastFetchOk ? `data ${fmtAge(age)}` : 'loading…';

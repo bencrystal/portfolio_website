@@ -2,7 +2,7 @@
 import { getCalibrationOffset } from './heading.js';
 
 export const state = {
-  mode: 'bike',            // 'bike' | 'dock'
+  mode: 'bike',            // 'bike' | 'ebike' | 'dock'
   calibrating: false,
   calibrationOffset: getCalibrationOffset(),
   detailOpen: false,
