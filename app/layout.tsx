@@ -9,6 +9,11 @@ export const metadata: Metadata = {
   title: "Ben Crystal - Creative Technologist",
   description:
     "Portfolio of Ben Crystal, XR creative technologist and electrical engineer based in Brooklyn, NY. Specializing in immersive AR/VR experiences, machine learning, and innovative interface design.",
+  icons: {
+    icon: "/nanobanana_logo_sphere.png",
+    shortcut: "/nanobanana_logo_sphere.png",
+    apple: "/nanobanana_logo_sphere.png",
+  },
 };
 
 export default function RootLayout({
