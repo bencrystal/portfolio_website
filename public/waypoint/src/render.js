@@ -2,7 +2,7 @@
 // rAF loop capped at 30fps. Per-frame: heading interpolation + pin transforms
 // + ribbon redraw (compositor/canvas only). Text content updates at ~2Hz.
 import { CONFIG } from './config.js';
-import { state } from './state.js';
+import { state, markActivity } from './state.js';
 import { distanceM, bearingTo, normDelta, norm360 } from './geo.js';
 import { interpToward } from './heading.js';
 
@@ -15,6 +15,7 @@ let ribbonCtx = null;
 let headingFilter = null;
 let viewW = CONFIG.VIEW_PX;  // measured; 600 on glasses, screen width on harness
 let fieldH = 420;
+const ribbonTicks = []; // [{x, id}] from the last ribbon draw, for tap focus
 
 export function measure() {
   const app = document.getElementById('app');
@@ -48,14 +49,41 @@ export function initRenderer(filter) {
       <div class="pin-label"></div>
       <div class="pin-dist"></div>`;
     els['pin-field'].appendChild(pin);
-    pinPool.push({
+    const slot = {
       el: pin,
       count: pin.querySelector('.pin-count'),
       label: pin.querySelector('.pin-label'),
       dist: pin.querySelector('.pin-dist'),
       stationId: null,
+    };
+    // Tap a pin: focus it and open its detail card (harness; no-op input
+    // on glasses, which have no pointer).
+    pin.addEventListener('click', () => {
+      if (slot.stationId === null) return;
+      markActivity();
+      state.focusedId = slot.stationId;
+      state.detailOpen = true;
     });
+    pinPool.push(slot);
   }
+
+  // Tap the detail card to dismiss it.
+  els['detail-card'].addEventListener('click', () => { state.detailOpen = false; });
+
+  // Tap a ribbon tick: focus that station.
+  els['ribbon'].addEventListener('click', (e) => {
+    const rect = els['ribbon'].getBoundingClientRect();
+    const x = (e.clientX - rect.left) * (els['ribbon'].width / rect.width);
+    let best = null;
+    for (const t of ribbonTicks) {
+      const dx = Math.abs(t.x - x);
+      if (dx <= 22 && (!best || dx < best.dx)) best = { dx, id: t.id };
+    }
+    if (best) {
+      markActivity();
+      state.focusedId = best.id;
+    }
+  });
 }
 
 // ---------- nearby list (recomputed at text rate, not per frame) ----------
@@ -80,8 +108,30 @@ export function recomputeNearby() {
 }
 
 // Cycle focus by bearing order across ALL nearby (ribbon ticks), PRD §5.4.
+// After 5s without cycling, focus re-anchors to the nearest in-view station
+// first — so a stale selection from a while ago isn't the starting point.
+let lastCycleTs = 0;
+
 export function cycleFocus(dir) {
   if (!state.nearby.length) return;
+  const now = performance.now();
+  const staleFocus = now - lastCycleTs > 5000;
+  lastCycleTs = now;
+
+  if (staleFocus) {
+    const heading = effectiveHeading();
+    let anchor = null;
+    if (heading !== null) {
+      anchor = state.nearby.find((w) =>
+        Math.abs(normDelta(w.bearing - heading)) <= HALF_FOV + CONFIG.FOV_PAD_DEG);
+    }
+    anchor = anchor ?? state.nearby[0]; // nearest overall if none in view
+    if (anchor.id !== state.focusedId) {
+      state.focusedId = anchor.id; // consume the press selecting the anchor
+      return;
+    }
+  }
+
   const byBearing = [...state.nearby].sort((a, b) => a.bearing - b.bearing);
   const i = byBearing.findIndex((w) => w.id === state.focusedId);
   const next = byBearing[(i + dir + byBearing.length) % byBearing.length];
@@ -206,20 +256,34 @@ function drawRibbon(heading, stale) {
     ctx.fillText(name, degToX(normDelta(deg - heading)), 56);
   }
 
-  // Station ticks (full 360° now fits)
+  // Station ticks (full 360° now fits).
+  // Height encodes distance (closer = taller); color stays availability;
+  // focus is a caret under the tick. Positions recorded for tap hit-testing.
+  ribbonTicks.length = 0;
   for (const w of state.nearby) {
     const d = normDelta(w.bearing - heading);
     const x = degToX(d);
     const n = countFor(w);
-    const focused = w.id === state.focusedId;
+    const closeness = 1 - Math.min(w.distance / CONFIG.RADIUS_M, 1);
+    const h = 10 + closeness * 22;
     ctx.strokeStyle = stale ? '#5a5a5a'
       : n >= 5 ? '#2bff6f' : n >= 1 ? '#ffb52b' : '#ff4d4d';
-    ctx.lineWidth = focused ? 4 : 2;
-    const h = focused ? 24 : 14;
+    ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(x, MID + 8 - h);
     ctx.lineTo(x, MID + 8);
     ctx.stroke();
+    ribbonTicks.push({ x, id: w.id });
+
+    if (w.id === state.focusedId) {
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.moveTo(x, MID + 10);      // caret ▲ just under the tick
+      ctx.lineTo(x - 5, MID + 17);
+      ctx.lineTo(x + 5, MID + 17);
+      ctx.closePath();
+      ctx.fill();
+    }
   }
 }
 

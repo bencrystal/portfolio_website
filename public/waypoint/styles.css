@@ -116,6 +116,7 @@ body.cam-on #app { background: transparent; }
   gap: 2px;
   will-change: transform;
   transition: opacity 0.15s linear;
+  cursor: pointer;
 }
 .pin-glyph {
   width: 44px;
