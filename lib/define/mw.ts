@@ -42,6 +42,29 @@ interface MwEntry {
   shortdef?: string[]
   // The `def[].sseq[][]` structure is deeply nested; we walk it loosely.
   def?: Array<{ sseq?: unknown }>
+  // Etymology: array of ["text", "<content>"] tuples. MW formatting tokens
+  // (e.g. {it}...{/it}) need stripping.
+  et?: Array<[string, string]>
+}
+
+/** Strip MW formatting tokens like {it}…{/it}, {ldquo}, {bc}, etc. */
+const stripMwTokens = (s: string): string =>
+  s
+    .replace(/\{ldquo\}/g, '\u201c')
+    .replace(/\{rdquo\}/g, '\u201d')
+    .replace(/\{[^}]+\}/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+/** Flatten MW's `et` array into a single etymology line. */
+const findEtymology = (entry: MwEntry): string | null => {
+  if (!Array.isArray(entry.et)) return null
+  const textNodes = entry.et
+    .filter((pair) => Array.isArray(pair) && pair[0] === 'text' && typeof pair[1] === 'string')
+    .map((pair) => stripMwTokens(pair[1]))
+    .filter(Boolean)
+  if (textNodes.length === 0) return null
+  return textNodes.join(' ')
 }
 
 /** Extract the first example sentence from the deeply-nested def/sseq tree. */
@@ -81,6 +104,7 @@ const toFormalEntry = (entry: MwEntry): FormalEntry => {
     audio: prs?.sound?.audio ? audioUrl(prs.sound.audio) : null,
     senses: (entry.shortdef ?? []).slice(0, 3),
     example: findExample(entry),
+    etymology: findEtymology(entry),
   }
 }
 

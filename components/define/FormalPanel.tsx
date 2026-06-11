@@ -118,6 +118,12 @@ const Entry = ({ entry, playLabel }: { entry: FormalEntry; playLabel: string }) 
           </p>
         </div>
       )}
+
+      {entry.etymology && (
+        <p className="text-xs text-white/40 italic leading-relaxed pl-4">
+          {entry.etymology}
+        </p>
+      )}
     </div>
   )
 }

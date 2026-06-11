@@ -5,6 +5,8 @@ export interface FormalEntry {
   audio: string | null
   senses: string[]
   example: string | null
+  /** Origin/etymology line, MW formatting stripped. Null when MW doesn't provide one. */
+  etymology: string | null
 }
 
 export interface FormalPanel {
