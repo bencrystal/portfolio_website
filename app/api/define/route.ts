@@ -7,14 +7,17 @@ import type { DefineResponse } from '@/lib/define/types'
 export const runtime = 'edge'
 export const revalidate = 86400
 
-const WORD_RE = /^[a-z][a-z0-9-]{0,49}$/
+// Words and phrases: letters, digits, single spaces, hyphens, apostrophes.
+// Must start with a letter. Up to 60 chars total to cover phrases like
+// "the proof of the pudding is in the eating".
+const QUERY_RE = /^[a-z][a-z0-9 '-]{0,59}$/
 
 export async function GET(req: Request) {
   const url = new URL(req.url)
   const raw = url.searchParams.get('w') ?? ''
-  const word = raw.trim().toLowerCase()
+  const word = raw.trim().toLowerCase().replace(/\s+/g, ' ')
 
-  if (!word || !WORD_RE.test(word)) {
+  if (!word || !QUERY_RE.test(word)) {
     return NextResponse.json(
       { error: 'invalid word' },
       { status: 400 }

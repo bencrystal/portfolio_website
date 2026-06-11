@@ -11,6 +11,6 @@ export default function DefinePage({
 }: {
   searchParams: { w?: string }
 }) {
-  const initialQuery = (searchParams.w ?? '').trim().toLowerCase()
+  const initialQuery = (searchParams.w ?? '').trim().toLowerCase().replace(/\s+/g, ' ')
   return <DefineClient initialQuery={initialQuery} />
 }
