@@ -12,6 +12,8 @@ export interface Release {
   links?: { label: string; url: string }[]
   /** Spotify embed URL (https://open.spotify.com/embed/track/...) — renders inline player. */
   spotifyEmbedUrl?: string
+  /** YouTube video ID — renders a full-width 16:9 embed below the hero. */
+  youtubeId?: string
   /** Long-form description / liner notes. Plain text. */
   about?: string
 }

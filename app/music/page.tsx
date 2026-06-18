@@ -14,6 +14,29 @@ export default function MusicPage() {
       <div className="relative z-10">
         <ReleaseHero release={featuredRelease} />
 
+        {featuredRelease.youtubeId && (
+          <section className="border-t border-white/10 bg-black/40 backdrop-blur-[2px]">
+            <div className="max-w-5xl mx-auto px-6 py-16">
+              <p
+                className="text-xs font-bold uppercase tracking-[0.3em] mb-6"
+                style={{ color: ACCENT }}
+              >
+                Watch
+              </p>
+              <div className="relative w-full aspect-video overflow-hidden border border-white/10">
+                <iframe
+                  src={`https://www.youtube.com/embed/${featuredRelease.youtubeId}`}
+                  title={`${featuredRelease.title} — official video`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  loading="lazy"
+                  className="absolute inset-0 w-full h-full"
+                />
+              </div>
+            </div>
+          </section>
+        )}
+
         {others.length > 0 && (
           <section className="border-b border-white/10 bg-black/40 backdrop-blur-[2px]">
             <div className="max-w-7xl mx-auto px-6 py-16">

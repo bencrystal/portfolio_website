@@ -10,6 +10,7 @@ export const releases: Release[] = [
     status: 'released',
     spotifyEmbedUrl:
       'https://open.spotify.com/embed/track/74evtzOHAHVgfLy4UyTX8V?utm_source=generator',
+    youtubeId: '61Qabs2Gr3E',
     links: [
       {
         label: 'Spotify',
