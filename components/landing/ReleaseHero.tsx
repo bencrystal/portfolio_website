@@ -17,6 +17,12 @@ const PLATFORM_ICONS: Record<string, string> = {
     'M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z',
 }
 
+/** Filled-button brand colors for recognized platforms. */
+const BRAND_BUTTONS: Record<string, { bg: string; fg: string }> = {
+  spotify: { bg: ACCENT, fg: '#000000' },
+  youtube: { bg: '#FF0000', fg: '#ffffff' },
+}
+
 const PlatformIcon = ({ label }: { label: string }) => {
   const path = PLATFORM_ICONS[label.toLowerCase()]
   if (!path) return null
@@ -63,7 +69,7 @@ export const ReleaseHero = ({ release }: { release: Release }) => {
   const upcoming = release.status === 'upcoming'
 
   return (
-    <section className="border-b border-white/10">
+    <section>
       <div className="max-w-7xl mx-auto px-6 py-10 sm:py-16 lg:py-20 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
         <CoverArt release={release} />
 
@@ -101,8 +107,8 @@ export const ReleaseHero = ({ release }: { release: Release }) => {
                 <span>Presave {release.title} →</span>
               </a>
             )}
-            {release.links?.map((link, i) => {
-              const primary = !upcoming && i === 0
+            {release.links?.map((link) => {
+              const brand = BRAND_BUTTONS[link.label.toLowerCase()]
               return (
                 <a
                   key={link.url}
@@ -110,11 +116,11 @@ export const ReleaseHero = ({ release }: { release: Release }) => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className={
-                    primary
-                      ? 'inline-flex items-center justify-center gap-2.5 px-6 py-3.5 font-bold uppercase tracking-widest text-xs text-black transition-transform hover:-translate-y-0.5'
-                      : 'inline-flex items-center justify-center gap-2.5 px-6 py-3.5 font-bold uppercase tracking-widest text-xs text-white border border-white/30 hover:border-white hover:text-white transition-colors'
+                    brand
+                      ? 'inline-flex items-center justify-center gap-2.5 px-6 py-3.5 font-bold uppercase tracking-widest text-xs transition-transform hover:-translate-y-0.5'
+                      : 'inline-flex items-center justify-center gap-2.5 px-6 py-3.5 font-bold uppercase tracking-widest text-xs text-white border border-white/30 hover:border-white transition-colors'
                   }
-                  style={primary ? { backgroundColor: ACCENT } : undefined}
+                  style={brand ? { backgroundColor: brand.bg, color: brand.fg } : undefined}
                 >
                   <PlatformIcon label={link.label} />
                   <span>{link.label}</span>
