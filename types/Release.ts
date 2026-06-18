@@ -10,6 +10,8 @@ export interface Release {
   presaveUrl?: string
   /** Streaming or release URLs once live. */
   links?: { label: string; url: string }[]
+  /** Spotify embed URL (https://open.spotify.com/embed/track/...) — renders inline player. */
+  spotifyEmbedUrl?: string
   /** Long-form description / liner notes. Plain text. */
   about?: string
 }

@@ -108,6 +108,22 @@ export const ReleaseHero = ({ release }: { release: Release }) => {
               </a>
             ))}
           </div>
+
+          {release.spotifyEmbedUrl && (
+            <div className="mt-10">
+              <iframe
+                src={release.spotifyEmbedUrl}
+                width="100%"
+                height="352"
+                frameBorder={0}
+                allowFullScreen
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                loading="lazy"
+                title={`${release.title} on Spotify`}
+                style={{ borderRadius: 12 }}
+              />
+            </div>
+          )}
         </div>
       </div>
     </section>
