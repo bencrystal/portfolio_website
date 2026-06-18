@@ -46,18 +46,18 @@ export const ReleaseHero = ({ release }: { release: Release }) => {
 
   return (
     <section className="border-b border-white/10">
-      <div className="max-w-7xl mx-auto px-6 py-16 sm:py-20 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div className="max-w-7xl mx-auto px-6 py-10 sm:py-20 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
         <CoverArt release={release} />
 
         <div>
           <p
-            className="text-xs font-bold uppercase tracking-[0.3em] mb-6"
+            className="text-xs font-bold uppercase tracking-[0.3em] mb-3 sm:mb-6"
             style={{ color: ACCENT }}
           >
             {upcoming ? 'New Single' : 'Out Now'} · {formatReleaseDate(release.releaseDate)}
           </p>
 
-          <div style={{ containerType: 'inline-size' }} className="mb-6">
+          <div style={{ containerType: 'inline-size' }} className="mb-3 sm:mb-6">
             <h1
               className="font-black tracking-[-0.04em] uppercase leading-[0.85] whitespace-nowrap"
               style={{ fontSize: 'min(14cqw, 7rem)' }}
@@ -66,12 +66,12 @@ export const ReleaseHero = ({ release }: { release: Release }) => {
             </h1>
           </div>
 
-          <p className="text-xl sm:text-2xl text-white/70 font-light mb-8">
+          <p className="text-xl sm:text-2xl text-white/70 font-light mb-3 sm:mb-8">
             {release.artist}
           </p>
 
           {release.about && (
-            <p className="text-base sm:text-lg text-white/80 leading-relaxed mb-10 max-w-xl">
+            <p className="text-base sm:text-lg text-white/80 leading-relaxed mb-5 sm:mb-10 max-w-xl">
               {release.about}
             </p>
           )}
@@ -110,7 +110,7 @@ export const ReleaseHero = ({ release }: { release: Release }) => {
           </div>
 
           {release.spotifyEmbedUrl && (
-            <div className="mt-10">
+            <div className="mt-6 sm:mt-10">
               <iframe
                 src={release.spotifyEmbedUrl}
                 width="100%"
