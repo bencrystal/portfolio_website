@@ -50,13 +50,6 @@ export const ReleaseHero = ({ release }: { release: Release }) => {
         <CoverArt release={release} />
 
         <div>
-          <p
-            className="text-xs font-bold uppercase tracking-[0.3em] mb-3 sm:mb-6"
-            style={{ color: ACCENT }}
-          >
-            {upcoming ? 'New Single' : 'Out Now'} · {formatReleaseDate(release.releaseDate)}
-          </p>
-
           <div style={{ containerType: 'inline-size' }} className="mb-3 sm:mb-6">
             <h1
               className="font-black tracking-[-0.04em] uppercase leading-[0.85] whitespace-nowrap"
@@ -66,15 +59,9 @@ export const ReleaseHero = ({ release }: { release: Release }) => {
             </h1>
           </div>
 
-          <p className="text-xl sm:text-2xl text-white/70 font-light mb-3 sm:mb-8">
+          <p className="text-xl sm:text-2xl text-white/70 font-light mb-5 sm:mb-8">
             {release.artist}
           </p>
-
-          {release.about && (
-            <p className="text-base sm:text-lg text-white/80 leading-relaxed mb-5 sm:mb-10 max-w-xl">
-              {release.about}
-            </p>
-          )}
 
           <div className="flex flex-col sm:flex-row gap-3">
             {upcoming && release.presaveUrl && (
@@ -108,6 +95,12 @@ export const ReleaseHero = ({ release }: { release: Release }) => {
               </a>
             ))}
           </div>
+
+          {release.about && (
+            <p className="text-base sm:text-lg text-white/80 leading-relaxed mt-5 sm:mt-10 max-w-xl">
+              {release.about}
+            </p>
+          )}
 
           {release.spotifyEmbedUrl && (
             <div className="mt-6 sm:mt-10">
