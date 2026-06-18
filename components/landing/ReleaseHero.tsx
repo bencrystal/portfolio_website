@@ -9,6 +9,24 @@ const ACCENT = '#57f1ff'
 const formatReleaseDate = (iso: string) =>
   new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
 
+/** Brand glyphs for streaming links, matched by label. Inherit currentColor. */
+const PLATFORM_ICONS: Record<string, string> = {
+  spotify:
+    'M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.84-.179-.96-.6-.122-.42.18-.84.6-.96 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z',
+  youtube:
+    'M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z',
+}
+
+const PlatformIcon = ({ label }: { label: string }) => {
+  const path = PLATFORM_ICONS[label.toLowerCase()]
+  if (!path) return null
+  return (
+    <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+      <path d={path} />
+    </svg>
+  )
+}
+
 const CoverArt = ({ release }: { release: Release }) => {
   const [errored, setErrored] = useState(false)
   const showPlaceholder = !release.cover || errored
@@ -46,11 +64,11 @@ export const ReleaseHero = ({ release }: { release: Release }) => {
 
   return (
     <section className="border-b border-white/10">
-      <div className="max-w-7xl mx-auto px-6 py-10 sm:py-20 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+      <div className="max-w-7xl mx-auto px-6 py-10 sm:py-16 lg:py-20 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
         <CoverArt release={release} />
 
         <div>
-          <div style={{ containerType: 'inline-size' }} className="mb-3 sm:mb-6">
+          <div style={{ containerType: 'inline-size' }} className="mb-2 sm:mb-3">
             <h1
               className="font-black tracking-[-0.04em] uppercase leading-[0.85] whitespace-nowrap"
               style={{ fontSize: 'min(14cqw, 7rem)' }}
@@ -59,7 +77,7 @@ export const ReleaseHero = ({ release }: { release: Release }) => {
             </h1>
           </div>
 
-          <p className="text-xl sm:text-2xl text-white/70 font-light mb-5 sm:mb-8">
+          <p className="text-xl sm:text-2xl text-white/60 font-light mb-6 sm:mb-8">
             {release.artist}
           </p>
 
@@ -69,7 +87,7 @@ export const ReleaseHero = ({ release }: { release: Release }) => {
                 href={release.presaveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 font-bold uppercase tracking-widest text-xs text-black transition-transform hover:-translate-y-0.5"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 font-bold uppercase tracking-widest text-xs text-black transition-transform hover:-translate-y-0.5"
                 style={{ backgroundColor: ACCENT }}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -83,31 +101,40 @@ export const ReleaseHero = ({ release }: { release: Release }) => {
                 <span>Presave {release.title} →</span>
               </a>
             )}
-            {release.links?.map((link) => (
-              <a
-                key={link.url}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-6 py-3 font-bold uppercase tracking-widest text-xs text-white border border-white/30 hover:border-white transition-colors"
-              >
-                {link.label} →
-              </a>
-            ))}
+            {release.links?.map((link, i) => {
+              const primary = !upcoming && i === 0
+              return (
+                <a
+                  key={link.url}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={
+                    primary
+                      ? 'inline-flex items-center justify-center gap-2.5 px-6 py-3.5 font-bold uppercase tracking-widest text-xs text-black transition-transform hover:-translate-y-0.5'
+                      : 'inline-flex items-center justify-center gap-2.5 px-6 py-3.5 font-bold uppercase tracking-widest text-xs text-white border border-white/30 hover:border-white hover:text-white transition-colors'
+                  }
+                  style={primary ? { backgroundColor: ACCENT } : undefined}
+                >
+                  <PlatformIcon label={link.label} />
+                  <span>{link.label}</span>
+                </a>
+              )
+            })}
           </div>
 
           {release.about && (
-            <p className="text-base sm:text-lg text-white/80 leading-relaxed mt-5 sm:mt-10 max-w-xl">
+            <p className="text-base sm:text-lg text-white/70 leading-relaxed mt-6 sm:mt-8 max-w-xl">
               {release.about}
             </p>
           )}
 
           {release.spotifyEmbedUrl && (
-            <div className="mt-6 sm:mt-10">
+            <div className="mt-6 sm:mt-8">
               <iframe
                 src={release.spotifyEmbedUrl}
                 width="100%"
-                height="352"
+                height="152"
                 frameBorder={0}
                 allowFullScreen
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
