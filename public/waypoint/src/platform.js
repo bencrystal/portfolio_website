@@ -14,7 +14,11 @@ export const isGlasses = /\b(MRBD|Meta Wearable|RayBan|Ray-Ban)\b/i.test(navigat
 export const isTouch = !isGlasses && ('ontouchstart' in window);
 
 export function getHeading(e) {
-  if (isGlasses) return e.alpha; // already absolute compass heading
+  // Glasses report W3C alpha (counterclockwise from north), NOT a ready-made
+  // compass heading — verified on-device: without this conversion, head
+  // rotation revolves the pins the wrong way. Convert to clockwise like the
+  // other non-iOS paths below.
+  if (isGlasses) return typeof e.alpha === 'number' ? (360 - e.alpha) % 360 : null;
   if (typeof e.webkitCompassHeading === 'number' && e.webkitCompassHeading >= 0) {
     return e.webkitCompassHeading; // iOS, clockwise from north
   }
