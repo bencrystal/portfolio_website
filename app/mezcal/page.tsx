@@ -260,7 +260,7 @@ export default function MezcalPage() {
             className="font-[family-name:var(--font-serif)] mb-12 font-medium tracking-[-0.01em]"
             style={{ fontSize: FLUID_H2 }}
           >
-            Choose your journey.
+            Pick your flight.
           </h2>
         </Reveal>
         <div className="grid gap-6 md:grid-cols-2">
@@ -392,8 +392,8 @@ export default function MezcalPage() {
               )}
             </div>
             <p className="mt-5 text-sm text-[#9FA98A]">
-              or write us at{' '}
-              <a href={reserveMailto} className="underline underline-offset-2 hover:text-[#D9E0CC]">
+              or write us directly at{' '}
+              <a href={`mailto:${booking.email}`} className="underline underline-offset-2 hover:text-[#D9E0CC]">
                 {booking.email}
               </a>
             </p>

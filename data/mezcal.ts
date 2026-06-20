@@ -16,9 +16,9 @@ export const mezcal: MezcalContent = {
   about: {
     heading: 'The experience',
     paragraphs: [
-      'Gather around a single table for a curated flight of small-batch mezcals, each poured and introduced by Gary. No rush, no pretense, just honest spirits, a little history, and the stories behind every bottle.',
+      'Gather around a single table for a curated flight of small-batch mezcals, each poured and introduced by Gary. No rush, no pretense. Just honest spirits, a little history, and the stories behind every bottle.',
       'We pour from espadín to wild-harvested varietals, pacing the evening so each agave has room to breathe. Expect citrus, salt, fruit, and a slow campfire finish, served alongside orange, sal de gusano, and seasonal bites.',
-      'Whether you are mezcal-curious or already chasing tobalá, the journey meets you where you are. Relaxed enough for a weeknight, polished enough to celebrate.',
+      'Whether you are mezcal-curious or already chasing tobalá, you will find your level. Relaxed enough for a weeknight, polished enough to celebrate.',
     ],
     image: '/nanobananagarymezcaltasting.png',
   },
@@ -53,7 +53,7 @@ export const mezcal: MezcalContent = {
       species: 'tobala',
       notes: 'tropical fruit, honey, floral',
       description:
-        'A small, round wild agave that takes more than a decade to mature, giving a delicate, fruit-forward elegance. The so-called king of agaves.',
+        'A small wild agave with tight, rounded leaves that takes more than a decade to mature in the shade of oak canyons, giving a delicate, fruit-forward elegance.',
       coords: { x: 717, y: 774 },
     },
     {
