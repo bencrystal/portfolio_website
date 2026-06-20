@@ -36,6 +36,25 @@ const GRAIN =
 export default function MezcalPage() {
   const { hero, about, gallery, mezcals, pricing, instagram, booking } = mezcal
 
+  // Stopgap until a real booking form lands: pre-fill the subject and body so a
+  // warm lead just fills in the blanks instead of composing a cold email.
+  const reserveMailto = `mailto:${booking.email}?subject=${encodeURIComponent(
+    'Mezcal flight reservation'
+  )}&body=${encodeURIComponent(
+    [
+      'Hi Gary,',
+      '',
+      "I'd love to book a mezcal flight. Details:",
+      '',
+      'Preferred date(s): ',
+      'Group size: ',
+      'Flight (Classic / Private): ',
+      'Anything else: ',
+      '',
+      'Thanks!',
+    ].join('\n')
+  )}`
+
   return (
     <main
       className={`${serif.variable} relative min-h-screen min-h-dvh`}
@@ -289,7 +308,7 @@ export default function MezcalPage() {
                   href="#reserve"
                   className="mt-8 inline-block rounded-full px-6 py-3 text-center text-xs font-semibold uppercase tracking-[0.25em] transition-transform hover:scale-[1.03]"
                   style={{
-                    backgroundColor: tier.featured ? AGAVE : 'transparent',
+                    backgroundColor: tier.featured ? TERRA : 'transparent',
                     color: tier.featured ? LINEN : AGAVE,
                     border: tier.featured ? 'none' : `1px solid ${AGAVE}`,
                   }}
@@ -342,24 +361,40 @@ export default function MezcalPage() {
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               {booking.reserveUrl ? (
+                <>
+                  <a
+                    href={booking.reserveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-full px-8 py-3 text-xs font-semibold uppercase tracking-[0.25em] shadow-[0_14px_30px_-14px_rgba(0,0,0,0.6)] transition-transform hover:scale-[1.03]"
+                    style={{ backgroundColor: TERRA, color: LINEN }}
+                  >
+                    Book online
+                  </a>
+                  <a
+                    href={reserveMailto}
+                    className="rounded-full border px-8 py-3 text-xs font-semibold uppercase tracking-[0.25em] transition-colors hover:bg-[#F4EFE6] hover:text-[#2F3A24]"
+                    style={{ borderColor: '#F4EFE6' }}
+                  >
+                    Reserve by email
+                  </a>
+                </>
+              ) : (
                 <a
-                  href={booking.reserveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-full px-8 py-3 text-xs font-semibold uppercase tracking-[0.25em] transition-transform hover:scale-[1.03]"
+                  href={reserveMailto}
+                  className="rounded-full px-8 py-3 text-xs font-semibold uppercase tracking-[0.25em] shadow-[0_14px_30px_-14px_rgba(0,0,0,0.6)] transition-transform hover:scale-[1.03]"
                   style={{ backgroundColor: TERRA, color: LINEN }}
                 >
-                  Book online
+                  Reserve by email
                 </a>
-              ) : null}
-              <a
-                href={`mailto:${booking.email}`}
-                className="rounded-full border px-8 py-3 text-xs font-semibold uppercase tracking-[0.25em] transition-colors hover:bg-[#F4EFE6] hover:text-[#2F3A24]"
-                style={{ borderColor: '#F4EFE6' }}
-              >
+              )}
+            </div>
+            <p className="mt-5 text-sm text-[#9FA98A]">
+              or write us at{' '}
+              <a href={reserveMailto} className="underline underline-offset-2 hover:text-[#D9E0CC]">
                 {booking.email}
               </a>
-            </div>
+            </p>
             <p className="mt-12 text-xs uppercase tracking-[0.3em] text-[#9FA98A]">
               Please sip responsibly · 21+
             </p>
