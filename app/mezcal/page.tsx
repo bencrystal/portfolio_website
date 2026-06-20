@@ -49,6 +49,8 @@ export default function MezcalPage() {
       'Preferred date(s): ',
       'Group size: ',
       'Flight (Classic / Private): ',
+      'Location (your place or mine): ',
+      'Occasion (optional): ',
       'Anything else: ',
       '',
       'Thanks!',
