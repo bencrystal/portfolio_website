@@ -59,8 +59,8 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
   const rotorRef = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(0)
   const [reduce, setReduce] = useState(false)
-  // Below lg the pinned crossfade clips long descriptions, so fall back to a
-  // stacked layout where every mezcal's full notes are visible in flow.
+  // Below lg the absolute crossfade clips long descriptions, so the active
+  // card renders in normal flow (auto height) while the agave still rotates.
   const [compact, setCompact] = useState(false)
 
   const initialShape = SHAPES[mezcals[0]?.species ?? 'ensamble']
@@ -88,7 +88,7 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
 
   // Scroll → rotation (applied imperatively to avoid per-frame React renders).
   useEffect(() => {
-    if (reduce || compact) return
+    if (reduce) return
     let frame = 0
     const onScroll = () => {
       cancelAnimationFrame(frame)
@@ -117,7 +117,7 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
       window.removeEventListener('scroll', onScroll)
       cancelAnimationFrame(frame)
     }
-  }, [reduce, compact, steps])
+  }, [reduce, steps])
 
   // Active change → ease the leaf silhouette toward the new species.
   useEffect(() => {
@@ -190,8 +190,34 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
     </svg>
   )
 
-  // -------- Reduced motion / mobile fallback: static plant + stacked list --------
-  if (reduce || compact) {
+  const cardInner = (m: Mezcal, i: number) => (
+    <>
+      <span
+        className="font-[family-name:var(--font-serif)] leading-none tabular-nums"
+        style={{ fontSize: 'clamp(2.5rem,6vw,4rem)', color: '#CDBFA3' }}
+      >
+        {String(i + 1).padStart(2, '0')}
+      </span>
+      <h3
+        className="font-[family-name:var(--font-serif)] mt-2 font-semibold leading-tight"
+        style={{ fontSize: 'clamp(1.75rem,3vw,2.5rem)', color: INK }}
+      >
+        {m.name}
+      </h3>
+      <p className="mt-1 text-sm uppercase tracking-[0.2em]" style={{ color: AGAVE }}>
+        {m.region} · {m.agave}
+      </p>
+      <p className="mt-4 max-w-md text-base leading-relaxed lg:text-lg" style={{ color: '#48443B' }}>
+        {m.description}
+      </p>
+      <p className="mt-4 text-sm italic" style={{ color: MUTED }}>
+        {m.notes}
+      </p>
+    </>
+  )
+
+  // -------- Reduced motion fallback: static plant + stacked list --------
+  if (reduce) {
     return (
       <section style={{ backgroundColor: '#EDE5D5' }}>
         <div className="mx-auto max-w-6xl px-6 py-24 sm:py-32">
@@ -250,20 +276,20 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
       style={{ backgroundColor: '#EDE5D5', height: `${steps * 90}vh` }}
       aria-label="The mezcal flight"
     >
-      <div className="sticky top-0 flex min-h-screen flex-col justify-center overflow-hidden py-20">
+      <div className="sticky top-0 flex min-h-screen flex-col justify-center overflow-hidden py-12 sm:py-16 lg:py-20">
         <div className="mx-auto w-full max-w-6xl px-6">
           <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em]" style={{ color: TERRA }}>
             The flight
           </p>
           <h2
-            className="font-[family-name:var(--font-serif)] mb-10 font-medium tracking-[-0.01em]"
+            className="font-[family-name:var(--font-serif)] mb-6 font-medium tracking-[-0.01em] sm:mb-10"
             style={{ fontSize: 'clamp(2rem, 4.5vw, 3.25rem)' }}
           >
             What you&apos;ll taste.
           </h2>
 
-          <div className="grid items-center gap-8 lg:grid-cols-2">
-            <div className="relative mx-auto aspect-square w-[min(72vw,30rem)]">
+          <div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-8">
+            <div className="relative mx-auto aspect-square w-[min(44vw,13rem)] sm:w-[min(42vw,20rem)] lg:w-[min(48vw,30rem)]">
               <div
                 ref={rotorRef}
                 className="h-full w-full"
@@ -286,42 +312,32 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
             </div>
 
             <div className="flex flex-col gap-8">
-              <div className="relative min-h-[16rem]">
-              {mezcals.map((m, i) => (
-                <div
-                  key={m.id}
-                  aria-hidden={i !== active}
-                  className="absolute inset-0 flex flex-col justify-center"
-                  style={{
-                    opacity: i === active ? 1 : 0,
-                    transform: i === active ? 'translateY(0)' : 'translateY(12px)',
-                    transition: 'opacity 0.5s ease, transform 0.5s ease',
-                    pointerEvents: i === active ? 'auto' : 'none',
-                  }}
-                >
-                  <span
-                    className="font-[family-name:var(--font-serif)] leading-none tabular-nums"
-                    style={{ fontSize: 'clamp(2.5rem,6vw,4rem)', color: '#CDBFA3' }}
-                  >
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <h3
-                    className="font-[family-name:var(--font-serif)] mt-2 font-semibold leading-tight"
-                    style={{ fontSize: 'clamp(1.75rem,3vw,2.5rem)', color: INK }}
-                  >
-                    {m.name}
-                  </h3>
-                  <p className="mt-1 text-sm uppercase tracking-[0.2em]" style={{ color: AGAVE }}>
-                    {m.region} · {m.agave}
-                  </p>
-                  <p className="mt-4 max-w-md text-lg leading-relaxed" style={{ color: '#48443B' }}>
-                    {m.description}
-                  </p>
-                  <p className="mt-4 text-sm italic" style={{ color: MUTED }}>
-                    {m.notes}
-                  </p>
-                </div>
-              ))}
+              <div className="relative lg:min-h-[16rem]">
+                {compact
+                  ? mezcals[active] && (
+                      // Mobile: only the active card, in normal flow so its full
+                      // notes are never clipped. Keyed by index so it re-mounts
+                      // and the fade-in animation replays on each step.
+                      <div key={active} className="fade-in flex flex-col">
+                        {cardInner(mezcals[active], active)}
+                      </div>
+                    )
+                  : mezcals.map((m, i) => (
+                      // Desktop: absolute crossfade between cards.
+                      <div
+                        key={m.id}
+                        aria-hidden={i !== active}
+                        className="absolute inset-0 flex flex-col justify-center"
+                        style={{
+                          opacity: i === active ? 1 : 0,
+                          transform: i === active ? 'translateY(0)' : 'translateY(12px)',
+                          transition: 'opacity 0.5s ease, transform 0.5s ease',
+                          pointerEvents: i === active ? 'auto' : 'none',
+                        }}
+                      >
+                        {cardInner(m, i)}
+                      </div>
+                    ))}
               </div>
 
               {/* Map muted for now:
