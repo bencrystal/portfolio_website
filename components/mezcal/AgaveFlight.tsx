@@ -59,6 +59,9 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
   const rotorRef = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(0)
   const [reduce, setReduce] = useState(false)
+  // Below lg the pinned crossfade clips long descriptions, so fall back to a
+  // stacked layout where every mezcal's full notes are visible in flow.
+  const [compact, setCompact] = useState(false)
 
   const initialShape = SHAPES[mezcals[0]?.species ?? 'ensamble']
   const [morph, setMorph] = useState(initialShape)
@@ -74,9 +77,18 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
     return () => mq.removeEventListener('change', update)
   }, [])
 
+  // Detect narrow viewports (below the lg breakpoint = 1024px).
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 1023px)')
+    const update = () => setCompact(mq.matches)
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
+
   // Scroll → rotation (applied imperatively to avoid per-frame React renders).
   useEffect(() => {
-    if (reduce) return
+    if (reduce || compact) return
     let frame = 0
     const onScroll = () => {
       cancelAnimationFrame(frame)
@@ -86,11 +98,13 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
         const track = el.offsetHeight - window.innerHeight
         const scrolled = Math.min(Math.max(-el.getBoundingClientRect().top, 0), track)
         const progress = track > 0 ? scrolled / track : 0
-        const rotation = -progress * (steps - 1) * (360 / steps)
-        if (rotorRef.current) {
-          rotorRef.current.style.transform = `rotate(${rotation.toFixed(2)}deg)`
-        }
+        // Snap to one of `steps` discrete stops rather than rotating
+        // continuously, so the agave settles on a position per mezcal.
         const next = Math.round(progress * (steps - 1))
+        const rotation = -next * (360 / steps)
+        if (rotorRef.current) {
+          rotorRef.current.style.transform = `rotate(${rotation}deg)`
+        }
         if (next !== activeRef.current) {
           activeRef.current = next
           setActive(next)
@@ -103,7 +117,7 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
       window.removeEventListener('scroll', onScroll)
       cancelAnimationFrame(frame)
     }
-  }, [reduce, steps])
+  }, [reduce, compact, steps])
 
   // Active change → ease the leaf silhouette toward the new species.
   useEffect(() => {
@@ -176,8 +190,8 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
     </svg>
   )
 
-  // -------- Reduced motion / fallback: static plant + stacked list --------
-  if (reduce) {
+  // -------- Reduced motion / mobile fallback: static plant + stacked list --------
+  if (reduce || compact) {
     return (
       <section style={{ backgroundColor: '#EDE5D5' }}>
         <div className="mx-auto max-w-6xl px-6 py-24 sm:py-32">
@@ -250,7 +264,11 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
 
           <div className="grid items-center gap-8 lg:grid-cols-2">
             <div className="relative mx-auto aspect-square w-[min(72vw,30rem)]">
-              <div ref={rotorRef} className="h-full w-full" style={{ willChange: 'transform' }}>
+              <div
+                ref={rotorRef}
+                className="h-full w-full"
+                style={{ willChange: 'transform', transition: 'transform 0.7s cubic-bezier(0.22, 1, 0.36, 1)' }}
+              >
                 {Agave}
               </div>
               <div className="absolute -right-1 top-1/2 hidden -translate-y-1/2 flex-col gap-3 lg:flex">
