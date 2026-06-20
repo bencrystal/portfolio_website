@@ -6,25 +6,25 @@ import type { MezcalContent } from '@/types/Mezcal'
 
 export const mezcal: MezcalContent = {
   hero: {
-    eyebrow: 'A mezcal flight tasting',
+    eyebrow: 'A mezcal tasting',
     title: "Gary's Mezcal Journey",
     subtitle:
-      'An intimate, guided flight through the smoke and soul of agave — classy, unhurried, and built around good conversation.',
+      'A guided flight of small-batch mezcals around one table. We take our time.',
     image: '/mezcal/hero.jpg',
   },
 
   about: {
     heading: 'The experience',
     paragraphs: [
-      'Gather around a single table for a curated flight of small-batch mezcals, each poured and introduced by Gary. No rush, no pretense — just honest spirits, a little history, and the stories behind every bottle.',
+      'Gather around a single table for a curated flight of small-batch mezcals, each poured and introduced by Gary. No rush, no pretense, just honest spirits, a little history, and the stories behind every bottle.',
       'We pour from espadín to wild-harvested varietals, pacing the evening so each agave has room to breathe. Expect citrus, salt, fruit, and a slow campfire finish, served alongside orange, sal de gusano, and seasonal bites.',
-      'Whether you are mezcal-curious or already chasing tobalá, the journey meets you where you are — relaxed enough for a weeknight, polished enough to celebrate.',
+      'Whether you are mezcal-curious or already chasing tobalá, the journey meets you where you are. Relaxed enough for a weeknight, polished enough to celebrate.',
     ],
     image: '/nanobananagarymezcaltasting.png',
   },
 
   // NOTE: gallery-02..05 are temporary, freely-licensed filler photos (agave,
-  // bottles, salt, a toast) — swap in Gary's real shots when ready.
+  // bottles, salt, a toast). Swap in Gary's real shots when ready.
   gallery: [
     { src: '/nanobananagarymezcaltasting.png', alt: 'Gary sharing a mezcal flight tasting' },
     { src: '/mezcal/gallery-02.jpg', alt: 'Small-batch mezcal bottles' },
@@ -42,7 +42,7 @@ export const mezcal: MezcalContent = {
       species: 'espadin',
       notes: 'green apple, white pepper, soft smoke',
       description:
-        'The welcoming pour — bright and approachable, with the long, sword-like leaves that give espadín its name. It sets the baseline for the smoke and minerality to come.',
+        'The welcoming pour: bright and approachable, with the long, sword-like leaves that give espadín its name. It sets the baseline for the smoke and minerality to come.',
       coords: { x: 711, y: 776 },
     },
     {
@@ -53,7 +53,7 @@ export const mezcal: MezcalContent = {
       species: 'tobala',
       notes: 'tropical fruit, honey, floral',
       description:
-        'A small, round wild agave that takes more than a decade to mature, giving a delicate, fruit-forward elegance — the so-called king of agaves.',
+        'A small, round wild agave that takes more than a decade to mature, giving a delicate, fruit-forward elegance. The so-called king of agaves.',
       coords: { x: 717, y: 774 },
     },
     {
@@ -64,7 +64,7 @@ export const mezcal: MezcalContent = {
       species: 'tepeztate',
       notes: 'herbaceous, green pepper, citrus zest',
       description:
-        'Harvested after 25+ years, this cliffside agave fans out in wide, wavy leaves. Vivid and vegetal — the conversation piece of the flight.',
+        'Harvested after 25+ years, this cliffside agave fans out in wide, wavy leaves. Vivid and vegetal, the conversation piece of the flight.',
       coords: { x: 704, y: 796 },
     },
     {
@@ -75,7 +75,7 @@ export const mezcal: MezcalContent = {
       species: 'arroqueno',
       notes: 'roasted earth, dark chocolate, leather',
       description:
-        'A towering, broad-leafed ancestor of espadín, slow-roasted to a deep, savory finish — a powerful place to end the journey.',
+        'A towering, broad-leafed ancestor of espadín, slow-roasted to a deep, savory finish. A powerful place to end the journey.',
       coords: { x: 694, y: 789 },
     },
   ],
@@ -121,7 +121,7 @@ export const mezcal: MezcalContent = {
   booking: {
     heading: 'Reserve a flight',
     blurb:
-      'Tastings run by reservation for small groups. Tell us your date, group size, and vibe — Gary will take it from there.',
+      'Tastings run by reservation for small groups. Tell us your date, group size, and vibe. Gary will take it from there.',
     email: 'hello@garysmezcaljourney.com',
     reserveUrl: '',
   },

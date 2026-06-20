@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 import type { AgaveSpecies, Mezcal } from '@/types/Mezcal'
-import { MexicoMap } from './MexicoMap'
+// Map muted for now. Restore this import and the two <MexicoMap> blocks below to re-enable.
+// import { MexicoMap } from './MexicoMap'
 
 const LINEN = '#F4EFE6'
 const INK = '#2B2B26'
@@ -189,10 +190,12 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
           >
             What you&apos;ll taste.
           </h2>
-          <div className="mx-auto mb-8 h-48 w-48 opacity-80">{Agave}</div>
+          <div className="mx-auto mb-12 h-48 w-48 opacity-80">{Agave}</div>
+          {/* Map muted for now:
           <div className="mx-auto mb-12 max-w-md">
             <MexicoMap mezcals={mezcals} active={0} />
           </div>
+          */}
           <div>
             {mezcals.map((m, i) => (
               <div
@@ -303,6 +306,7 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
               ))}
               </div>
 
+              {/* Map muted for now:
               <div>
                 <p
                   className="mb-2 text-xs font-semibold uppercase tracking-[0.3em]"
@@ -312,6 +316,7 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
                 </p>
                 <MexicoMap mezcals={mezcals} active={active} />
               </div>
+              */}
             </div>
           </div>
 

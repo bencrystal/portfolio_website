@@ -14,7 +14,7 @@ const serif = Cormorant_Garamond({
 })
 
 export const metadata: Metadata = {
-  title: "Gary's Mezcal Journey — A Mezcal Flight Tasting",
+  title: "Gary's Mezcal Journey | A Mezcal Tasting",
   description:
     'An intimate, guided mezcal flight tasting hosted by Gary. Classy, casual, and built around small-batch agave spirits and good conversation.',
 }
@@ -25,11 +25,11 @@ const AGAVE = '#4A5D3A'
 const TERRA = '#C06B4A'
 const MUTED = '#9A8F78'
 
-// Fluid type scales — smooth from mobile to desktop.
+// Fluid type scales: smooth from mobile to desktop.
 const FLUID_HERO = 'clamp(2.75rem, 7vw, 5.5rem)'
 const FLUID_H2 = 'clamp(2rem, 4.5vw, 3.25rem)'
 
-// Inline SVG film grain — subtle tactile texture over the whole page.
+// Inline SVG film grain: subtle tactile texture over the whole page.
 const GRAIN =
   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")"
 
@@ -41,7 +41,7 @@ export default function MezcalPage() {
       className={`${serif.variable} relative min-h-screen min-h-dvh`}
       style={{ backgroundColor: LINEN, color: INK }}
     >
-      {/* Film grain overlay — viewport-sized fixed GPU layer (no blend mode → no
+      {/* Film grain overlay: viewport-sized fixed GPU layer (no blend mode, so no
           per-frame compositing of the page beneath; cheap to keep on screen). */}
       <div
         aria-hidden
@@ -53,35 +53,95 @@ export default function MezcalPage() {
       />
 
       {/* ---------------- Hero (parallax) ---------------- */}
-      <section className="relative flex min-h-[88vh] items-center justify-center overflow-hidden">
+      <section className="relative flex min-h-screen min-h-dvh items-center justify-center overflow-hidden">
+        {/* Layer order (top to bottom): warm smoky scrim for legibility, the
+            atmospheric photo, then a warm dark gradient as a fallback if the
+            photo is missing. The scrim is semi-transparent so the photo, not a
+            flat gradient, carries the mood. */}
         <ParallaxBg
           speed={0.2}
-          backgroundImage={`linear-gradient(to bottom, rgba(31,38,24,0.45), rgba(31,38,24,0.65)), linear-gradient(135deg, #8A9A6B 0%, #4A5D3A 60%, #2F3A24 100%), url('${hero.image}')`}
+          backgroundImage={`linear-gradient(to bottom, rgba(26,20,15,0.40) 0%, rgba(26,20,15,0.55) 55%, rgba(20,15,11,0.82) 100%), url('${hero.image}'), linear-gradient(135deg, #3A2A1F 0%, #241A12 100%)`}
         />
-        <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
+
+        {/* Warm candlelight glow that slowly breathes behind the headline */}
+        <div
+          aria-hidden
+          className="hero-glow pointer-events-none absolute left-1/2 top-1/2 h-[120vmin] w-[120vmin] -translate-x-1/2 -translate-y-1/2 rounded-full"
+          style={{
+            background:
+              'radial-gradient(circle, rgba(192,107,74,0.32) 0%, rgba(192,107,74,0.10) 40%, transparent 70%)',
+          }}
+        />
+
+        {/* Faint agave rosette, slowly rotating, to break the flat field */}
+        <svg
+          aria-hidden
+          viewBox="-200 -200 400 400"
+          className="hero-agave pointer-events-none absolute left-1/2 top-1/2 h-[150vmin] w-[150vmin] -translate-x-1/2 -translate-y-1/2"
+          style={{ opacity: 0.06 }}
+        >
+          {Array.from({ length: 16 }).map((_, i) => (
+            <path
+              key={i}
+              transform={`rotate(${i * (360 / 16)}) scale(1.1 0.5)`}
+              d="M30 0 C90 -28 150 -20 188 0 C150 20 90 28 30 0 Z"
+              fill="none"
+              stroke={LINEN}
+              strokeWidth={2}
+            />
+          ))}
+        </svg>
+
+        {/* Content sits a touch above center so the lower third reads as
+            atmosphere + scroll cue rather than dead space. */}
+        <div className="relative z-10 mx-auto max-w-3xl px-6 pb-16 text-center">
           <p
-            className="mb-6 text-xs uppercase tracking-[0.4em]"
-            style={{ color: '#E7DFCD' }}
+            className="text-[11px] uppercase tracking-[0.42em]"
+            style={{ color: 'rgba(231,223,205,0.72)' }}
           >
             {hero.eyebrow}
           </p>
+          {/* Small terracotta mark to anchor the eye and break the flat field */}
+          <span
+            aria-hidden
+            className="mx-auto mt-5 mb-6 block h-px w-10"
+            style={{ backgroundColor: TERRA }}
+          />
           <h1
             className="font-[family-name:var(--font-serif)] font-medium leading-[1.02] tracking-[-0.01em] text-[#F7F3EA] text-balance"
             style={{ fontSize: FLUID_HERO }}
           >
             {hero.title}
           </h1>
-          <p className="mx-auto mt-8 max-w-xl text-lg leading-relaxed text-[#EEE7D8] text-balance">
+          <p className="mx-auto mt-7 max-w-md text-lg leading-relaxed text-[#EEE7D8] text-balance">
             {hero.subtitle}
           </p>
           <a
             href="#reserve"
-            className="mt-10 inline-block rounded-full px-8 py-3 text-xs font-semibold uppercase tracking-[0.25em] transition-transform hover:scale-[1.03]"
+            className="mt-10 inline-block rounded-full px-10 py-4 text-sm font-semibold uppercase tracking-[0.25em] shadow-[0_16px_34px_-14px_rgba(0,0,0,0.7)] transition-transform transition-shadow duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.75)]"
             style={{ backgroundColor: TERRA, color: LINEN }}
           >
             Reserve a flight
           </a>
+          <a
+            href="#tastings"
+            className="mt-6 block text-xs uppercase tracking-[0.28em] text-[#EEE7D8]/75 transition-colors hover:text-[#F7F3EA]"
+          >
+            See the flights ↓
+          </a>
         </div>
+        {/* Subtle scroll cue so the empty lower third reads as intentional */}
+        <a
+          href="#tastings"
+          aria-label="Scroll to the flights"
+          className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2"
+        >
+          <span
+            aria-hidden
+            className="block h-10 w-px animate-pulse"
+            style={{ backgroundColor: 'rgba(231,223,205,0.5)' }}
+          />
+        </a>
       </section>
 
       {/* ---------------- About ---------------- */}
@@ -167,7 +227,7 @@ export default function MezcalPage() {
       <AgaveFlight mezcals={mezcals} />
 
       {/* ---------------- Pricing ---------------- */}
-      <section className="mx-auto max-w-6xl px-6 py-24 sm:py-32">
+      <section id="tastings" className="mx-auto max-w-6xl px-6 py-24 sm:py-32">
         <Reveal>
           <p
             className="mb-4 text-xs font-semibold uppercase tracking-[0.3em]"
@@ -220,7 +280,7 @@ export default function MezcalPage() {
                 <ul className="mt-6 space-y-3 text-sm" style={{ color: '#48443B' }}>
                   {tier.includes.map((item, j) => (
                     <li key={j} className="flex gap-3">
-                      <span style={{ color: TERRA }}>—</span>
+                      <span style={{ color: TERRA }}>·</span>
                       <span>{item}</span>
                     </li>
                   ))}

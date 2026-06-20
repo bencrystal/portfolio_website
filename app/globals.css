@@ -99,3 +99,33 @@
   animation: marquee 40s linear infinite;
   will-change: transform;
 }
+
+/* Mezcal hero atmosphere: a faint agave rosette rotates slowly behind the
+   headline, while a warm candlelight glow breathes. Both motions are paused
+   for users who prefer reduced motion. */
+@keyframes agaveSpin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes candleBreathe {
+  0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.85; transform: translate(-50%, -50%) scale(1.06); }
+}
+
+.hero-agave {
+  animation: agaveSpin 140s linear infinite;
+  will-change: transform;
+}
+
+.hero-glow {
+  animation: candleBreathe 7s ease-in-out infinite;
+  will-change: opacity, transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-agave,
+  .hero-glow {
+    animation: none;
+  }
+}
