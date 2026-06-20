@@ -21,6 +21,12 @@ const MusicIcon = (
   </svg>
 )
 
+const MezcalIcon = (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 3h12l-1.5 7.5a4.5 4.5 0 01-9 0L6 3zM12 15v5m-3 0h6" />
+  </svg>
+)
+
 const DefineIcon = (
   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
     <text
@@ -56,6 +62,7 @@ const GitHubIcon = (
 
 const NAV_ITEMS: NavItem[] = [
   { label: 'Music', href: '/music', icon: MusicIcon, matchPath: '/music' },
+  { label: 'Mezcal', href: '/mezcal', icon: MezcalIcon, matchPath: '/mezcal' },
   { label: 'Define', href: '/define', icon: DefineIcon, matchPath: '/define' },
   { label: 'Resume', href: '/Resume_BenCrystal.pdf', icon: ResumeIcon, external: true },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/ben-crystal/', icon: LinkedInIcon, external: true },
