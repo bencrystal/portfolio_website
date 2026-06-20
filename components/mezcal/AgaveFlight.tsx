@@ -273,7 +273,7 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
   return (
     <section
       ref={sectionRef}
-      style={{ backgroundColor: '#EDE5D5', height: `${steps * 90}vh` }}
+      style={{ backgroundColor: '#EDE5D5', height: `${steps * 55}vh` }}
       aria-label="The mezcal flight"
     >
       <div className="sticky top-0 flex min-h-screen flex-col justify-center overflow-hidden py-12 sm:py-16 lg:py-20">
