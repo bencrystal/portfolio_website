@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import type { AgaveSpecies, Mezcal } from '@/types/Mezcal'
+import { MexicoMap } from './MexicoMap'
 
 const LINEN = '#F4EFE6'
 const INK = '#2B2B26'
@@ -54,7 +55,7 @@ interface AgaveFlightProps {
 export function AgaveFlight({ mezcals }: AgaveFlightProps) {
   const steps = Math.max(mezcals.length, 1)
   const sectionRef = useRef<HTMLDivElement>(null)
-  const rotorRef = useRef<SVGGElement>(null)
+  const rotorRef = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(0)
   const [reduce, setReduce] = useState(false)
 
@@ -85,7 +86,9 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
         const scrolled = Math.min(Math.max(-el.getBoundingClientRect().top, 0), track)
         const progress = track > 0 ? scrolled / track : 0
         const rotation = -progress * (steps - 1) * (360 / steps)
-        rotorRef.current?.setAttribute('transform', `rotate(${rotation.toFixed(2)})`)
+        if (rotorRef.current) {
+          rotorRef.current.style.transform = `rotate(${rotation.toFixed(2)}deg)`
+        }
         const next = Math.round(progress * (steps - 1))
         if (next !== activeRef.current) {
           activeRef.current = next
@@ -135,7 +138,7 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
   })
 
   const Agave = (
-    <svg viewBox="-200 -200 400 400" className="h-full w-full" role="img" aria-label="Agave rosette">
+    <svg viewBox="-260 -260 520 520" className="h-full w-full overflow-visible" role="img" aria-label="Agave rosette">
       <defs>
         <linearGradient id="leafGrad" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%" stopColor="#5C7049" />
@@ -146,7 +149,7 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
           <stop offset="100%" stopColor="#B7C593" />
         </linearGradient>
       </defs>
-      <g ref={rotorRef}>
+      <g>
         {leaves.map((l, i) => (
           <Leaf
             key={`in-${i}`}
@@ -186,7 +189,10 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
           >
             What you&apos;ll taste.
           </h2>
-          <div className="mx-auto mb-12 h-48 w-48 opacity-80">{Agave}</div>
+          <div className="mx-auto mb-8 h-48 w-48 opacity-80">{Agave}</div>
+          <div className="mx-auto mb-12 max-w-md">
+            <MexicoMap mezcals={mezcals} active={0} />
+          </div>
           <div>
             {mezcals.map((m, i) => (
               <div
@@ -241,7 +247,9 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
 
           <div className="grid items-center gap-8 lg:grid-cols-2">
             <div className="relative mx-auto aspect-square w-[min(72vw,30rem)]">
-              {Agave}
+              <div ref={rotorRef} className="h-full w-full" style={{ willChange: 'transform' }}>
+                {Agave}
+              </div>
               <div className="absolute -right-1 top-1/2 hidden -translate-y-1/2 flex-col gap-3 lg:flex">
                 {mezcals.map((_, i) => (
                   <span
@@ -256,7 +264,8 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
               </div>
             </div>
 
-            <div className="relative min-h-[16rem]">
+            <div className="flex flex-col gap-8">
+              <div className="relative min-h-[16rem]">
               {mezcals.map((m, i) => (
                 <div
                   key={m.id}
@@ -292,6 +301,17 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
                   </p>
                 </div>
               ))}
+              </div>
+
+              <div>
+                <p
+                  className="mb-2 text-xs font-semibold uppercase tracking-[0.3em]"
+                  style={{ color: TERRA }}
+                >
+                  Where it&apos;s from
+                </p>
+                <MexicoMap mezcals={mezcals} active={active} />
+              </div>
             </div>
           </div>
 

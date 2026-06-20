@@ -41,14 +41,14 @@ export default function MezcalPage() {
       className={`${serif.variable} relative min-h-screen min-h-dvh`}
       style={{ backgroundColor: LINEN, color: INK }}
     >
-      {/* Film grain overlay — static layer (scrolls with content; no per-frame repaint) */}
+      {/* Film grain overlay — viewport-sized fixed GPU layer (no blend mode → no
+          per-frame compositing of the page beneath; cheap to keep on screen). */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 z-50"
+        className="pointer-events-none fixed inset-0 z-50"
         style={{
           backgroundImage: GRAIN,
-          opacity: 0.045,
-          mixBlendMode: 'multiply',
+          opacity: 0.05,
         }}
       />
 

@@ -19,6 +19,11 @@ export interface Mezcal {
   notes: string
   /** A sentence about the pour and why it's in the flight */
   description: string
+  /**
+   * Approximate origin on the Mexico map, in the silhouette's 0–1024 viewBox
+   * space (x: west→east, y: north→south). Drives the locator pin in the flight.
+   */
+  coords?: { x: number; y: number }
 }
 
 export interface PricingTier {

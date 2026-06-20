@@ -23,12 +23,14 @@ export const mezcal: MezcalContent = {
     image: '/nanobananagarymezcaltasting.png',
   },
 
+  // NOTE: gallery-02..05 are temporary, freely-licensed filler photos (agave,
+  // bottles, salt, a toast) — swap in Gary's real shots when ready.
   gallery: [
     { src: '/nanobananagarymezcaltasting.png', alt: 'Gary sharing a mezcal flight tasting' },
-    { src: '/mezcal/gallery-02.jpg', alt: 'Pouring mezcal at the tasting table' },
-    { src: '/mezcal/gallery-03.jpg', alt: 'Orange slices with sal de gusano' },
-    { src: '/mezcal/gallery-04.jpg', alt: 'Agave hearts and bottles on linen' },
-    { src: '/mezcal/gallery-05.jpg', alt: 'Guests gathered for the tasting' },
+    { src: '/mezcal/gallery-02.jpg', alt: 'Small-batch mezcal bottles' },
+    { src: '/mezcal/gallery-03.jpg', alt: 'Mezcal poured for the table' },
+    { src: '/mezcal/gallery-04.jpg', alt: 'Agave and mezcal in Oaxaca' },
+    { src: '/mezcal/gallery-05.jpg', alt: 'A toast over mezcal' },
   ],
 
   mezcals: [
@@ -41,6 +43,7 @@ export const mezcal: MezcalContent = {
       notes: 'green apple, white pepper, soft smoke',
       description:
         'The welcoming pour — bright and approachable, with the long, sword-like leaves that give espadín its name. It sets the baseline for the smoke and minerality to come.',
+      coords: { x: 711, y: 776 },
     },
     {
       id: 'tobala',
@@ -51,6 +54,7 @@ export const mezcal: MezcalContent = {
       notes: 'tropical fruit, honey, floral',
       description:
         'A small, round wild agave that takes more than a decade to mature, giving a delicate, fruit-forward elegance — the so-called king of agaves.',
+      coords: { x: 717, y: 774 },
     },
     {
       id: 'tepeztate',
@@ -61,6 +65,7 @@ export const mezcal: MezcalContent = {
       notes: 'herbaceous, green pepper, citrus zest',
       description:
         'Harvested after 25+ years, this cliffside agave fans out in wide, wavy leaves. Vivid and vegetal — the conversation piece of the flight.',
+      coords: { x: 704, y: 796 },
     },
     {
       id: 'arroqueno',
@@ -71,6 +76,7 @@ export const mezcal: MezcalContent = {
       notes: 'roasted earth, dark chocolate, leather',
       description:
         'A towering, broad-leafed ancestor of espadín, slow-roasted to a deep, savory finish — a powerful place to end the journey.',
+      coords: { x: 694, y: 789 },
     },
   ],
 
