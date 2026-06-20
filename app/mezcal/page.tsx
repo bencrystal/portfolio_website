@@ -217,7 +217,7 @@ export default function MezcalPage() {
             className="font-[family-name:var(--font-serif)] max-w-2xl text-center italic text-[#F4EFE6] text-balance"
             style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)' }}
           >
-            “Every bottle carries a place, a maker, and a season. We taste all
+            “Every mezcal carries a place, a maker, and a season. We taste all
             three.”
           </p>
         </div>
