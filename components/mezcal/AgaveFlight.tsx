@@ -13,6 +13,9 @@ const MUTED = '#9A8F78'
 
 const TOTAL_LEAVES = 12
 
+// Scroll height allotted to each mezcal in the pinned flight (vh).
+const STEP_VH = 55
+
 // Per-species leaf silhouette: scaleX = length along the leaf, scaleY = width.
 const SHAPES: Record<AgaveSpecies, { sx: number; sy: number }> = {
   espadin: { sx: 1.2, sy: 0.5 }, // long, narrow swords
@@ -85,6 +88,19 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
     mq.addEventListener('change', update)
     return () => mq.removeEventListener('change', update)
   }, [])
+
+  // Gentle vertical scroll-snap on the document while this flight is mounted,
+  // so each rotation stop magnetically catches. Proximity (not mandatory) keeps
+  // the rest of the page free, and only the markers below are snap targets.
+  useEffect(() => {
+    if (reduce) return
+    const root = document.documentElement
+    const prev = root.style.scrollSnapType
+    root.style.scrollSnapType = 'y proximity'
+    return () => {
+      root.style.scrollSnapType = prev
+    }
+  }, [reduce])
 
   // Scroll → rotation (applied imperatively to avoid per-frame React renders).
   useEffect(() => {
@@ -277,9 +293,24 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
   return (
     <section
       ref={sectionRef}
-      style={{ backgroundColor: '#EDE5D5', height: `${steps * 55}vh` }}
+      className="relative"
+      style={{ backgroundColor: '#EDE5D5', height: `${steps * STEP_VH}vh` }}
       aria-label="The mezcal flight"
     >
+      {/* One zero-size snap target per mezcal, placed at the scroll offset that
+          lands each rotation stop, so the viewport magnetically catches them. */}
+      {steps > 1 &&
+        Array.from({ length: steps }).map((_, i) => (
+          <div
+            key={`snap-${i}`}
+            aria-hidden
+            className="pointer-events-none absolute left-0 h-px w-px"
+            style={{
+              top: `${(i / (steps - 1)) * (steps * STEP_VH - 100)}vh`,
+              scrollSnapAlign: 'start',
+            }}
+          />
+        ))}
       <div className="sticky top-0 flex min-h-screen flex-col justify-center overflow-hidden py-12 sm:py-16 lg:py-20">
         <div className="mx-auto w-full max-w-6xl px-6">
           <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em]" style={{ color: TERRA }}>
