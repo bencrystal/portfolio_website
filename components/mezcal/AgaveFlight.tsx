@@ -108,6 +108,10 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
         if (next !== activeRef.current) {
           activeRef.current = next
           setActive(next)
+          // Light tactile "tick" on devices that support it (mostly mobile).
+          if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+            navigator.vibrate(8)
+          }
         }
       })
     }
@@ -293,9 +297,11 @@ export function AgaveFlight({ mezcals }: AgaveFlightProps) {
               <div
                 ref={rotorRef}
                 className="h-full w-full"
-                style={{ willChange: 'transform', transition: 'transform 0.7s cubic-bezier(0.22, 1, 0.36, 1)' }}
+                style={{ willChange: 'transform', transition: 'transform 0.85s cubic-bezier(0.34, 1.32, 0.5, 1)' }}
               >
-                {Agave}
+                <div key={active} className="agave-pop h-full w-full">
+                  {Agave}
+                </div>
               </div>
               <div className="absolute -right-1 top-1/2 hidden -translate-y-1/2 flex-col gap-3 lg:flex">
                 {mezcals.map((_, i) => (
