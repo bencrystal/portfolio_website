@@ -13,10 +13,25 @@ const serif = Cormorant_Garamond({
   variable: '--font-serif',
 })
 
+const PAGE_TITLE = "Gary's Mezcal Journey | A Mezcal Tasting"
+const PAGE_DESCRIPTION =
+  'An intimate, guided mezcal flight tasting hosted by Gary. Classy, casual, and built around small-batch agave spirits and good conversation.'
+
 export const metadata: Metadata = {
-  title: "Gary's Mezcal Journey | A Mezcal Tasting",
-  description:
-    'An intimate, guided mezcal flight tasting hosted by Gary. Classy, casual, and built around small-batch agave spirits and good conversation.',
+  title: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
+  openGraph: {
+    title: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
+    type: 'website',
+    images: [{ url: mezcal.hero.image, alt: "Gary's Mezcal Journey" }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
+    images: [mezcal.hero.image],
+  },
 }
 
 const LINEN = '#F4EFE6'
@@ -37,25 +52,30 @@ export default function MezcalPage() {
   const { hero, about, gallery, mezcals, pricing, instagram, booking } = mezcal
 
   // Stopgap until a real booking form lands: pre-fill the subject and body so a
-  // warm lead just fills in the blanks instead of composing a cold email.
-  const reserveMailto = `mailto:${booking.email}?subject=${encodeURIComponent(
-    'Mezcal flight reservation'
-  )}&body=${encodeURIComponent(
-    [
-      'Hi Gary,',
-      '',
-      "I'd love to book a mezcal flight. Details:",
-      '',
-      'Preferred date(s): ',
-      'Group size: ',
-      'Flight (Classic / Private): ',
-      'Location (your place or mine): ',
-      'Occasion (optional): ',
-      'Anything else: ',
-      '',
-      'Thanks!',
-    ].join('\n')
-  )}`
+  // warm lead just fills in the blanks instead of composing a cold email. When a
+  // flight is passed (from a pricing card) it pre-fills that line so the pick
+  // follows the guest into the email.
+  const buildMailto = (flight?: string) =>
+    `mailto:${booking.email}?subject=${encodeURIComponent(
+      'Mezcal flight reservation'
+    )}&body=${encodeURIComponent(
+      [
+        'Hi Gary,',
+        '',
+        "I'd love to book a mezcal flight. Details:",
+        '',
+        'Preferred date(s): ',
+        'Group size: ',
+        flight ? `Flight: ${flight}` : 'Flight (Classic / Private): ',
+        'Location (your place or mine): ',
+        'Occasion (optional): ',
+        'Anything else: ',
+        '',
+        'Thanks!',
+      ].join('\n')
+    )}`
+
+  const reserveMailto = buildMailto()
 
   return (
     <main
@@ -307,7 +327,7 @@ export default function MezcalPage() {
                   ))}
                 </ul>
                 <a
-                  href="#reserve"
+                  href={buildMailto(tier.name)}
                   className="mt-8 inline-block rounded-full px-6 py-3 text-center text-xs font-semibold uppercase tracking-[0.25em] transition-transform hover:scale-[1.03]"
                   style={{
                     backgroundColor: tier.featured ? TERRA : 'transparent',
