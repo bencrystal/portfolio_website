@@ -4,11 +4,11 @@ import Background from '@/components/Background'
 export const metadata: Metadata = {
   title: 'FlowBot Privacy Policy · Ben Crystal',
   description:
-    'Privacy policy for FlowBot, the iOS freestyle rap training app. Recordings and transcripts stay on your device — no accounts, no analytics, no tracking.',
+    'Privacy policy for FlowBot, the iOS freestyle rap training app. Recordings and transcripts stay on your device — no accounts, no ads, no cross-app tracking.',
   robots: { index: false },
 }
 
-const LAST_UPDATED = 'July 2, 2026'
+const LAST_UPDATED = 'July 5, 2026'
 
 function Section({
   title,
@@ -36,8 +36,7 @@ export default function FlowBotPrivacyPage() {
 
         <p className="mt-8 border-l-2 border-neutral-700 pl-4 leading-relaxed">
           FlowBot is a freestyle rap training app for iOS. It is built so that your
-          practice stays private: everything you record and everything the app learns
-          about your sessions lives on your device.
+          practice stays private: your recordings and transcripts live on your device.
         </p>
 
         <Section title="What stays on your device">
@@ -58,11 +57,23 @@ export default function FlowBotPrivacyPage() {
           </ul>
         </Section>
 
-        <Section title="No accounts, no analytics, no tracking">
+        <Section title="No accounts, no ads, no tracking">
           <p>
-            FlowBot has no user accounts, no sign-in, no third-party analytics, no
-            advertising SDKs, and no tracking of any kind. We do not collect, sell, or
-            share personal data.
+            FlowBot has no user accounts, no sign-in, no advertising SDKs, and does not
+            track you across other apps or websites. We do not sell or share personal
+            data.
+          </p>
+        </Section>
+
+        <Section title="Anonymous usage analytics">
+          <p>
+            To understand how the app is used and improve it, FlowBot collects anonymous
+            usage events (like &ldquo;session started&rdquo; or &ldquo;beat
+            selected&rdquo;) through PostHog, an analytics provider. These events are tied
+            to a random device identifier — not your name, email, or any account. They
+            never include your audio, transcripts, lyrics, or the names of beats you
+            import. Analytics data is used only for improving FlowBot and is not linked to
+            your identity or used for advertising.
           </p>
         </Section>
 
@@ -97,10 +108,12 @@ export default function FlowBotPrivacyPage() {
 
         <Section title="Data deletion">
           <p>
-            Delete the app to delete all data. Because everything is stored locally,
-            removing FlowBot from your device removes your recordings, transcripts, and
-            session history with it. Premium session summaries in your private iCloud
-            database can be removed via iOS Settings &gt; iCloud &gt; Manage Storage.
+            Delete the app to delete all recordings, transcripts, and session history,
+            which are stored only on your device. Anonymous analytics events already sent
+            cannot be tied back to you; if you want them removed anyway, email us with the
+            approximate dates you used the app. Premium session summaries in your private
+            iCloud database can be removed via iOS Settings &gt; iCloud &gt; Manage
+            Storage.
           </p>
         </Section>
 
