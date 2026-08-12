@@ -11,7 +11,7 @@ type Todo = {
   position: number;
   deleted_at?: string | null;
 };
-type Bucket = { id: string; name: string; position: number };
+type Bucket = { id: string; name: string; position: number; hidden?: boolean };
 
 const UNSORTED = "unsorted";
 
@@ -64,9 +64,9 @@ export default function ListView({ token }: { token: string }) {
     return () => clearInterval(t);
   }, [refresh]);
 
-  // If the selected bucket disappears, fall back to Unsorted.
+  // If the selected bucket disappears or gets hidden, fall back to Unsorted.
   useEffect(() => {
-    if (view !== UNSORTED && !buckets.some((b) => b.id === view)) setView(UNSORTED);
+    if (view !== UNSORTED && !buckets.some((b) => b.id === view && !b.hidden)) setView(UNSORTED);
   }, [buckets, view]);
 
   // ---- todo actions ----
@@ -136,6 +136,13 @@ export default function ListView({ token }: { token: string }) {
     if (!name.trim()) return;
     setBuckets((bs) => bs.map((b) => (b.id === id ? { ...b, name: name.trim() } : b)));
     await call("buckets", "PATCH", { id, name });
+  }
+
+  // Hidden buckets keep their items but disappear from the grid,
+  // so dormant projects do not clutter the view.
+  async function setBucketHidden(id: string, hidden: boolean) {
+    setBuckets((bs) => bs.map((b) => (b.id === id ? { ...b, hidden } : b)));
+    await call("buckets", "PATCH", { id, hidden });
   }
 
   async function deleteBucket(id: string) {
@@ -274,8 +281,16 @@ export default function ListView({ token }: { token: string }) {
                 defaultValue={b.name}
                 onBlur={(e) => e.target.value !== b.name && renameBucket(b.id, e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
-                className="flex-1 rounded border border-transparent bg-transparent px-2 py-1 hover:border-neutral-700 focus:border-neutral-600 focus:bg-neutral-900"
+                className={`flex-1 rounded border border-transparent bg-transparent px-2 py-1 hover:border-neutral-700 focus:border-neutral-600 focus:bg-neutral-900 ${
+                  b.hidden ? "text-neutral-600" : ""
+                }`}
               />
+              <button
+                onClick={() => setBucketHidden(b.id, !b.hidden)}
+                className="text-sm text-neutral-500 hover:text-neutral-300"
+              >
+                {b.hidden ? "Show" : "Hide"}
+              </button>
               <button onClick={() => deleteBucket(b.id)} className="text-red-900 hover:text-red-600">
                 Delete
               </button>
@@ -314,9 +329,11 @@ export default function ListView({ token }: { token: string }) {
         <>
           <div className="mb-3 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
             {chip(UNSORTED, "Unsorted", todos.filter((t) => !t.done && t.bucket_id === null).length)}
-            {buckets.map((b) =>
-              chip(b.id, b.name, todos.filter((t) => !t.done && t.bucket_id === b.id).length)
-            )}
+            {buckets
+              .filter((b) => !b.hidden)
+              .map((b) =>
+                chip(b.id, b.name, todos.filter((t) => !t.done && t.bucket_id === b.id).length)
+              )}
           </div>
 
           <div className="mb-3 flex gap-2">

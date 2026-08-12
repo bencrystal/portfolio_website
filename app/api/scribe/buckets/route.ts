@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   if (!validListToken(req.nextUrl.searchParams.get("token"))) return unauthorized();
   const { data, error } = await scribeDb
     .from("buckets")
-    .select("id, name, position")
+    .select("id, name, position, hidden")
     .order("position", { ascending: true });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ buckets: data });
@@ -30,13 +30,14 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ bucket: data });
 }
 
-// PATCH { id, name?, position? }
+// PATCH { id, name?, position?, hidden? }
 export async function PATCH(req: NextRequest) {
   if (!validListToken(req.nextUrl.searchParams.get("token"))) return unauthorized();
   const { id, ...fields } = await req.json();
   const updates: Record<string, unknown> = {};
   if (typeof fields.name === "string" && fields.name.trim()) updates.name = fields.name.trim();
   if (typeof fields.position === "number") updates.position = fields.position;
+  if (typeof fields.hidden === "boolean") updates.hidden = fields.hidden;
   if (!id || Object.keys(updates).length === 0) {
     return NextResponse.json({ error: "missing id or fields" }, { status: 400 });
   }
