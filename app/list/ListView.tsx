@@ -17,8 +17,23 @@ type Bucket = { id: string; name: string; position: number; hidden?: boolean };
 const ALL = "all";
 const UNSORTED = "unsorted";
 
+// "5m ago" style for the first week, then a plain date.
 function fmtDate(iso: string) {
+  const s = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (s < 60) return "now";
+  if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+  if (s < 86_400) return `${Math.floor(s / 3600)}h ago`;
+  if (s < 7 * 86_400) return `${Math.floor(s / 86_400)}d ago`;
   return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
+// Stable accent color per bucket, derived from its id with the same djb2
+// hash as the iOS app so both agree without storing anything.
+const BUCKET_PALETTE = ["#3b82f6", "#22c55e", "#f97316", "#ec4899", "#a855f7", "#14b8a6", "#6366f1", "#ef4444"];
+function bucketColor(id: string) {
+  let h = 5381;
+  for (let i = 0; i < id.length; i++) h = ((h << 5) + h + id.charCodeAt(i)) >>> 0;
+  return BUCKET_PALETTE[h % BUCKET_PALETTE.length];
 }
 
 export default function ListView({ token }: { token: string }) {
@@ -36,6 +51,8 @@ export default function ListView({ token }: { token: string }) {
   const [error, setError] = useState<string | null>(null);
   const dragId = useRef<string | null>(null);
   const [dragOverChip, setDragOverChip] = useState<string | null>(null);
+  const knownIds = useRef<Set<string> | null>(null); // for spotting fresh captures
+  const [flashIds, setFlashIds] = useState<Set<string>>(new Set());
 
   const call = useCallback(
     async (path: "todos" | "buckets", method: string, body?: unknown, query = ""): Promise<Response> => {
@@ -57,6 +74,27 @@ export default function ListView({ token }: { token: string }) {
       setTodos(data.todos);
       setBuckets(data.buckets ?? []);
       setError(null);
+      // Briefly highlight captures that just arrived from a recording.
+      const idList = (data.todos as Todo[]).map((t) => t.id);
+      const ids = new Set<string>(idList);
+      if (knownIds.current) {
+        const fresh = idList.filter((id) => !knownIds.current!.has(id));
+        if (fresh.length) {
+          setFlashIds((f) => {
+            const next = new Set(Array.from(f));
+            fresh.forEach((id) => next.add(id));
+            return next;
+          });
+          setTimeout(() => {
+            setFlashIds((f) => {
+              const next = new Set(f);
+              fresh.forEach((id) => next.delete(id));
+              return next;
+            });
+          }, 2000);
+        }
+      }
+      knownIds.current = ids;
     }
   }, [call]);
 
@@ -235,7 +273,15 @@ export default function ListView({ token }: { token: string }) {
             : "border-neutral-700 bg-neutral-900 text-neutral-300 hover:border-neutral-500"
       }`}
     >
-      <span className="text-sm font-medium leading-tight">{label}</span>
+      <span className="flex items-center gap-1.5 text-sm font-medium leading-tight">
+        {id !== ALL && id !== UNSORTED && (
+          <span
+            className="h-2 w-2 shrink-0 rounded-full"
+            style={{ backgroundColor: bucketColor(id) }}
+          />
+        )}
+        {label}
+      </span>
       <span className="text-xs opacity-60">{count > 0 ? count : "\u00A0"}</span>
     </button>
   );
@@ -251,7 +297,9 @@ export default function ListView({ token }: { token: string }) {
         e.preventDefault();
         reorder(todo.id);
       }}
-      className="relative flex items-center gap-3 border-b border-neutral-800 py-3 pr-9"
+      className="relative flex items-center gap-3 border-b border-neutral-800 py-3 pr-9 transition-colors duration-700"
+      // Fresh captures glow briefly so the transcription is easy to spot.
+      style={flashIds.has(todo.id) ? { backgroundColor: "rgba(59, 130, 246, 0.15)" } : undefined}
     >
       <span className="cursor-grab select-none text-neutral-700" title="Drag to reorder or onto a bucket">
         ::
@@ -277,8 +325,11 @@ export default function ListView({ token }: { token: string }) {
           {todo.text}
         </span>
       )}
-      {view === ALL && bucketName(todo.bucket_id) && (
-        <span className="shrink-0 rounded bg-neutral-800 px-1.5 py-0.5 text-xs text-neutral-400">
+      {view === ALL && todo.bucket_id && bucketName(todo.bucket_id) && (
+        <span
+          className="shrink-0 rounded px-1.5 py-0.5 text-xs"
+          style={{ color: bucketColor(todo.bucket_id), backgroundColor: `${bucketColor(todo.bucket_id)}33` }}
+        >
           {bucketName(todo.bucket_id)}
         </span>
       )}
