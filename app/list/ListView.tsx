@@ -12,7 +12,7 @@ type Todo = {
   all_position: number;
   deleted_at?: string | null;
 };
-type Bucket = { id: string; name: string; position: number; hidden?: boolean };
+type Bucket = { id: string; name: string; position: number; hidden?: boolean; color?: string | null };
 
 const ALL = "all";
 const UNSORTED = "unsorted";
@@ -193,6 +193,12 @@ export default function ListView({ token }: { token: string }) {
     await call("buckets", "PATCH", { id, hidden });
   }
 
+  // null resets to the automatic hash-derived color.
+  async function setBucketColor(id: string, color: string | null) {
+    setBuckets((bs) => bs.map((b) => (b.id === id ? { ...b, color } : b)));
+    await call("buckets", "PATCH", { id, color });
+  }
+
   async function deleteBucket(id: string) {
     if (!confirm("Delete this bucket? Its items go back to Unsorted.")) return;
     setBuckets((bs) => bs.filter((b) => b.id !== id));
@@ -234,6 +240,10 @@ export default function ListView({ token }: { token: string }) {
   function bucketName(id: string | null) {
     return id ? buckets.find((b) => b.id === id)?.name ?? null : null;
   }
+  // Stored custom color wins; otherwise the stable hash-derived one.
+  function colorOf(id: string) {
+    return buckets.find((b) => b.id === id)?.color || bucketColor(id);
+  }
 
   if (error) return <main className="p-10 text-neutral-200">{error}</main>;
   if (!todos) return <main className="p-10 text-neutral-200">Loading...</main>;
@@ -242,49 +252,63 @@ export default function ListView({ token }: { token: string }) {
   const done = doneList();
 
   // The All tile is not a drop target: dropping there would not change
-  // which bucket an item belongs to.
-  const chip = (id: string, label: string, count: number) => (
-    <button
-      key={id}
-      onClick={() => setView(id)}
-      onDragOver={
-        id === ALL
-          ? undefined
-          : (e) => {
-              e.preventDefault();
-              setDragOverChip(id);
-            }
-      }
-      onDragLeave={id === ALL ? undefined : () => setDragOverChip((c) => (c === id ? null : c))}
-      onDrop={
-        id === ALL
-          ? undefined
-          : (e) => {
-              e.preventDefault();
-              setDragOverChip(null);
-              if (dragId.current) moveToBucket(dragId.current, id === UNSORTED ? null : id);
-            }
-      }
-      className={`flex min-h-16 flex-col items-start justify-between rounded-lg border p-3 text-left transition-colors ${
-        dragOverChip === id
-          ? "scale-105 border-blue-400 bg-blue-950 text-blue-200"
-          : view === id
-            ? "border-neutral-300 bg-neutral-200 text-neutral-900"
-            : "border-neutral-700 bg-neutral-900 text-neutral-300 hover:border-neutral-500"
-      }`}
-    >
-      <span className="flex items-center gap-1.5 text-sm font-medium leading-tight">
-        {id !== ALL && id !== UNSORTED && (
-          <span
-            className="h-2 w-2 shrink-0 rounded-full"
-            style={{ backgroundColor: bucketColor(id) }}
-          />
-        )}
-        {label}
-      </span>
-      <span className="text-xs opacity-60">{count > 0 ? count : "\u00A0"}</span>
-    </button>
-  );
+  // which bucket an item belongs to. Bucket tiles highlight in their own
+  // color when selected or when a dragged task hovers over them.
+  const chip = (id: string, label: string, count: number) => {
+    const c = id === ALL || id === UNSORTED ? null : colorOf(id);
+    const over = dragOverChip === id;
+    const selected = view === id;
+    return (
+      <button
+        key={id}
+        onClick={() => setView(id)}
+        onDragOver={
+          id === ALL
+            ? undefined
+            : (e) => {
+                e.preventDefault();
+                setDragOverChip(id);
+              }
+        }
+        onDragLeave={id === ALL ? undefined : () => setDragOverChip((c) => (c === id ? null : c))}
+        onDrop={
+          id === ALL
+            ? undefined
+            : (e) => {
+                e.preventDefault();
+                setDragOverChip(null);
+                if (dragId.current) moveToBucket(dragId.current, id === UNSORTED ? null : id);
+              }
+        }
+        className={`flex min-h-16 flex-col items-start justify-between rounded-lg border p-3 text-left transition-colors ${
+          over ? "scale-105" : ""
+        } ${
+          c
+            ? "text-neutral-200 hover:brightness-125"
+            : over
+              ? "border-blue-400 bg-blue-950 text-blue-200"
+              : selected
+                ? "border-neutral-300 bg-neutral-200 text-neutral-900"
+                : "border-neutral-700 bg-neutral-900 text-neutral-300 hover:border-neutral-500"
+        }`}
+        style={
+          c
+            ? over
+              ? { borderColor: c, backgroundColor: `${c}59` }
+              : selected
+                ? { borderColor: c, backgroundColor: `${c}2e` }
+                : { borderColor: "#404040", backgroundColor: "#171717" }
+            : undefined
+        }
+      >
+        <span className="flex items-center gap-1.5 text-sm font-medium leading-tight">
+          {c && <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: c }} />}
+          {label}
+        </span>
+        <span className="text-xs opacity-60">{count > 0 ? count : "\u00A0"}</span>
+      </button>
+    );
+  };
 
   const row = (todo: Todo) => (
     <div
@@ -298,8 +322,15 @@ export default function ListView({ token }: { token: string }) {
         reorder(todo.id);
       }}
       className="relative flex items-center gap-3 border-b border-neutral-800 py-3 pr-9 transition-colors duration-700"
-      // Fresh captures glow briefly so the transcription is easy to spot.
-      style={flashIds.has(todo.id) ? { backgroundColor: "rgba(59, 130, 246, 0.15)" } : undefined}
+      // Fresh captures glow briefly; in All, rows carry a whisper of their
+      // bucket's color under everything else.
+      style={
+        flashIds.has(todo.id)
+          ? { backgroundColor: "rgba(59, 130, 246, 0.15)" }
+          : view === ALL && todo.bucket_id
+            ? { backgroundColor: `${colorOf(todo.bucket_id)}0d` }
+            : undefined
+      }
     >
       <span className="cursor-grab select-none text-neutral-700" title="Drag to reorder or onto a bucket">
         ::
@@ -328,7 +359,7 @@ export default function ListView({ token }: { token: string }) {
       {view === ALL && todo.bucket_id && bucketName(todo.bucket_id) && (
         <span
           className="shrink-0 rounded px-1.5 py-0.5 text-xs"
-          style={{ color: bucketColor(todo.bucket_id), backgroundColor: `${bucketColor(todo.bucket_id)}33` }}
+          style={{ color: colorOf(todo.bucket_id), backgroundColor: `${colorOf(todo.bucket_id)}33` }}
         >
           {bucketName(todo.bucket_id)}
         </span>
@@ -366,6 +397,24 @@ export default function ListView({ token }: { token: string }) {
           <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-neutral-500">Buckets</h2>
           {buckets.map((b) => (
             <div key={b.id} className="flex items-center gap-2 border-b border-neutral-800 py-2">
+              <input
+                type="color"
+                value={colorOf(b.id)}
+                // Update locally while the picker drags, save when it closes.
+                onChange={(e) => setBuckets((bs) => bs.map((x) => (x.id === b.id ? { ...x, color: e.target.value } : x)))}
+                onBlur={(e) => call("buckets", "PATCH", { id: b.id, color: e.target.value })}
+                className="h-6 w-6 shrink-0 cursor-pointer rounded border-none bg-transparent"
+                title="Bucket color"
+              />
+              {b.color && (
+                <button
+                  onClick={() => setBucketColor(b.id, null)}
+                  className="text-xs text-neutral-600 hover:text-neutral-400"
+                  title="Reset to automatic color"
+                >
+                  Auto
+                </button>
+              )}
               <input
                 defaultValue={b.name}
                 onBlur={(e) => e.target.value !== b.name && renameBucket(b.id, e.target.value)}

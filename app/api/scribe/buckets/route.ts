@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   if (!validListToken(req.nextUrl.searchParams.get("token"))) return unauthorized();
   const { data, error } = await scribeDb
     .from("buckets")
-    .select("id, name, position, hidden")
+    .select("id, name, position, hidden, color")
     .order("position", { ascending: true });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ buckets: data });
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ bucket: data });
 }
 
-// PATCH { id, name?, position?, hidden? }
+// PATCH { id, name?, position?, hidden?, color? ("#rrggbb" or null for auto) }
 export async function PATCH(req: NextRequest) {
   if (!validListToken(req.nextUrl.searchParams.get("token"))) return unauthorized();
   const { id, ...fields } = await req.json();
@@ -38,6 +38,12 @@ export async function PATCH(req: NextRequest) {
   if (typeof fields.name === "string" && fields.name.trim()) updates.name = fields.name.trim();
   if (typeof fields.position === "number") updates.position = fields.position;
   if (typeof fields.hidden === "boolean") updates.hidden = fields.hidden;
+  if ("color" in fields) {
+    if (fields.color === null) updates.color = null;
+    else if (typeof fields.color === "string" && /^#[0-9a-fA-F]{6}$/.test(fields.color)) {
+      updates.color = fields.color.toLowerCase();
+    }
+  }
   if (!id || Object.keys(updates).length === 0) {
     return NextResponse.json({ error: "missing id or fields" }, { status: 400 });
   }

@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
       .order("position", { ascending: false }),
     scribeDb
       .from("buckets")
-      .select("id, name, position, hidden")
+      .select("id, name, position, hidden, color")
       .order("position", { ascending: true }),
   ]);
   if (todosRes.error) return NextResponse.json({ error: todosRes.error.message }, { status: 500 });
