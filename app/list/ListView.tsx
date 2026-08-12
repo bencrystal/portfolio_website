@@ -328,7 +328,7 @@ export default function ListView({ token }: { token: string }) {
         flashIds.has(todo.id)
           ? { backgroundColor: "rgba(59, 130, 246, 0.15)" }
           : view === ALL && todo.bucket_id
-            ? { backgroundColor: `${colorOf(todo.bucket_id)}0d` }
+            ? { backgroundColor: `${colorOf(todo.bucket_id)}1f` }
             : undefined
       }
     >
