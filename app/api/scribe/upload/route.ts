@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
   // One todo per capture for v1. Later: LLM pass to split multi-item captures.
   const { data: todo, error: todoErr } = await scribeDb
     .from("todos")
-    .insert({ text: transcript, capture_id: capture.id, position: Date.now() / 1000 })
+    .insert({ text: transcript, capture_id: capture.id, position: Date.now() / 1000, all_position: Date.now() / 1000 })
     .select()
     .single();
   if (todoErr) {

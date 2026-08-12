@@ -9,10 +9,12 @@ type Todo = {
   done: boolean;
   bucket_id: string | null;
   position: number;
+  all_position: number;
   deleted_at?: string | null;
 };
 type Bucket = { id: string; name: string; position: number; hidden?: boolean };
 
+const ALL = "all";
 const UNSORTED = "unsorted";
 
 function fmtDate(iso: string) {
@@ -22,7 +24,7 @@ function fmtDate(iso: string) {
 export default function ListView({ token }: { token: string }) {
   const [todos, setTodos] = useState<Todo[] | null>(null);
   const [buckets, setBuckets] = useState<Bucket[]>([]);
-  const [view, setView] = useState<string>(UNSORTED); // UNSORTED or bucket id
+  const [view, setView] = useState<string>(ALL); // ALL, UNSORTED, or bucket id
   const [newText, setNewText] = useState("");
   const [search, setSearch] = useState("");
   const [doneOpen, setDoneOpen] = useState(false);
@@ -64,9 +66,11 @@ export default function ListView({ token }: { token: string }) {
     return () => clearInterval(t);
   }, [refresh]);
 
-  // If the selected bucket disappears or gets hidden, fall back to Unsorted.
+  // If the selected bucket disappears or gets hidden, fall back to All.
   useEffect(() => {
-    if (view !== UNSORTED && !buckets.some((b) => b.id === view && !b.hidden)) setView(UNSORTED);
+    if (view !== ALL && view !== UNSORTED && !buckets.some((b) => b.id === view && !b.hidden)) {
+      setView(ALL);
+    }
   }, [buckets, view]);
 
   // ---- todo actions ----
@@ -85,7 +89,10 @@ export default function ListView({ token }: { token: string }) {
     const text = newText.trim();
     if (!text) return;
     setNewText("");
-    await call("todos", "POST", { text, bucket_id: view === UNSORTED ? null : view });
+    await call("todos", "POST", {
+      text,
+      bucket_id: view === UNSORTED || view === ALL ? null : view,
+    });
     refresh();
   }
 
@@ -109,17 +116,20 @@ export default function ListView({ token }: { token: string }) {
   }
 
   // Drop dragged item onto target: place it just above target in the list.
+  // The All view has its own ordering (all_position, seeded from recency)
+  // that is independent of the per-bucket order.
   async function reorder(targetId: string) {
     const id = dragId.current;
     if (!id || id === targetId || !todos) return;
+    const field = view === ALL ? "all_position" : "position";
     const list = activeList();
     const targetIdx = list.findIndex((t) => t.id === targetId);
     if (targetIdx < 0) return;
     const above = list[targetIdx - 1];
     const target = list[targetIdx];
-    const pos = above ? (above.position + target.position) / 2 : target.position + 1;
-    setTodos((ts) => ts!.map((t) => (t.id === id ? { ...t, position: pos } : t)));
-    await call("todos", "PATCH", { id, position: pos });
+    const pos = above ? (above[field] + target[field]) / 2 : target[field] + 1;
+    setTodos((ts) => ts!.map((t) => (t.id === id ? { ...t, [field]: pos } : t)));
+    await call("todos", "PATCH", { id, [field]: pos });
   }
 
   // ---- bucket actions ----
@@ -168,16 +178,23 @@ export default function ListView({ token }: { token: string }) {
   // ---- derived lists ----
 
   function inView(t: Todo) {
+    if (view === ALL) return true;
     return view === UNSORTED ? t.bucket_id === null : t.bucket_id === view;
   }
   function matches(t: Todo) {
     return !search.trim() || t.text.toLowerCase().includes(search.trim().toLowerCase());
   }
+  function byViewOrder(a: Todo, b: Todo) {
+    return view === ALL ? b.all_position - a.all_position : b.position - a.position;
+  }
   function activeList() {
-    return (todos ?? []).filter((t) => !t.done && inView(t) && matches(t));
+    return (todos ?? []).filter((t) => !t.done && inView(t) && matches(t)).sort(byViewOrder);
   }
   function doneList() {
-    return (todos ?? []).filter((t) => t.done && inView(t) && matches(t));
+    return (todos ?? []).filter((t) => t.done && inView(t) && matches(t)).sort(byViewOrder);
+  }
+  function bucketName(id: string | null) {
+    return id ? buckets.find((b) => b.id === id)?.name ?? null : null;
   }
 
   if (error) return <main className="p-10 text-neutral-200">{error}</main>;
@@ -186,20 +203,30 @@ export default function ListView({ token }: { token: string }) {
   const active = activeList();
   const done = doneList();
 
+  // The All tile is not a drop target: dropping there would not change
+  // which bucket an item belongs to.
   const chip = (id: string, label: string, count: number) => (
     <button
       key={id}
       onClick={() => setView(id)}
-      onDragOver={(e) => {
-        e.preventDefault();
-        setDragOverChip(id);
-      }}
-      onDragLeave={() => setDragOverChip((c) => (c === id ? null : c))}
-      onDrop={(e) => {
-        e.preventDefault();
-        setDragOverChip(null);
-        if (dragId.current) moveToBucket(dragId.current, id === UNSORTED ? null : id);
-      }}
+      onDragOver={
+        id === ALL
+          ? undefined
+          : (e) => {
+              e.preventDefault();
+              setDragOverChip(id);
+            }
+      }
+      onDragLeave={id === ALL ? undefined : () => setDragOverChip((c) => (c === id ? null : c))}
+      onDrop={
+        id === ALL
+          ? undefined
+          : (e) => {
+              e.preventDefault();
+              setDragOverChip(null);
+              if (dragId.current) moveToBucket(dragId.current, id === UNSORTED ? null : id);
+            }
+      }
       className={`flex min-h-16 flex-col items-start justify-between rounded-lg border p-3 text-left transition-colors ${
         dragOverChip === id
           ? "scale-105 border-blue-400 bg-blue-950 text-blue-200"
@@ -224,7 +251,7 @@ export default function ListView({ token }: { token: string }) {
         e.preventDefault();
         reorder(todo.id);
       }}
-      className="flex items-center gap-3 border-b border-neutral-800 py-3"
+      className="relative flex items-center gap-3 border-b border-neutral-800 py-3 pr-9"
     >
       <span className="cursor-grab select-none text-neutral-700" title="Drag to reorder or onto a bucket">
         ::
@@ -250,8 +277,19 @@ export default function ListView({ token }: { token: string }) {
           {todo.text}
         </span>
       )}
+      {view === ALL && bucketName(todo.bucket_id) && (
+        <span className="shrink-0 rounded bg-neutral-800 px-1.5 py-0.5 text-xs text-neutral-400">
+          {bucketName(todo.bucket_id)}
+        </span>
+      )}
       <span className="text-xs text-neutral-600">{fmtDate(todo.created_at)}</span>
-      <button onClick={() => remove(todo)} className="text-red-900 hover:text-red-600" aria-label="Delete">
+      {/* Fixed top-right position on every row so repeated deletes do not
+          require moving the pointer. */}
+      <button
+        onClick={() => remove(todo)}
+        className="absolute right-0 top-2 px-2 py-1 text-red-900 hover:text-red-600"
+        aria-label="Delete"
+      >
         x
       </button>
     </div>
@@ -328,6 +366,7 @@ export default function ListView({ token }: { token: string }) {
       ) : (
         <>
           <div className="mb-3 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
+            {chip(ALL, "All", todos.filter((t) => !t.done).length)}
             {chip(UNSORTED, "Unsorted", todos.filter((t) => !t.done && t.bucket_id === null).length)}
             {buckets
               .filter((b) => !b.hidden)
@@ -341,7 +380,7 @@ export default function ListView({ token }: { token: string }) {
               value={newText}
               onChange={(e) => setNewText(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && add()}
-              placeholder={view === UNSORTED ? "Add an item" : "Add to this bucket"}
+              placeholder={view === UNSORTED || view === ALL ? "Add an item" : "Add to this bucket"}
               className="flex-1 rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 placeholder:text-neutral-500"
             />
             <button onClick={add} className="rounded-md bg-neutral-700 px-4 py-2 hover:bg-neutral-600">

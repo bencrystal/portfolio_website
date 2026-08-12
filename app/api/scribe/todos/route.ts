@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
   const [todosRes, bucketsRes] = await Promise.all([
     scribeDb
       .from("todos")
-      .select("id, created_at, text, done, bucket_id, position")
+      .select("id, created_at, text, done, bucket_id, position, all_position")
       .is("deleted_at", null)
       .order("position", { ascending: false }),
     scribeDb
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
   if (!text?.trim()) return NextResponse.json({ error: "missing text" }, { status: 400 });
   const { data, error } = await scribeDb
     .from("todos")
-    .insert({ text: text.trim(), bucket_id: bucket_id ?? null, position: nowPosition() })
+    .insert({ text: text.trim(), bucket_id: bucket_id ?? null, position: nowPosition(), all_position: nowPosition() })
     .select()
     .single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -70,6 +70,7 @@ export async function PATCH(req: NextRequest) {
   if (typeof fields.text === "string" && fields.text.trim()) updates.text = fields.text.trim();
   if ("bucket_id" in fields) updates.bucket_id = fields.bucket_id ?? null;
   if (typeof fields.position === "number") updates.position = fields.position;
+  if (typeof fields.all_position === "number") updates.all_position = fields.all_position;
   if (fields.restore === true) updates.deleted_at = null;
   if (!id || Object.keys(updates).length === 0) {
     return NextResponse.json({ error: "missing id or fields" }, { status: 400 });
