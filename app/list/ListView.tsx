@@ -193,16 +193,16 @@ export default function ListView({ token }: { token: string }) {
         setDragOverChip(null);
         if (dragId.current) moveToBucket(dragId.current, id === UNSORTED ? null : id);
       }}
-      className={`shrink-0 rounded-full border px-3 py-1 text-sm transition-colors ${
-        view === id
-          ? "border-neutral-400 bg-neutral-200 text-neutral-900"
-          : dragOverChip === id
-            ? "border-blue-400 bg-blue-950 text-blue-200"
+      className={`flex min-h-16 flex-col items-start justify-between rounded-lg border p-3 text-left transition-colors ${
+        dragOverChip === id
+          ? "scale-105 border-blue-400 bg-blue-950 text-blue-200"
+          : view === id
+            ? "border-neutral-300 bg-neutral-200 text-neutral-900"
             : "border-neutral-700 bg-neutral-900 text-neutral-300 hover:border-neutral-500"
       }`}
     >
-      {label}
-      {count > 0 && <span className="ml-1.5 opacity-60">{count}</span>}
+      <span className="text-sm font-medium leading-tight">{label}</span>
+      <span className="text-xs opacity-60">{count > 0 ? count : "\u00A0"}</span>
     </button>
   );
 
@@ -251,7 +251,7 @@ export default function ListView({ token }: { token: string }) {
   );
 
   return (
-    <main className="mx-auto min-h-screen max-w-xl bg-neutral-950 px-5 py-6 text-neutral-100">
+    <main className="mx-auto min-h-screen max-w-3xl bg-neutral-950 px-5 py-6 text-neutral-100">
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-xl font-semibold">Todos</h1>
         <button
@@ -312,7 +312,7 @@ export default function ListView({ token }: { token: string }) {
         </section>
       ) : (
         <>
-          <div className="mb-3 flex gap-2 overflow-x-auto pb-1">
+          <div className="mb-3 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
             {chip(UNSORTED, "Unsorted", todos.filter((t) => !t.done && t.bucket_id === null).length)}
             {buckets.map((b) =>
               chip(b.id, b.name, todos.filter((t) => !t.done && t.bucket_id === b.id).length)
