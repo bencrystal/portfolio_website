@@ -321,12 +321,12 @@ export default function ListView({ token }: { token: string }) {
         e.preventDefault();
         reorder(todo.id);
       }}
-      className="relative flex items-center gap-3 border-b border-neutral-800 py-3 pr-9 transition-colors duration-700"
+      className="relative flex items-center gap-3 border-b border-neutral-800 py-3 pr-9 transition-colors duration-1000"
       // Fresh captures glow briefly; in All, rows carry a whisper of their
       // bucket's color under everything else.
       style={
         flashIds.has(todo.id)
-          ? { backgroundColor: "rgba(59, 130, 246, 0.15)" }
+          ? { backgroundColor: "rgba(147, 197, 253, 0.15)" }
           : view === ALL && todo.bucket_id
             ? { backgroundColor: `${colorOf(todo.bucket_id)}1f` }
             : undefined
