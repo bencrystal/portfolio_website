@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 type Todo = {
   id: string;
@@ -53,6 +53,44 @@ export default function ListView({ token }: { token: string }) {
   const [dragOverChip, setDragOverChip] = useState<string | null>(null);
   const knownIds = useRef<Set<string> | null>(null); // for spotting fresh captures
   const [flashIds, setFlashIds] = useState<Set<string>>(new Set());
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [lastDeleted, setLastDeleted] = useState<Todo | null>(null);
+  const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rowRefs = useRef(new Map<string, HTMLDivElement>());
+  const prevTops = useRef(new Map<string, number>());
+
+  // FLIP: whenever rows land in new spots (reorder, bucket move, fresh
+  // capture), slide them from where they were instead of snapping.
+  useLayoutEffect(() => {
+    const tops = new Map<string, number>();
+    rowRefs.current.forEach((el, id) => {
+      if (!el.isConnected) {
+        rowRefs.current.delete(id);
+        return;
+      }
+      tops.set(id, el.getBoundingClientRect().top);
+    });
+    tops.forEach((top, id) => {
+      const prev = prevTops.current.get(id);
+      const el = rowRefs.current.get(id);
+      if (!el || prev === undefined || Math.abs(prev - top) < 1) return;
+      el.style.transition = "none";
+      el.style.transform = `translateY(${prev - top}px)`;
+      requestAnimationFrame(() => {
+        el.style.transition = "transform 0.3s ease";
+        el.style.transform = "";
+        el.addEventListener(
+          "transitionend",
+          () => {
+            // Hand transitions back to the classes (color fades).
+            el.style.transition = "";
+          },
+          { once: true }
+        );
+      });
+    });
+    prevTops.current = tops;
+  });
 
   const call = useCallback(
     async (path: "todos" | "buckets", method: string, body?: unknown, query = ""): Promise<Response> => {
@@ -120,7 +158,27 @@ export default function ListView({ token }: { token: string }) {
 
   async function remove(todo: Todo) {
     setTodos((ts) => ts!.filter((t) => t.id !== todo.id));
+    // Offer a short undo window; the delete is soft on the server, so
+    // restoring is just a PATCH away.
+    if (undoTimer.current) clearTimeout(undoTimer.current);
+    setLastDeleted(todo);
+    undoTimer.current = setTimeout(() => setLastDeleted(null), 6000);
     await call("todos", "DELETE", { id: todo.id });
+  }
+
+  async function undoDelete() {
+    const todo = lastDeleted;
+    if (!todo) return;
+    if (undoTimer.current) clearTimeout(undoTimer.current);
+    setLastDeleted(null);
+    await call("todos", "PATCH", { id: todo.id, restore: true });
+    setTodos((ts) => (ts ? [...ts, todo] : ts));
+  }
+
+  function copyText(todo: Todo) {
+    navigator.clipboard.writeText(todo.text);
+    setCopiedId(todo.id);
+    setTimeout(() => setCopiedId((c) => (c === todo.id ? null : c)), 1500);
   }
 
   async function add() {
@@ -313,6 +371,10 @@ export default function ListView({ token }: { token: string }) {
   const row = (todo: Todo) => (
     <div
       key={todo.id}
+      ref={(el) => {
+        if (el) rowRefs.current.set(todo.id, el);
+        else rowRefs.current.delete(todo.id);
+      }}
       draggable
       onDragStart={() => (dragId.current = todo.id)}
       onDragEnd={() => (dragId.current = null)}
@@ -321,7 +383,7 @@ export default function ListView({ token }: { token: string }) {
         e.preventDefault();
         reorder(todo.id);
       }}
-      className="relative flex items-center gap-3 border-b border-neutral-800 py-3 pr-9 transition-colors duration-1000"
+      className="relative flex items-center gap-3 border-b border-neutral-800 py-3 pr-16 transition-colors duration-1000"
       // Fresh captures glow briefly; in All, rows carry a whisper of their
       // bucket's color under everything else.
       style={
@@ -365,6 +427,14 @@ export default function ListView({ token }: { token: string }) {
         </span>
       )}
       <span className="text-xs text-neutral-600">{fmtDate(todo.created_at)}</span>
+      <button
+        onClick={() => copyText(todo)}
+        className="absolute right-7 top-2 px-2 py-1 text-neutral-600 hover:text-neutral-300"
+        aria-label="Copy text"
+        title="Copy text"
+      >
+        {copiedId === todo.id ? "\u2713" : "\u29c9"}
+      </button>
       {/* Fixed top-right position on every row so repeated deletes do not
           require moving the pointer. */}
       <button
@@ -514,6 +584,15 @@ export default function ListView({ token }: { token: string }) {
             </div>
           )}
         </>
+      )}
+
+      {lastDeleted && (
+        <div className="fixed bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-3 rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm shadow-lg">
+          <span className="text-neutral-300">Deleted</span>
+          <button onClick={undoDelete} className="font-medium text-blue-400 hover:text-blue-200">
+            Undo
+          </button>
+        </div>
       )}
     </main>
   );
