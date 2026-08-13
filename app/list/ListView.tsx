@@ -417,8 +417,10 @@ export default function ListView({ token }: { token: string }) {
       style={
         flashIds.has(todo.id)
           ? { backgroundColor: "rgba(147, 197, 253, 0.15)" }
-          : view === ALL && todo.bucket_id
-            ? { backgroundColor: `${colorOf(todo.bucket_id)}1f` }
+          : todo.bucket_id
+            ? // Tinted in every view, not just All: inside a bucket the
+              // wash of its color confirms which bucket is on screen.
+              { backgroundColor: `${colorOf(todo.bucket_id)}1f` }
             : undefined
       }
     >
