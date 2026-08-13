@@ -55,7 +55,10 @@ export default function ListView({ token }: { token: string }) {
   const [flashIds, setFlashIds] = useState<Set<string>>(new Set());
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [lastDeleted, setLastDeleted] = useState<Todo | null>(null);
+  const [undoVisible, setUndoVisible] = useState(false);
   const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const undoClearTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [dragOverRow, setDragOverRow] = useState<string | null>(null);
   const rowRefs = useRef(new Map<string, HTMLDivElement>());
   const prevTops = useRef(new Map<string, number>());
 
@@ -159,10 +162,14 @@ export default function ListView({ token }: { token: string }) {
   async function remove(todo: Todo) {
     setTodos((ts) => ts!.filter((t) => t.id !== todo.id));
     // Offer a short undo window; the delete is soft on the server, so
-    // restoring is just a PATCH away.
+    // restoring is just a PATCH away. The toast fades out before it
+    // unmounts instead of vanishing.
     if (undoTimer.current) clearTimeout(undoTimer.current);
+    if (undoClearTimer.current) clearTimeout(undoClearTimer.current);
     setLastDeleted(todo);
-    undoTimer.current = setTimeout(() => setLastDeleted(null), 6000);
+    setUndoVisible(true);
+    undoTimer.current = setTimeout(() => setUndoVisible(false), 6000);
+    undoClearTimer.current = setTimeout(() => setLastDeleted(null), 6600);
     await call("todos", "DELETE", { id: todo.id });
   }
 
@@ -170,6 +177,8 @@ export default function ListView({ token }: { token: string }) {
     const todo = lastDeleted;
     if (!todo) return;
     if (undoTimer.current) clearTimeout(undoTimer.current);
+    if (undoClearTimer.current) clearTimeout(undoClearTimer.current);
+    setUndoVisible(false);
     setLastDeleted(null);
     await call("todos", "PATCH", { id: todo.id, restore: true });
     setTodos((ts) => (ts ? [...ts, todo] : ts));
@@ -369,21 +378,40 @@ export default function ListView({ token }: { token: string }) {
   };
 
   const row = (todo: Todo) => (
+    // Wrapper owns the drop targeting so an animated gap can open above
+    // the row, previewing where the dragged task would land.
     <div
       key={todo.id}
       ref={(el) => {
         if (el) rowRefs.current.set(todo.id, el);
         else rowRefs.current.delete(todo.id);
       }}
-      draggable
-      onDragStart={() => (dragId.current = todo.id)}
-      onDragEnd={() => (dragId.current = null)}
-      onDragOver={(e) => e.preventDefault()}
+      onDragOver={(e) => {
+        e.preventDefault();
+        if (dragId.current && dragId.current !== todo.id) setDragOverRow(todo.id);
+      }}
+      onDragLeave={() => setDragOverRow((r) => (r === todo.id ? null : r))}
       onDrop={(e) => {
         e.preventDefault();
+        setDragOverRow(null);
         reorder(todo.id);
       }}
-      className="relative flex items-center gap-3 border-b border-neutral-800 py-3 pr-16 transition-colors duration-1000"
+    >
+      <div
+        className="pointer-events-none"
+        style={{
+          height: dragOverRow === todo.id && dragId.current !== todo.id ? 44 : 0,
+          transition: "height 0.15s ease",
+        }}
+      />
+      <div
+        draggable
+        onDragStart={() => (dragId.current = todo.id)}
+        onDragEnd={() => {
+          dragId.current = null;
+          setDragOverRow(null);
+        }}
+        className="relative flex items-center gap-3 border-b border-neutral-800 py-3 pr-16 transition-colors duration-1000"
       // Fresh captures glow briefly; in All, rows carry a whisper of their
       // bucket's color under everything else.
       style={
@@ -444,6 +472,7 @@ export default function ListView({ token }: { token: string }) {
       >
         x
       </button>
+      </div>
     </div>
   );
 
@@ -587,7 +616,12 @@ export default function ListView({ token }: { token: string }) {
       )}
 
       {lastDeleted && (
-        <div className="fixed bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-3 rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm shadow-lg">
+        <div
+          className={`fixed left-1/2 z-10 flex -translate-x-1/2 items-center gap-3 rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm shadow-lg transition-opacity duration-500 ${undoVisible ? "opacity-100" : "opacity-0"}`}
+          // Lifted well clear of the mobile browser toolbar; bottom-6 hid
+          // it behind Safari's bottom bar on the phone.
+          style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 4.5rem)" }}
+        >
           <span className="text-neutral-300">Deleted</span>
           <button onClick={undoDelete} className="font-medium text-blue-400 hover:text-blue-200">
             Undo
