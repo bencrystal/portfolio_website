@@ -53,12 +53,23 @@ export default function ListView({ token }: { token: string }) {
   const [dragOverChip, setDragOverChip] = useState<string | null>(null);
   const knownIds = useRef<Set<string> | null>(null); // for spotting fresh captures
   const [flashIds, setFlashIds] = useState<Set<string>>(new Set());
-  const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [lastDeleted, setLastDeleted] = useState<Todo | null>(null);
+  // Which row's copy or add-to-copy button just fired (for the checkmark).
+  const [copied, setCopied] = useState<{ id: string; kind: "copy" | "add" } | null>(null);
+  // What we last put on the clipboard; while set (30s window) every row
+  // offers an add-to-copy button that appends its task on a new line.
+  const [copyBuf, setCopyBuf] = useState<string | null>(null);
+  const copyBufTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // One shared undo toast for both destructive-feeling actions: deleting
+  // a task and checking it done (which whisks it out of the active list).
+  const [lastUndo, setLastUndo] = useState<{ todo: Todo; kind: "deleted" | "done" } | null>(null);
   const [undoVisible, setUndoVisible] = useState(false);
   const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const undoClearTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [dragOverRow, setDragOverRow] = useState<string | null>(null);
+  // iOS Safari never fires HTML5 drag events, so touch dragging runs on
+  // pointer events instead: the drag handle captures the pointer and
+  // elementFromPoint hit-tests chips and rows under the finger.
+  const [touchGhost, setTouchGhost] = useState<{ text: string; x: number; y: number } | null>(null);
   const rowRefs = useRef(new Map<string, HTMLDivElement>());
   const prevTops = useRef(new Map<string, number>());
 
@@ -154,40 +165,65 @@ export default function ListView({ token }: { token: string }) {
 
   // ---- todo actions ----
 
+  // The toast fades out before it unmounts instead of vanishing.
+  function showUndo(todo: Todo, kind: "deleted" | "done") {
+    if (undoTimer.current) clearTimeout(undoTimer.current);
+    if (undoClearTimer.current) clearTimeout(undoClearTimer.current);
+    setLastUndo({ todo, kind });
+    setUndoVisible(true);
+    undoTimer.current = setTimeout(() => setUndoVisible(false), 8000);
+    undoClearTimer.current = setTimeout(() => setLastUndo(null), 8600);
+  }
+
   async function toggle(todo: Todo) {
     setTodos((ts) => ts!.map((t) => (t.id === todo.id ? { ...t, done: !t.done } : t)));
+    // Checking done removes the row from the active list immediately, so
+    // give the same undo window a delete gets.
+    if (!todo.done) showUndo(todo, "done");
     await call("todos", "PATCH", { id: todo.id, done: !todo.done });
   }
 
   async function remove(todo: Todo) {
     setTodos((ts) => ts!.filter((t) => t.id !== todo.id));
-    // Offer a short undo window; the delete is soft on the server, so
-    // restoring is just a PATCH away. The toast fades out before it
-    // unmounts instead of vanishing.
-    if (undoTimer.current) clearTimeout(undoTimer.current);
-    if (undoClearTimer.current) clearTimeout(undoClearTimer.current);
-    setLastDeleted(todo);
-    setUndoVisible(true);
-    undoTimer.current = setTimeout(() => setUndoVisible(false), 6000);
-    undoClearTimer.current = setTimeout(() => setLastDeleted(null), 6600);
+    // The delete is soft on the server, so restoring is just a PATCH away.
+    showUndo(todo, "deleted");
     await call("todos", "DELETE", { id: todo.id });
   }
 
-  async function undoDelete() {
-    const todo = lastDeleted;
-    if (!todo) return;
+  async function undoLast() {
+    const u = lastUndo;
+    if (!u) return;
     if (undoTimer.current) clearTimeout(undoTimer.current);
     if (undoClearTimer.current) clearTimeout(undoClearTimer.current);
     setUndoVisible(false);
-    setLastDeleted(null);
-    await call("todos", "PATCH", { id: todo.id, restore: true });
-    setTodos((ts) => (ts ? [...ts, todo] : ts));
+    setLastUndo(null);
+    if (u.kind === "deleted") {
+      await call("todos", "PATCH", { id: u.todo.id, restore: true });
+      setTodos((ts) => (ts ? [...ts, u.todo] : ts));
+    } else {
+      setTodos((ts) => ts!.map((t) => (t.id === u.todo.id ? { ...t, done: false } : t)));
+      await call("todos", "PATCH", { id: u.todo.id, done: false });
+    }
+  }
+
+  function setClipboard(text: string, id: string, kind: "copy" | "add") {
+    navigator.clipboard.writeText(text);
+    if (copyBufTimer.current) clearTimeout(copyBufTimer.current);
+    setCopyBuf(text);
+    copyBufTimer.current = setTimeout(() => setCopyBuf(null), 30000);
+    setCopied({ id, kind });
+    setTimeout(() => setCopied((c) => (c?.id === id && c.kind === kind ? null : c)), 1500);
   }
 
   function copyText(todo: Todo) {
-    navigator.clipboard.writeText(todo.text);
-    setCopiedId(todo.id);
-    setTimeout(() => setCopiedId((c) => (c === todo.id ? null : c)), 1500);
+    setClipboard(todo.text, todo.id, "copy");
+  }
+
+  // Appends this task to the last-copied text, one task per line. We track
+  // the text ourselves since iOS will not let the page read the clipboard.
+  function appendCopy(todo: Todo) {
+    if (!copyBuf) return;
+    setClipboard(`${copyBuf}\n${todo.text}`, todo.id, "add");
   }
 
   async function add() {
@@ -223,8 +259,7 @@ export default function ListView({ token }: { token: string }) {
   // Drop dragged item onto target: place it just above target in the list.
   // The All view has its own ordering (all_position, seeded from recency)
   // that is independent of the per-bucket order.
-  async function reorder(targetId: string) {
-    const id = dragId.current;
+  async function reorder(id: string, targetId: string) {
     if (!id || id === targetId || !todos) return;
     const field = view === ALL ? "all_position" : "position";
     const list = activeList();
@@ -235,6 +270,44 @@ export default function ListView({ token }: { token: string }) {
     const pos = above ? (above[field] + target[field]) / 2 : target[field] + 1;
     setTodos((ts) => ts!.map((t) => (t.id === id ? { ...t, [field]: pos } : t)));
     await call("todos", "PATCH", { id, [field]: pos });
+  }
+
+  // ---- touch drag (pointer events; HTML5 DnD does not fire on iOS) ----
+
+  function dropTargetAt(x: number, y: number) {
+    const el = document.elementFromPoint(x, y);
+    const chipId = el?.closest<HTMLElement>("[data-chip-id]")?.dataset.chipId ?? null;
+    const rowId = el?.closest<HTMLElement>("[data-row-id]")?.dataset.rowId ?? null;
+    // The All chip is not a drop target (dropping there changes nothing).
+    return { chipId: chipId === ALL ? null : chipId, rowId };
+  }
+
+  function touchDragStart(e: React.PointerEvent, todo: Todo) {
+    if (e.pointerType !== "touch") return; // mouse keeps the HTML5 path
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    dragId.current = todo.id;
+    setTouchGhost({ text: todo.text, x: e.clientX, y: e.clientY });
+  }
+
+  function touchDragMove(e: React.PointerEvent) {
+    if (!dragId.current || !touchGhost) return;
+    setTouchGhost((g) => (g ? { ...g, x: e.clientX, y: e.clientY } : g));
+    const { chipId, rowId } = dropTargetAt(e.clientX, e.clientY);
+    setDragOverChip(chipId);
+    setDragOverRow(chipId ? null : rowId !== dragId.current ? rowId : null);
+  }
+
+  function touchDragEnd(e: React.PointerEvent) {
+    const id = dragId.current;
+    if (!id || !touchGhost) return;
+    dragId.current = null;
+    setTouchGhost(null);
+    setDragOverChip(null);
+    setDragOverRow(null);
+    if (e.type === "pointercancel") return;
+    const { chipId, rowId } = dropTargetAt(e.clientX, e.clientY);
+    if (chipId) moveToBucket(id, chipId === UNSORTED ? null : chipId);
+    else if (rowId && rowId !== id) reorder(id, rowId);
   }
 
   // ---- bucket actions ----
@@ -328,6 +401,7 @@ export default function ListView({ token }: { token: string }) {
     return (
       <button
         key={id}
+        data-chip-id={id}
         onClick={() => setView(id)}
         onDragOver={
           id === ALL
@@ -382,6 +456,7 @@ export default function ListView({ token }: { token: string }) {
     // the row, previewing where the dragged task would land.
     <div
       key={todo.id}
+      data-row-id={todo.id}
       ref={(el) => {
         if (el) rowRefs.current.set(todo.id, el);
         else rowRefs.current.delete(todo.id);
@@ -394,7 +469,7 @@ export default function ListView({ token }: { token: string }) {
       onDrop={(e) => {
         e.preventDefault();
         setDragOverRow(null);
-        reorder(todo.id);
+        if (dragId.current) reorder(dragId.current, todo.id);
       }}
     >
       <div
@@ -411,7 +486,9 @@ export default function ListView({ token }: { token: string }) {
           dragId.current = null;
           setDragOverRow(null);
         }}
-        className="relative flex items-center gap-3 border-b border-neutral-800 py-3 pr-16 transition-colors duration-1000"
+        className={`relative flex items-center gap-3 border-b border-neutral-800 py-3 transition-colors duration-1000 ${
+          copyBuf ? "pr-24" : "pr-16"
+        }`}
       // Fresh captures glow briefly; in All, rows carry a whisper of their
       // bucket's color under everything else.
       style={
@@ -424,7 +501,16 @@ export default function ListView({ token }: { token: string }) {
             : undefined
       }
     >
-      <span className="cursor-grab select-none text-neutral-700" title="Drag to reorder or onto a bucket">
+      {/* touch-none stops iOS from scrolling instead of dragging; the
+          padding widens the touch target beyond the two glyphs. */}
+      <span
+        className="-my-3 -ml-2 cursor-grab touch-none select-none py-3 pl-2 pr-1 text-neutral-700"
+        title="Drag to reorder or onto a bucket"
+        onPointerDown={(e) => touchDragStart(e, todo)}
+        onPointerMove={touchDragMove}
+        onPointerUp={touchDragEnd}
+        onPointerCancel={touchDragEnd}
+      >
         ::
       </span>
       <input type="checkbox" checked={todo.done} onChange={() => toggle(todo)} className="h-4 w-4" />
@@ -457,19 +543,30 @@ export default function ListView({ token }: { token: string }) {
         </span>
       )}
       <span className="text-xs text-neutral-600">{fmtDate(todo.created_at)}</span>
+      {/* Padded well past the glyphs so they are easy to hit on the phone. */}
+      {copyBuf && (
+        <button
+          onClick={() => appendCopy(todo)}
+          className="absolute right-16 top-0.5 p-2 text-neutral-600 hover:text-neutral-300"
+          aria-label="Add to copied text"
+          title="Add to copied text (new line)"
+        >
+          {copied?.id === todo.id && copied.kind === "add" ? "\u2713" : "+\u29c9"}
+        </button>
+      )}
       <button
         onClick={() => copyText(todo)}
-        className="absolute right-7 top-2 px-2 py-1 text-neutral-600 hover:text-neutral-300"
+        className="absolute right-8 top-0.5 p-2 text-neutral-600 hover:text-neutral-300"
         aria-label="Copy text"
         title="Copy text"
       >
-        {copiedId === todo.id ? "\u2713" : "\u29c9"}
+        {copied?.id === todo.id && copied.kind === "copy" ? "\u2713" : "\u29c9"}
       </button>
       {/* Fixed top-right position on every row so repeated deletes do not
           require moving the pointer. */}
       <button
         onClick={() => remove(todo)}
-        className="absolute right-0 top-2 px-2 py-1 text-red-900 hover:text-red-600"
+        className="absolute right-0 top-0.5 p-2 text-red-900 hover:text-red-600"
         aria-label="Delete"
       >
         x
@@ -617,15 +714,25 @@ export default function ListView({ token }: { token: string }) {
         </>
       )}
 
-      {lastDeleted && (
+      {touchGhost && (
+        <div
+          className="pointer-events-none fixed z-20 max-w-[70vw] -translate-x-1/2 truncate rounded-md border border-neutral-600 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-200 shadow-lg"
+          // Held above the finger so it stays visible while dragging.
+          style={{ left: touchGhost.x, top: touchGhost.y - 48 }}
+        >
+          {touchGhost.text}
+        </div>
+      )}
+
+      {lastUndo && (
         <div
           className={`fixed left-1/2 z-10 flex -translate-x-1/2 items-center gap-3 rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm shadow-lg transition-opacity duration-500 ${undoVisible ? "opacity-100" : "opacity-0"}`}
           // Lifted well clear of the mobile browser toolbar; bottom-6 hid
           // it behind Safari's bottom bar on the phone.
           style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 4.5rem)" }}
         >
-          <span className="text-neutral-300">Deleted</span>
-          <button onClick={undoDelete} className="font-medium text-blue-400 hover:text-blue-200">
+          <span className="text-neutral-300">{lastUndo.kind === "deleted" ? "Deleted" : "Marked done"}</span>
+          <button onClick={undoLast} className="font-medium text-blue-400 hover:text-blue-200">
             Undo
           </button>
         </div>
