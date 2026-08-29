@@ -20,7 +20,9 @@ const nextConfig = {
   transpilePackages: ['p5'],
   // Add this to help with the build process
   experimental: {
-    esmExternals: 'loose'
+    esmExternals: 'loose',
+    // pdfjs-dist's ESM build breaks under webpack bundling; load it via Node.
+    serverComponentsExternalPackages: ['pdf-parse', 'pdfjs-dist'],
   },
   // Add cache control
   headers: async () => {
