@@ -3,7 +3,6 @@ import { JSDOM } from "jsdom";
 import { Readability } from "@mozilla/readability";
 import { marked } from "marked";
 import mammoth from "mammoth";
-import { PDFParse } from "pdf-parse";
 
 export interface ConvertResult {
   title: string;
@@ -205,6 +204,9 @@ export async function convert(input: ConvertInput): Promise<ConvertResult> {
       return { title, epub: await htmlToEpub(title, value) };
     }
     case "pdf": {
+      // Lazy import: pdfjs-dist is fragile under serverless bundling; keep it
+      // out of the route's module graph so it can only fail PDF conversions.
+      const { PDFParse } = await import("pdf-parse");
       const parser = new PDFParse({ data: new Uint8Array(buf) });
       const { text } = await parser.getText();
       await parser.destroy();
