@@ -17,6 +17,19 @@ type Bucket = { id: string; name: string; position: number; hidden?: boolean; co
 const ALL = "all";
 const UNSORTED = "unsorted";
 
+// Mutations that fail because the network is down get queued here and
+// replayed in order once the connection returns.
+const QUEUE_KEY = "scribe-offline-queue";
+type QueuedCall = { path: "todos" | "buckets"; method: string; body?: unknown; query?: string };
+
+function readQueue(): QueuedCall[] {
+  try {
+    return JSON.parse(localStorage.getItem(QUEUE_KEY) ?? "[]");
+  } catch {
+    return [];
+  }
+}
+
 // "5m ago" style for the first week, then a plain date.
 function fmtDate(iso: string) {
   const s = (Date.now() - new Date(iso).getTime()) / 1000;
@@ -106,18 +119,58 @@ export default function ListView({ token }: { token: string }) {
     prevTops.current = tops;
   });
 
+  const [offline, setOffline] = useState(false);
+  const flushing = useRef(false);
+
   const call = useCallback(
     async (path: "todos" | "buckets", method: string, body?: unknown, query = ""): Promise<Response> => {
-      const res = await fetch(`/api/scribe/${path}?token=${encodeURIComponent(token)}${query}`, {
-        method,
-        headers: body ? { "Content-Type": "application/json" } : undefined,
-        body: body ? JSON.stringify(body) : undefined,
-      });
-      if (res.status === 401) setError("Invalid link.");
-      return res;
+      try {
+        const res = await fetch(`/api/scribe/${path}?token=${encodeURIComponent(token)}${query}`, {
+          method,
+          headers: body ? { "Content-Type": "application/json" } : undefined,
+          body: body ? JSON.stringify(body) : undefined,
+        });
+        if (res.status === 401) setError("Invalid link.");
+        return res;
+      } catch {
+        // Network down. Queue mutations for replay; the optimistic state
+        // update the caller already made keeps the UI truthful meanwhile.
+        setOffline(true);
+        if (method !== "GET") {
+          localStorage.setItem(QUEUE_KEY, JSON.stringify([...readQueue(), { path, method, body, query }]));
+        }
+        return new Response(null, { status: 503 });
+      }
     },
     [token]
   );
+
+  const flushQueue = useCallback(async () => {
+    if (flushing.current) return;
+    flushing.current = true;
+    try {
+      let q = readQueue();
+      while (q.length) {
+        const item = q[0];
+        try {
+          await fetch(`/api/scribe/${item.path}?token=${encodeURIComponent(token)}${item.query ?? ""}`, {
+            method: item.method,
+            headers: item.body ? { "Content-Type": "application/json" } : undefined,
+            body: item.body ? JSON.stringify(item.body) : undefined,
+          });
+        } catch {
+          return; // still offline; keep the rest queued
+        }
+        // Dequeue on any server response, even an error: replaying a bad
+        // request forever would wedge the whole queue.
+        q = q.slice(1);
+        localStorage.setItem(QUEUE_KEY, JSON.stringify(q));
+      }
+      setOffline(false);
+    } finally {
+      flushing.current = false;
+    }
+  }, [token]);
 
   const refresh = useCallback(async () => {
     const res = await call("todos", "GET");
@@ -151,10 +204,20 @@ export default function ListView({ token }: { token: string }) {
   }, [call]);
 
   useEffect(() => {
-    refresh();
-    const t = setInterval(refresh, 15000); // pick up captures from other devices
-    return () => clearInterval(t);
-  }, [refresh]);
+    // Flush before every refresh so the server catches up on queued edits
+    // before its state overwrites ours.
+    const tick = async () => {
+      await flushQueue();
+      refresh();
+    };
+    tick();
+    const t = setInterval(tick, 15000); // pick up captures from other devices
+    window.addEventListener("online", tick);
+    return () => {
+      clearInterval(t);
+      window.removeEventListener("online", tick);
+    };
+  }, [refresh, flushQueue]);
 
   // If the selected bucket disappears or gets hidden, fall back to All.
   useEffect(() => {
@@ -230,10 +293,26 @@ export default function ListView({ token }: { token: string }) {
     const text = newText.trim();
     if (!text) return;
     setNewText("");
-    await call("todos", "POST", {
-      text,
-      bucket_id: view === UNSORTED || view === ALL ? null : view,
-    });
+    const bucket_id = view === UNSORTED || view === ALL ? null : view;
+    const res = await call("todos", "POST", { text, bucket_id });
+    if (res.status === 503) {
+      // Offline: show it locally now; the queued POST creates the real row
+      // and the next successful refresh swaps this stand-in for it.
+      const top = Math.max(0, ...todos!.map((t) => Math.max(t.position, t.all_position)));
+      setTodos((ts) => [
+        ...ts!,
+        {
+          id: `local-${Date.now()}`,
+          created_at: new Date().toISOString(),
+          text,
+          done: false,
+          bucket_id,
+          position: top + 1,
+          all_position: top + 1,
+        },
+      ]);
+      return;
+    }
     refresh();
   }
 
@@ -577,6 +656,11 @@ export default function ListView({ token }: { token: string }) {
 
   return (
     <main className="mx-auto min-h-screen max-w-3xl bg-neutral-950 px-5 py-6 text-neutral-100">
+      {offline && (
+        <p className="mb-2 rounded-md border border-amber-900 bg-amber-950/50 px-3 py-1.5 text-xs text-amber-400">
+          Offline: changes are saved on this device and will sync when you reconnect.
+        </p>
+      )}
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-xl font-semibold">Todos</h1>
         <button
