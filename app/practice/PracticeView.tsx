@@ -5,7 +5,7 @@ import BpmRuler from "./BpmRuler";
 import Chart, { Series } from "./Chart";
 import { ClickSound, Metronome } from "./metronome";
 
-type Exercise = { id: string; name: string; position: number; archived: boolean };
+type Exercise = { id: string; name: string; position: number; archived: boolean; ref_url?: string | null };
 type Session = {
   id: string;
   exercise_id: string;
@@ -141,11 +141,17 @@ export default function PracticeView() {
   const [form, setForm] = useState<FormState | null>(null);
   const [saving, setSaving] = useState(false);
   const [expandedEx, setExpandedEx] = useState<string | null>(null);
-  const [justLogged, setJustLogged] = useState<Session | null>(null);
+  const [justLogged, setJustLogged] = useState<{ session: Session; pb: boolean } | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [metric, setMetric] = useState<"seconds" | "bpm">("seconds");
+  const [focusEx, setFocusEx] = useState<string | null>(null); // chart legend isolation
   const [manageOpen, setManageOpen] = useState(false);
   const [newExName, setNewExName] = useState("");
+  const [lightbox, setLightbox] = useState<string | null>(null);
+  const dragEx = useRef<string | null>(null);
+  const fileInput = useRef<HTMLInputElement | null>(null);
+  const attachTarget = useRef<string | null>(null);
+  const [uploading, setUploading] = useState<string | null>(null);
 
   function getMetro() {
     metro.current ??= new Metronome();
@@ -344,6 +350,17 @@ export default function PracticeView() {
     setSwRunning(false);
   }
 
+  // Toast a fresh log entry, celebrating if it set a new top BPM.
+  function announceLog(session: Session, prevBest: number) {
+    setJustLogged({ session, pb: session.bpm != null && prevBest > 0 && session.bpm > prevBest });
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setJustLogged(null), 6000);
+  }
+
+  function bestBpm(exId: string) {
+    return Math.max(0, ...(sessions ?? []).filter((s) => s.exercise_id === exId).map((s) => s.bpm ?? 0));
+  }
+
   // One tap: save immediately with the current bpm/elapsed; undo toast after.
   async function swLog() {
     if (!requireUnlock()) return;
@@ -354,6 +371,7 @@ export default function PracticeView() {
     const totalMs = swRunning ? swAccum.current + performance.now() - swStart.current : swAccum.current;
     const seconds = Math.round(totalMs / 1000);
     const exId = selectedEx;
+    const prevBest = bestBpm(exId);
     swReset();
     try {
       const { session } = await api("sessions", "POST", {
@@ -364,9 +382,7 @@ export default function PracticeView() {
         note: null,
       });
       setSessions((s) => [...(s ?? []), session]);
-      setJustLogged(session);
-      if (toastTimer.current) clearTimeout(toastTimer.current);
-      toastTimer.current = setTimeout(() => setJustLogged(null), 6000);
+      announceLog(session, prevBest);
     } catch (e) {
       // Fall back to the form so the measurement isn't lost.
       setForm({ exercise_id: exId, date: todayISO(), bpm: String(bpm), dur: fmtSecs(seconds), note: "" });
@@ -376,7 +392,7 @@ export default function PracticeView() {
 
   async function undoLog() {
     if (!justLogged) return;
-    const id = justLogged.id;
+    const id = justLogged.session.id;
     setJustLogged(null);
     setSessions((s) => s!.filter((x) => x.id !== id));
     try {
@@ -429,8 +445,10 @@ export default function PracticeView() {
         const { session } = await api("sessions", "PATCH", { id: form.id, ...body });
         setSessions((s) => s!.map((x) => (x.id === session.id ? session : x)));
       } else {
+        const prevBest = bestBpm(form.exercise_id);
         const { session } = await api("sessions", "POST", body);
         setSessions((s) => [...(s ?? []), session]);
+        announceLog(session, prevBest);
       }
       setForm(null);
     } catch (e) {
@@ -478,6 +496,100 @@ export default function PracticeView() {
     }
   }
 
+  // ---------- attachments ----------
+
+  function openRef(url: string) {
+    if (url.split("?")[0].toLowerCase().endsWith(".pdf")) window.open(url, "_blank", "noopener");
+    else setLightbox(url);
+  }
+
+  function pickFile(exId: string) {
+    if (!requireUnlock()) return;
+    attachTarget.current = exId;
+    fileInput.current?.click();
+  }
+
+  async function uploadRef(file: File) {
+    const exId = attachTarget.current;
+    if (!exId) return;
+    setUploading(exId);
+    try {
+      const token = localStorage.getItem(TOKEN_KEY) ?? "";
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("exercise_id", exId);
+      const res = await fetch(`/api/practice/upload?token=${encodeURIComponent(token)}`, { method: "POST", body: fd });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Upload failed");
+      setExercises((ex) => ex!.map((x) => (x.id === exId ? json.exercise : x)));
+    } catch (e) {
+      setError(String((e as Error).message));
+    } finally {
+      setUploading(null);
+    }
+  }
+
+  function linkRef(ex: Exercise) {
+    if (!requireUnlock()) return;
+    const url = prompt("Link an image or PDF (https://…)", ex.ref_url ?? "");
+    if (url === null) return;
+    void patchExercise(ex.id, { ref_url: url.trim() || null } as Partial<Exercise>);
+  }
+
+  // ---------- reorder ----------
+
+  // Give the moved exercise a position between its new neighbours.
+  function positionBetween(list: Exercise[], to: number) {
+    const prev = list[to - 1]?.position ?? (list[to + 1]?.position ?? 0) - 2;
+    const next = list[to + 1]?.position ?? (list[to - 1]?.position ?? 0) + 2;
+    return (prev + next) / 2;
+  }
+
+  function reorder(fromId: string, toId: string) {
+    if (fromId === toId) return;
+    const list = active.slice();
+    const from = list.findIndex((e) => e.id === fromId);
+    const to = list.findIndex((e) => e.id === toId);
+    if (from < 0 || to < 0) return;
+    const [moved] = list.splice(from, 1);
+    list.splice(to, 0, moved);
+    void patchExercise(moved.id, { position: positionBetween(list, to) });
+  }
+
+  function moveBy(ex: Exercise, dir: -1 | 1) {
+    const list = active.slice();
+    const from = list.findIndex((e) => e.id === ex.id);
+    const to = from + dir;
+    if (from < 0 || to < 0 || to >= list.length) return;
+    const [moved] = list.splice(from, 1);
+    list.splice(to, 0, moved);
+    void patchExercise(moved.id, { position: positionBetween(list, to) });
+  }
+
+  // ---------- csv export ----------
+
+  function exportCsv() {
+    const rows = [
+      ["date", "exercise", "bpm", "seconds", "time", "note"],
+      ...byDateDesc.map((s) => [
+        s.date,
+        exById.get(s.exercise_id)?.name ?? "",
+        s.bpm ?? "",
+        s.seconds ?? "",
+        s.seconds != null ? fmtSecs(s.seconds) : "",
+        s.note ?? "",
+      ]),
+    ];
+    const csv = rows
+      .map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+    a.download = `practice-log-${todayISO()}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
   // Tap a card: select it for the stopwatch and jump the metronome to the
   // BPM you last used on it, so you can start (or +5) without hunting.
   function armExercise(ex: Exercise, aggs: DayAgg[]) {
@@ -489,8 +601,31 @@ export default function PracticeView() {
   // ---------- derived ----------
 
   const exById = new Map((exercises ?? []).map((e) => [e.id, e]));
-  const active = (exercises ?? []).filter((e) => !e.archived);
+  const active = (exercises ?? []).filter((e) => !e.archived).sort((a, b) => a.position - b.position);
   const today = todayISO();
+
+  // Streak: consecutive practiced days ending today (or yesterday, so it
+  // doesn't read as broken before you've played today). Week: last 7 days.
+  const practicedDates = new Set((sessions ?? []).map((s) => s.date));
+  let streak = 0;
+  {
+    const d = new Date();
+    const iso = () =>
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    if (!practicedDates.has(iso())) d.setDate(d.getDate() - 1);
+    while (practicedDates.has(iso())) {
+      streak++;
+      d.setDate(d.getDate() - 1);
+    }
+  }
+  const weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 6);
+  const weekAgoISO = `${weekAgo.getFullYear()}-${String(weekAgo.getMonth() + 1).padStart(2, "0")}-${String(
+    weekAgo.getDate()
+  ).padStart(2, "0")}`;
+  const weekSecs = (sessions ?? [])
+    .filter((s) => s.date >= weekAgoISO)
+    .reduce((sum, s) => sum + (s.seconds ?? 0), 0);
 
   const series: Series[] = active
     .map((ex) => ({
@@ -502,6 +637,11 @@ export default function PracticeView() {
         .reverse(),
     }))
     .filter((s) => s.points.length > 0);
+
+  // Legend isolation: dim every line except the focused one.
+  const displaySeries: Series[] = focusEx
+    ? series.map((s) => (s.name === focusEx ? s : { ...s, color: s.color + "26" }))
+    : series;
 
   const byDateDesc = [...(sessions ?? [])].sort(
     (a, b) => b.date.localeCompare(a.date) || b.created_at.localeCompare(a.created_at)
@@ -613,6 +753,14 @@ export default function PracticeView() {
       <div className="flex items-center justify-between py-4">
         <h1 className="text-xl font-semibold">Guitar Practice</h1>
         <div className="flex items-center gap-3">
+          {streak > 1 && (
+            <span className="text-xs text-amber-400/90">{streak}-day streak</span>
+          )}
+          {weekSecs > 0 && (
+            <span className="hidden text-xs text-neutral-500 sm:inline">
+              <span className="tabular-nums text-neutral-300">{fmtSecs(weekSecs)}</span> this week
+            </span>
+          )}
           {todayTotal > 0 && (
             <span className="text-xs text-neutral-500">
               today <span className="tabular-nums text-neutral-300">{fmtSecs(todayTotal)}</span>
@@ -835,10 +983,35 @@ export default function PracticeView() {
                     selected ? "" : "border-neutral-800 hover:border-neutral-700"
                   }`}
                   style={selected ? { borderColor: exColor(ex.id) } : undefined}
+                  draggable={unlocked}
+                  onDragStart={() => {
+                    dragEx.current = ex.id;
+                  }}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    if (dragEx.current && dragEx.current !== ex.id) reorder(dragEx.current, ex.id);
+                    dragEx.current = null;
+                  }}
                 >
                   <button className="flex w-full items-center gap-2 text-left" onClick={() => armExercise(ex, aggs)}>
                     <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: exColor(ex.id) }} />
                     <span className="min-w-0 flex-1 break-words font-medium">{ex.name}</span>
+                    {ex.ref_url && (
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        title="View reference"
+                        className="px-1 text-xs text-neutral-500 hover:text-neutral-200"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openRef(ex.ref_url!);
+                        }}
+                        onKeyDown={(e) => e.key === "Enter" && openRef(ex.ref_url!)}
+                      >
+                        ♪
+                      </span>
+                    )}
                     <span
                       role="button"
                       tabIndex={0}
@@ -938,13 +1111,23 @@ export default function PracticeView() {
               <p className="py-8 text-center text-sm text-neutral-500">Loading…</p>
             ) : (
               <>
-                <Chart series={series} fmtY={metric === "seconds" ? fmtSecs : (y) => String(Math.round(y))} />
+                <Chart series={displaySeries} fmtY={metric === "seconds" ? fmtSecs : (y) => String(Math.round(y))} />
+                {/* Legend doubles as a filter: tap a name to isolate its line. */}
                 <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
                   {series.map((s) => (
-                    <span key={s.name} className="flex items-center gap-1.5 text-xs text-neutral-400">
-                      <span className="h-2 w-4 rounded-sm" style={{ background: s.color }} />
+                    <button
+                      key={s.name}
+                      onClick={() => setFocusEx(focusEx === s.name ? null : s.name)}
+                      className={`flex items-center gap-1.5 text-xs ${
+                        focusEx && focusEx !== s.name ? "text-neutral-600" : "text-neutral-400"
+                      }`}
+                    >
+                      <span
+                        className="h-2 w-4 rounded-sm"
+                        style={{ background: focusEx && focusEx !== s.name ? s.color + "40" : s.color }}
+                      />
                       {s.name}
-                    </span>
+                    </button>
                   ))}
                 </div>
               </>
@@ -955,15 +1138,22 @@ export default function PracticeView() {
           <section className={`${card} mb-4`}>
             <div className="mb-2 flex items-center justify-between">
               <h2 className="text-sm font-medium text-neutral-400">Log</h2>
-              <button
-                className="text-xs text-neutral-400 underline"
-                onClick={() =>
-                  requireUnlock() &&
-                  setForm({ exercise_id: selectedEx ?? "", date: todayISO(), bpm: "", dur: "", note: "" })
-                }
-              >
-                + add entry
-              </button>
+              <div className="flex gap-3">
+                {byDateDesc.length > 0 && (
+                  <button className="text-xs text-neutral-500 underline hover:text-neutral-300" onClick={exportCsv}>
+                    export csv
+                  </button>
+                )}
+                <button
+                  className="text-xs text-neutral-400 underline"
+                  onClick={() =>
+                    requireUnlock() &&
+                    setForm({ exercise_id: selectedEx ?? "", date: todayISO(), bpm: "", dur: "", note: "" })
+                  }
+                >
+                  + add entry
+                </button>
+              </div>
             </div>
             {!loading && byDateDesc.length === 0 && (
               <p className="text-sm text-neutral-600">Nothing logged yet.</p>
@@ -1038,6 +1228,54 @@ export default function PracticeView() {
                     {unlocked && (
                       <>
                         <button
+                          className="px-0.5 text-xs text-neutral-500 hover:text-neutral-200"
+                          onClick={() => moveBy(ex, -1)}
+                          title="Move up"
+                        >
+                          ↑
+                        </button>
+                        <button
+                          className="px-0.5 text-xs text-neutral-500 hover:text-neutral-200"
+                          onClick={() => moveBy(ex, 1)}
+                          title="Move down"
+                        >
+                          ↓
+                        </button>
+                        {uploading === ex.id ? (
+                          <span className="text-xs text-neutral-500">uploading…</span>
+                        ) : ex.ref_url ? (
+                          <>
+                            <button
+                              className="text-xs text-neutral-500 hover:text-neutral-200"
+                              onClick={() => openRef(ex.ref_url!)}
+                            >
+                              ref
+                            </button>
+                            <button
+                              className="text-xs text-neutral-500 hover:text-red-400"
+                              title="Remove reference"
+                              onClick={() => patchExercise(ex.id, { ref_url: null })}
+                            >
+                              ×ref
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              className="text-xs text-neutral-500 hover:text-neutral-200"
+                              onClick={() => pickFile(ex.id)}
+                            >
+                              attach
+                            </button>
+                            <button
+                              className="text-xs text-neutral-500 hover:text-neutral-200"
+                              onClick={() => linkRef(ex)}
+                            >
+                              link
+                            </button>
+                          </>
+                        )}
+                        <button
                           className="text-xs text-neutral-500 hover:text-neutral-200"
                           onClick={() => {
                             const name = prompt("Rename exercise", ex.name);
@@ -1074,18 +1312,51 @@ export default function PracticeView() {
         </div>
       </div>
 
-      {/* Undo toast for one-tap logging */}
+      {/* Undo toast for one-tap logging (amber celebration on a personal best) */}
       {justLogged && (
-        <div className="fixed bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-3 whitespace-nowrap rounded-full bg-neutral-800 px-4 py-2 text-sm shadow-lg">
+        <div
+          className={`fixed bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-3 whitespace-nowrap rounded-full px-4 py-2 text-sm shadow-lg ${
+            justLogged.pb ? "bg-amber-400 text-neutral-950" : "bg-neutral-800"
+          }`}
+        >
           <span>
-            Logged {exById.get(justLogged.exercise_id)?.name} · {justLogged.bpm} bpm ·{" "}
-            {fmtSecs(justLogged.seconds ?? 0)}
+            {justLogged.pb ? "✦ New best! " : "Logged "}
+            {exById.get(justLogged.session.exercise_id)?.name}
+            {justLogged.session.bpm != null && ` · ${justLogged.session.bpm} bpm`}
+            {justLogged.session.seconds != null && ` · ${fmtSecs(justLogged.session.seconds)}`}
           </span>
-          <button className="font-semibold text-amber-400" onClick={undoLog}>
+          <button
+            className={`font-semibold ${justLogged.pb ? "text-neutral-950 underline" : "text-amber-400"}`}
+            onClick={undoLog}
+          >
             Undo
           </button>
         </div>
       )}
+
+      {/* Fullscreen image reference viewer */}
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-40 flex items-center justify-center bg-black/90 p-4"
+          onClick={() => setLightbox(null)}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={lightbox} className="max-h-full max-w-full rounded" alt="reference" />
+        </div>
+      )}
+
+      {/* Hidden picker for reference uploads (triggered from Manage exercises) */}
+      <input
+        ref={fileInput}
+        type="file"
+        accept="image/*,application/pdf"
+        className="hidden"
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f) void uploadRef(f);
+          e.target.value = "";
+        }}
+      />
     </main>
   );
 }

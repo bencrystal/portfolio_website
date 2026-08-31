@@ -11,7 +11,7 @@ function unauthorized() {
 export async function GET() {
   const { data, error } = await scribeDb
     .from("practice_exercises")
-    .select("id, name, position, archived")
+    .select("id, name, position, archived, ref_url")
     .order("position", { ascending: true });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ exercises: data });
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ exercise: data });
 }
 
-// PATCH { id, name?, position?, archived? }
+// PATCH { id, name?, position?, archived?, ref_url? (null clears) }
 export async function PATCH(req: NextRequest) {
   if (!validPracticeToken(req.nextUrl.searchParams.get("token"))) return unauthorized();
   const { id, ...fields } = await req.json();
@@ -38,6 +38,12 @@ export async function PATCH(req: NextRequest) {
   if (typeof fields.name === "string" && fields.name.trim()) updates.name = fields.name.trim();
   if (typeof fields.position === "number") updates.position = fields.position;
   if (typeof fields.archived === "boolean") updates.archived = fields.archived;
+  if ("ref_url" in fields) {
+    updates.ref_url =
+      typeof fields.ref_url === "string" && /^https?:\/\//.test(fields.ref_url.trim())
+        ? fields.ref_url.trim()
+        : null;
+  }
   if (!id || Object.keys(updates).length === 0) {
     return NextResponse.json({ error: "missing id or fields" }, { status: 400 });
   }
