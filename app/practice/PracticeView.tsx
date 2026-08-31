@@ -148,6 +148,7 @@ export default function PracticeView() {
   const [manageOpen, setManageOpen] = useState(false);
   const [newExName, setNewExName] = useState("");
   const [lightbox, setLightbox] = useState<string | null>(null);
+  const [hoverRef, setHoverRef] = useState<string | null>(null); // desktop hover preview
   const dragEx = useRef<string | null>(null);
   const fileInput = useRef<HTMLInputElement | null>(null);
   const attachTarget = useRef<string | null>(null);
@@ -498,8 +499,12 @@ export default function PracticeView() {
 
   // ---------- attachments ----------
 
+  function isPdf(url: string) {
+    return url.split("?")[0].toLowerCase().endsWith(".pdf");
+  }
+
   function openRef(url: string) {
-    if (url.split("?")[0].toLowerCase().endsWith(".pdf")) window.open(url, "_blank", "noopener");
+    if (isPdf(url)) window.open(url, "_blank", "noopener");
     else setLightbox(url);
   }
 
@@ -1005,9 +1010,12 @@ export default function PracticeView() {
                         className="px-1 text-xs text-neutral-500 hover:text-neutral-200"
                         onClick={(e) => {
                           e.stopPropagation();
+                          setHoverRef(null);
                           openRef(ex.ref_url!);
                         }}
                         onKeyDown={(e) => e.key === "Enter" && openRef(ex.ref_url!)}
+                        onMouseEnter={() => setHoverRef(ex.ref_url!)}
+                        onMouseLeave={() => setHoverRef(null)}
                       >
                         ♪
                       </span>
@@ -1331,6 +1339,22 @@ export default function PracticeView() {
           >
             Undo
           </button>
+        </div>
+      )}
+
+      {/* Desktop hover preview: large in-page peek, click-through (pointer-events-none) */}
+      {hoverRef && !lightbox && (
+        <div className="pointer-events-none fixed inset-0 z-40 hidden items-center justify-center bg-black/70 p-8 lg:flex">
+          {isPdf(hoverRef) ? (
+            <iframe
+              src={hoverRef}
+              title="reference preview"
+              className="h-full w-full max-w-4xl rounded border border-neutral-700 bg-neutral-900"
+            />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={hoverRef} className="max-h-full max-w-full rounded shadow-2xl" alt="reference preview" />
+          )}
         </div>
       )}
 
