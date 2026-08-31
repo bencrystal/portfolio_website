@@ -813,7 +813,7 @@ export default function PracticeView() {
         {/* ---- Content column ---- */}
         <div>
           {/* Exercise cards: last vs today at a glance; tap = arm stopwatch + metronome. */}
-          <section className="mb-4 grid gap-2 sm:grid-cols-2">
+          <section className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
             {active.map((ex) => {
               const aggs = aggByDate(sessions ?? [], ex.id);
               const todayAgg = aggs[0]?.date === today ? aggs[0] : null;
@@ -838,7 +838,7 @@ export default function PracticeView() {
                 >
                   <button className="flex w-full items-center gap-2 text-left" onClick={() => armExercise(ex, aggs)}>
                     <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: exColor(ex.id) }} />
-                    <span className="min-w-0 flex-1 truncate font-medium">{ex.name}</span>
+                    <span className="min-w-0 flex-1 break-words font-medium">{ex.name}</span>
                     <span
                       role="button"
                       tabIndex={0}
