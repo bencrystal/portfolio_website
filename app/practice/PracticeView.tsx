@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import BpmRuler from "./BpmRuler";
 import Chart, { Series } from "./Chart";
-import { Metronome } from "./metronome";
+import { ClickSound, Metronome } from "./metronome";
 
 type Exercise = { id: string; name: string; position: number; archived: boolean };
 type Session = {
@@ -31,6 +31,19 @@ const NOTE_PAIRS: string[][] = [
   ["A"], ["A#", "Bb"], ["B"], ["C"], ["C#", "Db"], ["D"],
   ["D#", "Eb"], ["E"], ["F"], ["F#", "Gb"], ["G"], ["G#", "Ab"],
 ];
+
+type Note = { idx: number; label: string };
+
+// Random pitch, never the same as the previous one; black keys get their
+// flat spelling half the time.
+function randNote(excludeIdx: number | null): Note {
+  let idx = excludeIdx;
+  while (idx === excludeIdx) idx = Math.floor(Math.random() * 12);
+  const pair = NOTE_PAIRS[idx!];
+  return { idx: idx!, label: pair.length === 2 && Math.random() < 0.5 ? pair[1] : pair[0] };
+}
+
+const PREFS_KEY = "practice_prefs";
 
 function fmtSecs(total: number) {
   const s = Math.round(total);
@@ -104,11 +117,18 @@ export default function PracticeView() {
   const [beatsPerBar, setBeatsPerBar] = useState(4);
   const [pulse, setPulse] = useState(-1);
   const [metroOpen, setMetroOpen] = useState(false); // mobile: full controls expanded
+  const [sound, setSound] = useState<ClickSound>("beep");
+  const [volume, setVolume] = useState(1);
   const taps = useRef<number[]>([]);
 
   // --- random note ---
-  const [noteIdx, setNoteIdx] = useState<number | null>(null);
-  const [noteLabel, setNoteLabel] = useState<string>("");
+  const [noteCur, setNoteCur] = useState<Note | null>(null);
+  const [noteNext, setNoteNext] = useState<Note | null>(null);
+  const noteRef = useRef<{ cur: Note | null; next: Note | null }>({ cur: null, next: null });
+  // Auto-advance interval in beats while the metronome runs (0 = off).
+  const [noteSync, setNoteSync] = useState(0);
+  const noteSyncRef = useRef(0);
+  const beatCount = useRef(0);
 
   // --- stopwatch ---
   const [selectedEx, setSelectedEx] = useState<string | null>(null);
@@ -149,7 +169,22 @@ export default function PracticeView() {
       .catch((e) => setError(String(e.message ?? e)));
     // Re-verify a remembered password silently.
     if (localStorage.getItem(TOKEN_KEY)) void verifyToken(localStorage.getItem(TOKEN_KEY)!).then(setUnlocked);
+    // Restore metronome prefs.
+    try {
+      const p = JSON.parse(localStorage.getItem(PREFS_KEY) ?? "{}");
+      if (typeof p.bpm === "number") setBpm(clampBpm(p.bpm));
+      if (typeof p.beatsPerBar === "number") setBeatsPerBar(p.beatsPerBar);
+      if (["beep", "wood", "tick"].includes(p.sound)) setSound(p.sound);
+      if (typeof p.volume === "number") setVolume(Math.min(1, Math.max(0, p.volume)));
+      if (typeof p.noteSync === "number") setNoteSync(p.noteSync);
+    } catch {
+      // Corrupt prefs — defaults are fine.
+    }
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ bpm, beatsPerBar, sound, volume, noteSync }));
+  }, [bpm, beatsPerBar, sound, volume, noteSync]);
 
   // The sessions PATCH route checks the token before reading the body, so an
   // empty body distinguishes "authorized but bad request" (400) from 401.
@@ -201,9 +236,26 @@ export default function PracticeView() {
 
   // ---------- metronome ----------
 
+  // Advance to the (pre-generated) next note and queue a fresh one, so the
+  // upcoming note can always be previewed.
+  const advanceNote = useCallback(() => {
+    const cur = noteRef.current.next ?? randNote(noteRef.current.cur?.idx ?? null);
+    const next = randNote(cur.idx);
+    noteRef.current = { cur, next };
+    setNoteCur(cur);
+    setNoteNext(next);
+  }, []);
+
   const toggleMetronome = useCallback(() => {
     const m = getMetro();
-    m.onBeat = (b) => setPulse(b);
+    m.onBeat = (b) => {
+      setPulse(b);
+      const every = noteSyncRef.current;
+      if (every > 0) {
+        if (beatCount.current % every === 0) advanceNote();
+        beatCount.current++;
+      }
+    };
     if (m.running) {
       m.stop();
       setRunning(false);
@@ -211,10 +263,11 @@ export default function PracticeView() {
     } else {
       m.bpm = bpm;
       m.beatsPerBar = beatsPerBar;
+      beatCount.current = 0;
       m.start();
       setRunning(true);
     }
-  }, [bpm, beatsPerBar]);
+  }, [bpm, beatsPerBar, advanceNote]);
 
   useEffect(() => {
     getMetro().bpm = bpm;
@@ -222,6 +275,15 @@ export default function PracticeView() {
   useEffect(() => {
     getMetro().beatsPerBar = beatsPerBar;
   }, [beatsPerBar]);
+  useEffect(() => {
+    getMetro().sound = sound;
+  }, [sound]);
+  useEffect(() => {
+    getMetro().volume = volume;
+  }, [volume]);
+  useEffect(() => {
+    noteSyncRef.current = noteSync;
+  }, [noteSync]);
 
   const nudgeBpm = (d: number) => setBpm((b) => clampBpm(b + d));
 
@@ -238,32 +300,24 @@ export default function PracticeView() {
     }
   }
 
-  // ---------- random note ----------
-
-  const shuffleNote = useCallback(() => {
-    setNoteIdx((prev) => {
-      let idx = prev;
-      while (idx === prev) idx = Math.floor(Math.random() * 12);
-      const pair = NOTE_PAIRS[idx!];
-      // 50/50 chance a black key is spelled as its flat name.
-      setNoteLabel(pair.length === 2 && Math.random() < 0.5 ? pair[1] : pair[0]);
-      return idx;
-    });
-  }, []);
+  // ---------- keyboard ----------
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       const tag = (e.target as HTMLElement)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || e.metaKey || e.ctrlKey) return;
-      if (e.key === "n" || e.key === "N") shuffleNote();
-      if (e.key === " ") {
-        e.preventDefault();
-        toggleMetronome();
-      }
+      if (e.key === "n" || e.key === "N") advanceNote();
+      else if (e.key === " ") toggleMetronome();
+      else if (e.key === "ArrowUp") nudgeBpm(+1);
+      else if (e.key === "ArrowDown") nudgeBpm(-1);
+      else if (e.key === "ArrowRight") nudgeBpm(+5);
+      else if (e.key === "ArrowLeft") nudgeBpm(-5);
+      else return;
+      e.preventDefault();
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [shuffleNote, toggleMetronome]);
+  }, [advanceNote, toggleMetronome]);
 
   // ---------- stopwatch ----------
 
@@ -547,11 +601,12 @@ export default function PracticeView() {
         </button>
         {startBtn()}
         <button
-          onClick={shuffleNote}
-          className="ml-auto min-w-[3.25rem] rounded-md bg-neutral-800 px-2 py-1.5 text-center text-xl font-bold hover:bg-neutral-700"
+          onClick={advanceNote}
+          className="ml-auto flex min-w-[3.25rem] items-baseline justify-center gap-1.5 rounded-md bg-neutral-800 px-2 py-1.5 text-center text-xl font-bold hover:bg-neutral-700"
           aria-label="random note"
         >
-          {noteLabel || "♪?"}
+          {noteCur?.label ?? "♪?"}
+          {noteNext && noteSync > 0 && <span className="text-xs font-normal text-neutral-500">{noteNext.label}</span>}
         </button>
       </div>
 
@@ -653,19 +708,76 @@ export default function PracticeView() {
                 ))}
               </select>
             </div>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <div className="flex overflow-hidden rounded-md border border-neutral-700 text-xs">
+                {(["beep", "wood", "tick"] as const).map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => setSound(s)}
+                    className={`px-2.5 py-1.5 ${sound === s ? "bg-neutral-200 text-neutral-950" : "text-neutral-400"}`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={Math.round(volume * 100)}
+                onChange={(e) => setVolume(Number(e.target.value) / 100)}
+                className="w-24 accent-amber-500"
+                aria-label="volume"
+              />
+              <label className="ml-auto flex items-center gap-1.5 text-xs text-neutral-500 lg:hidden">
+                note every
+                <select
+                  value={noteSync}
+                  onChange={(e) => setNoteSync(Number(e.target.value))}
+                  className={input}
+                  aria-label="auto note change"
+                >
+                  <option value={0}>off</option>
+                  {[1, 2, 4, 8].map((n) => (
+                    <option key={n} value={n}>
+                      {n} beat{n > 1 ? "s" : ""}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
           </section>
 
           {/* Random note: its own card on desktop; lives in the strip on mobile. */}
-          <section className={`${card} mb-4 hidden items-center justify-between lg:flex`}>
+          <section className={`${card} mb-4 hidden items-center justify-between gap-3 lg:flex`}>
             <div>
               <h2 className="text-sm font-medium text-neutral-400">Random note</h2>
               <p className="text-xs text-neutral-600">press N or tap the note</p>
+              <label className="mt-2 flex items-center gap-1.5 text-xs text-neutral-500">
+                change every
+                <select
+                  value={noteSync}
+                  onChange={(e) => setNoteSync(Number(e.target.value))}
+                  className={input}
+                  aria-label="auto note change"
+                >
+                  <option value={0}>off</option>
+                  {[1, 2, 4, 8].map((n) => (
+                    <option key={n} value={n}>
+                      {n} beat{n > 1 ? "s" : ""}
+                    </option>
+                  ))}
+                </select>
+              </label>
             </div>
             <button
-              onClick={shuffleNote}
-              className="min-w-[5.5rem] rounded-lg bg-neutral-800 px-4 py-3 text-center text-3xl font-bold hover:bg-neutral-700"
+              onClick={advanceNote}
+              className="min-w-[5.5rem] rounded-lg bg-neutral-800 px-4 py-3 text-center hover:bg-neutral-700"
             >
-              {noteLabel || "?"}
+              <span className="text-3xl font-bold">{noteCur?.label ?? "?"}</span>
+              {noteNext && noteSync > 0 && (
+                <span className="ml-2 align-middle text-sm text-neutral-500">then {noteNext.label}</span>
+              )}
             </button>
           </section>
 
@@ -740,32 +852,36 @@ export default function PracticeView() {
                       {expanded ? "▾" : "▸"}
                     </span>
                   </button>
-                  <div className="mt-2 grid grid-cols-2 gap-1 text-sm">
-                    <div className="text-neutral-400">
-                      <span className="text-xs text-neutral-600">
-                        {lastAgg ? fmtDateShort(lastAgg.date) : "last"}{" "}
-                      </span>
-                      {lastAgg ? (
-                        <span className="tabular-nums">
-                          {lastAgg.bpm > 0 && `${lastAgg.bpm} bpm · `}
-                          {lastAgg.seconds > 0 && fmtSecs(lastAgg.seconds)}
+                  {aggs.length === 0 ? (
+                    <p className="mt-2 text-xs text-neutral-600">not practiced yet — tap to arm the stopwatch</p>
+                  ) : (
+                    <div className="mt-2 grid grid-cols-2 gap-1 text-sm">
+                      <div className="text-neutral-400">
+                        <span className="text-xs text-neutral-600">
+                          {lastAgg ? fmtDateShort(lastAgg.date) : "last"}{" "}
                         </span>
-                      ) : (
-                        <span className="text-neutral-600">—</span>
-                      )}
+                        {lastAgg ? (
+                          <span className="tabular-nums">
+                            {lastAgg.bpm > 0 && `${lastAgg.bpm} bpm · `}
+                            {lastAgg.seconds > 0 && fmtSecs(lastAgg.seconds)}
+                          </span>
+                        ) : (
+                          <span className="text-neutral-600">—</span>
+                        )}
+                      </div>
+                      <div>
+                        <span className="text-xs text-neutral-600">today </span>
+                        {todayAgg ? (
+                          <span className="tabular-nums">
+                            {todayAgg.bpm > 0 && `${todayAgg.bpm} bpm · `}
+                            {todayAgg.seconds > 0 && fmtSecs(todayAgg.seconds)}
+                          </span>
+                        ) : (
+                          <span className="text-neutral-600">—</span>
+                        )}
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-xs text-neutral-600">today </span>
-                      {todayAgg ? (
-                        <span className="tabular-nums">
-                          {todayAgg.bpm > 0 && `${todayAgg.bpm} bpm · `}
-                          {todayAgg.seconds > 0 && fmtSecs(todayAgg.seconds)}
-                        </span>
-                      ) : (
-                        <span className="text-neutral-600">—</span>
-                      )}
-                    </div>
-                  </div>
+                  )}
                   {(timeDelta !== null || bpmDelta !== null) && (
                     <div className="mt-1 flex gap-3 text-xs">
                       {bpmDelta !== null && bpmDelta !== 0 && (
@@ -802,8 +918,8 @@ export default function PracticeView() {
 
           {entryForm}
 
-          {/* Charts */}
-          <section className={`${card} mb-4`}>
+          {/* Charts (hidden until there's something to plot) */}
+          <section className={`${card} mb-4 ${!loading && series.length === 0 ? "hidden" : ""}`}>
             <div className="mb-2 flex items-center justify-between">
               <h2 className="text-sm font-medium text-neutral-400">Progress</h2>
               <div className="flex overflow-hidden rounded-md border border-neutral-700 text-xs">
@@ -850,7 +966,7 @@ export default function PracticeView() {
               </button>
             </div>
             {!loading && byDateDesc.length === 0 && (
-              <p className="py-4 text-center text-sm text-neutral-500">Nothing logged yet.</p>
+              <p className="text-sm text-neutral-600">Nothing logged yet.</p>
             )}
             {dates.map((date) => (
               <div key={date} className="mb-3">
@@ -872,7 +988,7 @@ export default function PracticeView() {
                       />
                       <span className="min-w-0 flex-1 truncate">{exById.get(s.exercise_id)?.name ?? "?"}</span>
                       {s.note && (
-                        <span className="hidden max-w-[10rem] truncate text-xs text-neutral-500 sm:inline">{s.note}</span>
+                        <span className="max-w-[8rem] truncate text-xs text-neutral-500 sm:max-w-[10rem]">{s.note}</span>
                       )}
                       <span className="tabular-nums text-neutral-400">{s.bpm != null ? `${s.bpm} bpm` : ""}</span>
                       <span className="w-14 text-right tabular-nums">{s.seconds != null ? fmtSecs(s.seconds) : ""}</span>

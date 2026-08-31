@@ -4,6 +4,9 @@ import type { ReactNode } from "react";
 export const metadata: Metadata = {
   title: "Practice",
   robots: { index: false, follow: false },
+  manifest: "/practice.webmanifest",
+  icons: { apple: "/apple-touch-icon-practice.png" },
+  appleWebApp: { capable: true, title: "Practice", statusBarStyle: "black" },
 };
 
 // maximumScale keeps double-tap/pinch zoom from fighting the dial and
