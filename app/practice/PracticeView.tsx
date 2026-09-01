@@ -667,8 +667,18 @@ export default function PracticeView() {
     return url.split("?")[0].toLowerCase().endsWith(".pdf");
   }
 
+  // Uploads live in our Supabase bucket; anything else is an external link.
+  function isUpload(url: string) {
+    return url.includes("/storage/v1/object/public/");
+  }
+
+  function isImage(url: string) {
+    return /\.(png|jpe?g|gif|webp|heic)$/i.test(url.split("?")[0]);
+  }
+
   function openRef(url: string) {
-    if (isPdf(url)) window.open(url, "_blank", "noopener");
+    // External links and PDFs get their own tab; uploaded images the lightbox.
+    if (!isUpload(url) || isPdf(url)) window.open(url, "_blank", "noopener");
     else setLightbox(url);
   }
 
@@ -1306,7 +1316,7 @@ export default function PracticeView() {
                       <span
                         role="button"
                         tabIndex={0}
-                        title="View reference"
+                        title={isUpload(ex.ref_url) ? "View reference" : "Open link"}
                         className="px-1 text-xs text-neutral-500 hover:text-neutral-200"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -1317,7 +1327,7 @@ export default function PracticeView() {
                         onMouseEnter={() => setHoverRef(ex.ref_url!)}
                         onMouseLeave={() => setHoverRef(null)}
                       >
-                        📄
+                        {isUpload(ex.ref_url) ? "📄" : "🔗"}
                       </span>
                     )}
                     <span
@@ -1778,7 +1788,9 @@ export default function PracticeView() {
       {/* Desktop hover preview: large in-page peek, click-through (pointer-events-none) */}
       {hoverRef && !lightbox && (
         <div className="pointer-events-none fixed inset-0 z-40 hidden items-center justify-center bg-black/70 p-8 lg:flex">
-          {isPdf(hoverRef) ? (
+          {isPdf(hoverRef) || (!isUpload(hoverRef) && !isImage(hoverRef)) ? (
+            // PDFs and linked webpages preview in a framed peek (sites that
+            // forbid embedding just render blank — the click still opens them).
             <iframe
               src={hoverRef}
               title="reference preview"
