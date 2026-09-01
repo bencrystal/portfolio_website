@@ -1028,7 +1028,7 @@ export default function PracticeView() {
             <div className="flex items-center gap-2">
               <div className="mr-auto">
                 <div className="text-3xl font-bold tabular-nums">{fmtSecs(swElapsed / 1000)}</div>
-                <div className="max-w-[10rem] truncate text-xs text-neutral-500">
+                <div className="break-words text-xs text-neutral-500">
                   {selectedEx ? exById.get(selectedEx)?.name : "no exercise selected"}
                 </div>
                 {selectedEx && exById.get(selectedEx)?.track_variants && (
@@ -1090,10 +1090,11 @@ export default function PracticeView() {
               return (
                 <div
                   key={ex.id}
-                  className={`rounded-xl border bg-neutral-900 p-3 transition-colors ${
+                  className={`cursor-pointer rounded-xl border bg-neutral-900 p-3 transition-colors ${
                     selected ? "" : "border-neutral-800 hover:border-neutral-700"
                   }`}
                   style={selected ? { borderColor: exColor(ex.id) } : undefined}
+                  onClick={() => armExercise(ex, aggs)}
                   draggable={unlocked}
                   onDragStart={() => {
                     dragEx.current = ex.id;
