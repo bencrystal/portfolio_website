@@ -32,12 +32,13 @@ type Session = {
 
 const TOKEN_KEY = "practice_token";
 
-// Same stable-color trick as /list: hash the id into a palette slot.
+// Same stable-color trick as /list: hash the id into a palette slot. The
+// component then resolves collisions so no two exercises share a dot.
 const PALETTE = ["#3b82f6", "#ef4444", "#eab308", "#22c55e", "#f97316", "#a855f7", "#14b8a6", "#ec4899"];
-function exColor(id: string) {
+function hashSlot(id: string) {
   let h = 5381;
   for (let i = 0; i < id.length; i++) h = ((h << 5) + h + id.charCodeAt(i)) >>> 0;
-  return PALETTE[h % PALETTE.length];
+  return h % PALETTE.length;
 }
 
 // 12 chromatic pitches; the black keys carry both spellings.
@@ -190,6 +191,40 @@ function NoteMorph({
         </span>
       )}
     </>
+  );
+}
+
+// Descriptions are plain text with newlines preserved, but runs of lines that
+// look like ASCII tab (3+ dashes) get a monospace block with horizontal
+// scroll — reflowing tab in a proportional font destroys its alignment.
+const TAB_LINE = /-{3,}/;
+function DescriptionBody({ text }: { text: string }) {
+  const blocks: { mono: boolean; lines: string[] }[] = [];
+  for (const line of text.split("\n")) {
+    const mono = TAB_LINE.test(line);
+    const last = blocks[blocks.length - 1];
+    if (last && last.mono === mono) last.lines.push(line);
+    else blocks.push({ mono, lines: [line] });
+  }
+  return (
+    <div className="space-y-1.5">
+      {blocks.map((b, i) =>
+        b.mono ? (
+          <pre
+            key={i}
+            className="overflow-x-auto whitespace-pre rounded bg-neutral-950 p-2 font-mono text-[11px] leading-4 text-neutral-300"
+          >
+            {b.lines.join("\n")}
+          </pre>
+        ) : (
+          b.lines.join("\n").trim() && (
+            <p key={i} className="whitespace-pre-line text-xs text-neutral-400">
+              {b.lines.join("\n").trim()}
+            </p>
+          )
+        )
+      )}
+    </div>
   );
 }
 
@@ -803,6 +838,22 @@ export default function PracticeView() {
   const active = (exercises ?? []).filter((e) => !e.archived).sort((a, b) => a.position - b.position);
   const today = todayISO();
 
+  // Identity colors: hash gives each exercise a stable starting slot, then we
+  // walk to the next free one so no two dots collide (until the palette runs
+  // out at 8). Sorted by id so the assignment doesn't shift on reorder.
+  const colorByEx = new Map<string, string>();
+  {
+    const taken = new Set<number>();
+    for (const id of (exercises ?? []).map((e) => e.id).sort()) {
+      if (taken.size === PALETTE.length) taken.clear();
+      let slot = hashSlot(id);
+      while (taken.has(slot)) slot = (slot + 1) % PALETTE.length;
+      taken.add(slot);
+      colorByEx.set(id, PALETTE[slot]);
+    }
+  }
+  const colorOf = (id: string) => colorByEx.get(id) ?? PALETTE[hashSlot(id)];
+
   // Streak: consecutive practiced days ending today (or yesterday, so it
   // doesn't read as broken before you've played today). Week: last 7 days.
   const practicedDates = new Set((sessions ?? []).map((s) => s.date));
@@ -852,7 +903,7 @@ export default function PracticeView() {
       const mk = (v: Variant | undefined, suffix: string, dash: boolean): VSeries => ({
         name: ex.name + suffix,
         exName: ex.name,
-        color: exColor(ex.id),
+        color: colorOf(ex.id),
         dash,
         points: aggByDate(sessions ?? [], ex.id, v)
           .map((a) => ({ x: new Date(a.date + "T00:00:00").getTime(), y: a[metric] }))
@@ -1109,14 +1160,16 @@ export default function PracticeView() {
                 </div>
               )}
             </div>
+            {/* While a session runs the live timer takes over and the
+                set-and-forget bpm number steps back. */}
             <div className="flex items-end justify-between">
               <div>
-                <div className="text-4xl font-bold tabular-nums">
+                <div className={`font-bold tabular-nums transition-all ${swRunning ? "text-2xl" : "text-4xl"}`}>
                   {bpm}
                   <span className="ml-1 text-sm font-normal text-neutral-500">bpm</span>
                 </div>
                 {/* Beat dots live right under the number they describe; the
-                    downbeat pulses amber and a touch larger. */}
+                    downbeat is amber even at rest so "1" reads at a glance. */}
                 <div className="mt-1.5 flex items-center gap-2">
                   {Array.from({ length: beatsPerBar }, (_, i) => (
                     <span
@@ -1126,14 +1179,22 @@ export default function PracticeView() {
                           ? i === 0
                             ? "scale-125 bg-amber-400"
                             : "bg-neutral-200"
-                          : "bg-neutral-700"
+                          : i === 0
+                            ? "bg-amber-500/40"
+                            : "bg-neutral-700"
                       }`}
                     />
                   ))}
                 </div>
               </div>
               <div className="pb-0.5 text-right">
-                <div className="text-3xl font-bold tabular-nums">{fmtSecs(swElapsed / 1000)}</div>
+                <div
+                  className={`font-bold tabular-nums transition-all ${
+                    swRunning ? "text-5xl text-amber-400" : swElapsed > 0 ? "text-3xl" : "text-3xl text-neutral-600"
+                  }`}
+                >
+                  {fmtSecs(swElapsed / 1000)}
+                </div>
                 <div className="text-[10px] text-neutral-600">session</div>
               </div>
             </div>
@@ -1178,13 +1239,20 @@ export default function PracticeView() {
                 </>
               )}
             </div>
-            <div className="mt-3 flex flex-wrap items-center gap-3">
+            {/* A mode, not a setting — its own row, quieter than Start. */}
+            <div className="mt-2">
               <button
-                className="text-xs text-neutral-500 underline hover:text-neutral-300"
+                className={`w-full rounded-md border px-3 py-1.5 text-xs ${
+                  running
+                    ? "border-amber-500/50 text-amber-400 hover:bg-neutral-800"
+                    : "border-neutral-700 text-neutral-300 hover:bg-neutral-800"
+                }`}
                 onClick={toggleMetronome}
               >
                 {running ? "stop metronome" : "metronome only"}
               </button>
+            </div>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
               <div className="flex overflow-hidden rounded-md border border-neutral-700 text-xs">
                 {(["beep", "wood", "tick"] as const).map((s) => (
                   <button
@@ -1196,15 +1264,18 @@ export default function PracticeView() {
                   </button>
                 ))}
               </div>
-              <input
-                type="range"
-                min={0}
-                max={100}
-                value={Math.round(volume * 100)}
-                onChange={(e) => setVolume(Number(e.target.value) / 100)}
-                className="w-24 accent-amber-500"
-                aria-label="volume"
-              />
+              <label className="flex items-center gap-1 text-xs text-neutral-500">
+                🔊
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  value={Math.round(volume * 100)}
+                  onChange={(e) => setVolume(Number(e.target.value) / 100)}
+                  className="w-24 accent-amber-500"
+                  aria-label="volume"
+                />
+              </label>
               <label className="ml-auto flex items-center gap-1.5 text-xs text-neutral-500 lg:hidden">
                 note every
                 <select
@@ -1269,6 +1340,15 @@ export default function PracticeView() {
         {/* ---- Content column ---- */}
         <div>
           {/* Exercise cards: last vs today at a glance; tap = arm stopwatch + metronome. */}
+          <div className="mb-2 flex items-center justify-between">
+            <h2 className="text-sm font-medium text-neutral-400">Exercises</h2>
+            <button
+              className="text-xs text-neutral-500 underline hover:text-neutral-300"
+              onClick={() => setManageOpen((o) => !o)}
+            >
+              {manageOpen ? "close manage" : "manage"}
+            </button>
+          </div>
           <section className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
             {/* Said once, up here — the cards below just show a quiet "—". */}
             {!loading && (sessions ?? []).length === 0 && active.length > 0 && (
@@ -1296,7 +1376,7 @@ export default function PracticeView() {
                   className={`cursor-pointer rounded-xl border bg-neutral-900 p-3 transition-colors ${
                     selected ? "" : "border-neutral-800 hover:border-neutral-700"
                   }`}
-                  style={selected ? { borderColor: exColor(ex.id) } : undefined}
+                  style={selected ? { borderColor: colorOf(ex.id) } : undefined}
                   onClick={() => armExercise(ex, aggs)}
                   draggable={unlocked}
                   onDragStart={() => {
@@ -1310,13 +1390,17 @@ export default function PracticeView() {
                   }}
                 >
                   <button className="flex w-full items-center gap-2 text-left" onClick={() => armExercise(ex, aggs)}>
-                    <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: exColor(ex.id) }} />
+                    <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: colorOf(ex.id) }} />
                     <span className="min-w-0 flex-1 break-words font-medium">{ex.name}</span>
                     {ex.ref_url && (
                       <span
                         role="button"
                         tabIndex={0}
-                        title={isUpload(ex.ref_url) ? "View reference" : "Open link"}
+                        title={
+                          isUpload(ex.ref_url)
+                            ? "Attached reference — click to view"
+                            : "Reference link — opens in a new tab"
+                        }
                         className="px-1 text-xs text-neutral-500 hover:text-neutral-200"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -1333,6 +1417,7 @@ export default function PracticeView() {
                     <span
                       role="button"
                       tabIndex={0}
+                      title="History & full description"
                       className="px-1 text-xs text-neutral-500 hover:text-neutral-200"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -1343,10 +1428,13 @@ export default function PracticeView() {
                       {expanded ? "▾" : "▸"}
                     </span>
                   </button>
-                  {ex.description && (
-                    <p className="mt-0.5 pl-[1.125rem] text-xs text-neutral-500">{ex.description}</p>
+                  {ex.description && !expanded && (
+                    // Two-line teaser; the chevron's detail view has the rest.
+                    <p className="mt-0.5 line-clamp-2 whitespace-pre-line pl-[1.125rem] text-xs text-neutral-500">
+                      {ex.description}
+                    </p>
                   )}
-                  {ex.track_variants ? (
+                  {aggs.length === 0 ? null : ex.track_variants ? (
                     // One row per stroke-start so both tempos are visible at a glance.
                     <div className="mt-2 space-y-0.5 text-sm">
                       {(["down", "up"] as const).map((v) => {
@@ -1422,6 +1510,11 @@ export default function PracticeView() {
                   )}
                   {expanded && (
                     <div className="mt-2 border-t border-neutral-800 pt-2 text-xs text-neutral-400">
+                      {ex.description && (
+                        <div className="mb-2">
+                          <DescriptionBody text={ex.description} />
+                        </div>
+                      )}
                       {aggs.slice(0, 7).map((a) => (
                         <div key={a.date} className="flex justify-between py-0.5 tabular-nums">
                           <span>{fmtDateShort(a.date)}</span>
@@ -1436,7 +1529,9 @@ export default function PracticeView() {
               );
             })}
             {!loading && active.length === 0 && (
-              <p className={`${card} text-sm text-neutral-500 sm:col-span-2`}>No exercises yet — add one below.</p>
+              <p className={`${card} text-sm text-neutral-500 sm:col-span-2`}>
+                No exercises yet — open “manage” above to add one.
+              </p>
             )}
           </section>
 
@@ -1546,7 +1641,7 @@ export default function PracticeView() {
                     <div key={s.id} className="flex items-baseline gap-2 border-b border-neutral-800/60 py-1.5 text-sm">
                       <span
                         className="h-2 w-2 shrink-0 self-center rounded-full"
-                        style={{ background: exColor(s.exercise_id) }}
+                        style={{ background: colorOf(s.exercise_id) }}
                       />
                       <span className="min-w-0 flex-1 truncate">
                         {exById.get(s.exercise_id)?.name ?? "?"}
@@ -1588,21 +1683,21 @@ export default function PracticeView() {
             ))}
           </section>
 
-          {/* Exercises */}
+          {/* Manage panel: opened from the small link by the Exercises header. */}
+          {manageOpen && (
           <section className={card}>
             <button
               className="flex w-full items-center justify-between text-sm font-medium text-neutral-400"
-              onClick={() => setManageOpen((o) => !o)}
+              onClick={() => setManageOpen(false)}
             >
               Manage exercises
-              <span className="text-xs">{manageOpen ? "▾" : "▸"}</span>
+              <span className="text-xs">▾</span>
             </button>
-            {manageOpen && (
               <div className="mt-3">
                 {(exercises ?? []).map((ex) => (
                   <div key={ex.id} className="border-b border-neutral-800/60">
                   <div className="flex items-center gap-2 py-1.5 text-sm">
-                    <span className="h-2 w-2 rounded-full" style={{ background: exColor(ex.id) }} />
+                    <span className="h-2 w-2 rounded-full" style={{ background: colorOf(ex.id) }} />
                     <span className={`flex-1 ${ex.archived ? "text-neutral-600 line-through" : ""}`}>{ex.name}</span>
                     {unlocked && (
                       <>
@@ -1741,8 +1836,8 @@ export default function PracticeView() {
                   </button>
                 </div>
               </div>
-            )}
           </section>
+          )}
         </div>
       </div>
 

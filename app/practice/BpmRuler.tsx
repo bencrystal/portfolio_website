@@ -53,19 +53,22 @@ export default function BpmRuler({ value, onChange }: { value: number; onChange:
       for (let bpm = MIN; bpm <= MAX; bpm += STEP) {
         const x = center + (bpm - current) * POINTS_PER_BPM;
         if (x < -20 || x > width + 20) continue;
+        // Three tiers so the scale reads precisely: labeled 20s, medium 10s,
+        // small 5s.
         const isMajor = bpm % majorEvery === 0;
-        const tickHeight = isMajor ? 18 : 10;
+        const isMid = !isMajor && bpm % (STEP * 2) === 0;
+        const tickHeight = isMajor ? 18 : isMid ? 13 : 8;
         // Ticks fade toward the edges so the ruler feels like it emerges
         // from the card rather than being clipped by it.
         const opacity = Math.min(1, Math.max(0, Math.min(x, width - x) / edgeFade));
-        g.strokeStyle = `rgba(163,163,163,${(isMajor ? 0.8 : 0.4) * opacity})`;
+        g.strokeStyle = `rgba(163,163,163,${(isMajor ? 0.85 : isMid ? 0.55 : 0.35) * opacity})`;
         g.lineWidth = isMajor ? 2 : 1;
         g.beginPath();
         g.moveTo(x, HEIGHT - 14);
         g.lineTo(x, HEIGHT - 14 - tickHeight);
         g.stroke();
         if (isMajor) {
-          g.fillStyle = `rgba(163,163,163,${opacity})`;
+          g.fillStyle = `rgba(212,212,212,${opacity})`;
           g.fillText(String(bpm), x, HEIGHT - 2);
         }
       }
