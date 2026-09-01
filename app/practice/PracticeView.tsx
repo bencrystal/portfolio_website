@@ -893,14 +893,17 @@ export default function PracticeView() {
           )}
           {unlocked ? (
             <span className="text-xs text-neutral-500">
-              editing on ·{" "}
+              logged in ·{" "}
               <button className="underline hover:text-neutral-300" onClick={signOut}>
-                sign out
+                log out
               </button>
             </span>
           ) : (
-            <button className="text-xs text-neutral-400 underline" onClick={() => setUnlockOpen(true)}>
-              unlock editing
+            <button
+              className="rounded-md border border-neutral-600 px-3 py-1 text-xs font-semibold text-neutral-200 hover:border-neutral-400 hover:bg-neutral-800"
+              onClick={() => setUnlockOpen(true)}
+            >
+              Log in
             </button>
           )}
         </div>
@@ -909,7 +912,7 @@ export default function PracticeView() {
       {unlockOpen && !unlocked && (
         <div className={`${card} mb-4`}>
           <p className="mb-2 text-sm text-neutral-400">
-            Enter your password (saved on this device) — it opens your own practice log.
+            Log in with your password — it opens your own practice log and stays saved on this device.
           </p>
           <div className="flex gap-2">
             <input
@@ -922,7 +925,7 @@ export default function PracticeView() {
               className={`${input} flex-1`}
             />
             <button className={btn} onClick={submitPassword}>
-              Unlock
+              Log in
             </button>
             <button className={btn} onClick={() => setUnlockOpen(false)}>
               Cancel
@@ -1162,7 +1165,7 @@ export default function PracticeView() {
                         onMouseEnter={() => setHoverRef(ex.ref_url!)}
                         onMouseLeave={() => setHoverRef(null)}
                       >
-                        ♪
+                        📄
                       </span>
                     )}
                     <span
