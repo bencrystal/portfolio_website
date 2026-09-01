@@ -138,6 +138,11 @@ function NoteMorph({
   nextClass: string;
 }) {
   const [active, setActive] = useState(false);
+  // Measured end pose: how far (and how much bigger) the upcoming note must
+  // travel so it lands exactly on the current note's spot at the swap.
+  const [target, setTarget] = useState<{ x: number; y: number; s: number } | null>(null);
+  const curRef = useRef<HTMLSpanElement | null>(null);
+  const nextRef = useRef<HTMLSpanElement | null>(null);
   // Reset synchronously when the note swaps so the new pair paints at rest
   // (no one-frame flash of the animated state).
   const [prevCur, setPrevCur] = useState(cur);
@@ -150,9 +155,18 @@ function NoteMorph({
       setActive(false);
       return;
     }
-    // Double rAF: let the at-rest styles paint first, then start the ease.
+    // Double rAF: measure the at-rest layout first, then start the ease.
     let id2 = 0;
     const id = requestAnimationFrame(() => {
+      const c = curRef.current?.getBoundingClientRect();
+      const n = nextRef.current?.getBoundingClientRect();
+      if (c && n && n.height > 0) {
+        setTarget({
+          x: c.left + c.width / 2 - (n.left + n.width / 2),
+          y: c.top + c.height / 2 - (n.top + n.height / 2),
+          s: c.height / n.height,
+        });
+      }
       id2 = requestAnimationFrame(() => setActive(true));
     });
     return () => {
@@ -164,6 +178,7 @@ function NoteMorph({
   return (
     <>
       <span
+        ref={curRef}
         className={curClass}
         style={
           active
@@ -175,13 +190,14 @@ function NoteMorph({
       </span>
       {next && (
         <span
+          ref={nextRef}
           className={nextClass}
           style={
-            active
+            active && target
               ? {
                   transition: ease,
-                  transform: "translateX(-1em) scale(1.9)",
-                  transformOrigin: "left center",
+                  transform: `translate(${target.x}px, ${target.y}px) scale(${target.s})`,
+                  transformOrigin: "center",
                   color: "#f5f5f5",
                 }
               : { transform: "none" }
@@ -705,10 +721,6 @@ export default function PracticeView() {
   // Uploads live in our Supabase bucket; anything else is an external link.
   function isUpload(url: string) {
     return url.includes("/storage/v1/object/public/");
-  }
-
-  function isImage(url: string) {
-    return /\.(png|jpe?g|gif|webp|heic)$/i.test(url.split("?")[0]);
   }
 
   function openRef(url: string) {
@@ -1408,7 +1420,7 @@ export default function PracticeView() {
                           openRef(ex.ref_url!);
                         }}
                         onKeyDown={(e) => e.key === "Enter" && openRef(ex.ref_url!)}
-                        onMouseEnter={() => setHoverRef(ex.ref_url!)}
+                        onMouseEnter={() => isUpload(ex.ref_url!) && setHoverRef(ex.ref_url!)}
                         onMouseLeave={() => setHoverRef(null)}
                       >
                         {isUpload(ex.ref_url) ? "📄" : "🔗"}
@@ -1883,9 +1895,7 @@ export default function PracticeView() {
       {/* Desktop hover preview: large in-page peek, click-through (pointer-events-none) */}
       {hoverRef && !lightbox && (
         <div className="pointer-events-none fixed inset-0 z-40 hidden items-center justify-center bg-black/70 p-8 lg:flex">
-          {isPdf(hoverRef) || (!isUpload(hoverRef) && !isImage(hoverRef)) ? (
-            // PDFs and linked webpages preview in a framed peek (sites that
-            // forbid embedding just render blank — the click still opens them).
+          {isPdf(hoverRef) ? (
             <iframe
               src={hoverRef}
               title="reference preview"
