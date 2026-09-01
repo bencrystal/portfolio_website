@@ -488,6 +488,14 @@ export default function PracticeView() {
     setSwRunning(false);
   }
 
+  // The one primary control: stopwatch and metronome move together. The
+  // metronome alone stays reachable via its own small affordance.
+  function startSession() {
+    const m = getMetro();
+    swToggle();
+    if (swRunning === m.running) toggleMetronome();
+  }
+
   // Toast a fresh log entry, celebrating if it set a new top BPM.
   function announceLog(session: Session, prevBest: number) {
     setJustLogged({ session, pb: session.bpm != null && prevBest > 0 && session.bpm > prevBest });
@@ -864,6 +872,22 @@ export default function PracticeView() {
     .filter((s) => s.date === today)
     .reduce((sum, s) => sum + (s.seconds ?? 0), 0);
 
+  // Today's time on the armed exercise, shown in the session hero.
+  const selTodaySecs = (sessions ?? [])
+    .filter((s) => s.exercise_id === selectedEx && s.date === today)
+    .reduce((sum, s) => sum + (s.seconds ?? 0), 0);
+
+  // With under 5 practiced days a line chart is mostly single dots, so the
+  // Progress card shows a week strip + streak until there's a real trend.
+  const chartReady = dates.length >= 5;
+  const last7: { iso: string; label: string; done: boolean }[] = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    last7.push({ iso, label: "SMTWTFS"[d.getDay()], done: practicedDates.has(iso) });
+  }
+
   const loading = exercises === null || sessions === null;
 
   // ---------- render ----------
@@ -873,14 +897,14 @@ export default function PracticeView() {
   const input =
     "rounded-md border border-neutral-700 bg-neutral-950 px-2 py-1.5 text-sm placeholder:text-neutral-600";
 
-  const startBtn = (extra = "") => (
+  const sessionBtn = (extra = "") => (
     <button
       className={`rounded-md px-4 py-2 text-sm font-semibold ${
-        running ? "bg-amber-500 text-neutral-950 hover:bg-amber-400" : "bg-neutral-100 text-neutral-950 hover:bg-white"
+        swRunning ? "bg-amber-500 text-neutral-950 hover:bg-amber-400" : "bg-neutral-100 text-neutral-950 hover:bg-white"
       } ${extra}`}
-      onClick={toggleMetronome}
+      onClick={startSession}
     >
-      {running ? "Stop" : "Start"}
+      {swRunning ? "Stop" : swElapsed > 0 ? "Resume" : "Start session"}
     </button>
   );
 
@@ -962,7 +986,7 @@ export default function PracticeView() {
         <button className={btn} onClick={() => nudgeBpm(+5)}>
           +5
         </button>
-        {startBtn()}
+        {sessionBtn()}
         <button
           onClick={advanceNote}
           className="ml-auto flex min-w-[3.25rem] items-baseline justify-center gap-1.5 rounded-md bg-neutral-800 px-2 py-1.5 text-center text-xl font-bold hover:bg-neutral-700"
@@ -985,24 +1009,6 @@ export default function PracticeView() {
       <div className="flex items-center justify-between py-4">
         <h1 className="text-xl font-semibold">Guitar Practice</h1>
         <div className="flex items-center gap-3">
-          {streak > 1 && (
-            <span className="hidden text-xs text-amber-400/90 sm:inline">{streak}-day streak</span>
-          )}
-          {weekSecs > 0 && (
-            <span className="hidden text-xs text-neutral-500 sm:inline">
-              <span className="tabular-nums text-neutral-300">{fmtSecs(weekSecs)}</span> this week
-            </span>
-          )}
-          {totalSecs > 0 && (
-            <span className="hidden text-xs text-neutral-500 lg:inline">
-              <span className="tabular-nums text-neutral-300">{fmtSecs(totalSecs)}</span> all-time
-            </span>
-          )}
-          {todayTotal > 0 && (
-            <span className="text-xs text-neutral-500">
-              today <span className="tabular-nums text-neutral-300">{fmtSecs(todayTotal)}</span>
-            </span>
-          )}
           {unlocked ? (
             <span className="text-xs text-neutral-500">
               logged in ·{" "}
@@ -1059,27 +1065,70 @@ export default function PracticeView() {
       <div className="lg:grid lg:grid-cols-[24rem_minmax(0,1fr)] lg:items-start lg:gap-6">
         {/* ---- Tools column ---- */}
         <div className="lg:sticky lg:top-4">
-          {/* Full metronome card: always on desktop, expanded-only on mobile. */}
-          <section className={`${card} mb-4 ${metroOpen ? "" : "hidden lg:block"}`}>
-            <div className="mb-1 flex items-end justify-between">
-              <div className="text-4xl font-bold tabular-nums">
-                {bpm}
-                <span className="ml-1 text-sm font-normal text-neutral-500">bpm</span>
+          {/* Session hero: armed exercise + tempo + one primary control.
+              Always on desktop, expanded-only on mobile (the strip drives it). */}
+          <section className={`${card} mb-4 border-amber-500/25 ${metroOpen ? "" : "hidden lg:block"}`}>
+            <div className="mb-3">
+              <div className="break-words font-medium">
+                {selectedEx ? exById.get(selectedEx)?.name : <span className="text-neutral-500">no exercise armed</span>}
               </div>
-              <div className="flex items-center gap-1.5 pb-2">
-                {Array.from({ length: beatsPerBar }, (_, i) => (
-                  <span
-                    key={i}
-                    className={`h-2.5 w-2.5 rounded-full transition-colors ${
-                      running && pulse === i ? (i === 0 ? "bg-amber-400" : "bg-neutral-200") : "bg-neutral-700"
-                    }`}
-                  />
-                ))}
+              <div className="text-xs text-neutral-500">
+                {bpm} bpm · {beatsPerBar}/4 · {sound}
+                {selTodaySecs > 0 && (
+                  <>
+                    {" · "}
+                    <span className="tabular-nums text-neutral-300">{fmtSecs(selTodaySecs)}</span> today
+                  </>
+                )}
+              </div>
+              {selectedEx && exById.get(selectedEx)?.track_variants && (
+                <div className="mt-1.5 flex gap-1">
+                  {(["down", "up"] as const).map((v) => (
+                    <button
+                      key={v}
+                      onClick={() => selectVariant(v)}
+                      className={`rounded px-2 py-1 text-xs ${
+                        variant === v
+                          ? "bg-neutral-200 font-semibold text-neutral-950"
+                          : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700"
+                      }`}
+                    >
+                      {v === "down" ? "↓ down" : "↑ up"}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="flex items-end justify-between">
+              <div>
+                <div className="text-4xl font-bold tabular-nums">
+                  {bpm}
+                  <span className="ml-1 text-sm font-normal text-neutral-500">bpm</span>
+                </div>
+                {/* Beat dots live right under the number they describe; the
+                    downbeat pulses amber and a touch larger. */}
+                <div className="mt-1.5 flex items-center gap-2">
+                  {Array.from({ length: beatsPerBar }, (_, i) => (
+                    <span
+                      key={i}
+                      className={`h-3.5 w-3.5 rounded-full transition-all ${
+                        running && pulse === i
+                          ? i === 0
+                            ? "scale-125 bg-amber-400"
+                            : "bg-neutral-200"
+                          : "bg-neutral-700"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+              <div className="pb-0.5 text-right">
+                <div className="text-3xl font-bold tabular-nums">{fmtSecs(swElapsed / 1000)}</div>
+                <div className="text-[10px] text-neutral-600">session</div>
               </div>
             </div>
             <BpmRuler value={bpm} onChange={setBpm} />
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              {startBtn("hidden lg:block")}
               <button className={btn} onClick={tapTempo}>
                 Tap
               </button>
@@ -1103,7 +1152,29 @@ export default function PracticeView() {
                 ))}
               </select>
             </div>
+            <div className="mt-3 flex items-center gap-2">
+              {sessionBtn("flex-1 py-3")}
+              {swElapsed > 0 && !swRunning && (
+                <>
+                  <button
+                    className="rounded-md bg-amber-500 px-4 py-3 text-sm font-semibold text-neutral-950 hover:bg-amber-400"
+                    onClick={swLog}
+                  >
+                    Log it
+                  </button>
+                  <button className={btn} onClick={swReset}>
+                    Reset
+                  </button>
+                </>
+              )}
+            </div>
             <div className="mt-3 flex flex-wrap items-center gap-3">
+              <button
+                className="text-xs text-neutral-500 underline hover:text-neutral-300"
+                onClick={toggleMetronome}
+              >
+                {running ? "stop metronome" : "metronome only"}
+              </button>
               <div className="flex overflow-hidden rounded-md border border-neutral-700 text-xs">
                 {(["beep", "wood", "tick"] as const).map((s) => (
                   <button
@@ -1183,56 +1254,18 @@ export default function PracticeView() {
             </button>
           </section>
 
-          {/* Stopwatch */}
-          <section className={`${card} mb-4`}>
-            <div className="flex items-center gap-2">
-              <div className="mr-auto">
-                <div className="text-3xl font-bold tabular-nums">{fmtSecs(swElapsed / 1000)}</div>
-                <div className="break-words text-xs text-neutral-500">
-                  {selectedEx ? exById.get(selectedEx)?.name : "no exercise selected"}
-                </div>
-                {selectedEx && exById.get(selectedEx)?.track_variants && (
-                  <div className="mt-1 flex gap-1">
-                    {(["down", "up"] as const).map((v) => (
-                      <button
-                        key={v}
-                        onClick={() => selectVariant(v)}
-                        className={`rounded px-1.5 py-0.5 text-xs ${
-                          variant === v
-                            ? "bg-neutral-200 font-semibold text-neutral-950"
-                            : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700"
-                        }`}
-                      >
-                        {v === "down" ? "↓ down" : "↑ up"}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <button className={btn} onClick={swToggle}>
-                {swRunning ? "Pause" : swElapsed > 0 ? "Resume" : "Start"}
-              </button>
-              {swElapsed > 0 && (
-                <>
-                  <button className={btn} onClick={swReset}>
-                    Reset
-                  </button>
-                  <button
-                    className="rounded-md bg-neutral-100 px-4 py-2 text-sm font-semibold text-neutral-950 hover:bg-white"
-                    onClick={swLog}
-                  >
-                    Log it
-                  </button>
-                </>
-              )}
-            </div>
-          </section>
         </div>
 
         {/* ---- Content column ---- */}
         <div>
           {/* Exercise cards: last vs today at a glance; tap = arm stopwatch + metronome. */}
           <section className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {/* Said once, up here — the cards below just show a quiet "—". */}
+            {!loading && (sessions ?? []).length === 0 && active.length > 0 && (
+              <p className="text-xs text-neutral-600 sm:col-span-2">
+                Nothing logged yet — tap an exercise to arm it, then Start session.
+              </p>
+            )}
             {active.map((ex) => {
               const aggs = aggByDate(sessions ?? [], ex.id);
               const todayAgg = aggs[0]?.date === today ? aggs[0] : null;
@@ -1303,9 +1336,7 @@ export default function PracticeView() {
                   {ex.description && (
                     <p className="mt-0.5 pl-[1.125rem] text-xs text-neutral-500">{ex.description}</p>
                   )}
-                  {aggs.length === 0 ? (
-                    <p className="mt-2 text-xs text-neutral-600">not practiced yet — tap to arm the stopwatch</p>
-                  ) : ex.track_variants ? (
+                  {ex.track_variants ? (
                     // One row per stroke-start so both tempos are visible at a glance.
                     <div className="mt-2 space-y-0.5 text-sm">
                       {(["down", "up"] as const).map((v) => {
@@ -1401,24 +1432,45 @@ export default function PracticeView() {
 
           {entryForm}
 
-          {/* Charts (hidden until there's something to plot) */}
-          <section className={`${card} mb-4 ${!loading && series.length === 0 ? "hidden" : ""}`}>
+          {/* Progress: a real chart once ~5 days exist; before that a week
+              strip + streak, which says more than a scatter of single dots. */}
+          <section className={`${card} mb-4 ${!loading && byDateDesc.length === 0 ? "hidden" : ""}`}>
             <div className="mb-2 flex items-center justify-between">
               <h2 className="text-sm font-medium text-neutral-400">Progress</h2>
-              <div className="flex overflow-hidden rounded-md border border-neutral-700 text-xs">
-                {(["seconds", "bpm"] as const).map((m) => (
-                  <button
-                    key={m}
-                    onClick={() => setMetric(m)}
-                    className={`px-3 py-1 ${metric === m ? "bg-neutral-200 text-neutral-950" : "text-neutral-400"}`}
-                  >
-                    {m === "seconds" ? "Time" : "BPM"}
-                  </button>
-                ))}
-              </div>
+              {chartReady && (
+                <div className="flex overflow-hidden rounded-md border border-neutral-700 text-xs">
+                  {(["seconds", "bpm"] as const).map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => setMetric(m)}
+                      className={`px-3 py-1 ${metric === m ? "bg-neutral-200 text-neutral-950" : "text-neutral-400"}`}
+                    >
+                      {m === "seconds" ? "Time" : "BPM"}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             {loading ? (
               <p className="py-8 text-center text-sm text-neutral-500">Loading…</p>
+            ) : !chartReady ? (
+              <div>
+                <div className="flex gap-1.5">
+                  {last7.map((d) => (
+                    <div key={d.iso} className="flex-1 text-center">
+                      <div
+                        className={`h-8 rounded ${
+                          d.done ? "bg-amber-500/80" : "bg-neutral-800"
+                        } ${d.iso === today ? "ring-1 ring-neutral-600" : ""}`}
+                      />
+                      <div className="mt-1 text-[10px] text-neutral-600">{d.label}</div>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-2 text-xs text-neutral-600">
+                  {streak > 1 ? `${streak}-day streak · ` : ""}charts unlock after 5 practiced days ({dates.length}/5)
+                </p>
+              </div>
             ) : (
               <>
                 <Chart series={displaySeries} fmtY={metric === "seconds" ? fmtSecs : (y) => String(Math.round(y))} />
@@ -1688,13 +1740,15 @@ export default function PracticeView() {
           Mobile also gets streak/week/all-time here since the header hides them. */}
       {!loading && totalSecs > 0 && (
         <footer className="mt-8 text-center text-[10px] leading-relaxed text-neutral-600">
-          <span className="sm:hidden">
-            {streak > 1 && <span className="text-amber-400/80">{streak}-day streak · </span>}
-            <span className="tabular-nums">{fmtSecs(weekSecs)}</span> this week ·{" "}
-            <span className="tabular-nums">{fmtSecs(totalSecs)}</span> all-time ·{" "}
-          </span>
-          {daysPracticed} day{daysPracticed !== 1 ? "s" : ""} practiced · best streak {bestStreak} · avg{" "}
-          <span className="tabular-nums">{fmtSecs(totalSecs / daysPracticed)}</span>/day
+          {streak > 1 && <span className="text-amber-400/80">streak {streak} · </span>}
+          {todayTotal > 0 && (
+            <>
+              today <span className="tabular-nums">{fmtSecs(todayTotal)}</span> ·{" "}
+            </>
+          )}
+          this week <span className="tabular-nums">{fmtSecs(weekSecs)}</span> · all-time{" "}
+          <span className="tabular-nums">{fmtSecs(totalSecs)}</span> · days practiced {daysPracticed} · best streak{" "}
+          {bestStreak} · avg <span className="tabular-nums">{fmtSecs(totalSecs / daysPracticed)}</span>/day
         </footer>
       )}
 
