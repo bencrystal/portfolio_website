@@ -728,6 +728,24 @@ export default function PracticeView() {
     .filter((s) => s.date >= weekAgoISO)
     .reduce((sum, s) => sum + (s.seconds ?? 0), 0);
 
+  const totalSecs = (sessions ?? []).reduce((sum, s) => sum + (s.seconds ?? 0), 0);
+  const daysPracticed = practicedDates.size;
+  // Longest run of consecutive practiced days ever.
+  let bestStreak = 0;
+  {
+    const ds = Array.from(practicedDates).sort();
+    let run = 0;
+    for (let i = 0; i < ds.length; i++) {
+      const prev = new Date(ds[i] + "T00:00:00");
+      prev.setDate(prev.getDate() - 1);
+      const prevISO = `${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, "0")}-${String(
+        prev.getDate()
+      ).padStart(2, "0")}`;
+      run = i > 0 && ds[i - 1] === prevISO ? run + 1 : 1;
+      bestStreak = Math.max(bestStreak, run);
+    }
+  }
+
   // Variant-tracked exercises get two lines in the same color: solid for
   // down-stroke starts, dashed for up. exName groups them for the legend.
   type VSeries = Series & { exName: string };
@@ -879,11 +897,16 @@ export default function PracticeView() {
         <h1 className="text-xl font-semibold">Guitar Practice</h1>
         <div className="flex items-center gap-3">
           {streak > 1 && (
-            <span className="text-xs text-amber-400/90">{streak}-day streak</span>
+            <span className="hidden text-xs text-amber-400/90 sm:inline">{streak}-day streak</span>
           )}
           {weekSecs > 0 && (
             <span className="hidden text-xs text-neutral-500 sm:inline">
               <span className="tabular-nums text-neutral-300">{fmtSecs(weekSecs)}</span> this week
+            </span>
+          )}
+          {totalSecs > 0 && (
+            <span className="hidden text-xs text-neutral-500 lg:inline">
+              <span className="tabular-nums text-neutral-300">{fmtSecs(totalSecs)}</span> all-time
             </span>
           )}
           {todayTotal > 0 && (
@@ -1532,6 +1555,20 @@ export default function PracticeView() {
           </section>
         </div>
       </div>
+
+      {/* Tiny lifetime stats, tucked at the bottom so they never crowd the tools.
+          Mobile also gets streak/week/all-time here since the header hides them. */}
+      {!loading && totalSecs > 0 && (
+        <footer className="mt-8 text-center text-[10px] leading-relaxed text-neutral-600">
+          <span className="sm:hidden">
+            {streak > 1 && <span className="text-amber-400/80">{streak}-day streak · </span>}
+            <span className="tabular-nums">{fmtSecs(weekSecs)}</span> this week ·{" "}
+            <span className="tabular-nums">{fmtSecs(totalSecs)}</span> all-time ·{" "}
+          </span>
+          {daysPracticed} day{daysPracticed !== 1 ? "s" : ""} practiced · best streak {bestStreak} · avg{" "}
+          <span className="tabular-nums">{fmtSecs(totalSecs / daysPracticed)}</span>/day
+        </footer>
+      )}
 
       {/* Undo toast for one-tap logging (amber celebration on a personal best) */}
       {justLogged && (
