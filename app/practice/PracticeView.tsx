@@ -120,6 +120,79 @@ type FormState = {
   variant?: string; // "" | "down" | "up"
 };
 
+// Current + upcoming note. When morphMs is set (auto-advance, a few beats
+// before the swap) the upcoming label eases into the current one's spot while
+// the current shrinks away, landing right as the swap happens on the downbeat.
+function NoteMorph({
+  cur,
+  next,
+  morphMs,
+  curClass,
+  nextClass,
+}: {
+  cur: string;
+  next: string | null;
+  morphMs: number | null;
+  curClass: string;
+  nextClass: string;
+}) {
+  const [active, setActive] = useState(false);
+  // Reset synchronously when the note swaps so the new pair paints at rest
+  // (no one-frame flash of the animated state).
+  const [prevCur, setPrevCur] = useState(cur);
+  if (prevCur !== cur) {
+    setPrevCur(cur);
+    setActive(false);
+  }
+  useEffect(() => {
+    if (morphMs == null) {
+      setActive(false);
+      return;
+    }
+    // Double rAF: let the at-rest styles paint first, then start the ease.
+    let id2 = 0;
+    const id = requestAnimationFrame(() => {
+      id2 = requestAnimationFrame(() => setActive(true));
+    });
+    return () => {
+      cancelAnimationFrame(id);
+      cancelAnimationFrame(id2);
+    };
+  }, [morphMs, cur]);
+  const ease = `all ${morphMs ?? 0}ms cubic-bezier(0.65, 0, 0.35, 1)`; // easeInOutCubic
+  return (
+    <>
+      <span
+        className={curClass}
+        style={
+          active
+            ? { transition: ease, opacity: 0, transform: "scale(0.55)", transformOrigin: "center" }
+            : { opacity: 1, transform: "none" }
+        }
+      >
+        {cur}
+      </span>
+      {next && (
+        <span
+          className={nextClass}
+          style={
+            active
+              ? {
+                  transition: ease,
+                  transform: "translateX(-1em) scale(1.9)",
+                  transformOrigin: "left center",
+                  color: "#f5f5f5",
+                }
+              : { transform: "none" }
+          }
+        >
+          {next}
+        </span>
+      )}
+    </>
+  );
+}
+
 export default function PracticeView() {
   const [exercises, setExercises] = useState<Exercise[] | null>(null);
   const [sessions, setSessions] = useState<Session[] | null>(null);
@@ -150,6 +223,7 @@ export default function PracticeView() {
   const [noteSync, setNoteSync] = useState(0);
   const noteSyncRef = useRef(0);
   const barCount = useRef(-1); // bars since start; -1 until the first downbeat
+  const [noteMorph, setNoteMorph] = useState<number | null>(null); // ms of the lead-in animation
 
   // --- stopwatch ---
   const [selectedEx, setSelectedEx] = useState<string | null>(null);
@@ -305,6 +379,7 @@ export default function PracticeView() {
     noteRef.current = { cur, next };
     setNoteCur(cur);
     setNoteNext(next);
+    setNoteMorph(null);
   }, []);
 
   const toggleMetronome = useCallback(() => {
@@ -319,12 +394,16 @@ export default function PracticeView() {
         // switched on mid-run.
         const beatIndex = barCount.current * m.beatsPerBar + b;
         if (beatIndex % every === 0) advanceNote();
+        // Up to 4 beats before the swap, start easing the upcoming note in.
+        const lead = Math.min(4, every);
+        if ((beatIndex + lead) % every === 0) setNoteMorph((lead * 60000) / m.bpm);
       }
     };
     if (m.running) {
       m.stop();
       setRunning(false);
       setPulse(-1);
+      setNoteMorph(null);
     } else {
       m.bpm = bpm;
       m.beatsPerBar = beatsPerBar;
@@ -889,8 +968,17 @@ export default function PracticeView() {
           className="ml-auto flex min-w-[3.25rem] items-baseline justify-center gap-1.5 rounded-md bg-neutral-800 px-2 py-1.5 text-center text-xl font-bold hover:bg-neutral-700"
           aria-label="random note"
         >
-          {noteCur?.label ?? "♪?"}
-          {noteNext && noteSync > 0 && <span className="text-xs font-normal text-neutral-500">{noteNext.label}</span>}
+          {noteCur ? (
+            <NoteMorph
+              cur={noteCur.label}
+              next={noteSync > 0 ? noteNext?.label ?? null : null}
+              morphMs={noteMorph}
+              curClass="inline-block"
+              nextClass="inline-block text-xs font-normal text-neutral-500"
+            />
+          ) : (
+            "♪?"
+          )}
         </button>
       </div>
 
@@ -1045,7 +1133,7 @@ export default function PracticeView() {
                   aria-label="auto note change"
                 >
                   <option value={0}>off</option>
-                  {[1, 2, 4, 8].map((n) => (
+                  {[1, 2, 4, 8, 16, 32].map((n) => (
                     <option key={n} value={n}>
                       {n} beat{n > 1 ? "s" : ""}
                     </option>
@@ -1069,7 +1157,7 @@ export default function PracticeView() {
                   aria-label="auto note change"
                 >
                   <option value={0}>off</option>
-                  {[1, 2, 4, 8].map((n) => (
+                  {[1, 2, 4, 8, 16, 32].map((n) => (
                     <option key={n} value={n}>
                       {n} beat{n > 1 ? "s" : ""}
                     </option>
@@ -1081,9 +1169,16 @@ export default function PracticeView() {
               onClick={advanceNote}
               className="min-w-[5.5rem] rounded-lg bg-neutral-800 px-4 py-3 text-center hover:bg-neutral-700"
             >
-              <span className="text-3xl font-bold">{noteCur?.label ?? "?"}</span>
-              {noteNext && noteSync > 0 && (
-                <span className="ml-2 align-middle text-sm text-neutral-500">then {noteNext.label}</span>
+              {noteCur ? (
+                <NoteMorph
+                  cur={noteCur.label}
+                  next={noteSync > 0 ? noteNext?.label ?? null : null}
+                  morphMs={noteMorph}
+                  curClass="inline-block text-3xl font-bold"
+                  nextClass="ml-2 inline-block align-middle text-sm text-neutral-500"
+                />
+              ) : (
+                <span className="text-3xl font-bold">?</span>
               )}
             </button>
           </section>
