@@ -6,6 +6,7 @@
 export type Series = {
   name: string;
   color: string;
+  dash?: boolean; // dashed line (e.g. up-stroke variant)
   points: { x: number; y: number }[]; // sorted by x
 };
 
@@ -73,6 +74,7 @@ export default function Chart({ series, fmtY }: { series: Series[]; fmtY: (y: nu
             fill="none"
             stroke={s.color}
             strokeWidth={2}
+            strokeDasharray={s.dash ? "6 5" : undefined}
             strokeLinejoin="round"
             strokeLinecap="round"
           />

@@ -5,7 +5,19 @@ import BpmRuler from "./BpmRuler";
 import Chart, { Series } from "./Chart";
 import { ClickSound, Metronome } from "./metronome";
 
-type Exercise = { id: string; name: string; position: number; archived: boolean; ref_url?: string | null };
+// Variant: which stroke the exercise starts on, for exercises practiced both
+// ways at different tempos. Sessions logged before the flag existed count as
+// down-strokes (the usual default).
+type Variant = "down" | "up";
+
+type Exercise = {
+  id: string;
+  name: string;
+  position: number;
+  archived: boolean;
+  ref_url?: string | null;
+  track_variants?: boolean;
+};
 type Session = {
   id: string;
   exercise_id: string;
@@ -13,6 +25,7 @@ type Session = {
   bpm: number | null;
   seconds: number | null;
   note: string | null;
+  variant?: Variant | null;
   created_at: string;
 };
 
@@ -78,16 +91,22 @@ const clampBpm = (b: number) => Math.min(300, Math.max(20, Math.round(b)));
 
 // Per-exercise daily rollup: total time, top BPM, newest first.
 type DayAgg = { date: string; seconds: number; bpm: number };
-function aggByDate(sessions: Session[], exId: string): DayAgg[] {
+function aggByDate(sessions: Session[], exId: string, variant?: Variant): DayAgg[] {
   const byDate = new Map<string, DayAgg>();
   for (const s of sessions) {
     if (s.exercise_id !== exId) continue;
+    if (variant && (s.variant ?? "down") !== variant) continue;
     const cur = byDate.get(s.date) ?? { date: s.date, seconds: 0, bpm: 0 };
     cur.seconds += s.seconds ?? 0;
     cur.bpm = Math.max(cur.bpm, s.bpm ?? 0);
     byDate.set(s.date, cur);
   }
   return Array.from(byDate.values()).sort((a, b) => b.date.localeCompare(a.date));
+}
+
+// "96 bpm · 4:10" — whichever parts an aggregate actually has.
+function fmtAgg(a: DayAgg) {
+  return [a.bpm > 0 ? `${a.bpm} bpm` : "", a.seconds > 0 ? fmtSecs(a.seconds) : ""].filter(Boolean).join(" · ");
 }
 
 type FormState = {
@@ -97,6 +116,7 @@ type FormState = {
   bpm: string;
   dur: string;
   note: string;
+  variant?: string; // "" | "down" | "up"
 };
 
 export default function PracticeView() {
@@ -132,6 +152,7 @@ export default function PracticeView() {
 
   // --- stopwatch ---
   const [selectedEx, setSelectedEx] = useState<string | null>(null);
+  const [variant, setVariant] = useState<Variant>("down"); // stroke-start for tracked exercises
   const [swRunning, setSwRunning] = useState(false);
   const [swElapsed, setSwElapsed] = useState(0); // ms
   const swStart = useRef(0);
@@ -358,8 +379,14 @@ export default function PracticeView() {
     toastTimer.current = setTimeout(() => setJustLogged(null), 6000);
   }
 
-  function bestBpm(exId: string) {
-    return Math.max(0, ...(sessions ?? []).filter((s) => s.exercise_id === exId).map((s) => s.bpm ?? 0));
+  // Top BPM so far; per-variant when v is given so up-stroke bests count too.
+  function bestBpm(exId: string, v?: Variant) {
+    return Math.max(
+      0,
+      ...(sessions ?? [])
+        .filter((s) => s.exercise_id === exId && (!v || (s.variant ?? "down") === v))
+        .map((s) => s.bpm ?? 0)
+    );
   }
 
   // One tap: save immediately with the current bpm/elapsed; undo toast after.
@@ -372,7 +399,8 @@ export default function PracticeView() {
     const totalMs = swRunning ? swAccum.current + performance.now() - swStart.current : swAccum.current;
     const seconds = Math.round(totalMs / 1000);
     const exId = selectedEx;
-    const prevBest = bestBpm(exId);
+    const tracked = exById.get(exId)?.track_variants ?? false;
+    const prevBest = bestBpm(exId, tracked ? variant : undefined);
     swReset();
     try {
       const { session } = await api("sessions", "POST", {
@@ -381,6 +409,7 @@ export default function PracticeView() {
         bpm,
         seconds,
         note: null,
+        variant: tracked ? variant : null,
       });
       setSessions((s) => [...(s ?? []), session]);
       announceLog(session, prevBest);
@@ -441,12 +470,23 @@ export default function PracticeView() {
     setError(null);
     setSaving(true);
     try {
-      const body = { exercise_id: form.exercise_id, date: form.date, bpm: bpmNum, seconds, note: form.note };
+      const tracked = exById.get(form.exercise_id)?.track_variants ?? false;
+      const body = {
+        exercise_id: form.exercise_id,
+        date: form.date,
+        bpm: bpmNum,
+        seconds,
+        note: form.note,
+        variant: tracked ? form.variant || null : null,
+      };
       if (form.id) {
         const { session } = await api("sessions", "PATCH", { id: form.id, ...body });
         setSessions((s) => s!.map((x) => (x.id === session.id ? session : x)));
       } else {
-        const prevBest = bestBpm(form.exercise_id);
+        const prevBest = bestBpm(
+          form.exercise_id,
+          tracked ? ((form.variant as Variant) || "down") : undefined
+        );
         const { session } = await api("sessions", "POST", body);
         setSessions((s) => [...(s ?? []), session]);
         announceLog(session, prevBest);
@@ -575,10 +615,11 @@ export default function PracticeView() {
 
   function exportCsv() {
     const rows = [
-      ["date", "exercise", "bpm", "seconds", "time", "note"],
+      ["date", "exercise", "start", "bpm", "seconds", "time", "note"],
       ...byDateDesc.map((s) => [
         s.date,
         exById.get(s.exercise_id)?.name ?? "",
+        s.variant ?? "",
         s.bpm ?? "",
         s.seconds ?? "",
         s.seconds != null ? fmtSecs(s.seconds) : "",
@@ -599,8 +640,27 @@ export default function PracticeView() {
   // BPM you last used on it, so you can start (or +5) without hunting.
   function armExercise(ex: Exercise, aggs: DayAgg[]) {
     setSelectedEx(ex.id);
-    const refBpm = aggs.find((a) => a.bpm > 0)?.bpm;
-    if (refBpm) setBpm(clampBpm(refBpm));
+    if (ex.track_variants) {
+      // Suggest whichever stroke-start you haven't done yet today.
+      const todays = (sessions ?? []).filter((s) => s.exercise_id === ex.id && s.date === today);
+      const done = (v: Variant) => todays.some((s) => (s.variant ?? "down") === v);
+      const v: Variant = done("down") && !done("up") ? "up" : done("up") && !done("down") ? "down" : variant;
+      setVariant(v);
+      const refBpm = aggByDate(sessions ?? [], ex.id, v).find((a) => a.bpm > 0)?.bpm;
+      if (refBpm) setBpm(clampBpm(refBpm));
+    } else {
+      const refBpm = aggs.find((a) => a.bpm > 0)?.bpm;
+      if (refBpm) setBpm(clampBpm(refBpm));
+    }
+  }
+
+  // Switching stroke-start also jumps the dial to that variant's last BPM.
+  function selectVariant(v: Variant) {
+    setVariant(v);
+    if (selectedEx && exById.get(selectedEx)?.track_variants) {
+      const refBpm = aggByDate(sessions ?? [], selectedEx, v).find((a) => a.bpm > 0)?.bpm;
+      if (refBpm) setBpm(clampBpm(refBpm));
+    }
   }
 
   // ---------- derived ----------
@@ -632,20 +692,33 @@ export default function PracticeView() {
     .filter((s) => s.date >= weekAgoISO)
     .reduce((sum, s) => sum + (s.seconds ?? 0), 0);
 
-  const series: Series[] = active
-    .map((ex) => ({
-      name: ex.name,
-      color: exColor(ex.id),
-      points: aggByDate(sessions ?? [], ex.id)
-        .map((a) => ({ x: new Date(a.date + "T00:00:00").getTime(), y: a[metric] }))
-        .filter((p) => p.y > 0)
-        .reverse(),
-    }))
+  // Variant-tracked exercises get two lines in the same color: solid for
+  // down-stroke starts, dashed for up. exName groups them for the legend.
+  type VSeries = Series & { exName: string };
+  const series: VSeries[] = active
+    .flatMap((ex) => {
+      const mk = (v: Variant | undefined, suffix: string, dash: boolean): VSeries => ({
+        name: ex.name + suffix,
+        exName: ex.name,
+        color: exColor(ex.id),
+        dash,
+        points: aggByDate(sessions ?? [], ex.id, v)
+          .map((a) => ({ x: new Date(a.date + "T00:00:00").getTime(), y: a[metric] }))
+          .filter((p) => p.y > 0)
+          .reverse(),
+      });
+      return ex.track_variants
+        ? [mk("down", " ↓", false), mk("up", " ↑", true)]
+        : [mk(undefined, "", false)];
+    })
     .filter((s) => s.points.length > 0);
 
-  // Legend isolation: dim every line except the focused one.
+  // One legend entry per exercise, even when it draws two variant lines.
+  const legendItems = Array.from(new Map(series.map((s) => [s.exName, s.color])).entries());
+
+  // Legend isolation: dim every line except the focused exercise's.
   const displaySeries: Series[] = focusEx
-    ? series.map((s) => (s.name === focusEx ? s : { ...s, color: s.color + "26" }))
+    ? series.map((s) => (s.exName === focusEx ? s : { ...s, color: s.color + "26" }))
     : series;
 
   const byDateDesc = [...(sessions ?? [])].sort(
@@ -708,6 +781,17 @@ export default function PracticeView() {
           placeholder="Time (5:12)"
           className={input}
         />
+        {exById.get(form.exercise_id)?.track_variants && (
+          <select
+            value={form.variant ?? ""}
+            onChange={(e) => setForm({ ...form, variant: e.target.value })}
+            className={input}
+          >
+            <option value="">start…</option>
+            <option value="down">↓ down</option>
+            <option value="up">↑ up</option>
+          </select>
+        )}
         <input
           value={form.note}
           onChange={(e) => setForm({ ...form, note: e.target.value })}
@@ -942,6 +1026,23 @@ export default function PracticeView() {
                 <div className="max-w-[10rem] truncate text-xs text-neutral-500">
                   {selectedEx ? exById.get(selectedEx)?.name : "no exercise selected"}
                 </div>
+                {selectedEx && exById.get(selectedEx)?.track_variants && (
+                  <div className="mt-1 flex gap-1">
+                    {(["down", "up"] as const).map((v) => (
+                      <button
+                        key={v}
+                        onClick={() => selectVariant(v)}
+                        className={`rounded px-1.5 py-0.5 text-xs ${
+                          variant === v
+                            ? "bg-neutral-200 font-semibold text-neutral-950"
+                            : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700"
+                        }`}
+                      >
+                        {v === "down" ? "↓ down" : "↑ up"}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
               <button className={btn} onClick={swToggle}>
                 {swRunning ? "Pause" : swElapsed > 0 ? "Resume" : "Start"}
@@ -1035,6 +1136,38 @@ export default function PracticeView() {
                   </button>
                   {aggs.length === 0 ? (
                     <p className="mt-2 text-xs text-neutral-600">not practiced yet — tap to arm the stopwatch</p>
+                  ) : ex.track_variants ? (
+                    // One row per stroke-start so both tempos are visible at a glance.
+                    <div className="mt-2 space-y-0.5 text-sm">
+                      {(["down", "up"] as const).map((v) => {
+                        const vAggs = aggByDate(sessions ?? [], ex.id, v);
+                        const vToday = vAggs[0]?.date === today ? vAggs[0] : null;
+                        const vLast = vToday ? vAggs[1] : vAggs[0];
+                        return (
+                          <div key={v} className="grid grid-cols-[1rem_1fr_1fr] gap-1">
+                            <span className="text-neutral-500">{v === "down" ? "↓" : "↑"}</span>
+                            <span className="text-neutral-400">
+                              <span className="text-xs text-neutral-600">
+                                {vLast ? fmtDateShort(vLast.date) : "last"}{" "}
+                              </span>
+                              {vLast ? (
+                                <span className="tabular-nums">{fmtAgg(vLast)}</span>
+                              ) : (
+                                <span className="text-neutral-600">—</span>
+                              )}
+                            </span>
+                            <span>
+                              <span className="text-xs text-neutral-600">today </span>
+                              {vToday ? (
+                                <span className="tabular-nums">{fmtAgg(vToday)}</span>
+                              ) : (
+                                <span className="text-neutral-600">—</span>
+                              )}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
                   ) : (
                     <div className="mt-2 grid grid-cols-2 gap-1 text-sm">
                       <div className="text-neutral-400">
@@ -1120,21 +1253,21 @@ export default function PracticeView() {
             ) : (
               <>
                 <Chart series={displaySeries} fmtY={metric === "seconds" ? fmtSecs : (y) => String(Math.round(y))} />
-                {/* Legend doubles as a filter: tap a name to isolate its line. */}
+                {/* Legend doubles as a filter: tap a name to isolate its line(s). */}
                 <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
-                  {series.map((s) => (
+                  {legendItems.map(([name, color]) => (
                     <button
-                      key={s.name}
-                      onClick={() => setFocusEx(focusEx === s.name ? null : s.name)}
+                      key={name}
+                      onClick={() => setFocusEx(focusEx === name ? null : name)}
                       className={`flex items-center gap-1.5 text-xs ${
-                        focusEx && focusEx !== s.name ? "text-neutral-600" : "text-neutral-400"
+                        focusEx && focusEx !== name ? "text-neutral-600" : "text-neutral-400"
                       }`}
                     >
                       <span
                         className="h-2 w-4 rounded-sm"
-                        style={{ background: focusEx && focusEx !== s.name ? s.color + "40" : s.color }}
+                        style={{ background: focusEx && focusEx !== name ? color + "40" : color }}
                       />
-                      {s.name}
+                      {name}
                     </button>
                   ))}
                 </div>
@@ -1184,7 +1317,12 @@ export default function PracticeView() {
                         className="h-2 w-2 shrink-0 self-center rounded-full"
                         style={{ background: exColor(s.exercise_id) }}
                       />
-                      <span className="min-w-0 flex-1 truncate">{exById.get(s.exercise_id)?.name ?? "?"}</span>
+                      <span className="min-w-0 flex-1 truncate">
+                        {exById.get(s.exercise_id)?.name ?? "?"}
+                        {s.variant && (
+                          <span className="ml-1 text-xs text-neutral-500">{s.variant === "up" ? "↑" : "↓"}</span>
+                        )}
+                      </span>
                       {s.note && (
                         <span className="max-w-[8rem] truncate text-xs text-neutral-500 sm:max-w-[10rem]">{s.note}</span>
                       )}
@@ -1202,6 +1340,7 @@ export default function PracticeView() {
                                 bpm: s.bpm != null ? String(s.bpm) : "",
                                 dur: s.seconds != null ? fmtSecs(s.seconds) : "",
                                 note: s.note ?? "",
+                                variant: s.variant ?? "",
                               })
                             }
                           >
@@ -1284,6 +1423,15 @@ export default function PracticeView() {
                           </>
                         )}
                         <button
+                          className={`text-xs ${
+                            ex.track_variants ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
+                          }`}
+                          title="Track down/up-stroke starts separately"
+                          onClick={() => patchExercise(ex.id, { track_variants: !ex.track_variants })}
+                        >
+                          ↓↑
+                        </button>
+                        <button
                           className="text-xs text-neutral-500 hover:text-neutral-200"
                           onClick={() => {
                             const name = prompt("Rename exercise", ex.name);
@@ -1330,6 +1478,7 @@ export default function PracticeView() {
           <span>
             {justLogged.pb ? "✦ New best! " : "Logged "}
             {exById.get(justLogged.session.exercise_id)?.name}
+            {justLogged.session.variant && ` ${justLogged.session.variant === "up" ? "↑" : "↓"}`}
             {justLogged.session.bpm != null && ` · ${justLogged.session.bpm} bpm`}
             {justLogged.session.seconds != null && ` · ${fmtSecs(justLogged.session.seconds)}`}
           </span>

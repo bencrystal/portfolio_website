@@ -11,7 +11,7 @@ function unauthorized() {
 export async function GET() {
   const { data, error } = await scribeDb
     .from("practice_exercises")
-    .select("id, name, position, archived, ref_url")
+    .select("id, name, position, archived, ref_url, track_variants")
     .order("position", { ascending: true });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ exercises: data });
@@ -38,6 +38,7 @@ export async function PATCH(req: NextRequest) {
   if (typeof fields.name === "string" && fields.name.trim()) updates.name = fields.name.trim();
   if (typeof fields.position === "number") updates.position = fields.position;
   if (typeof fields.archived === "boolean") updates.archived = fields.archived;
+  if (typeof fields.track_variants === "boolean") updates.track_variants = fields.track_variants;
   if ("ref_url" in fields) {
     updates.ref_url =
       typeof fields.ref_url === "string" && /^https?:\/\//.test(fields.ref_url.trim())
