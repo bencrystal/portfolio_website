@@ -18,6 +18,7 @@ type Exercise = {
   ref_url?: string | null;
   track_variants?: boolean;
   description?: string | null;
+  target_bpm?: number | null;
 };
 type Session = {
   id: string;
@@ -81,6 +82,19 @@ function fmtSecs(total: number) {
   return `${m}:${String(sec).padStart(2, "0")}`;
 }
 
+// Durations shown next to dates read as clock times ("11:00" looks like
+// 11 o'clock), so aggregates use unit words instead. The colon format stays
+// for the live stopwatch and CSV, where it reads as elapsed time.
+function fmtDur(total: number) {
+  const s = Math.round(total);
+  if (s < 60) return `${s}s`;
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  if (h > 0) return m > 0 ? `${h}h ${m}m` : `${h}h`;
+  return sec > 0 ? `${m}m ${sec}s` : `${m}m`;
+}
+
 // "7:43" -> 463s, "1:02:30" -> 3750s, "5" -> 300s (bare number = minutes).
 function parseDur(text: string): number | null {
   const t = text.trim();
@@ -118,9 +132,9 @@ function aggByDate(sessions: Session[], exId: string, variant?: Variant): DayAgg
   return Array.from(byDate.values()).sort((a, b) => b.date.localeCompare(a.date));
 }
 
-// "96 bpm · 4:10" — whichever parts an aggregate actually has.
+// "96 bpm · 4m 10s" — whichever parts an aggregate actually has.
 function fmtAgg(a: DayAgg) {
-  return [a.bpm > 0 ? `${a.bpm} bpm` : "", a.seconds > 0 ? fmtSecs(a.seconds) : ""].filter(Boolean).join(" · ");
+  return [a.bpm > 0 ? `${a.bpm} bpm` : "", a.seconds > 0 ? fmtDur(a.seconds) : ""].filter(Boolean).join(" · ");
 }
 
 type FormState = {
@@ -1059,38 +1073,61 @@ export default function PracticeView() {
   }
 
   // Variant-tracked exercises get two lines in the same color: solid for
-  // down-stroke starts, dashed for up. exName groups them for the legend.
-  type VSeries = Series & { exName: string };
-  const series: VSeries[] = active
+  // down-stroke starts, dashed for up (the legend spells this out per entry).
+  const series: Series[] = active
     .flatMap((ex) => {
-      const mk = (v: Variant | undefined, suffix: string, dash: boolean): VSeries => ({
+      const mk = (v: Variant | undefined, suffix: string, dash: boolean): Series => ({
         name: ex.name + suffix,
-        exName: ex.name,
         color: colorOf(ex.id),
         dash,
+        // The goal line belongs to the exercise, so only its first series
+        // carries it — otherwise it would draw (and label) twice.
+        target: !dash && metric === "bpm" ? ex.target_bpm ?? undefined : undefined,
         points: aggByDate(sessions ?? [], ex.id, v)
-          .map((a) => ({ x: new Date(a.date + "T00:00:00").getTime(), y: a[metric] }))
+          .map((a) => ({
+            x: new Date(a.date + "T00:00:00").getTime(),
+            y: a[metric],
+            label: [fmtDateShort(a.date), a.bpm > 0 ? `${a.bpm} bpm` : "", a.seconds > 0 ? fmtDur(a.seconds) : ""]
+              .filter(Boolean)
+              .join(" · "),
+          }))
           .filter((p) => p.y > 0)
           .reverse(),
       });
       return ex.track_variants
-        ? [mk("down", " ↓", false), mk("up", " ↑", true)]
+        ? [mk("down", " ↓ down", false), mk("up", " ↑ up", true)]
         : [mk(undefined, "", false)];
     })
     .filter((s) => s.points.length > 0);
 
-  // One legend entry per exercise, even when it draws two variant lines.
-  const legendItems = Array.from(new Map(series.map((s) => [s.exName, s.color])).entries());
-
-  // Legend isolation: dim every line except the focused exercise's.
+  // Legend isolation: dim every line except the focused one.
   const displaySeries: Series[] = focusEx
-    ? series.map((s) => (s.exName === focusEx ? s : { ...s, color: s.color + "26" }))
+    ? series.map((s) => (s.name === focusEx ? s : { ...s, color: s.color + "26" }))
     : series;
 
   const byDateDesc = [...(sessions ?? [])].sort(
     (a, b) => b.date.localeCompare(a.date) || b.created_at.localeCompare(a.created_at)
   );
   const dates = Array.from(new Set(byDateDesc.map((s) => s.date)));
+  // With a single exercise the log would repeat its name every row.
+  const manyEx = new Set(byDateDesc.map((s) => s.exercise_id)).size > 1;
+
+  // Sessions that beat the exercise's (per-variant) top BPM at the time they
+  // were logged. The first-ever entry doesn't count — nothing was beaten.
+  const pbIds = new Set<string>();
+  {
+    const best = new Map<string, number>();
+    const chrono = [...(sessions ?? [])].sort(
+      (a, b) => a.date.localeCompare(b.date) || a.created_at.localeCompare(b.created_at)
+    );
+    for (const s of chrono) {
+      if (s.bpm == null) continue;
+      const key = `${s.exercise_id}|${s.variant ?? "down"}`;
+      const prev = best.get(key) ?? 0;
+      if (prev > 0 && s.bpm > prev) pbIds.add(s.id);
+      best.set(key, Math.max(prev, s.bpm));
+    }
+  }
 
   const todayTotal = (sessions ?? [])
     .filter((s) => s.date === today)
@@ -1112,16 +1149,26 @@ export default function PracticeView() {
     last7.push({ iso, label: "SMTWTFS"[d.getDay()], done: practicedDates.has(iso) });
   }
 
-  // Heatmap: ~26 weeks of daily totals (GitHub-style), shown once charts
-  // unlock. Amber intensity scales with minutes relative to the best day.
+  // Heatmap: daily totals (GitHub-style), shown once charts unlock. Sized to
+  // the data — from the first logged day (min 8, max 26 weeks) — so a young
+  // log isn't a field of empty cells. Amber intensity is relative to the
+  // best day.
   const secsByDate = new Map<string, number>();
   for (const s of sessions ?? []) secsByDate.set(s.date, (secsByDate.get(s.date) ?? 0) + (s.seconds ?? 0));
   const heatMax = Math.max(1, ...Array.from(secsByDate.values()));
+  const firstDate = dates[dates.length - 1]; // oldest practiced day (dates is desc)
+  const heatWeekCount = Math.min(
+    26,
+    Math.max(
+      8,
+      Math.ceil((Date.now() - new Date((firstDate ?? today) + "T00:00:00").getTime()) / (7 * 86_400_000)) + 1
+    )
+  );
   const heatWeeks: { iso: string; secs: number; future: boolean }[][] = [];
   {
     const start = new Date();
-    start.setDate(start.getDate() - start.getDay() - 25 * 7); // back to a Sunday, 26 weeks ago
-    for (let w = 0; w < 26; w++) {
+    start.setDate(start.getDate() - start.getDay() - (heatWeekCount - 1) * 7); // back to a Sunday
+    for (let w = 0; w < heatWeekCount; w++) {
       const col: (typeof heatWeeks)[number] = [];
       for (let d = 0; d < 7; d++) {
         const dt = new Date(start);
@@ -1330,7 +1377,7 @@ export default function PracticeView() {
                 {selTodaySecs > 0 && (
                   <>
                     {" · "}
-                    <span className="tabular-nums text-neutral-300">{fmtSecs(selTodaySecs)}</span> today
+                    <span className="tabular-nums text-neutral-300">{fmtDur(selTodaySecs)}</span> today
                   </>
                 )}
               </div>
@@ -1709,6 +1756,12 @@ export default function PracticeView() {
                         const vAggs = aggByDate(sessions ?? [], ex.id, v);
                         const vToday = vAggs[0]?.date === today ? vAggs[0] : null;
                         const vLast = vToday ? vAggs[1] : vAggs[0];
+                        // Each stroke-start compares against its own previous
+                        // day — mixing them would compare different tempos.
+                        const vDelta =
+                          vAggs[0] && vAggs[1] && vAggs[0].bpm > 0 && vAggs[1].bpm > 0
+                            ? vAggs[0].bpm - vAggs[1].bpm
+                            : null;
                         return (
                           <div key={v} className="grid grid-cols-[1rem_1fr_1fr] gap-1">
                             <span className="text-neutral-500">{v === "down" ? "↓" : "↑"}</span>
@@ -1729,6 +1782,11 @@ export default function PracticeView() {
                               ) : (
                                 <span className="text-neutral-600">—</span>
                               )}
+                              {vDelta !== null && vDelta !== 0 && (
+                                <span className={`ml-1 text-xs ${vDelta > 0 ? "text-green-400" : "text-red-400"}`}>
+                                  {vDelta > 0 ? "▲" : "▼"}{Math.abs(vDelta)}
+                                </span>
+                              )}
                             </span>
                           </div>
                         );
@@ -1743,7 +1801,7 @@ export default function PracticeView() {
                         {lastAgg ? (
                           <span className="tabular-nums">
                             {lastAgg.bpm > 0 && `${lastAgg.bpm} bpm · `}
-                            {lastAgg.seconds > 0 && fmtSecs(lastAgg.seconds)}
+                            {lastAgg.seconds > 0 && fmtDur(lastAgg.seconds)}
                           </span>
                         ) : (
                           <span className="text-neutral-600">—</span>
@@ -1754,7 +1812,7 @@ export default function PracticeView() {
                         {todayAgg ? (
                           <span className="tabular-nums">
                             {todayAgg.bpm > 0 && `${todayAgg.bpm} bpm · `}
-                            {todayAgg.seconds > 0 && fmtSecs(todayAgg.seconds)}
+                            {todayAgg.seconds > 0 && fmtDur(todayAgg.seconds)}
                           </span>
                         ) : (
                           <span className="text-neutral-600">—</span>
@@ -1764,13 +1822,17 @@ export default function PracticeView() {
                   )}
                   {(timeDelta !== null || bpmDelta !== null) && (
                     <div className="mt-1 flex gap-3 text-xs">
-                      {bpmDelta !== null && bpmDelta !== 0 && (
+                      {/* Tracked exercises get per-variant deltas in the rows
+                          above — a combined one would compare ↓ vs ↑ days. */}
+                      {!ex.track_variants && bpmDelta !== null && bpmDelta !== 0 && (
                         <span className={bpmDelta > 0 ? "text-green-400" : "text-red-400"}>
                           {bpmDelta > 0 ? "▲" : "▼"} {Math.abs(bpmDelta)} bpm
                         </span>
                       )}
+                      {/* Practicing more or less isn't better or worse, so the
+                          time trend stays neutral. */}
                       {timeDelta !== null && Math.abs(timeDelta) >= 0.005 && (
-                        <span className={timeDelta < 0 ? "text-green-400" : "text-red-400"}>
+                        <span className="text-neutral-500">
                           {timeDelta < 0 ? "▼" : "▲"} {Math.abs(Math.round(timeDelta * 100))}% time
                         </span>
                       )}
@@ -1787,7 +1849,7 @@ export default function PracticeView() {
                         <div key={a.date} className="flex justify-between py-0.5 tabular-nums">
                           <span>{fmtDateShort(a.date)}</span>
                           <span>{a.bpm > 0 ? `${a.bpm} bpm` : ""}</span>
-                          <span>{a.seconds > 0 ? fmtSecs(a.seconds) : ""}</span>
+                          <span>{a.seconds > 0 ? fmtDur(a.seconds) : ""}</span>
                         </div>
                       ))}
                       {aggs.length === 0 && <p className="py-1 text-neutral-600">no sessions yet</p>}
@@ -1846,46 +1908,88 @@ export default function PracticeView() {
               </div>
             ) : (
               <>
-                <Chart series={displaySeries} fmtY={metric === "seconds" ? fmtSecs : (y) => String(Math.round(y))} />
-                {/* Legend doubles as a filter: tap a name to isolate its line(s). */}
+                {/* Time = stacked bars of each day's total (sessions are
+                    discrete); BPM = lines (a capability that persists). */}
+                <Chart
+                  series={displaySeries}
+                  bars={metric === "seconds"}
+                  fmtY={metric === "seconds" ? fmtDur : (y) => String(Math.round(y))}
+                />
+                {/* Legend doubles as a filter: tap an entry to isolate it.
+                    Variant series get their own entries so the solid (↓ down)
+                    vs dashed (↑ up) styling is explained where it's seen. */}
                 <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
-                  {legendItems.map(([name, color]) => (
-                    <button
-                      key={name}
-                      onClick={() => setFocusEx(focusEx === name ? null : name)}
-                      className={`flex items-center gap-1.5 text-xs ${
-                        focusEx && focusEx !== name ? "text-neutral-600" : "text-neutral-400"
-                      }`}
-                    >
-                      <span
-                        className="h-2 w-4 rounded-sm"
-                        style={{ background: focusEx && focusEx !== name ? color + "40" : color }}
-                      />
-                      {name}
-                    </button>
-                  ))}
-                </div>
-                {/* Daily heatmap: half a year of totals at a glance. */}
-                <div className="mt-4 overflow-x-auto">
-                  <div className="flex gap-[3px]">
-                    {heatWeeks.map((week, i) => (
-                      <div key={i} className="flex flex-col gap-[3px]">
-                        {week.map((d) => (
+                  {series.map((s) => {
+                    const dim = focusEx && focusEx !== s.name;
+                    return (
+                      <button
+                        key={s.name}
+                        onClick={() => setFocusEx(focusEx === s.name ? null : s.name)}
+                        className={`flex items-center gap-1.5 text-xs ${dim ? "text-neutral-600" : "text-neutral-400"}`}
+                      >
+                        {metric === "seconds" || !s.dash ? (
+                          <span className="h-2 w-4 rounded-sm" style={{ background: dim ? s.color + "40" : s.color }} />
+                        ) : (
                           <span
-                            key={d.iso}
-                            title={`${fmtDateShort(d.iso)}${d.secs > 0 ? ` · ${fmtSecs(d.secs)}` : ""}`}
-                            className="h-2.5 w-2.5 rounded-[2px]"
-                            style={{
-                              background: d.future
-                                ? "transparent"
-                                : d.secs === 0
-                                  ? "#26262666"
-                                  : `rgba(245,158,11,${0.25 + 0.75 * Math.min(1, d.secs / heatMax)})`,
-                            }}
+                            className="w-4 border-t-2 border-dashed"
+                            style={{ borderColor: dim ? s.color + "40" : s.color }}
                           />
+                        )}
+                        {s.name}
+                      </button>
+                    );
+                  })}
+                </div>
+                {/* Daily heatmap: practiced days at a glance. */}
+                <div className="mt-4 overflow-x-auto">
+                  <div className="inline-block min-w-full">
+                    {/* Month labels sit over the first column of each month. */}
+                    <div className="mb-1 ml-[19px] flex text-[9px] leading-none text-neutral-600">
+                      {heatWeeks.map((week, i) => {
+                        const month = week[0].iso.slice(5, 7);
+                        const newMonth = i > 0 && heatWeeks[i - 1][0].iso.slice(5, 7) !== month;
+                        return (
+                          <span key={i} className="w-[13px] shrink-0 overflow-visible whitespace-nowrap">
+                            {(i === 0 || newMonth) &&
+                              new Date(week[0].iso + "T00:00:00").toLocaleDateString(undefined, { month: "short" })}
+                          </span>
+                        );
+                      })}
+                    </div>
+                    <div className="flex gap-[3px]">
+                      <div className="flex w-4 shrink-0 flex-col gap-[3px] text-[9px] leading-none text-neutral-600">
+                        {["", "M", "", "W", "", "F", ""].map((l, i) => (
+                          <span key={i} className="flex h-2.5 items-center">
+                            {l}
+                          </span>
                         ))}
                       </div>
-                    ))}
+                      {heatWeeks.map((week, i) => (
+                        <div key={i} className="flex flex-col gap-[3px]">
+                          {week.map((d) => (
+                            <span
+                              key={d.iso}
+                              title={`${fmtDateShort(d.iso)}${d.secs > 0 ? ` · ${fmtDur(d.secs)}` : ""}`}
+                              className="h-2.5 w-2.5 rounded-[2px]"
+                              style={{
+                                background: d.future
+                                  ? "transparent"
+                                  : d.secs === 0
+                                    ? "#26262666"
+                                    : `rgba(245,158,11,${0.25 + 0.75 * Math.min(1, d.secs / heatMax)})`,
+                              }}
+                            />
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-1.5 flex items-center justify-end gap-[3px] text-[9px] text-neutral-600">
+                      less
+                      {["#26262666", "rgba(245,158,11,0.4)", "rgba(245,158,11,0.7)", "rgba(245,158,11,1)"].map((c) => (
+                        <span key={c} className="h-2.5 w-2.5 rounded-[2px]" style={{ background: c }} />
+                      ))}
+                      more
+                    </div>
                   </div>
                 </div>
               </>
@@ -1916,62 +2020,85 @@ export default function PracticeView() {
             {!loading && byDateDesc.length === 0 && (
               <p className="text-sm text-neutral-600">Nothing logged yet.</p>
             )}
-            {dates.map((date) => (
-              <div key={date} className="mb-3">
-                <h3 className="mb-1 text-xs font-semibold text-neutral-500">
-                  {new Date(date + "T00:00:00").toLocaleDateString(undefined, {
-                    weekday: "short",
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
-                </h3>
-                {byDateDesc
-                  .filter((s) => s.date === date)
-                  .map((s) => (
-                    <div key={s.id} className="flex items-baseline gap-2 border-b border-neutral-800/60 py-1.5 text-sm">
-                      <span
-                        className="h-2 w-2 shrink-0 self-center rounded-full"
-                        style={{ background: colorOf(s.exercise_id) }}
-                      />
-                      <span className="min-w-0 flex-1 truncate">
-                        {exById.get(s.exercise_id)?.name ?? "?"}
-                        {s.variant && (
-                          <span className="ml-1 text-xs text-neutral-500">{s.variant === "up" ? "↑" : "↓"}</span>
-                        )}
-                      </span>
-                      {s.note && (
-                        <span className="max-w-[8rem] truncate text-xs text-neutral-500 sm:max-w-[10rem]">{s.note}</span>
-                      )}
-                      <span className="tabular-nums text-neutral-400">{s.bpm != null ? `${s.bpm} bpm` : ""}</span>
-                      <span className="w-14 text-right tabular-nums">{s.seconds != null ? fmtSecs(s.seconds) : ""}</span>
-                      {unlocked && (
-                        <span className="flex gap-1.5 text-xs">
-                          <button
-                            className="text-neutral-500 hover:text-neutral-200"
-                            onClick={() =>
-                              setForm({
-                                id: s.id,
-                                exercise_id: s.exercise_id,
-                                date: s.date,
-                                bpm: s.bpm != null ? String(s.bpm) : "",
-                                dur: s.seconds != null ? fmtSecs(s.seconds) : "",
-                                note: s.note ?? "",
-                                variant: s.variant ?? "",
-                              })
-                            }
-                          >
-                            edit
-                          </button>
-                          <button className="text-neutral-500 hover:text-red-400" onClick={() => deleteSession(s.id)}>
-                            ×
-                          </button>
+            {dates.map((date) => {
+              const daySessions = byDateDesc.filter((s) => s.date === date);
+              const daySecs = daySessions.reduce((t, s) => t + (s.seconds ?? 0), 0);
+              return (
+                <div key={date} className="mb-3">
+                  {/* The year is noise for recent entries; the day's total
+                      lives up here so it reads without adding rows. */}
+                  <h3 className="mb-1 flex items-baseline justify-between text-xs font-semibold text-neutral-500">
+                    <span>
+                      {new Date(date + "T00:00:00").toLocaleDateString(undefined, {
+                        weekday: "short",
+                        month: "short",
+                        day: "numeric",
+                        ...(date.slice(0, 4) !== today.slice(0, 4) ? { year: "numeric" as const } : {}),
+                      })}
+                    </span>
+                    {daySecs > 0 && <span className="font-normal tabular-nums">{fmtDur(daySecs)}</span>}
+                  </h3>
+                  {daySessions.map((s) => (
+                    <div key={s.id} className="group border-b border-neutral-800/60 py-1.5 text-sm">
+                      <div className="flex items-baseline gap-2">
+                        <span
+                          className="h-2 w-2 shrink-0 self-center rounded-full"
+                          style={{ background: colorOf(s.exercise_id) }}
+                        />
+                        <span className="min-w-0 flex-1 truncate">
+                          {/* One exercise total? The dot suffices — repeating
+                              the name every row says nothing. */}
+                          {manyEx && (exById.get(s.exercise_id)?.name ?? "?")}
+                          {s.variant && (
+                            <span className={`text-xs text-neutral-500 ${manyEx ? "ml-1" : ""}`}>
+                              {s.variant === "up" ? "↑ up" : "↓ down"}
+                            </span>
+                          )}
                         </span>
-                      )}
+                        {pbIds.has(s.id) && (
+                          <span className="text-xs text-amber-400" title="personal best at the time">
+                            ✦ PB
+                          </span>
+                        )}
+                        <span className="tabular-nums text-neutral-400">{s.bpm != null ? `${s.bpm} bpm` : ""}</span>
+                        <span className="w-14 text-right tabular-nums">
+                          {s.seconds != null ? fmtDur(s.seconds) : ""}
+                        </span>
+                        {unlocked && (
+                          <span className="flex gap-1.5 text-xs transition-opacity [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100">
+                            <button
+                              className="text-neutral-500 hover:text-neutral-200"
+                              onClick={() =>
+                                setForm({
+                                  id: s.id,
+                                  exercise_id: s.exercise_id,
+                                  date: s.date,
+                                  bpm: s.bpm != null ? String(s.bpm) : "",
+                                  dur: s.seconds != null ? fmtSecs(s.seconds) : "",
+                                  note: s.note ?? "",
+                                  variant: s.variant ?? "",
+                                })
+                              }
+                            >
+                              edit
+                            </button>
+                            <button
+                              className="text-neutral-500 hover:text-red-400"
+                              onClick={() => deleteSession(s.id)}
+                            >
+                              ×
+                            </button>
+                          </span>
+                        )}
+                      </div>
+                      {/* Notes are the part written by a human — full line,
+                          readable color, never truncated. */}
+                      {s.note && <p className="pl-4 text-xs text-neutral-300">{s.note}</p>}
                     </div>
                   ))}
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </section>
 
           {/* Manage panel: opened from the small link by the Exercises header. */}
@@ -2051,6 +2178,19 @@ export default function PracticeView() {
                           onClick={() => patchExercise(ex.id, { track_variants: !ex.track_variants })}
                         >
                           ↓↑
+                        </button>
+                        <button
+                          className={`text-xs ${
+                            ex.target_bpm ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
+                          }`}
+                          title="Target BPM — draws a goal line on the chart"
+                          onClick={() => {
+                            const t = prompt("Target BPM (empty clears)", ex.target_bpm ? String(ex.target_bpm) : "");
+                            if (t === null) return;
+                            void patchExercise(ex.id, { target_bpm: t.trim() ? Number(t) : null } as Partial<Exercise>);
+                          }}
+                        >
+                          goal
                         </button>
                         <button
                           className="text-xs text-neutral-500 hover:text-neutral-200"
@@ -2139,12 +2279,12 @@ export default function PracticeView() {
           {streak > 1 && <span className="text-amber-400/80">streak {streak} · </span>}
           {todayTotal > 0 && (
             <>
-              today <span className="tabular-nums">{fmtSecs(todayTotal)}</span> ·{" "}
+              today <span className="tabular-nums">{fmtDur(todayTotal)}</span> ·{" "}
             </>
           )}
-          this week <span className="tabular-nums">{fmtSecs(weekSecs)}</span> · all-time{" "}
-          <span className="tabular-nums">{fmtSecs(totalSecs)}</span> · days practiced {daysPracticed} · best streak{" "}
-          {bestStreak} · avg <span className="tabular-nums">{fmtSecs(totalSecs / daysPracticed)}</span>/day
+          this week <span className="tabular-nums">{fmtDur(weekSecs)}</span> · all-time{" "}
+          <span className="tabular-nums">{fmtDur(totalSecs)}</span> · days practiced {daysPracticed} · best streak{" "}
+          {bestStreak} · avg <span className="tabular-nums">{fmtDur(totalSecs / daysPracticed)}</span>/day
         </footer>
       )}
 
@@ -2181,7 +2321,7 @@ export default function PracticeView() {
             {exById.get(justLogged.session.exercise_id)?.name}
             {justLogged.session.variant && ` ${justLogged.session.variant === "up" ? "↑" : "↓"}`}
             {justLogged.session.bpm != null && ` · ${justLogged.session.bpm} bpm`}
-            {justLogged.session.seconds != null && ` · ${fmtSecs(justLogged.session.seconds)}`}
+            {justLogged.session.seconds != null && ` · ${fmtDur(justLogged.session.seconds)}`}
           </span>
           <button
             className={`font-semibold ${justLogged.pb ? "text-neutral-950 underline" : "text-amber-400"}`}
