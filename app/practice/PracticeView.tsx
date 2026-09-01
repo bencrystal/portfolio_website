@@ -60,6 +60,18 @@ function randNote(excludeIdx: number | null): Note {
 
 const PREFS_KEY = "practice_prefs";
 
+// Mutations that fail because the network is down get queued here and
+// replayed in order once the connection returns (same pattern as /list).
+const QUEUE_KEY = "practice_offline_queue";
+type QueuedCall = { path: "exercises" | "sessions"; method: string; body: unknown };
+function readQueue(): QueuedCall[] {
+  try {
+    return JSON.parse(localStorage.getItem(QUEUE_KEY) ?? "[]");
+  } catch {
+    return [];
+  }
+}
+
 function fmtSecs(total: number) {
   const s = Math.round(total);
   const h = Math.floor(s / 3600);
@@ -284,6 +296,17 @@ export default function PracticeView() {
   const swStart = useRef(0);
   const swAccum = useRef(0);
 
+  // --- session extras ---
+  const [countIn, setCountIn] = useState(false); // one bar of clicks before the timer
+  const [countingIn, setCountingIn] = useState(false);
+  const countInPending = useRef(false);
+  const [trainer, setTrainer] = useState(false); // auto-bump bpm while running
+  const [trainerAdd, setTrainerAdd] = useState(2);
+  const [trainerBars, setTrainerBars] = useState(4);
+  const trainerRef = useRef({ on: false, add: 2, bars: 4 });
+  const [offline, setOffline] = useState(false);
+  const flushing = useRef(false);
+
   // --- log form / cards / charts ---
   const [form, setForm] = useState<FormState | null>(null);
   const [saving, setSaving] = useState(false);
@@ -331,9 +354,25 @@ export default function PracticeView() {
   }
 
   useEffect(() => {
-    void fetchAll(localStorage.getItem(TOKEN_KEY)).catch((e) => setError(String(e.message ?? e)));
+    // Flush queued offline writes before reading, so the server catches up
+    // before its state overwrites ours. Re-run whenever the network returns.
+    const sync = () => {
+      void flushQueue().then(() =>
+        fetchAll(localStorage.getItem(TOKEN_KEY)).catch((e) => {
+          if (e instanceof TypeError) setOffline(true); // network down; cached data stands
+          else setError(String(e.message ?? e));
+        })
+      );
+    };
+    sync();
+    window.addEventListener("online", sync);
+    // The service worker caches the shell + last API reads so the installed
+    // app opens (read-only fresh data aside) with no connection.
+    if ("serviceWorker" in navigator) {
+      void navigator.serviceWorker.register("/practice-sw.js", { scope: "/practice" }).catch(() => {});
+    }
     // Re-verify a remembered password silently.
-    if (localStorage.getItem(TOKEN_KEY)) void verifyToken(localStorage.getItem(TOKEN_KEY)!).then(setUnlocked);
+    if (localStorage.getItem(TOKEN_KEY)) void verifyToken(localStorage.getItem(TOKEN_KEY)!).then(setUnlocked).catch(() => {});
     // Restore metronome prefs.
     try {
       const p = JSON.parse(localStorage.getItem(PREFS_KEY) ?? "{}");
@@ -342,32 +381,86 @@ export default function PracticeView() {
       if (["beep", "wood", "tick"].includes(p.sound)) setSound(p.sound);
       if (typeof p.volume === "number") setVolume(Math.min(1, Math.max(0, p.volume)));
       if (typeof p.noteSync === "number") setNoteSync(p.noteSync);
+      if (typeof p.countIn === "boolean") setCountIn(p.countIn);
+      if (typeof p.trainer === "boolean") setTrainer(p.trainer);
+      if ([1, 2, 5].includes(p.trainerAdd)) setTrainerAdd(p.trainerAdd);
+      if ([2, 4, 8, 16].includes(p.trainerBars)) setTrainerBars(p.trainerBars);
     } catch {
       // Corrupt prefs — defaults are fine.
     }
+    return () => window.removeEventListener("online", sync);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ bpm, beatsPerBar, sound, volume, noteSync }));
-  }, [bpm, beatsPerBar, sound, volume, noteSync]);
+    localStorage.setItem(
+      PREFS_KEY,
+      JSON.stringify({ bpm, beatsPerBar, sound, volume, noteSync, countIn, trainer, trainerAdd, trainerBars })
+    );
+  }, [bpm, beatsPerBar, sound, volume, noteSync, countIn, trainer, trainerAdd, trainerBars]);
+
+  useEffect(() => {
+    trainerRef.current = { on: trainer, add: trainerAdd, bars: trainerBars };
+  }, [trainer, trainerAdd, trainerBars]);
 
   // The sessions PATCH route checks the token before reading the body, so an
   // empty body distinguishes "authorized but bad request" (400) from 401.
   async function verifyToken(token: string): Promise<boolean> {
-    const res = await fetch(`/api/practice/sessions?token=${encodeURIComponent(token)}`, {
-      method: "PATCH",
-      body: "{}",
-    });
-    return res.status !== 401;
+    try {
+      const res = await fetch(`/api/practice/sessions?token=${encodeURIComponent(token)}`, {
+        method: "PATCH",
+        body: "{}",
+      });
+      return res.status !== 401;
+    } catch {
+      return true; // can't check offline — trust the saved password until we can
+    }
+  }
+
+  // Offline mutations queue for replay and answer with a local stand-in so
+  // callers (and the UI) proceed as if the write landed.
+  function offlineEcho(path: "exercises" | "sessions", method: string, body: unknown) {
+    const b = body as Record<string, unknown>;
+    if (method === "DELETE") return { ok: true };
+    if (path === "sessions") {
+      if (method === "PATCH") {
+        const prev = (sessions ?? []).find((s) => s.id === b.id);
+        return { session: { ...prev, ...b } };
+      }
+      return {
+        session: {
+          id: `local-${Date.now()}`,
+          created_at: new Date().toISOString(),
+          bpm: null,
+          seconds: null,
+          note: null,
+          variant: null,
+          ...b,
+        },
+      };
+    }
+    if (method === "PATCH") {
+      const prev = (exercises ?? []).find((e) => e.id === b.id);
+      return { exercise: { ...prev, ...b } };
+    }
+    return { exercise: { id: `local-${Date.now()}`, position: Date.now() / 1000, archived: false, ...b } };
   }
 
   async function api(path: "exercises" | "sessions", method: string, body: unknown) {
     const token = localStorage.getItem(TOKEN_KEY) ?? "";
-    const res = await fetch(`/api/practice/${path}?token=${encodeURIComponent(token)}`, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    let res: Response;
+    try {
+      res = await fetch(`/api/practice/${path}?token=${encodeURIComponent(token)}`, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+    } catch {
+      // Network down: queue the write and keep going locally.
+      setOffline(true);
+      localStorage.setItem(QUEUE_KEY, JSON.stringify([...readQueue(), { path, method, body }]));
+      return offlineEcho(path, method, body);
+    }
     if (res.status === 401) {
       localStorage.removeItem(TOKEN_KEY);
       setUnlocked(false);
@@ -377,6 +470,34 @@ export default function PracticeView() {
     const json = await res.json();
     if (!res.ok) throw new Error(json.error ?? "Request failed");
     return json;
+  }
+
+  // Replay queued offline writes in order. Dequeue on any server response,
+  // even an error — replaying a bad request forever would wedge the queue.
+  async function flushQueue() {
+    if (flushing.current) return;
+    flushing.current = true;
+    try {
+      const token = localStorage.getItem(TOKEN_KEY) ?? "";
+      let q = readQueue();
+      while (q.length) {
+        const item = q[0];
+        try {
+          await fetch(`/api/practice/${item.path}?token=${encodeURIComponent(token)}`, {
+            method: item.method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(item.body),
+          });
+        } catch {
+          return; // still offline; keep the rest queued
+        }
+        q = q.slice(1);
+        localStorage.setItem(QUEUE_KEY, JSON.stringify(q));
+      }
+      setOffline(false);
+    } finally {
+      flushing.current = false;
+    }
   }
 
   async function submitPassword() {
@@ -437,7 +558,21 @@ export default function PracticeView() {
     const m = getMetro();
     m.onBeat = (b) => {
       setPulse(b);
-      if (b === 0) barCount.current++;
+      if (b === 0) {
+        barCount.current++;
+        // Count-in: the stopwatch engages on the downbeat after one full bar.
+        if (countInPending.current && barCount.current >= 1) {
+          countInPending.current = false;
+          setCountingIn(false);
+          swStart.current = performance.now();
+          setSwRunning(true);
+        }
+        // Tempo trainer: nudge the dial up every N completed bars.
+        const tr = trainerRef.current;
+        if (tr.on && barCount.current > 0 && barCount.current % tr.bars === 0) {
+          setBpm((v) => clampBpm(v + tr.add));
+        }
+      }
       const every = noteSyncRef.current;
       if (every > 0 && barCount.current >= 0) {
         // Count beats from the bar structure (not a free-running counter) so
@@ -455,6 +590,9 @@ export default function PracticeView() {
       setRunning(false);
       setPulse(-1);
       setNoteMorph(null);
+      // Killing the clicks mid-count-in cancels the pending timer start.
+      countInPending.current = false;
+      setCountingIn(false);
     } else {
       m.bpm = bpm;
       m.beatsPerBar = beatsPerBar;
@@ -543,8 +681,21 @@ export default function PracticeView() {
   // metronome alone stays reachable via its own small affordance.
   function startSession() {
     const m = getMetro();
-    swToggle();
-    if (swRunning === m.running) toggleMetronome();
+    if (swRunning || countingIn) {
+      // Stop everything (a stop during the count-in just cancels it).
+      countInPending.current = false;
+      setCountingIn(false);
+      if (swRunning) swToggle();
+      if (m.running) toggleMetronome();
+    } else if (countIn && !m.running) {
+      // One bar of clicks first; the beat handler starts the timer.
+      countInPending.current = true;
+      setCountingIn(true);
+      toggleMetronome();
+    } else {
+      swToggle();
+      if (!m.running) toggleMetronome();
+    }
   }
 
   // Toast a fresh log entry, celebrating if it set a new top BPM.
@@ -961,6 +1112,27 @@ export default function PracticeView() {
     last7.push({ iso, label: "SMTWTFS"[d.getDay()], done: practicedDates.has(iso) });
   }
 
+  // Heatmap: ~26 weeks of daily totals (GitHub-style), shown once charts
+  // unlock. Amber intensity scales with minutes relative to the best day.
+  const secsByDate = new Map<string, number>();
+  for (const s of sessions ?? []) secsByDate.set(s.date, (secsByDate.get(s.date) ?? 0) + (s.seconds ?? 0));
+  const heatMax = Math.max(1, ...Array.from(secsByDate.values()));
+  const heatWeeks: { iso: string; secs: number; future: boolean }[][] = [];
+  {
+    const start = new Date();
+    start.setDate(start.getDate() - start.getDay() - 25 * 7); // back to a Sunday, 26 weeks ago
+    for (let w = 0; w < 26; w++) {
+      const col: (typeof heatWeeks)[number] = [];
+      for (let d = 0; d < 7; d++) {
+        const dt = new Date(start);
+        dt.setDate(start.getDate() + w * 7 + d);
+        const iso = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
+        col.push({ iso, secs: secsByDate.get(iso) ?? 0, future: iso > today });
+      }
+      heatWeeks.push(col);
+    }
+  }
+
   const loading = exercises === null || sessions === null;
 
   // ---------- render ----------
@@ -973,11 +1145,13 @@ export default function PracticeView() {
   const sessionBtn = (extra = "") => (
     <button
       className={`rounded-md px-4 py-2 text-sm font-semibold ${
-        swRunning ? "bg-amber-500 text-neutral-950 hover:bg-amber-400" : "bg-neutral-100 text-neutral-950 hover:bg-white"
+        swRunning || countingIn
+          ? "bg-amber-500 text-neutral-950 hover:bg-amber-400"
+          : "bg-neutral-100 text-neutral-950 hover:bg-white"
       } ${extra}`}
       onClick={startSession}
     >
-      {swRunning ? "Stop" : swElapsed > 0 ? "Resume" : "Start session"}
+      {countingIn ? "…" : swRunning ? "Stop" : swElapsed > 0 ? "Resume" : "Start session"}
     </button>
   );
 
@@ -1135,6 +1309,12 @@ export default function PracticeView() {
         </div>
       )}
 
+      {offline && (
+        <div className="mb-4 rounded-md border border-amber-900 bg-amber-950/40 px-3 py-2 text-sm text-amber-300">
+          Offline — edits are saved on this device and sync when you're back.
+        </div>
+      )}
+
       <div className="lg:grid lg:grid-cols-[24rem_minmax(0,1fr)] lg:items-start lg:gap-6">
         {/* ---- Tools column ---- */}
         <div className="lg:sticky lg:top-4">
@@ -1207,7 +1387,9 @@ export default function PracticeView() {
                 >
                   {fmtSecs(swElapsed / 1000)}
                 </div>
-                <div className="text-[10px] text-neutral-600">session</div>
+                <div className={`text-[10px] ${countingIn ? "text-amber-400" : "text-neutral-600"}`}>
+                  {countingIn ? "count-in…" : "session"}
+                </div>
               </div>
             </div>
             <BpmRuler value={bpm} onChange={setBpm} />
@@ -1263,6 +1445,58 @@ export default function PracticeView() {
               >
                 {running ? "stop metronome" : "metronome only"}
               </button>
+            </div>
+            {/* Session extras: opt-in behaviors for the Start button. */}
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-neutral-400">
+              <label className="flex items-center gap-1.5">
+                <input
+                  type="checkbox"
+                  className="accent-amber-500"
+                  checked={countIn}
+                  onChange={(e) => setCountIn(e.target.checked)}
+                />
+                count-in bar
+              </label>
+              <label className="flex items-center gap-1.5">
+                <input
+                  type="checkbox"
+                  className="accent-amber-500"
+                  checked={trainer}
+                  onChange={(e) => setTrainer(e.target.checked)}
+                />
+                tempo trainer
+              </label>
+              {trainer && (
+                <span className="flex items-center gap-1 text-neutral-500">
+                  +
+                  <select
+                    value={trainerAdd}
+                    onChange={(e) => setTrainerAdd(Number(e.target.value))}
+                    className={input}
+                    aria-label="bpm increase"
+                  >
+                    {[1, 2, 5].map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                  bpm every
+                  <select
+                    value={trainerBars}
+                    onChange={(e) => setTrainerBars(Number(e.target.value))}
+                    className={input}
+                    aria-label="bars between increases"
+                  >
+                    {[2, 4, 8, 16].map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                  bars
+                </span>
+              )}
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-3">
               <div className="flex overflow-hidden rounded-md border border-neutral-700 text-xs">
@@ -1347,6 +1581,28 @@ export default function PracticeView() {
             </button>
           </section>
 
+          {/* Handy external references (and the future home of a drone/tuner). */}
+          <section className={`${card} mb-4 hidden lg:block`}>
+            <h2 className="mb-1 text-sm font-medium text-neutral-400">Tools</h2>
+            <div className="flex flex-col gap-1 text-xs">
+              <a
+                className="text-neutral-500 underline hover:text-neutral-300"
+                href="https://www.oolimo.com/en/guitar-chords/analyze"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                chord analyzer (oolimo) ↗
+              </a>
+              <a
+                className="text-neutral-500 underline hover:text-neutral-300"
+                href="https://www.all-guitar-chords.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                chords &amp; scales reference (all-guitar-chords) ↗
+              </a>
+            </div>
+          </section>
         </div>
 
         {/* ---- Content column ---- */}
@@ -1609,6 +1865,29 @@ export default function PracticeView() {
                     </button>
                   ))}
                 </div>
+                {/* Daily heatmap: half a year of totals at a glance. */}
+                <div className="mt-4 overflow-x-auto">
+                  <div className="flex gap-[3px]">
+                    {heatWeeks.map((week, i) => (
+                      <div key={i} className="flex flex-col gap-[3px]">
+                        {week.map((d) => (
+                          <span
+                            key={d.iso}
+                            title={`${fmtDateShort(d.iso)}${d.secs > 0 ? ` · ${fmtSecs(d.secs)}` : ""}`}
+                            className="h-2.5 w-2.5 rounded-[2px]"
+                            style={{
+                              background: d.future
+                                ? "transparent"
+                                : d.secs === 0
+                                  ? "#26262666"
+                                  : `rgba(245,158,11,${0.25 + 0.75 * Math.min(1, d.secs / heatMax)})`,
+                            }}
+                          />
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </>
             )}
           </section>
@@ -1868,6 +2147,27 @@ export default function PracticeView() {
           {bestStreak} · avg <span className="tabular-nums">{fmtSecs(totalSecs / daysPracticed)}</span>/day
         </footer>
       )}
+
+      {/* The Tools card is desktop-only; mobile gets the links down here. */}
+      <div className="mt-2 text-center text-[10px] text-neutral-600 lg:hidden">
+        <a
+          className="underline hover:text-neutral-400"
+          href="https://www.oolimo.com/en/guitar-chords/analyze"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          chord analyzer ↗
+        </a>
+        {" · "}
+        <a
+          className="underline hover:text-neutral-400"
+          href="https://www.all-guitar-chords.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          chords &amp; scales ↗
+        </a>
+      </div>
 
       {/* Undo toast for one-tap logging (amber celebration on a personal best) */}
       {justLogged && (
