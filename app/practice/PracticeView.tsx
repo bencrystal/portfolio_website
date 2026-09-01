@@ -175,6 +175,7 @@ export default function PracticeView() {
   const fileInput = useRef<HTMLInputElement | null>(null);
   const attachTarget = useRef<string | null>(null);
   const [uploading, setUploading] = useState<string | null>(null);
+  const [descEdit, setDescEdit] = useState<{ id: string; text: string } | null>(null);
 
   function getMetro() {
     metro.current ??= new Metronome();
@@ -1442,7 +1443,8 @@ export default function PracticeView() {
             {manageOpen && (
               <div className="mt-3">
                 {(exercises ?? []).map((ex) => (
-                  <div key={ex.id} className="flex items-center gap-2 border-b border-neutral-800/60 py-1.5 text-sm">
+                  <div key={ex.id} className="border-b border-neutral-800/60">
+                  <div className="flex items-center gap-2 py-1.5 text-sm">
                     <span className="h-2 w-2 rounded-full" style={{ background: exColor(ex.id) }} />
                     <span className={`flex-1 ${ex.archived ? "text-neutral-600 line-through" : ""}`}>{ex.name}</span>
                     {unlocked && (
@@ -1517,11 +1519,12 @@ export default function PracticeView() {
                           rename
                         </button>
                         <button
-                          className="text-xs text-neutral-500 hover:text-neutral-200"
-                          onClick={() => {
-                            const description = prompt("Description (empty clears)", ex.description ?? "");
-                            if (description !== null) void patchExercise(ex.id, { description });
-                          }}
+                          className={`text-xs ${
+                            descEdit?.id === ex.id ? "text-neutral-200" : "text-neutral-500 hover:text-neutral-200"
+                          }`}
+                          onClick={() =>
+                            setDescEdit(descEdit?.id === ex.id ? null : { id: ex.id, text: ex.description ?? "" })
+                          }
                         >
                           desc
                         </button>
@@ -1536,6 +1539,36 @@ export default function PracticeView() {
                         </button>
                       </>
                     )}
+                  </div>
+                  {descEdit?.id === ex.id && (
+                    <div className="mb-2 pl-4">
+                      <textarea
+                        autoFocus
+                        rows={3}
+                        value={descEdit.text}
+                        onChange={(e) => setDescEdit({ id: ex.id, text: e.target.value })}
+                        placeholder="Description — what to focus on, steps, etc. (empty clears)"
+                        className={`${input} w-full resize-y`}
+                      />
+                      <div className="mt-1 flex gap-2">
+                        <button
+                          className="rounded-md bg-neutral-100 px-3 py-1 text-xs font-semibold text-neutral-950 hover:bg-white"
+                          onClick={() => {
+                            void patchExercise(ex.id, { description: descEdit.text });
+                            setDescEdit(null);
+                          }}
+                        >
+                          Save
+                        </button>
+                        <button
+                          className="rounded-md bg-neutral-800 px-3 py-1 text-xs hover:bg-neutral-700"
+                          onClick={() => setDescEdit(null)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
                   </div>
                 ))}
                 <div className="mt-2 flex gap-2">
