@@ -17,6 +17,7 @@ type Exercise = {
   archived: boolean;
   ref_url?: string | null;
   track_variants?: boolean;
+  description?: string | null;
 };
 type Session = {
   id: string;
@@ -148,7 +149,7 @@ export default function PracticeView() {
   // Auto-advance interval in beats while the metronome runs (0 = off).
   const [noteSync, setNoteSync] = useState(0);
   const noteSyncRef = useRef(0);
-  const beatCount = useRef(0);
+  const barCount = useRef(-1); // bars since start; -1 until the first downbeat
 
   // --- stopwatch ---
   const [selectedEx, setSelectedEx] = useState<string | null>(null);
@@ -278,10 +279,14 @@ export default function PracticeView() {
     const m = getMetro();
     m.onBeat = (b) => {
       setPulse(b);
+      if (b === 0) barCount.current++;
       const every = noteSyncRef.current;
-      if (every > 0) {
-        if (beatCount.current % every === 0) advanceNote();
-        beatCount.current++;
+      if (every > 0 && barCount.current >= 0) {
+        // Count beats from the bar structure (not a free-running counter) so
+        // note changes stay anchored to the downbeat even if the interval is
+        // switched on mid-run.
+        const beatIndex = barCount.current * m.beatsPerBar + b;
+        if (beatIndex % every === 0) advanceNote();
       }
     };
     if (m.running) {
@@ -291,7 +296,7 @@ export default function PracticeView() {
     } else {
       m.bpm = bpm;
       m.beatsPerBar = beatsPerBar;
-      beatCount.current = 0;
+      barCount.current = -1;
       m.start();
       setRunning(true);
     }
@@ -1134,6 +1139,9 @@ export default function PracticeView() {
                       {expanded ? "▾" : "▸"}
                     </span>
                   </button>
+                  {ex.description && (
+                    <p className="mt-0.5 pl-[1.125rem] text-xs text-neutral-500">{ex.description}</p>
+                  )}
                   {aggs.length === 0 ? (
                     <p className="mt-2 text-xs text-neutral-600">not practiced yet — tap to arm the stopwatch</p>
                   ) : ex.track_variants ? (
@@ -1439,6 +1447,15 @@ export default function PracticeView() {
                           }}
                         >
                           rename
+                        </button>
+                        <button
+                          className="text-xs text-neutral-500 hover:text-neutral-200"
+                          onClick={() => {
+                            const description = prompt("Description (empty clears)", ex.description ?? "");
+                            if (description !== null) void patchExercise(ex.id, { description });
+                          }}
+                        >
+                          desc
                         </button>
                         <button
                           className="text-xs text-neutral-500 hover:text-neutral-200"
