@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { scribeDb } from "@/lib/scribe-db";
-import { validPracticeToken } from "@/lib/practice-db";
+import { spaceForToken } from "@/lib/practice-db";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -19,7 +19,8 @@ const EXT_BY_MIME: Record<string, string> = {
 // POST multipart/form-data { file, exercise_id } with ?token=<PRACTICE_TOKEN>.
 // Stores the file in a public bucket and points the exercise's ref_url at it.
 export async function POST(req: NextRequest) {
-  if (!validPracticeToken(req.nextUrl.searchParams.get("token"))) {
+  const space = await spaceForToken(req.nextUrl.searchParams.get("token"));
+  if (!space) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
   const form = await req.formData();
@@ -47,6 +48,7 @@ export async function POST(req: NextRequest) {
     .from("practice_exercises")
     .update({ ref_url: pub.publicUrl })
     .eq("id", exerciseId)
+    .eq("space_id", space)
     .select()
     .single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

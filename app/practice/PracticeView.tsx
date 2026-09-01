@@ -183,19 +183,29 @@ export default function PracticeView() {
 
   // ---------- data ----------
 
+  // Load the space belonging to the given password (or the default, public
+  // space without one). A stale saved password falls back to the public view.
+  async function fetchAll(token: string | null): Promise<void> {
+    const q = token ? `?token=${encodeURIComponent(token)}` : "";
+    const [exR, seR] = await Promise.all([
+      fetch(`/api/practice/exercises${q}`),
+      fetch(`/api/practice/sessions${q}`),
+    ]);
+    if (token && (exR.status === 401 || seR.status === 401)) {
+      localStorage.removeItem(TOKEN_KEY);
+      setUnlocked(false);
+      return fetchAll(null);
+    }
+    const [ex, se] = await Promise.all([exR.json(), seR.json()]);
+    if (ex.error || se.error) throw new Error(ex.error ?? se.error);
+    setExercises(ex.exercises);
+    setSessions(se.sessions);
+    const first = (ex.exercises as Exercise[]).find((e) => !e.archived);
+    setSelectedEx((cur) => (cur && ex.exercises.some((e: Exercise) => e.id === cur) ? cur : first?.id ?? null));
+  }
+
   useEffect(() => {
-    Promise.all([
-      fetch("/api/practice/exercises").then((r) => r.json()),
-      fetch("/api/practice/sessions").then((r) => r.json()),
-    ])
-      .then(([ex, se]) => {
-        if (ex.error || se.error) throw new Error(ex.error ?? se.error);
-        setExercises(ex.exercises);
-        setSessions(se.sessions);
-        const first = (ex.exercises as Exercise[]).find((e) => !e.archived);
-        setSelectedEx((cur) => cur ?? first?.id ?? null);
-      })
-      .catch((e) => setError(String(e.message ?? e)));
+    void fetchAll(localStorage.getItem(TOKEN_KEY)).catch((e) => setError(String(e.message ?? e)));
     // Re-verify a remembered password silently.
     if (localStorage.getItem(TOKEN_KEY)) void verifyToken(localStorage.getItem(TOKEN_KEY)!).then(setUnlocked);
     // Restore metronome prefs.
@@ -252,9 +262,30 @@ export default function PracticeView() {
       setUnlockOpen(false);
       setPwInput("");
       setPwError(false);
+      // The password names a space: load its data and drop stale selections.
+      setExercises(null);
+      setSessions(null);
+      setForm(null);
+      setExpandedEx(null);
+      setFocusEx(null);
+      setJustLogged(null);
+      void fetchAll(pw).catch((e) => setError(String(e.message ?? e)));
     } else {
       setPwError(true);
     }
+  }
+
+  // Back to the public (default) view; the saved password is forgotten.
+  function signOut() {
+    localStorage.removeItem(TOKEN_KEY);
+    setUnlocked(false);
+    setExercises(null);
+    setSessions(null);
+    setForm(null);
+    setExpandedEx(null);
+    setFocusEx(null);
+    setJustLogged(null);
+    void fetchAll(null).catch((e) => setError(String(e.message ?? e)));
   }
 
   function requireUnlock(): boolean {
@@ -861,7 +892,12 @@ export default function PracticeView() {
             </span>
           )}
           {unlocked ? (
-            <span className="text-xs text-neutral-500">editing on</span>
+            <span className="text-xs text-neutral-500">
+              editing on ·{" "}
+              <button className="underline hover:text-neutral-300" onClick={signOut}>
+                sign out
+              </button>
+            </span>
           ) : (
             <button className="text-xs text-neutral-400 underline" onClick={() => setUnlockOpen(true)}>
               unlock editing
@@ -872,7 +908,9 @@ export default function PracticeView() {
 
       {unlockOpen && !unlocked && (
         <div className={`${card} mb-4`}>
-          <p className="mb-2 text-sm text-neutral-400">Enter the edit password (saved on this device).</p>
+          <p className="mb-2 text-sm text-neutral-400">
+            Enter your password (saved on this device) — it opens your own practice log.
+          </p>
           <div className="flex gap-2">
             <input
               type="password"

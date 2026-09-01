@@ -1,38 +1,51 @@
 import { NextRequest, NextResponse } from "next/server";
 import { scribeDb } from "@/lib/scribe-db";
-import { validPracticeToken } from "@/lib/practice-db";
+import { defaultSpaceId, spaceForToken } from "@/lib/practice-db";
 
 function unauthorized() {
   return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 }
 
-// Reading is public; mutations require ?token=<PRACTICE_TOKEN>.
+// Reads show the token's space (or the default space without a token);
+// mutations require ?token=<space password> and are scoped to that space.
 
-export async function GET() {
+async function readSpace(req: NextRequest): Promise<string | null | "bad-token"> {
+  const token = req.nextUrl.searchParams.get("token");
+  if (token) return (await spaceForToken(token)) ?? "bad-token";
+  return defaultSpaceId();
+}
+
+export async function GET(req: NextRequest) {
+  const space = await readSpace(req);
+  if (space === "bad-token") return unauthorized();
+  if (!space) return NextResponse.json({ exercises: [] });
   const { data, error } = await scribeDb
     .from("practice_exercises")
     .select("id, name, position, archived, ref_url, track_variants, description")
+    .eq("space_id", space)
     .order("position", { ascending: true });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ exercises: data });
 }
 
 export async function POST(req: NextRequest) {
-  if (!validPracticeToken(req.nextUrl.searchParams.get("token"))) return unauthorized();
+  const space = await spaceForToken(req.nextUrl.searchParams.get("token"));
+  if (!space) return unauthorized();
   const { name } = await req.json();
   if (!name?.trim()) return NextResponse.json({ error: "missing name" }, { status: 400 });
   const { data, error } = await scribeDb
     .from("practice_exercises")
-    .insert({ name: name.trim(), position: Date.now() / 1000 })
+    .insert({ name: name.trim(), position: Date.now() / 1000, space_id: space })
     .select()
     .single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ exercise: data });
 }
 
-// PATCH { id, name?, position?, archived?, ref_url? (null clears) }
+// PATCH { id, name?, position?, archived?, track_variants?, description?, ref_url? (null clears) }
 export async function PATCH(req: NextRequest) {
-  if (!validPracticeToken(req.nextUrl.searchParams.get("token"))) return unauthorized();
+  const space = await spaceForToken(req.nextUrl.searchParams.get("token"));
+  if (!space) return unauthorized();
   const { id, ...fields } = await req.json();
   const updates: Record<string, unknown> = {};
   if (typeof fields.name === "string" && fields.name.trim()) updates.name = fields.name.trim();
@@ -56,6 +69,7 @@ export async function PATCH(req: NextRequest) {
     .from("practice_exercises")
     .update(updates)
     .eq("id", id)
+    .eq("space_id", space)
     .select()
     .single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -64,10 +78,11 @@ export async function PATCH(req: NextRequest) {
 
 // DELETE { id }: sessions for the exercise are removed too (FK cascade).
 export async function DELETE(req: NextRequest) {
-  if (!validPracticeToken(req.nextUrl.searchParams.get("token"))) return unauthorized();
+  const space = await spaceForToken(req.nextUrl.searchParams.get("token"));
+  if (!space) return unauthorized();
   const { id } = await req.json();
   if (!id) return NextResponse.json({ error: "missing id" }, { status: 400 });
-  const { error } = await scribeDb.from("practice_exercises").delete().eq("id", id);
+  const { error } = await scribeDb.from("practice_exercises").delete().eq("id", id).eq("space_id", space);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true });
 }
