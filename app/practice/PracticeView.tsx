@@ -1409,7 +1409,10 @@ export default function PracticeView() {
                             <button
                               className="text-xs text-neutral-500 hover:text-red-400"
                               title="Remove reference"
-                              onClick={() => patchExercise(ex.id, { ref_url: null })}
+                              onClick={() =>
+                                confirm(`Remove the reference from “${ex.name}”? This can't be undone.`) &&
+                                patchExercise(ex.id, { ref_url: null })
+                              }
                             >
                               ×ref
                             </button>
@@ -1459,7 +1462,10 @@ export default function PracticeView() {
                         </button>
                         <button
                           className="text-xs text-neutral-500 hover:text-neutral-200"
-                          onClick={() => patchExercise(ex.id, { archived: !ex.archived })}
+                          onClick={() =>
+                            (ex.archived || confirm(`Archive “${ex.name}”? Its history stays and it can be restored here.`)) &&
+                            patchExercise(ex.id, { archived: !ex.archived })
+                          }
                         >
                           {ex.archived ? "restore" : "archive"}
                         </button>
