@@ -1681,16 +1681,12 @@ export default function PracticeView() {
             </button>
           </section>
 
-          {/* Tuner: one collapsed row until needed, on mobile too — tuning is
-              the tool you want on a phone. */}
+          {/* Tools: the tuner plus handy external references. Visible on
+              mobile too — tuning is the tool you want on a phone. */}
           <section className={`${card} mb-4`}>
+            <h2 className="mb-2 text-sm font-medium text-neutral-400">Tools</h2>
             <Tuner />
-          </section>
-
-          {/* Handy external references. */}
-          <section className={`${card} mb-4 hidden lg:block`}>
-            <h2 className="mb-1 text-sm font-medium text-neutral-400">Tools</h2>
-            <div className="flex flex-col gap-1 text-xs">
+            <div className="mt-2 flex flex-col gap-1 border-t border-neutral-800 pt-2 text-xs">
               <a
                 className="text-neutral-500 underline hover:text-neutral-300"
                 href="https://www.oolimo.com/en/guitar-chords/analyze"
@@ -1716,12 +1712,17 @@ export default function PracticeView() {
           {/* Exercise cards: last vs today at a glance; tap = arm stopwatch + metronome. */}
           <div className="mb-2 flex items-center justify-between">
             <h2 className="text-sm font-medium text-neutral-400">Exercises</h2>
-            <button
-              className="text-xs text-neutral-500 underline hover:text-neutral-300"
-              onClick={() => setManageOpen((o) => !o)}
-            >
-              {manageOpen ? "close manage" : "manage"}
-            </button>
+            <div className="flex gap-3">
+              <a className="text-xs text-neutral-500 underline hover:text-neutral-300" href="/practice/tree">
+                🌳 skill tree
+              </a>
+              <button
+                className="text-xs text-neutral-500 underline hover:text-neutral-300"
+                onClick={() => setManageOpen((o) => !o)}
+              >
+                {manageOpen ? "close manage" : "manage"}
+              </button>
+            </div>
           </div>
           <section className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
             {/* Said once, up here — the cards below just show a quiet "—". */}
@@ -1775,7 +1776,7 @@ export default function PracticeView() {
                             ? "Attached reference — click to view"
                             : "Reference link — opens in a new tab"
                         }
-                        className="px-1 text-xs text-neutral-500 hover:text-neutral-200"
+                        className="rounded-md border border-neutral-700 bg-neutral-800/60 px-1.5 py-0.5 text-xs hover:border-neutral-400 hover:bg-neutral-700"
                         onClick={(e) => {
                           e.stopPropagation();
                           setHoverRef(null);
@@ -2342,27 +2343,6 @@ export default function PracticeView() {
           {bestStreak} · avg <span className="tabular-nums">{fmtDur(totalSecs / daysPracticed)}</span>/day
         </footer>
       )}
-
-      {/* The Tools card is desktop-only; mobile gets the links down here. */}
-      <div className="mt-2 text-center text-[10px] text-neutral-600 lg:hidden">
-        <a
-          className="underline hover:text-neutral-400"
-          href="https://www.oolimo.com/en/guitar-chords/analyze"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          chord analyzer ↗
-        </a>
-        {" · "}
-        <a
-          className="underline hover:text-neutral-400"
-          href="https://www.all-guitar-chords.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          chords &amp; scales ↗
-        </a>
-      </div>
 
       {/* Undo toast for one-tap logging (amber celebration on a personal best) */}
       {justLogged && (

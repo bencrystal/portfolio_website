@@ -168,6 +168,16 @@ export default function Tuner() {
   // 3+3 headstock, as seen from the front: low E nearest the nut on the left.
   const leftPegs = [2, 1, 0]; // D A E top-to-bottom
   const rightPegs = [3, 4, 5]; // G B e top-to-bottom
+  // String geometry in headstock-SVG space: tuning-post position (aligned to
+  // the peg button rows) and where the string sits in the nut.
+  const STRING_GEO = [
+    { post: [10, 104] as const, nut: 11 }, // E
+    { post: [10, 64] as const, nut: 15.4 }, // A
+    { post: [10, 24] as const, nut: 19.8 }, // D
+    { post: [34, 24] as const, nut: 24.2 }, // G
+    { post: [34, 64] as const, nut: 28.6 }, // B
+    { post: [34, 104] as const, nut: 33 }, // e
+  ];
   const inTune = heard != null && Math.abs(heard.cents) <= 5;
 
   const peg = (i: number) => (
@@ -204,11 +214,34 @@ export default function Tuner() {
         <div className="mt-2">
           <div className="flex items-center justify-center gap-2">
             <div className="flex flex-col gap-2">{leftPegs.map(peg)}</div>
-            {/* The headstock itself — purely decorative, but it makes the
-                peg layout read instantly. */}
-            <div className="h-[6.5rem] w-9 rounded-t-2xl rounded-b-sm border border-neutral-700 bg-neutral-800/60">
-              <div className="mx-auto mt-2 h-[4.7rem] w-1 rounded bg-neutral-700/60" />
-            </div>
+            {/* The headstock: tapered paddle, six strings running from their
+                posts over the nut onto a neck stub. The playing string lights
+                up. Decorative, but it makes the peg layout read instantly. */}
+            <svg viewBox="0 0 44 128" className="h-32 w-11" aria-hidden>
+              <path
+                d="M10 112 L6 24 Q6 8 16 8 L28 8 Q38 8 38 24 L34 112 Z"
+                fill="#262626"
+                stroke="#404040"
+                strokeWidth="1"
+              />
+              {STRING_GEO.map((g, i) => (
+                <g key={i} stroke={playing === i ? "#f59e0b" : "#525252"} strokeWidth={1.4 - i * 0.12}>
+                  <line x1={g.post[0]} y1={g.post[1]} x2={g.nut} y2={110} />
+                  <line x1={g.nut} y1={114} x2={g.nut} y2={128} />
+                </g>
+              ))}
+              <rect x="8" y="110" width="28" height="4" rx="1" fill="#737373" />
+              <rect x="10" y="114" width="24" height="14" fill="none" stroke="#404040" strokeWidth="1" />
+              {STRING_GEO.map((g, i) => (
+                <circle
+                  key={i}
+                  cx={g.post[0]}
+                  cy={g.post[1]}
+                  r={2.5}
+                  fill={playing === i ? "#f59e0b" : "#a3a3a3"}
+                />
+              ))}
+            </svg>
             <div className="flex flex-col gap-2">{rightPegs.map(peg)}</div>
           </div>
           <div className="mt-2 flex items-center justify-center gap-3">
