@@ -133,13 +133,13 @@ function Peek({
       >
         {base}
       </div>
+      {/* Purely visual — pointer-events-none keeps the hover zone at the
+          original footprint (so covered rows reappear the moment you head
+          for them) and lets clicks fall through to the real row beneath. */}
       <div
-        className={`absolute inset-x-0 top-0 z-10 rounded-lg border px-2.5 py-1.5 text-sm text-neutral-300 shadow-xl transition-opacity duration-200 ${
-          previewed
-            ? "border-neutral-700 bg-neutral-900 opacity-100"
-            : "pointer-events-none border-transparent opacity-0"
+        className={`pointer-events-none absolute inset-x-0 top-0 z-10 rounded-lg border px-2.5 py-1.5 text-sm text-neutral-300 shadow-xl transition-opacity duration-200 ${
+          previewed ? "border-neutral-700 bg-neutral-900 opacity-100" : "border-transparent opacity-0"
         }`}
-        {...handlers}
       >
         {base}
         <Reveal open={previewed}>{extra}</Reveal>
