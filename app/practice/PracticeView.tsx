@@ -60,6 +60,9 @@ function randNote(excludeIdx: number | null): Note {
 }
 
 const PREFS_KEY = "practice_prefs";
+// First visit shows a short how-it-works card; dismissing it is remembered
+// and the header's "?" brings it back.
+const HINT_KEY = "practice_hint_dismissed";
 
 // Mutations that fail because the network is down get queued here and
 // replayed in order once the connection returns (same pattern as /list).
@@ -320,6 +323,10 @@ export default function PracticeView() {
   const trainerRef = useRef({ on: false, add: 2, bars: 4 });
   const [offline, setOffline] = useState(false);
   const flushing = useRef(false);
+  // The 90% flow is exercise → Start → Log it; everything else (count-in,
+  // trainer, sound, meter) hides behind "options" so the hero stays simple.
+  const [extrasOpen, setExtrasOpen] = useState(false);
+  const [hintOpen, setHintOpen] = useState(false);
 
   // --- log form / cards / charts ---
   const [form, setForm] = useState<FormState | null>(null);
@@ -399,9 +406,11 @@ export default function PracticeView() {
       if (typeof p.trainer === "boolean") setTrainer(p.trainer);
       if ([1, 2, 5].includes(p.trainerAdd)) setTrainerAdd(p.trainerAdd);
       if ([2, 4, 8, 16].includes(p.trainerBars)) setTrainerBars(p.trainerBars);
+      if (typeof p.extrasOpen === "boolean") setExtrasOpen(p.extrasOpen);
     } catch {
       // Corrupt prefs — defaults are fine.
     }
+    if (!localStorage.getItem(HINT_KEY)) setHintOpen(true);
     return () => window.removeEventListener("online", sync);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -409,9 +418,9 @@ export default function PracticeView() {
   useEffect(() => {
     localStorage.setItem(
       PREFS_KEY,
-      JSON.stringify({ bpm, beatsPerBar, sound, volume, noteSync, countIn, trainer, trainerAdd, trainerBars })
+      JSON.stringify({ bpm, beatsPerBar, sound, volume, noteSync, countIn, trainer, trainerAdd, trainerBars, extrasOpen })
     );
-  }, [bpm, beatsPerBar, sound, volume, noteSync, countIn, trainer, trainerAdd, trainerBars]);
+  }, [bpm, beatsPerBar, sound, volume, noteSync, countIn, trainer, trainerAdd, trainerBars, extrasOpen]);
 
   useEffect(() => {
     trainerRef.current = { on: trainer, add: trainerAdd, bars: trainerBars };
@@ -1303,6 +1312,13 @@ export default function PracticeView() {
       <div className="flex items-center justify-between py-4">
         <h1 className="text-xl font-semibold">Guitar Practice</h1>
         <div className="flex items-center gap-3">
+          <button
+            className="rounded-full border border-neutral-700 px-2 text-xs text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
+            title="How it works"
+            onClick={() => setHintOpen((o) => !o)}
+          >
+            ?
+          </button>
           {unlocked ? (
             <span className="text-xs text-neutral-500">
               logged in ·{" "}
@@ -1359,6 +1375,30 @@ export default function PracticeView() {
       {offline && (
         <div className="mb-4 rounded-md border border-amber-900 bg-amber-950/40 px-3 py-2 text-sm text-amber-300">
           Offline — edits are saved on this device and sync when you're back.
+        </div>
+      )}
+
+      {hintOpen && (
+        <div className={`${card} mb-4 text-sm text-neutral-300`}>
+          <p>
+            <span className="font-medium">How it works:</span> tap an exercise to arm it →{" "}
+            <span className="font-medium">Start session</span> runs the metronome and timer together →{" "}
+            <span className="font-medium">Log it</span> saves your tempo and time.
+          </p>
+          <p className="mt-1.5 text-xs text-neutral-500">
+            More, when you want it: “options” under Start holds count-in, tempo trainer, sound and meter · ↓↑ in
+            manage tracks down/up-stroke starts separately · “goal” draws a target line on the chart ·{" "}
+            <span className="text-neutral-400">Log in</span> with your password to edit your own log.
+          </p>
+          <button
+            className="mt-2 rounded-md bg-neutral-800 px-3 py-1 text-xs hover:bg-neutral-700"
+            onClick={() => {
+              localStorage.setItem(HINT_KEY, "1");
+              setHintOpen(false);
+            }}
+          >
+            got it
+          </button>
         </div>
       )}
 
@@ -1451,18 +1491,6 @@ export default function PracticeView() {
                   </button>
                 ))}
               </div>
-              <select
-                value={beatsPerBar}
-                onChange={(e) => setBeatsPerBar(Number(e.target.value))}
-                className={`${input} ml-auto`}
-                aria-label="beats per bar"
-              >
-                {[2, 3, 4, 6].map((n) => (
-                  <option key={n} value={n}>
-                    {n}/4
-                  </option>
-                ))}
-              </select>
             </div>
             <div className="mt-3 flex items-center gap-2">
               {sessionBtn("flex-1 py-3")}
@@ -1493,6 +1521,16 @@ export default function PracticeView() {
                 {running ? "stop metronome" : "metronome only"}
               </button>
             </div>
+            {/* Tuning lives behind one small toggle so the hero stays at
+                exercise → tempo → Start for anyone new to the page. */}
+            <button
+              className="mt-2 text-xs text-neutral-500 hover:text-neutral-300"
+              onClick={() => setExtrasOpen((o) => !o)}
+            >
+              options {extrasOpen ? "▾" : "▸"}
+            </button>
+            {extrasOpen && (
+            <>
             {/* Session extras: opt-in behaviors for the Start button. */}
             <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-neutral-400">
               <label className="flex items-center gap-1.5">
@@ -1546,6 +1584,18 @@ export default function PracticeView() {
               )}
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-3">
+              <select
+                value={beatsPerBar}
+                onChange={(e) => setBeatsPerBar(Number(e.target.value))}
+                className={input}
+                aria-label="beats per bar"
+              >
+                {[2, 3, 4, 6].map((n) => (
+                  <option key={n} value={n}>
+                    {n}/4
+                  </option>
+                ))}
+              </select>
               <div className="flex overflow-hidden rounded-md border border-neutral-700 text-xs">
                 {(["beep", "wood", "tick"] as const).map((s) => (
                   <button
@@ -1586,6 +1636,8 @@ export default function PracticeView() {
                 </select>
               </label>
             </div>
+            </>
+            )}
           </section>
 
           {/* Random note: its own card on desktop; lives in the strip on mobile. */}
@@ -1908,13 +1960,7 @@ export default function PracticeView() {
               </div>
             ) : (
               <>
-                {/* Time = stacked bars of each day's total (sessions are
-                    discrete); BPM = lines (a capability that persists). */}
-                <Chart
-                  series={displaySeries}
-                  bars={metric === "seconds"}
-                  fmtY={metric === "seconds" ? fmtDur : (y) => String(Math.round(y))}
-                />
+                <Chart series={displaySeries} fmtY={metric === "seconds" ? fmtDur : (y) => String(Math.round(y))} />
                 {/* Legend doubles as a filter: tap an entry to isolate it.
                     Variant series get their own entries so the solid (↓ down)
                     vs dashed (↑ up) styling is explained where it's seen. */}
@@ -1927,7 +1973,7 @@ export default function PracticeView() {
                         onClick={() => setFocusEx(focusEx === s.name ? null : s.name)}
                         className={`flex items-center gap-1.5 text-xs ${dim ? "text-neutral-600" : "text-neutral-400"}`}
                       >
-                        {metric === "seconds" || !s.dash ? (
+                        {!s.dash ? (
                           <span className="h-2 w-4 rounded-sm" style={{ background: dim ? s.color + "40" : s.color }} />
                         ) : (
                           <span
