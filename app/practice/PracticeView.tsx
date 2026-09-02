@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import BpmRuler from "./BpmRuler";
 import Chart, { Series } from "./Chart";
+import Reveal from "./Reveal";
 import Tuner from "./Tuner";
 import { ClickSound, Metronome } from "./metronome";
 
@@ -339,6 +340,7 @@ export default function PracticeView() {
   const [focusEx, setFocusEx] = useState<string | null>(null); // chart legend isolation
   const [manageOpen, setManageOpen] = useState(false);
   const [logOpen, setLogOpen] = useState(false); // log shows ~2 entries until expanded
+  const logRef = useRef<HTMLDivElement | null>(null); // measured so max-height can lerp open
   const [newExName, setNewExName] = useState("");
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [hoverRef, setHoverRef] = useState<string | null>(null); // desktop hover preview
@@ -1888,7 +1890,7 @@ export default function PracticeView() {
                       {ex.description}
                     </p>
                   )}
-                  {expanded && (
+                  <Reveal open={expanded}>
                     <div className="mt-2 border-t border-neutral-800 pt-2 text-xs text-neutral-400">
                       {ex.description && (
                         <div className="mb-2">
@@ -1904,7 +1906,7 @@ export default function PracticeView() {
                       ))}
                       {aggs.length === 0 && <p className="py-1 text-neutral-600">no sessions yet</p>}
                     </div>
-                  )}
+                  </Reveal>
                   {/* Expand affordance along the bottom edge — full-width and
                       tall enough to hit with a thumb. */}
                   <button
@@ -2247,7 +2249,18 @@ export default function PracticeView() {
             )}
             {/* Collapsed by default: a couple of entries fading out under an
                 expand arrow — the log is a receipt, not the main event. */}
-            <div className={`relative ${!logOpen && byDateDesc.length > 3 ? "max-h-44 overflow-hidden" : ""}`}>
+            <div
+              ref={logRef}
+              className="relative overflow-hidden transition-[max-height] duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
+              style={{
+                maxHeight:
+                  byDateDesc.length > 3
+                    ? logOpen
+                      ? logRef.current?.scrollHeight // real height, so the mask lerps instead of snapping
+                      : 176
+                    : undefined,
+              }}
+            >
             {dates.map((date) => {
               const daySessions = byDateDesc.filter((s) => s.date === date);
               const daySecs = daySessions.reduce((t, s) => t + (s.seconds ?? 0), 0);
@@ -2329,8 +2342,10 @@ export default function PracticeView() {
                 </div>
               );
             })}
-            {!logOpen && byDateDesc.length > 3 && (
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-neutral-900 to-transparent" />
+            {byDateDesc.length > 3 && (
+              <div
+                className={`pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-neutral-900 to-transparent transition-opacity duration-500 ${logOpen ? "opacity-0" : "opacity-100"}`}
+              />
             )}
             </div>
             {byDateDesc.length > 3 && (

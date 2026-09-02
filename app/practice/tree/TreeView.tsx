@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Reveal from "../Reveal";
 
 // Full-screen skill-tree takeover: five linear paths of nodes. Starting a
 // node spawns a normal exercise on /practice; the gate (BPM threshold, total
@@ -316,9 +317,9 @@ export default function TreeView() {
                             style={{ borderColor: b.color }}
                           />
                         ) : tier === "next" ? (
-                          <span className="absolute left-[2px] top-1 h-3 w-3 rounded-full border border-neutral-600 bg-neutral-950" />
+                          <span className="absolute left-[2px] top-2 h-3 w-3 rounded-full border border-neutral-600 bg-neutral-950" />
                         ) : (
-                          <span className="absolute left-[5px] top-2 h-1.5 w-1.5 rounded-full bg-neutral-700" />
+                          <span className="absolute left-[5px] top-3 h-1.5 w-1.5 rounded-full bg-neutral-700" />
                         );
 
                       return (
@@ -402,10 +403,15 @@ export default function TreeView() {
                           )}
 
                           {tier === "next" && (
-                            <div className="text-sm" {...peekHandlers}>
+                            <div
+                              className="rounded-lg border border-neutral-800/60 px-2.5 py-1.5 text-sm"
+                              {...peekHandlers}
+                            >
                               <span className="text-neutral-300">{n.name}</span>
-                              {previewed && n.description && (
-                                <p className="mt-0.5 text-xs text-neutral-500">{n.description}</p>
+                              {n.description && (
+                                <Reveal open={previewed}>
+                                  <p className="mt-0.5 text-xs text-neutral-500">{n.description}</p>
+                                </Reveal>
                               )}
                               <p className="mt-0.5 flex items-center gap-1.5 text-xs text-neutral-500">
                                 <GateIcon type={n.gate_type} />
@@ -423,19 +429,22 @@ export default function TreeView() {
                           )}
 
                           {tier === "pill" && (
-                            <div className="cursor-default pt-0.5 text-sm" {...peekHandlers}>
-                              <p className={previewed ? "text-neutral-300" : "text-neutral-600"}>{n.name}</p>
-                              {previewed && (
-                                <>
-                                  {n.description && (
-                                    <p className="mt-0.5 text-xs text-neutral-500">{n.description}</p>
-                                  )}
-                                  <p className="mt-0.5 flex items-center gap-1.5 text-xs text-neutral-500">
-                                    <GateIcon type={n.gate_type} />
-                                    {gateShort(n)}
-                                  </p>
-                                </>
-                              )}
+                            <div
+                              className="cursor-default rounded-lg border border-neutral-800/60 px-2.5 py-1.5 text-sm"
+                              {...peekHandlers}
+                            >
+                              <p className={`transition-colors duration-300 ${previewed ? "text-neutral-300" : "text-neutral-600"}`}>
+                                {n.name}
+                              </p>
+                              <Reveal open={previewed}>
+                                {n.description && (
+                                  <p className="mt-0.5 text-xs text-neutral-500">{n.description}</p>
+                                )}
+                                <p className="mt-0.5 flex items-center gap-1.5 text-xs text-neutral-500">
+                                  <GateIcon type={n.gate_type} />
+                                  {gateShort(n)}
+                                </p>
+                              </Reveal>
                             </div>
                           )}
                         </div>
