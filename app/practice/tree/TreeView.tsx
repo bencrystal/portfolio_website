@@ -108,6 +108,46 @@ function gateShort(n: TreeNode) {
   return "you decide when";
 }
 
+// Compressed row whose preview floats as an overlay clone above the list —
+// expanding never shifts the rows below it, so hovering down a column can't
+// yank the next target out from under the cursor. The clone repeats the base
+// content pixel-aligned on top, then mask-reveals the extra lines.
+function Peek({
+  dim,
+  previewed,
+  handlers,
+  base,
+  extra,
+}: {
+  dim?: boolean;
+  previewed: boolean;
+  handlers: React.DOMAttributes<HTMLDivElement>;
+  base: React.ReactNode;
+  extra: React.ReactNode;
+}) {
+  return (
+    <div className="relative">
+      <div
+        className={`rounded-lg border border-neutral-800/60 px-2.5 py-1.5 text-sm ${dim ? "text-neutral-600" : ""}`}
+        {...handlers}
+      >
+        {base}
+      </div>
+      <div
+        className={`absolute inset-x-0 top-0 z-10 rounded-lg border px-2.5 py-1.5 text-sm text-neutral-300 shadow-xl transition-opacity duration-200 ${
+          previewed
+            ? "border-neutral-700 bg-neutral-900 opacity-100"
+            : "pointer-events-none border-transparent opacity-0"
+        }`}
+        {...handlers}
+      >
+        {base}
+        <Reveal open={previewed}>{extra}</Reveal>
+      </div>
+    </div>
+  );
+}
+
 export default function TreeView() {
   const [nodes, setNodes] = useState<TreeNode[] | null>(null);
   const [progress, setProgress] = useState<Progress[]>([]);
@@ -403,49 +443,52 @@ export default function TreeView() {
                           )}
 
                           {tier === "next" && (
-                            <div
-                              className="rounded-lg border border-neutral-800/60 px-2.5 py-1.5 text-sm"
-                              {...peekHandlers}
-                            >
-                              <span className="text-neutral-300">{n.name}</span>
-                              {n.description && (
-                                <Reveal open={previewed}>
+                            <Peek
+                              previewed={previewed}
+                              handlers={peekHandlers}
+                              base={
+                                <>
+                                  <span className="text-neutral-300">{n.name}</span>
+                                  <p className="mt-0.5 flex items-center gap-1.5 text-xs text-neutral-500">
+                                    <GateIcon type={n.gate_type} />
+                                    {gateShort(n)}
+                                    <span>·</span>
+                                    <button
+                                      className="underline hover:text-neutral-300"
+                                      disabled={busy === n.id}
+                                      onClick={() => startNode(n)}
+                                    >
+                                      {locked ? "start anyway" : "start"}
+                                    </button>
+                                  </p>
+                                </>
+                              }
+                              extra={
+                                n.description ? (
                                   <p className="mt-0.5 text-xs text-neutral-500">{n.description}</p>
-                                </Reveal>
-                              )}
-                              <p className="mt-0.5 flex items-center gap-1.5 text-xs text-neutral-500">
-                                <GateIcon type={n.gate_type} />
-                                {gateShort(n)}
-                                <span>·</span>
-                                <button
-                                  className="underline hover:text-neutral-300"
-                                  disabled={busy === n.id}
-                                  onClick={() => startNode(n)}
-                                >
-                                  {locked ? "start anyway" : "start"}
-                                </button>
-                              </p>
-                            </div>
+                                ) : null
+                              }
+                            />
                           )}
 
                           {tier === "pill" && (
-                            <div
-                              className="cursor-default rounded-lg border border-neutral-800/60 px-2.5 py-1.5 text-sm"
-                              {...peekHandlers}
-                            >
-                              <p className={`transition-colors duration-300 ${previewed ? "text-neutral-300" : "text-neutral-600"}`}>
-                                {n.name}
-                              </p>
-                              <Reveal open={previewed}>
-                                {n.description && (
-                                  <p className="mt-0.5 text-xs text-neutral-500">{n.description}</p>
-                                )}
-                                <p className="mt-0.5 flex items-center gap-1.5 text-xs text-neutral-500">
-                                  <GateIcon type={n.gate_type} />
-                                  {gateShort(n)}
-                                </p>
-                              </Reveal>
-                            </div>
+                            <Peek
+                              dim
+                              previewed={previewed}
+                              handlers={peekHandlers}
+                              base={<p>{n.name}</p>}
+                              extra={
+                                <>
+                                  {n.description && (
+                                    <p className="mt-0.5 text-xs text-neutral-500">{n.description}</p>
+                                  )}
+                                  <p className="mt-0.5 flex items-center gap-1.5 text-xs text-neutral-500">
+                                    <GateIcon type={n.gate_type} />
+                                    {gateShort(n)}
+                                  </p>
+                                </>
+                              }
+                            />
                           )}
                         </div>
                       );

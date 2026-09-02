@@ -1890,8 +1890,22 @@ export default function PracticeView() {
                       {ex.description}
                     </p>
                   )}
+                  {/* Expand affordance along the bottom edge — full-width and
+                      tall enough to hit with a thumb. Detail opens BELOW the
+                      arrow so the toggle never moves: click the same spot
+                      twice, no chasing the minimize button. */}
+                  <button
+                    className={`-mx-3 mt-0.5 w-[calc(100%+1.5rem)] py-2 text-center text-xs text-neutral-600 hover:text-neutral-300 ${expanded ? "" : "-mb-3"}`}
+                    title="History & full description"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setExpandedEx(expanded ? null : ex.id);
+                    }}
+                  >
+                    {expanded ? "▴" : "▾"}
+                  </button>
                   <Reveal open={expanded}>
-                    <div className="mt-2 border-t border-neutral-800 pt-2 text-xs text-neutral-400">
+                    <div className="border-t border-neutral-800 pt-2 text-xs text-neutral-400">
                       {ex.description && (
                         <div className="mb-2">
                           <DescriptionBody text={ex.description} />
@@ -1907,18 +1921,6 @@ export default function PracticeView() {
                       {aggs.length === 0 && <p className="py-1 text-neutral-600">no sessions yet</p>}
                     </div>
                   </Reveal>
-                  {/* Expand affordance along the bottom edge — full-width and
-                      tall enough to hit with a thumb. */}
-                  <button
-                    className="-mx-3 -mb-3 mt-0.5 w-[calc(100%+1.5rem)] py-2 text-center text-xs text-neutral-600 hover:text-neutral-300"
-                    title="History & full description"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setExpandedEx(expanded ? null : ex.id);
-                    }}
-                  >
-                    {expanded ? "▴" : "▾"}
-                  </button>
                 </div>
               );
             })}
