@@ -70,6 +70,8 @@ export default function Tuner() {
   const [micOn, setMicOn] = useState(false);
   const [playing, setPlaying] = useState<number | null>(null); // peg index
   const [heard, setHeard] = useState<{ name: string; cents: number } | null>(null);
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
+  const [deviceId, setDeviceId] = useState("");
 
   const ctx = useRef<AudioContext | null>(null);
   const osc = useRef<{ node: OscillatorNode; gain: GainNode } | null>(null);
@@ -108,14 +110,12 @@ export default function Tuner() {
     setPlaying(i);
   }
 
-  async function toggleMic() {
-    if (micOn) {
-      stopMic();
-      return;
-    }
+  async function startMic(id?: string) {
     stopTone(); // droning into the mic would tune the tuner
     try {
-      const s = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const s = await navigator.mediaDevices.getUserMedia({
+        audio: id ? { deviceId: { exact: id } } : true,
+      });
       stream.current = s;
       const ac = getCtx();
       const src = ac.createMediaStreamSource(s);
@@ -124,6 +124,10 @@ export default function Tuner() {
       src.connect(analyser);
       const buf = new Float32Array(analyser.fftSize);
       let last = 0;
+      // Median over the last few detections irons out jitter and the odd
+      // octave misfire; a few misses in a row before clearing stops flicker.
+      const hist: number[] = [];
+      let missed = 0;
       const loop = (t: number) => {
         raf.current = requestAnimationFrame(loop);
         if (t - last < 66) return; // ~15 checks/s — plenty, and O(n²) is warm
@@ -131,18 +135,26 @@ export default function Tuner() {
         analyser.getFloatTimeDomainData(buf);
         const freq = autoCorrelate(buf, ac.sampleRate);
         if (freq == null) {
-          setHeard(null);
+          hist.length = 0;
+          if (++missed > 5) setHeard(null);
           return;
         }
-        const midi = Math.round(12 * Math.log2(freq / 440)) + 69;
+        missed = 0;
+        hist.push(freq);
+        if (hist.length > 7) hist.shift();
+        const med = [...hist].sort((a, z) => a - z)[Math.floor(hist.length / 2)];
+        const midi = Math.round(12 * Math.log2(med / 440)) + 69;
         const ref = 440 * Math.pow(2, (midi - 69) / 12);
         setHeard({
           name: `${NOTE_NAMES[((midi % 12) + 12) % 12]}${Math.floor(midi / 12) - 1}`,
-          cents: Math.round(1200 * Math.log2(freq / ref)),
+          cents: Math.round(1200 * Math.log2(med / ref)),
         });
       };
       raf.current = requestAnimationFrame(loop);
       setMicOn(true);
+      // Labels only populate after permission is granted, so list them here.
+      const list = await navigator.mediaDevices.enumerateDevices();
+      setDevices(list.filter((d) => d.kind === "audioinput" && d.deviceId));
     } catch {
       // Mic denied — the pegs still work.
     }
@@ -171,12 +183,12 @@ export default function Tuner() {
   // String geometry in headstock-SVG space: tuning-post position (aligned to
   // the peg button rows) and where the string sits in the nut.
   const STRING_GEO = [
-    { post: [10, 104] as const, nut: 11 }, // E
-    { post: [10, 64] as const, nut: 15.4 }, // A
-    { post: [10, 24] as const, nut: 19.8 }, // D
-    { post: [34, 24] as const, nut: 24.2 }, // G
-    { post: [34, 64] as const, nut: 28.6 }, // B
-    { post: [34, 104] as const, nut: 33 }, // e
+    { post: [9, 104] as const, nut: 14 }, // E
+    { post: [9, 64] as const, nut: 19.6 }, // A
+    { post: [9, 24] as const, nut: 25.2 }, // D
+    { post: [47, 24] as const, nut: 30.8 }, // G
+    { post: [47, 64] as const, nut: 36.4 }, // B
+    { post: [47, 104] as const, nut: 42 }, // e
   ];
   const inTune = heard != null && Math.abs(heard.cents) <= 5;
 
@@ -217,9 +229,9 @@ export default function Tuner() {
             {/* The headstock: tapered paddle, six strings running from their
                 posts over the nut onto a neck stub. The playing string lights
                 up. Decorative, but it makes the peg layout read instantly. */}
-            <svg viewBox="0 0 44 128" className="h-32 w-11" aria-hidden>
+            <svg viewBox="0 0 56 128" className="h-32 w-14" aria-hidden>
               <path
-                d="M10 112 L6 24 Q6 8 16 8 L28 8 Q38 8 38 24 L34 112 Z"
+                d="M12 112 L4 24 Q4 8 14 8 L42 8 Q52 8 52 24 L44 112 Z"
                 fill="#262626"
                 stroke="#404040"
                 strokeWidth="1"
@@ -230,8 +242,8 @@ export default function Tuner() {
                   <line x1={g.nut} y1={114} x2={g.nut} y2={128} />
                 </g>
               ))}
-              <rect x="8" y="110" width="28" height="4" rx="1" fill="#737373" />
-              <rect x="10" y="114" width="24" height="14" fill="none" stroke="#404040" strokeWidth="1" />
+              <rect x="10" y="110" width="36" height="4" rx="1" fill="#737373" />
+              <rect x="13" y="114" width="30" height="14" fill="none" stroke="#404040" strokeWidth="1" />
               {STRING_GEO.map((g, i) => (
                 <circle
                   key={i}
@@ -251,10 +263,29 @@ export default function Tuner() {
                   ? "border-amber-500/50 text-amber-400"
                   : "border-neutral-700 text-neutral-400 hover:border-neutral-500"
               }`}
-              onClick={toggleMic}
+              onClick={() => (micOn ? stopMic() : startMic(deviceId || undefined))}
             >
               {micOn ? "mic off" : "🎤 mic"}
             </button>
+            {micOn && devices.length > 1 && (
+              <select
+                value={deviceId}
+                onChange={(e) => {
+                  setDeviceId(e.target.value);
+                  stopMic();
+                  void startMic(e.target.value || undefined);
+                }}
+                className="w-20 rounded border border-neutral-700 bg-neutral-900 px-1 py-0.5 text-[10px] text-neutral-400"
+                title="Microphone"
+              >
+                <option value="">default</option>
+                {devices.map((d, i) => (
+                  <option key={d.deviceId} value={d.deviceId}>
+                    {d.label || `mic ${i + 1}`}
+                  </option>
+                ))}
+              </select>
+            )}
             {micOn && (
               <div className="flex items-center gap-2">
                 {/* ±50¢ needle; green in the middle means in tune. */}
