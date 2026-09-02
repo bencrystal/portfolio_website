@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import BpmRuler from "./BpmRuler";
 import Chart, { Series } from "./Chart";
+import Tuner from "./Tuner";
 import { ClickSound, Metronome } from "./metronome";
 
 // Variant: which stroke the exercise starts on, for exercises practiced both
@@ -1680,7 +1681,13 @@ export default function PracticeView() {
             </button>
           </section>
 
-          {/* Handy external references (and the future home of a drone/tuner). */}
+          {/* Tuner: one collapsed row until needed, on mobile too — tuning is
+              the tool you want on a phone. */}
+          <section className={`${card} mb-4`}>
+            <Tuner />
+          </section>
+
+          {/* Handy external references. */}
           <section className={`${card} mb-4 hidden lg:block`}>
             <h2 className="mb-1 text-sm font-medium text-neutral-400">Tools</h2>
             <div className="flex flex-col gap-1 text-xs">
