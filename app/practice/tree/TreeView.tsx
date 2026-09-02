@@ -113,6 +113,7 @@ export default function TreeView() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null); // node id mid-request
+  const [preview, setPreview] = useState<string | null>(null); // compressed node peeked open
 
   const token = typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null;
 
@@ -279,6 +280,15 @@ export default function TreeView() {
                     />
                     {rows.map(({ n, prog, locked, tier }) => {
                       const { best, secs } = statsFor(prog?.exercise_id ?? null);
+                      // Compressed rows peek open on hover (or tap, where
+                      // there's no hover) to preview what's coming.
+                      const previewed = preview === n.id;
+                      const peekHandlers = {
+                        onPointerEnter: (e: React.PointerEvent) => e.pointerType === "mouse" && setPreview(n.id),
+                        onPointerLeave: (e: React.PointerEvent) => e.pointerType === "mouse" && setPreview(null),
+                        onPointerUp: (e: React.PointerEvent) =>
+                          e.pointerType !== "mouse" && setPreview(previewed ? null : n.id),
+                      };
                       const met =
                         n.gate_type === "bpm"
                           ? best >= (n.gate_value ?? Infinity)
@@ -392,8 +402,11 @@ export default function TreeView() {
                           )}
 
                           {tier === "next" && (
-                            <div className="text-sm">
+                            <div className="text-sm" {...peekHandlers}>
                               <span className="text-neutral-300">{n.name}</span>
+                              {previewed && n.description && (
+                                <p className="mt-0.5 text-xs text-neutral-500">{n.description}</p>
+                              )}
                               <p className="mt-0.5 flex items-center gap-1.5 text-xs text-neutral-500">
                                 <GateIcon type={n.gate_type} />
                                 {gateShort(n)}
@@ -409,7 +422,22 @@ export default function TreeView() {
                             </div>
                           )}
 
-                          {tier === "pill" && <p className="pt-0.5 text-sm text-neutral-600">{n.name}</p>}
+                          {tier === "pill" && (
+                            <div className="cursor-default pt-0.5 text-sm" {...peekHandlers}>
+                              <p className={previewed ? "text-neutral-300" : "text-neutral-600"}>{n.name}</p>
+                              {previewed && (
+                                <>
+                                  {n.description && (
+                                    <p className="mt-0.5 text-xs text-neutral-500">{n.description}</p>
+                                  )}
+                                  <p className="mt-0.5 flex items-center gap-1.5 text-xs text-neutral-500">
+                                    <GateIcon type={n.gate_type} />
+                                    {gateShort(n)}
+                                  </p>
+                                </>
+                              )}
+                            </div>
+                          )}
                         </div>
                       );
                     })}
