@@ -338,6 +338,7 @@ export default function PracticeView() {
   const [metric, setMetric] = useState<"seconds" | "bpm">("seconds");
   const [focusEx, setFocusEx] = useState<string | null>(null); // chart legend isolation
   const [manageOpen, setManageOpen] = useState(false);
+  const [logOpen, setLogOpen] = useState(false); // log shows ~2 entries until expanded
   const [newExName, setNewExName] = useState("");
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [hoverRef, setHoverRef] = useState<string | null>(null); // desktop hover preview
@@ -1904,11 +1905,10 @@ export default function PracticeView() {
                       {aggs.length === 0 && <p className="py-1 text-neutral-600">no sessions yet</p>}
                     </div>
                   )}
-                  {/* Expand affordance along the bottom edge — a bigger
-                      target than the old corner chevron, and it doesn't crowd
-                      the title row. */}
+                  {/* Expand affordance along the bottom edge — full-width and
+                      tall enough to hit with a thumb. */}
                   <button
-                    className="-mb-1.5 mt-1 flex w-full justify-center text-xs leading-4 text-neutral-600 hover:text-neutral-300"
+                    className="-mx-3 -mb-3 mt-0.5 w-[calc(100%+1.5rem)] py-2 text-center text-xs text-neutral-600 hover:text-neutral-300"
                     title="History & full description"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -1925,236 +1925,6 @@ export default function PracticeView() {
                 No exercises yet — open “manage” above to add one.
               </p>
             )}
-          </section>
-
-          {entryForm}
-
-          {/* Progress: a real chart once ~5 days exist; before that a week
-              strip + streak, which says more than a scatter of single dots. */}
-          <section className={`${card} mb-4 ${!loading && byDateDesc.length === 0 ? "hidden" : ""}`}>
-            <div className="mb-2 flex items-center justify-between">
-              <h2 className="text-sm font-medium text-neutral-400">Progress</h2>
-              {chartReady && (
-                <div className="flex overflow-hidden rounded-md border border-neutral-700 text-xs">
-                  {(["seconds", "bpm"] as const).map((m) => (
-                    <button
-                      key={m}
-                      onClick={() => setMetric(m)}
-                      className={`px-3 py-1 ${metric === m ? "bg-neutral-200 text-neutral-950" : "text-neutral-400"}`}
-                    >
-                      {m === "seconds" ? "Time" : "BPM"}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-            {loading ? (
-              <p className="py-8 text-center text-sm text-neutral-500">Loading…</p>
-            ) : !chartReady ? (
-              <div>
-                <div className="flex gap-1.5">
-                  {last7.map((d) => (
-                    <div key={d.iso} className="flex-1 text-center">
-                      <div
-                        className={`h-8 rounded ${
-                          d.done ? "bg-amber-500/80" : "bg-neutral-800"
-                        } ${d.iso === today ? "ring-1 ring-neutral-600" : ""}`}
-                      />
-                      <div className="mt-1 text-[10px] text-neutral-600">{d.label}</div>
-                    </div>
-                  ))}
-                </div>
-                <p className="mt-2 text-xs text-neutral-600">
-                  {streak > 1 ? `${streak}-day streak · ` : ""}charts unlock after 5 practiced days ({dates.length}/5)
-                </p>
-              </div>
-            ) : (
-              <>
-                <Chart series={displaySeries} fmtY={metric === "seconds" ? fmtDur : (y) => String(Math.round(y))} />
-                {/* Legend doubles as a filter: tap an entry to isolate it.
-                    Variant series get their own entries so the solid (↓ down)
-                    vs dashed (↑ up) styling is explained where it's seen. */}
-                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
-                  {series.map((s) => {
-                    const dim = focusEx && focusEx !== s.name;
-                    return (
-                      <button
-                        key={s.name}
-                        onClick={() => setFocusEx(focusEx === s.name ? null : s.name)}
-                        className={`flex items-center gap-1.5 text-xs ${dim ? "text-neutral-600" : "text-neutral-400"}`}
-                      >
-                        {!s.dash ? (
-                          <span className="h-2 w-4 rounded-sm" style={{ background: dim ? s.color + "40" : s.color }} />
-                        ) : (
-                          <span
-                            className="w-4 border-t-2 border-dashed"
-                            style={{ borderColor: dim ? s.color + "40" : s.color }}
-                          />
-                        )}
-                        {s.name}
-                      </button>
-                    );
-                  })}
-                </div>
-                {/* Daily heatmap: practiced days at a glance. */}
-                <div className="mt-4 overflow-x-auto">
-                  <div className="inline-block min-w-full">
-                    {/* Month labels sit over the first column of each month. */}
-                    <div className="mb-1 ml-[19px] flex text-[9px] leading-none text-neutral-600">
-                      {heatWeeks.map((week, i) => {
-                        const month = week[0].iso.slice(5, 7);
-                        const newMonth = i > 0 && heatWeeks[i - 1][0].iso.slice(5, 7) !== month;
-                        return (
-                          <span key={i} className="w-[13px] shrink-0 overflow-visible whitespace-nowrap">
-                            {(i === 0 || newMonth) &&
-                              new Date(week[0].iso + "T00:00:00").toLocaleDateString(undefined, { month: "short" })}
-                          </span>
-                        );
-                      })}
-                    </div>
-                    <div className="flex gap-[3px]">
-                      <div className="flex w-4 shrink-0 flex-col gap-[3px] text-[9px] leading-none text-neutral-600">
-                        {["", "M", "", "W", "", "F", ""].map((l, i) => (
-                          <span key={i} className="flex h-2.5 items-center">
-                            {l}
-                          </span>
-                        ))}
-                      </div>
-                      {heatWeeks.map((week, i) => (
-                        <div key={i} className="flex flex-col gap-[3px]">
-                          {week.map((d) => (
-                            <span
-                              key={d.iso}
-                              title={`${fmtDateShort(d.iso)}${d.secs > 0 ? ` · ${fmtDur(d.secs)}` : ""}`}
-                              className="h-2.5 w-2.5 rounded-[2px]"
-                              style={{
-                                background: d.future
-                                  ? "transparent"
-                                  : d.secs === 0
-                                    ? "#26262666"
-                                    : `rgba(245,158,11,${0.25 + 0.75 * Math.min(1, d.secs / heatMax)})`,
-                              }}
-                            />
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                    <div className="mt-1.5 flex items-center justify-end gap-[3px] text-[9px] text-neutral-600">
-                      less
-                      {["#26262666", "rgba(245,158,11,0.4)", "rgba(245,158,11,0.7)", "rgba(245,158,11,1)"].map((c) => (
-                        <span key={c} className="h-2.5 w-2.5 rounded-[2px]" style={{ background: c }} />
-                      ))}
-                      more
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-          </section>
-
-          {/* Log */}
-          <section className={`${card} mb-4`}>
-            <div className="mb-2 flex items-center justify-between">
-              <h2 className="text-sm font-medium text-neutral-400">Log</h2>
-              <div className="flex gap-3">
-                {byDateDesc.length > 0 && (
-                  <button className="text-xs text-neutral-500 underline hover:text-neutral-300" onClick={exportCsv}>
-                    export csv
-                  </button>
-                )}
-                <button
-                  className="text-xs text-neutral-400 underline"
-                  onClick={() =>
-                    requireUnlock() &&
-                    setForm({ exercise_id: selectedEx ?? "", date: todayISO(), bpm: "", dur: "", note: "" })
-                  }
-                >
-                  + add entry
-                </button>
-              </div>
-            </div>
-            {!loading && byDateDesc.length === 0 && (
-              <p className="text-sm text-neutral-600">Nothing logged yet.</p>
-            )}
-            {dates.map((date) => {
-              const daySessions = byDateDesc.filter((s) => s.date === date);
-              const daySecs = daySessions.reduce((t, s) => t + (s.seconds ?? 0), 0);
-              return (
-                <div key={date} className="mb-3">
-                  {/* The year is noise for recent entries; the day's total
-                      lives up here so it reads without adding rows. */}
-                  <h3 className="mb-1 flex items-baseline justify-between text-xs font-semibold text-neutral-500">
-                    <span>
-                      {new Date(date + "T00:00:00").toLocaleDateString(undefined, {
-                        weekday: "short",
-                        month: "short",
-                        day: "numeric",
-                        ...(date.slice(0, 4) !== today.slice(0, 4) ? { year: "numeric" as const } : {}),
-                      })}
-                    </span>
-                    {daySecs > 0 && <span className="font-normal tabular-nums">{fmtDur(daySecs)}</span>}
-                  </h3>
-                  {daySessions.map((s) => (
-                    <div key={s.id} className="group border-b border-neutral-800/60 py-1.5 text-sm">
-                      <div className="flex items-baseline gap-2">
-                        <span
-                          className="h-2 w-2 shrink-0 self-center rounded-full"
-                          style={{ background: colorOf(s.exercise_id) }}
-                        />
-                        <span className="min-w-0 flex-1 truncate">
-                          {/* One exercise total? The dot suffices — repeating
-                              the name every row says nothing. */}
-                          {manyEx && (exById.get(s.exercise_id)?.name ?? "?")}
-                          {s.variant && (
-                            <span className={`text-xs text-neutral-500 ${manyEx ? "ml-1" : ""}`}>
-                              {s.variant === "up" ? "↑ up" : "↓ down"}
-                            </span>
-                          )}
-                        </span>
-                        {pbIds.has(s.id) && (
-                          <span className="text-xs text-amber-400" title="personal best at the time">
-                            ✦ PB
-                          </span>
-                        )}
-                        <span className="tabular-nums text-neutral-400">{s.bpm != null ? `${s.bpm} bpm` : ""}</span>
-                        <span className="w-14 text-right tabular-nums">
-                          {s.seconds != null ? fmtDur(s.seconds) : ""}
-                        </span>
-                        {unlocked && (
-                          <span className="flex gap-1.5 text-xs transition-opacity [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100">
-                            <button
-                              className="text-neutral-500 hover:text-neutral-200"
-                              onClick={() =>
-                                setForm({
-                                  id: s.id,
-                                  exercise_id: s.exercise_id,
-                                  date: s.date,
-                                  bpm: s.bpm != null ? String(s.bpm) : "",
-                                  dur: s.seconds != null ? fmtSecs(s.seconds) : "",
-                                  note: s.note ?? "",
-                                  variant: s.variant ?? "",
-                                })
-                              }
-                            >
-                              edit
-                            </button>
-                            <button
-                              className="text-neutral-500 hover:text-red-400"
-                              onClick={() => deleteSession(s.id)}
-                            >
-                              ×
-                            </button>
-                          </span>
-                        )}
-                      </div>
-                      {/* Notes are the part written by a human — full line,
-                          readable color, never truncated. */}
-                      {s.note && <p className="pl-4 text-xs text-neutral-300">{s.note}</p>}
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
           </section>
 
           {/* Manage panel: opened from the small link by the Exercises header. */}
@@ -2325,6 +2095,254 @@ export default function PracticeView() {
               </div>
           </section>
           )}
+
+          {entryForm}
+
+          {/* Progress: a real chart once ~5 days exist; before that a week
+              strip + streak, which says more than a scatter of single dots. */}
+          <section className={`${card} mb-4 ${!loading && byDateDesc.length === 0 ? "hidden" : ""}`}>
+            <div className="mb-2 flex items-center justify-between">
+              <h2 className="text-sm font-medium text-neutral-400">Progress</h2>
+              {chartReady && (
+                <div className="flex overflow-hidden rounded-md border border-neutral-700 text-xs">
+                  {(["seconds", "bpm"] as const).map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => setMetric(m)}
+                      className={`px-3 py-1 ${metric === m ? "bg-neutral-200 text-neutral-950" : "text-neutral-400"}`}
+                    >
+                      {m === "seconds" ? "Time" : "BPM"}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            {loading ? (
+              <p className="py-8 text-center text-sm text-neutral-500">Loading…</p>
+            ) : !chartReady ? (
+              <div>
+                <div className="flex gap-1.5">
+                  {last7.map((d) => (
+                    <div key={d.iso} className="flex-1 text-center">
+                      <div
+                        className={`h-8 rounded ${
+                          d.done ? "bg-amber-500/80" : "bg-neutral-800"
+                        } ${d.iso === today ? "ring-1 ring-neutral-600" : ""}`}
+                      />
+                      <div className="mt-1 text-[10px] text-neutral-600">{d.label}</div>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-2 text-xs text-neutral-600">
+                  {streak > 1 ? `${streak}-day streak · ` : ""}charts unlock after 5 practiced days ({dates.length}/5)
+                </p>
+              </div>
+            ) : (
+              <>
+                <Chart series={displaySeries} fmtY={metric === "seconds" ? fmtDur : (y) => String(Math.round(y))} />
+                {/* Legend doubles as a filter: tap an entry to isolate it.
+                    Variant series get their own entries so the solid (↓ down)
+                    vs dashed (↑ up) styling is explained where it's seen. */}
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+                  {series.map((s) => {
+                    const dim = focusEx && focusEx !== s.name;
+                    return (
+                      <button
+                        key={s.name}
+                        onClick={() => setFocusEx(focusEx === s.name ? null : s.name)}
+                        className={`flex items-center gap-1.5 text-xs ${dim ? "text-neutral-600" : "text-neutral-400"}`}
+                      >
+                        {!s.dash ? (
+                          <span className="h-2 w-4 rounded-sm" style={{ background: dim ? s.color + "40" : s.color }} />
+                        ) : (
+                          <span
+                            className="w-4 border-t-2 border-dashed"
+                            style={{ borderColor: dim ? s.color + "40" : s.color }}
+                          />
+                        )}
+                        {s.name}
+                      </button>
+                    );
+                  })}
+                </div>
+                {/* Daily heatmap: practiced days at a glance. */}
+                <div className="mt-4 overflow-x-auto">
+                  <div className="inline-block min-w-full">
+                    {/* Month labels sit over the first column of each month. */}
+                    <div className="mb-1 ml-[19px] flex text-[9px] leading-none text-neutral-600">
+                      {heatWeeks.map((week, i) => {
+                        const month = week[0].iso.slice(5, 7);
+                        const newMonth = i > 0 && heatWeeks[i - 1][0].iso.slice(5, 7) !== month;
+                        return (
+                          <span key={i} className="w-[13px] shrink-0 overflow-visible whitespace-nowrap">
+                            {(i === 0 || newMonth) &&
+                              new Date(week[0].iso + "T00:00:00").toLocaleDateString(undefined, { month: "short" })}
+                          </span>
+                        );
+                      })}
+                    </div>
+                    <div className="flex gap-[3px]">
+                      <div className="flex w-4 shrink-0 flex-col gap-[3px] text-[9px] leading-none text-neutral-600">
+                        {["", "M", "", "W", "", "F", ""].map((l, i) => (
+                          <span key={i} className="flex h-2.5 items-center">
+                            {l}
+                          </span>
+                        ))}
+                      </div>
+                      {heatWeeks.map((week, i) => (
+                        <div key={i} className="flex flex-col gap-[3px]">
+                          {week.map((d) => (
+                            <span
+                              key={d.iso}
+                              title={`${fmtDateShort(d.iso)}${d.secs > 0 ? ` · ${fmtDur(d.secs)}` : ""}`}
+                              className="h-2.5 w-2.5 rounded-[2px]"
+                              style={{
+                                background: d.future
+                                  ? "transparent"
+                                  : d.secs === 0
+                                    ? "#26262666"
+                                    : `rgba(245,158,11,${0.25 + 0.75 * Math.min(1, d.secs / heatMax)})`,
+                              }}
+                            />
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-1.5 flex items-center justify-end gap-[3px] text-[9px] text-neutral-600">
+                      less
+                      {["#26262666", "rgba(245,158,11,0.4)", "rgba(245,158,11,0.7)", "rgba(245,158,11,1)"].map((c) => (
+                        <span key={c} className="h-2.5 w-2.5 rounded-[2px]" style={{ background: c }} />
+                      ))}
+                      more
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+          </section>
+
+          {/* Log */}
+          <section className={`${card} mb-4`}>
+            <div className="mb-2 flex items-center justify-between">
+              <h2 className="text-sm font-medium text-neutral-400">Log</h2>
+              <div className="flex gap-3">
+                {byDateDesc.length > 0 && (
+                  <button className="text-xs text-neutral-500 underline hover:text-neutral-300" onClick={exportCsv}>
+                    export csv
+                  </button>
+                )}
+                <button
+                  className="text-xs text-neutral-400 underline"
+                  onClick={() =>
+                    requireUnlock() &&
+                    setForm({ exercise_id: selectedEx ?? "", date: todayISO(), bpm: "", dur: "", note: "" })
+                  }
+                >
+                  + add entry
+                </button>
+              </div>
+            </div>
+            {!loading && byDateDesc.length === 0 && (
+              <p className="text-sm text-neutral-600">Nothing logged yet.</p>
+            )}
+            {/* Collapsed by default: a couple of entries fading out under an
+                expand arrow — the log is a receipt, not the main event. */}
+            <div className={`relative ${!logOpen && byDateDesc.length > 3 ? "max-h-44 overflow-hidden" : ""}`}>
+            {dates.map((date) => {
+              const daySessions = byDateDesc.filter((s) => s.date === date);
+              const daySecs = daySessions.reduce((t, s) => t + (s.seconds ?? 0), 0);
+              return (
+                <div key={date} className="mb-3">
+                  {/* The year is noise for recent entries; the day's total
+                      lives up here so it reads without adding rows. */}
+                  <h3 className="mb-1 flex items-baseline justify-between text-xs font-semibold text-neutral-500">
+                    <span>
+                      {new Date(date + "T00:00:00").toLocaleDateString(undefined, {
+                        weekday: "short",
+                        month: "short",
+                        day: "numeric",
+                        ...(date.slice(0, 4) !== today.slice(0, 4) ? { year: "numeric" as const } : {}),
+                      })}
+                    </span>
+                    {daySecs > 0 && <span className="font-normal tabular-nums">{fmtDur(daySecs)}</span>}
+                  </h3>
+                  {daySessions.map((s) => (
+                    <div key={s.id} className="group border-b border-neutral-800/60 py-1.5 text-sm">
+                      <div className="flex items-baseline gap-2">
+                        <span
+                          className="h-2 w-2 shrink-0 self-center rounded-full"
+                          style={{ background: colorOf(s.exercise_id) }}
+                        />
+                        <span className="min-w-0 flex-1 truncate">
+                          {/* One exercise total? The dot suffices — repeating
+                              the name every row says nothing. */}
+                          {manyEx && (exById.get(s.exercise_id)?.name ?? "?")}
+                          {s.variant && (
+                            <span className={`text-xs text-neutral-500 ${manyEx ? "ml-1" : ""}`}>
+                              {s.variant === "up" ? "↑ up" : "↓ down"}
+                            </span>
+                          )}
+                        </span>
+                        {pbIds.has(s.id) && (
+                          <span className="text-xs text-amber-400" title="personal best at the time">
+                            ✦ PB
+                          </span>
+                        )}
+                        <span className="tabular-nums text-neutral-400">{s.bpm != null ? `${s.bpm} bpm` : ""}</span>
+                        <span className="w-14 text-right tabular-nums">
+                          {s.seconds != null ? fmtDur(s.seconds) : ""}
+                        </span>
+                        {/* Faint but always visible — fully hidden controls
+                            made mistakes look undeletable on desktop. */}
+                        {unlocked && (
+                          <span className="flex gap-1.5 text-xs transition-opacity [@media(hover:hover)]:opacity-40 [@media(hover:hover)]:group-hover:opacity-100">
+                            <button
+                              className="text-neutral-500 hover:text-neutral-200"
+                              onClick={() =>
+                                setForm({
+                                  id: s.id,
+                                  exercise_id: s.exercise_id,
+                                  date: s.date,
+                                  bpm: s.bpm != null ? String(s.bpm) : "",
+                                  dur: s.seconds != null ? fmtSecs(s.seconds) : "",
+                                  note: s.note ?? "",
+                                  variant: s.variant ?? "",
+                                })
+                              }
+                            >
+                              edit
+                            </button>
+                            <button
+                              className="text-neutral-500 hover:text-red-400"
+                              onClick={() => deleteSession(s.id)}
+                            >
+                              ×
+                            </button>
+                          </span>
+                        )}
+                      </div>
+                      {/* Notes are the part written by a human — full line,
+                          readable color, never truncated. */}
+                      {s.note && <p className="pl-4 text-xs text-neutral-300">{s.note}</p>}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+            {!logOpen && byDateDesc.length > 3 && (
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-neutral-900 to-transparent" />
+            )}
+            </div>
+            {byDateDesc.length > 3 && (
+              <button
+                className="-mx-4 -mb-4 w-[calc(100%+2rem)] py-2 text-center text-xs text-neutral-500 hover:text-neutral-300"
+                onClick={() => setLogOpen((o) => !o)}
+              >
+                {logOpen ? "▴ collapse" : "▾ show all"}
+              </button>
+            )}
+          </section>
+
         </div>
       </div>
 
