@@ -1781,26 +1781,9 @@ export default function PracticeView() {
                         {isUpload(ex.ref_url) ? "📄" : "🔗"}
                       </span>
                     )}
-                    <span
-                      role="button"
-                      tabIndex={0}
-                      title="History & full description"
-                      className="px-1 text-xs text-neutral-500 hover:text-neutral-200"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setExpandedEx(expanded ? null : ex.id);
-                      }}
-                      onKeyDown={(e) => e.key === "Enter" && setExpandedEx(expanded ? null : ex.id)}
-                    >
-                      {expanded ? "▾" : "▸"}
-                    </span>
                   </button>
-                  {ex.description && !expanded && (
-                    // Two-line teaser; the chevron's detail view has the rest.
-                    <p className="mt-0.5 line-clamp-2 whitespace-pre-line pl-[1.125rem] text-xs text-neutral-500">
-                      {ex.description}
-                    </p>
-                  )}
+                  {/* Numbers first — they're what a glance is for; the prose
+                      teaser follows and the full text sits behind the arrow. */}
                   {aggs.length === 0 ? null : ex.track_variants ? (
                     // One row per stroke-start so both tempos are visible at a glance.
                     <div className="mt-2 space-y-0.5 text-sm">
@@ -1890,6 +1873,12 @@ export default function PracticeView() {
                       )}
                     </div>
                   )}
+                  {ex.description && !expanded && (
+                    // Two-line teaser; the arrow's detail view has the rest.
+                    <p className="mt-1.5 line-clamp-2 whitespace-pre-line text-xs text-neutral-500">
+                      {ex.description}
+                    </p>
+                  )}
                   {expanded && (
                     <div className="mt-2 border-t border-neutral-800 pt-2 text-xs text-neutral-400">
                       {ex.description && (
@@ -1907,6 +1896,19 @@ export default function PracticeView() {
                       {aggs.length === 0 && <p className="py-1 text-neutral-600">no sessions yet</p>}
                     </div>
                   )}
+                  {/* Expand affordance along the bottom edge — a bigger
+                      target than the old corner chevron, and it doesn't crowd
+                      the title row. */}
+                  <button
+                    className="-mb-1.5 mt-1 flex w-full justify-center text-xs leading-4 text-neutral-600 hover:text-neutral-300"
+                    title="History & full description"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setExpandedEx(expanded ? null : ex.id);
+                    }}
+                  >
+                    {expanded ? "▴" : "▾"}
+                  </button>
                 </div>
               );
             })}
