@@ -117,12 +117,14 @@ function Peek({
   previewed,
   handlers,
   base,
+  overlayBase,
   extra,
 }: {
   dim?: boolean;
   previewed: boolean;
   handlers: React.DOMAttributes<HTMLDivElement>;
   base: React.ReactNode;
+  overlayBase?: React.ReactNode; // un-truncated variant for the expanded clone
   extra: React.ReactNode;
 }) {
   return (
@@ -135,13 +137,17 @@ function Peek({
       </div>
       {/* Purely visual — pointer-events-none keeps the hover zone at the
           original footprint (so covered rows reappear the moment you head
-          for them) and lets clicks fall through to the real row beneath. */}
+          for them) and lets clicks fall through to the real row beneath.
+          On close the opacity fade waits for the mask to redact, so it
+          retracts the same way it expanded instead of just vanishing. */}
       <div
-        className={`pointer-events-none absolute inset-x-0 top-0 z-10 rounded-lg border px-2.5 py-1.5 text-sm text-neutral-300 shadow-xl transition-opacity duration-200 ${
-          previewed ? "border-neutral-700 bg-neutral-900 opacity-100" : "border-transparent opacity-0"
+        className={`pointer-events-none absolute inset-x-0 top-0 z-10 rounded-lg border px-2.5 py-1.5 text-sm text-neutral-300 shadow-xl transition-opacity ${
+          previewed
+            ? "border-neutral-700 bg-neutral-900 opacity-100 duration-200"
+            : "border-transparent opacity-0 delay-200 duration-200"
         }`}
       >
-        {base}
+        {overlayBase ?? base}
         <Reveal open={previewed}>{extra}</Reveal>
       </div>
     </div>
@@ -476,7 +482,8 @@ export default function TreeView() {
                               dim
                               previewed={previewed}
                               handlers={peekHandlers}
-                              base={<p>{n.name}</p>}
+                              base={<p className="truncate">{n.name}</p>}
+                              overlayBase={<p>{n.name}</p>}
                               extra={
                                 <>
                                   {n.description && (
