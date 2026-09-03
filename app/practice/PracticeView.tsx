@@ -573,6 +573,9 @@ export default function PracticeView() {
 
   // ---------- metronome ----------
 
+  // A2-rooted so the drone sits under the clicks.
+  const droneHz = (idx: number) => 110 * Math.pow(2, idx / 12);
+
   // Advance to the (pre-generated) next note and queue a fresh one, so the
   // upcoming note can always be previewed.
   const advanceNote = useCallback(() => {
@@ -582,6 +585,9 @@ export default function PracticeView() {
     setNoteCur(cur);
     setNoteNext(next);
     setNoteMorph(null);
+    // The drone must always sound the note on screen, so every change —
+    // auto-sync mid-bar or a manual tap — retriggers it at the new pitch.
+    if (droneRef.current && metro.current?.running) metro.current.playDrone(droneHz(cur.idx));
   }, []);
 
   const toggleMetronome = useCallback(() => {
@@ -604,21 +610,24 @@ export default function PracticeView() {
         }
       }
       const every = noteSyncRef.current;
+      let swapped = false;
       if (every > 0 && barCount.current >= 0) {
         // Count beats from the bar structure (not a free-running counter) so
         // note changes stay anchored to the downbeat even if the interval is
         // switched on mid-run.
         const beatIndex = barCount.current * m.beatsPerBar + b;
-        if (beatIndex % every === 0) advanceNote();
+        if (beatIndex % every === 0) {
+          advanceNote(); // retriggers the drone itself at the new pitch
+          swapped = true;
+        }
         // Up to 4 beats before the swap, start easing the upcoming note in.
         const lead = Math.min(4, every);
         if ((beatIndex + lead) % every === 0) setNoteMorph((lead * 60000) / m.bpm);
       }
-      // Drone rides the downbeat, after any note swap above so it always
-      // matches the pitch on screen. A2-rooted so it sits under the clicks.
-      if (b === 0 && droneRef.current) {
+      // Downbeats re-sound the held note so the drone never dies out mid-bar.
+      if (b === 0 && !swapped && droneRef.current) {
         const cur = noteRef.current.cur;
-        if (cur) m.playDrone(110 * Math.pow(2, cur.idx / 12));
+        if (cur) m.playDrone(droneHz(cur.idx));
       }
     };
     if (m.running) {
@@ -656,6 +665,10 @@ export default function PracticeView() {
   useEffect(() => {
     droneRef.current = droneOn;
     if (!droneOn) metro.current?.stopDrone();
+    // Unmuting mid-run sounds the current note right away rather than
+    // leaving silence until the next downbeat.
+    else if (metro.current?.running && noteRef.current.cur)
+      metro.current.playDrone(droneHz(noteRef.current.cur.idx));
   }, [droneOn]);
 
   const nudgeBpm = (d: number) => setBpm((b) => clampBpm(b + d));
