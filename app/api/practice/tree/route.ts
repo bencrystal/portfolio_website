@@ -107,6 +107,31 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ progress, exercise });
 }
 
+// DELETE { node_id } — un-start a node: progress row goes away and the linked
+// exercise is archived (not deleted) so any logged sessions survive.
+export async function DELETE(req: NextRequest) {
+  const space = await spaceForToken(req.nextUrl.searchParams.get("token"));
+  if (!space) return unauthorized();
+  const { node_id } = await req.json();
+  if (!node_id) return NextResponse.json({ error: "missing node_id" }, { status: 400 });
+  const { data: prog, error } = await scribeDb
+    .from("practice_tree_progress")
+    .delete()
+    .eq("space_id", space)
+    .eq("node_id", node_id)
+    .select()
+    .single();
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (prog?.exercise_id) {
+    await scribeDb
+      .from("practice_exercises")
+      .update({ archived: true })
+      .eq("id", prog.exercise_id)
+      .eq("space_id", space);
+  }
+  return NextResponse.json({ ok: true });
+}
+
 // PATCH { node_id, status: "evolved" | "active" } — evolve (or undo).
 export async function PATCH(req: NextRequest) {
   const space = await spaceForToken(req.nextUrl.searchParams.get("token"));

@@ -90,9 +90,9 @@ const BRANCHES = [
   { key: "repertoire", label: "Repertoire", color: "#fbbf24", icon: ICONS.music },
 ];
 
-// Tier names are tempo terms — musical, and they imply progression without
-// reading as video-game loot rarities.
-const TIER_NAMES = ["Largo", "Andante", "Allegro", "Presto"];
+// Tier names describe what the playing feels like at each stage — no persona
+// labels (amateur/pro), no video-game loot rarities.
+const TIER_NAMES = ["Fundamentals", "Development", "Fluency", "Mastery"];
 const tierName = (t: number | null) => TIER_NAMES[(t ?? 1) - 1] ?? `Tier ${t}`;
 
 function fmtDur(total: number) {
@@ -180,11 +180,15 @@ export default function TreeView() {
   const [hintOpen, setHintOpen] = useState(false); // how-it-works line, first-visit + "?"
   const [openBranch, setOpenBranch] = useState<string | null>(null); // mobile accordion
   const [wide, setWide] = useState(false); // lg+: all branches always open, side by side
+  const [exArchived, setExArchived] = useState<Map<string, boolean>>(new Map()); // linked exercise paused?
+  const [demo, setDemo] = useState(false); // ?demo — dev bar to preview celebrations
+  const [demoTier, setDemoTier] = useState(1);
 
   useEffect(() => {
     // Same first-visit-hint pattern as the main page: shown once, then
     // tucked behind the "?" so the header isn't permanent explainer noise.
     setHintOpen(localStorage.getItem("practice_tree_hint") !== "1");
+    setDemo(new URLSearchParams(location.search).has("demo"));
     const mq = window.matchMedia("(min-width: 1024px)");
     const sync = () => setWide(mq.matches);
     sync();
@@ -196,12 +200,19 @@ export default function TreeView() {
 
   async function fetchAll() {
     const q = token ? `?token=${encodeURIComponent(token)}` : "";
-    const [trR, seR] = await Promise.all([fetch(`/api/practice/tree${q}`), fetch(`/api/practice/sessions${q}`)]);
-    const [tr, se] = await Promise.all([trR.json(), seR.json()]);
-    if (tr.error || se.error) throw new Error(tr.error ?? se.error);
+    const [trR, seR, exR] = await Promise.all([
+      fetch(`/api/practice/tree${q}`),
+      fetch(`/api/practice/sessions${q}`),
+      fetch(`/api/practice/exercises${q}`),
+    ]);
+    const [tr, se, ex] = await Promise.all([trR.json(), seR.json(), exR.json()]);
+    if (tr.error || se.error || ex.error) throw new Error(tr.error ?? se.error ?? ex.error);
     setNodes(tr.nodes);
     setProgress(tr.progress);
     setSessions(se.sessions);
+    setExArchived(
+      new Map((ex.exercises as { id: string; archived: boolean }[]).map((e) => [e.id, !!e.archived]))
+    );
     // Mobile accordion opens on the branch you're mid-way through.
     const activeProg = (tr.progress as Progress[]).find((p) => p.status === "active");
     const activeNode = (tr.nodes as TreeNode[]).find((n) => n.id === activeProg?.node_id);
@@ -264,6 +275,36 @@ export default function TreeView() {
       label: `${b.label} — ${tierName(n.tier)} complete`,
       sublabel: "tap to continue",
     });
+  }
+
+  // Pause: archive the linked exercise so it leaves the main page, but keep
+  // the tree progress — the node shows "paused" and can resume any time.
+  async function togglePause(n: TreeNode, prog: Progress) {
+    if (!prog.exercise_id) return;
+    if (!token) {
+      setError("Log in on the practice page first — your password is your identity here too.");
+      return;
+    }
+    setBusy(n.id);
+    const paused = exArchived.get(prog.exercise_id) ?? false;
+    const res = await fetch(`/api/practice/exercises?token=${encodeURIComponent(token)}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: prog.exercise_id, archived: !paused }),
+    });
+    if (res.ok) setExArchived((m) => new Map(m).set(prog.exercise_id!, !paused));
+    else setError((await res.json()).error ?? "Request failed");
+    setBusy(null);
+  }
+
+  // Remove: un-start the node. The exercise is archived, not deleted, so any
+  // logged sessions survive.
+  async function removeNode(n: TreeNode) {
+    if (!confirm(`Remove “${n.name}” from your exercises? Logged sessions are kept.`)) return;
+    setBusy(n.id);
+    const json = await api("DELETE", { node_id: n.id });
+    if (json) setProgress((p) => p.filter((x) => x.node_id !== n.id));
+    setBusy(null);
   }
 
   async function addNode(branch: string) {
@@ -442,6 +483,7 @@ export default function TreeView() {
                             ? secs >= (n.gate_value ?? Infinity)
                             : true;
                       const ready = !!prog && prog.status !== "evolved" && met;
+                      const paused = !!prog?.exercise_id && (exArchived.get(prog.exercise_id) ?? false);
                       const gateNum =
                         n.gate_type === "bpm"
                           ? { cur: best, max: n.gate_value ?? 0, label: `${best} / ${n.gate_value}` }
@@ -503,11 +545,31 @@ export default function TreeView() {
                           {tier === "card" && (
                             <div
                               className="rounded-lg border bg-neutral-900/40 p-3 lg:flex lg:min-h-[11rem] lg:flex-col"
-                              style={{ borderColor: prog ? b.color : "#404040" }}
+                              style={{ borderColor: prog && !paused ? b.color : "#404040" }}
                             >
-                              <p className="text-xs" style={{ color: prog ? b.color : "#737373" }}>
-                                {prog ? "in progress" : "not started"}
-                              </p>
+                              <div className="flex items-start justify-between gap-2 text-xs">
+                                <span style={{ color: prog && !paused ? b.color : "#737373" }}>
+                                  {prog ? (paused ? "paused" : "in progress") : "not started"}
+                                </span>
+                                {prog && (
+                                  <span className="flex gap-2 text-[10px] text-neutral-600">
+                                    <button
+                                      className="hover:text-neutral-300"
+                                      disabled={busy === n.id}
+                                      onClick={() => togglePause(n, prog)}
+                                    >
+                                      {paused ? "resume" : "pause"}
+                                    </button>
+                                    <button
+                                      className="hover:text-red-400"
+                                      disabled={busy === n.id}
+                                      onClick={() => removeNode(n)}
+                                    >
+                                      remove
+                                    </button>
+                                  </span>
+                                )}
+                              </div>
                               <p className="mt-0.5 text-sm font-medium">{n.name}</p>
                               {n.description && <p className="mt-1 text-xs text-neutral-400">{n.description}</p>}
                               {/* Gate + actions pinned to the bottom so the five
@@ -632,6 +694,43 @@ export default function TreeView() {
           </div>
         )}
       </div>
+
+      {/* Dev bar (visit /practice/tree?demo): preview the tier celebration
+          for any branch/tier without having to actually clear one. */}
+      {demo && (
+        <div className="fixed bottom-3 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2.5 rounded-full border border-neutral-700 bg-neutral-900/95 px-3.5 py-1.5 text-xs">
+          <span className="text-neutral-500">celebrate:</span>
+          {BRANCHES.map((b) => (
+            <button
+              key={b.key}
+              className="hover:underline"
+              style={{ color: b.color }}
+              onClick={() =>
+                StringUnison.play({
+                  accent: b.color,
+                  background: "#0a0a0a",
+                  label: `${b.label} — ${tierName(demoTier)} complete`,
+                  sublabel: "tap to continue",
+                })
+              }
+            >
+              {b.label.split(" ")[0].toLowerCase()}
+            </button>
+          ))}
+          <select
+            className="rounded border border-neutral-700 bg-neutral-900 px-1 py-0.5 text-[10px] text-neutral-400"
+            value={demoTier}
+            onChange={(e) => setDemoTier(Number(e.target.value))}
+            aria-label="tier"
+          >
+            {TIER_NAMES.map((t, i) => (
+              <option key={t} value={i + 1}>
+                {t}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
     </main>
   );
 }
