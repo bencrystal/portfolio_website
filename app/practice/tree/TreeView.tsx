@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Reveal from "../Reveal";
+import StringUnison from "./string-unison.esm";
 
 // Full-screen skill-tree takeover: five linear paths of nodes. Starting a
 // node spawns a normal exercise on /practice; the gate (BPM threshold, total
@@ -25,6 +26,7 @@ type TreeNode = {
   gate_type: "bpm" | "time" | "self";
   gate_value: number | null;
   space_id: string | null; // null = shared node, set = personal graft
+  tier: number | null; // 1-based; null (pre-migration rows) reads as tier 1
 };
 type Progress = {
   node_id: string;
@@ -87,6 +89,11 @@ const BRANCHES = [
   { key: "theory", label: "Theory & fretboard", color: "#34d399", icon: ICONS.book },
   { key: "repertoire", label: "Repertoire", color: "#fbbf24", icon: ICONS.music },
 ];
+
+// Tier names are tempo terms — musical, and they imply progression without
+// reading as video-game loot rarities.
+const TIER_NAMES = ["Largo", "Andante", "Allegro", "Presto"];
+const tierName = (t: number | null) => TIER_NAMES[(t ?? 1) - 1] ?? `Tier ${t}`;
 
 function fmtDur(total: number) {
   const s = Math.round(total);
@@ -234,8 +241,29 @@ export default function TreeView() {
   async function setStatus(n: TreeNode, status: "evolved" | "active") {
     setBusy(n.id);
     const json = await api("PATCH", { node_id: n.id, status });
-    if (json) setProgress((p) => p.map((x) => (x.node_id === n.id ? json.progress : x)));
+    if (json) {
+      const next = progress.map((x) => (x.node_id === n.id ? json.progress : x));
+      setProgress(next);
+      if (status === "evolved") celebrateIfTierDone(n, next);
+    }
     setBusy(null);
+  }
+
+  // Tier completion is the one big moment: when the last node of a branch's
+  // tier evolves, the whole screen goes dark and the string-unison animation
+  // plays in the branch's hue. (Sound design to come.)
+  function celebrateIfTierDone(n: TreeNode, prog: Progress[]) {
+    const b = BRANCHES.find((x) => x.key === n.branch);
+    if (!b || !nodes) return;
+    const byId = new Map(prog.map((p) => [p.node_id, p]));
+    const tierNodes = nodes.filter((x) => x.branch === n.branch && (x.tier ?? 1) === (n.tier ?? 1));
+    if (tierNodes.length === 0 || !tierNodes.every((x) => byId.get(x.id)?.status === "evolved")) return;
+    StringUnison.play({
+      accent: b.color,
+      background: "#0a0a0a", // the page's neutral-950 — reads as the room dimming
+      label: `${b.label} — ${tierName(n.tier)} complete`,
+      sublabel: "tap to continue",
+    });
   }
 
   async function addNode(branch: string) {
@@ -383,7 +411,7 @@ export default function TreeView() {
                       className="absolute bottom-2 left-[7px] top-2 w-px"
                       style={{ background: `${b.color}30` }}
                     />
-                    {rows.map(({ n, prog, locked, tier }) => {
+                    {rows.map(({ n, prog, locked, tier }, idx) => {
                       const { best, secs } = statsFor(prog?.exercise_id ?? null);
                       // Compressed rows peek open on hover (or tap, where
                       // there's no hover) to preview what's coming.
@@ -441,6 +469,15 @@ export default function TreeView() {
 
                       return (
                         <div key={n.id} className="relative pb-4 pl-7">
+                          {/* Quiet divider where a new tier begins. */}
+                          {idx > 0 && (rows[idx - 1].n.tier ?? 1) !== (n.tier ?? 1) && (
+                            <p
+                              className="mb-1.5 text-[10px] uppercase tracking-widest"
+                              style={{ color: `${b.color}90` }}
+                            >
+                              {tierName(n.tier)}
+                            </p>
+                          )}
                           {dot}
 
                           {tier === "done" && (

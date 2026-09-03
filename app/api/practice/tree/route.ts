@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
   const [nodes, progress] = await Promise.all([
     scribeDb
       .from("practice_tree_nodes")
-      .select("id, branch, position, parent_node_id, name, description, gate_type, gate_value, space_id")
+      .select("id, branch, position, parent_node_id, name, description, gate_type, gate_value, space_id, tier")
       .or(`space_id.is.null,space_id.eq.${space}`)
       .order("branch", { ascending: true })
       .order("position", { ascending: true }),
