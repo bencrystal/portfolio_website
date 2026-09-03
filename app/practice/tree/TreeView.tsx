@@ -131,8 +131,12 @@ function Peek({
 }) {
   return (
     <div className="relative">
+      {/* "Brewing": the border warms toward the branch hue the instant the
+          pointer arrives — immediate acknowledgement while the peek itself
+          waits out the hover-intent delay. */}
       <div
-        className={`rounded-lg border border-neutral-800/60 px-2.5 py-1.5 text-sm ${dim ? "text-neutral-600" : ""}`}
+        className={`rounded-lg border border-neutral-800/60 px-2.5 py-1.5 text-sm transition-colors duration-150 hover:border-[var(--hue)] ${dim ? "text-neutral-600" : ""}`}
+        style={{ "--hue": `${color}55` } as React.CSSProperties}
         {...handlers}
       >
         {base}
