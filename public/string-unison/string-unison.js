@@ -2,10 +2,12 @@
  * string-unison.js — a celebration overlay for finishing a batch of exercises.
  *
  * Dozens of "strings" scatter across the screen, each vibrating at its own
- * inharmonic frequency. They swing into alignment, their oscillators pull each
- * other into phase (a Kuramoto-style lock), and they superpose into a single
- * bright standing wave — the fundamental — with its overtone series blooming
- * faintly around it. Holds until tap.
+ * inharmonic frequency. They swing into alignment; inside each string the
+ * ripple decays while the fundamental grows (higher modes die first, as on a
+ * real string); their oscillators find each other through mean-field Kuramoto
+ * coupling and synchronise; and the whole ensemble superposes into a single
+ * bright standing wave with its overtone series blooming faintly around it.
+ * Holds until tap.
  *
  * No dependencies. Plain Canvas 2D, so it drops into any web app and runs
  * unchanged inside a WebView if the app goes native.
@@ -23,7 +25,8 @@
   var DEFAULTS = {
     strings: 48,                 // how many voices
     accent: '#f4c26b',           // the colour everything resolves to
-    background: '#07060d',       // pass your app's background here
+    background: '#07060d',       // dim colour laid over the page (pass your app's background)
+    backdropAlpha: 0.82,         // 0-1: how strongly the page behind dims; 1 = full takeover
     chaosHue: [200, 290],        // hue range of the dissonant strings (blue → violet)
     label: 'Batch complete',     // set '' to hide
     sublabel: 'Tap to continue', // set '' to hide
@@ -38,11 +41,16 @@
 
   // Timeline, in seconds of build-time (scaled by `speed`).
   var T = {
-    appearDur: 0.7,   // each string draws itself on
-    alignStart: 2.0,  // strings begin sweeping toward the centre line
-    alignDur: 2.3,
-    lockStart: 3.3,   // frequencies glide and phases pull together
-    lockDur: 1.9
+    appearDur: 0.7,    // each string draws itself on
+    alignStart: 1.9,   // strings begin sweeping toward the centre line
+    alignDur: 2.6,
+    mergeStart: 2.9,   // ripples decay, the fundamental grows in each string
+    mergeDur: 2.4,
+    coupleStart: 3.0,  // mean-field coupling ramps: strings synchronise with each other
+    coupleDur: 2.6,
+    refStart: 4.5,     // the synchronised cluster is drawn onto the shared oscillator
+    refDur: 1.4,
+    deadline: 6.3      // unity is declared here at the latest
   };
 
   // ---------- small utils ----------
@@ -104,12 +112,11 @@
     var o = Object.assign({}, DEFAULTS, opts || {});
     var rng = mulberry32(o.seed == null ? (Math.random() * 2147483647) | 0 : o.seed);
     var accRgb = hexToRgb(o.accent), accHsl = rgbToHsl(accRgb);
-    var strings = [], maxDF = 0;
+    var strings = [];
 
     for (var i = 0; i < o.strings; i++) {
       var hue0 = lerp(o.chaosHue[0], o.chaosHue[1], rng());
       var dh = accHsl[0] - hue0; dh = ((dh + 540) % 360) - 180;   // shortest way round the wheel
-      var dF = rng() * 0.6; if (dF > maxDF) maxDF = dF;
       strings.push({
         cxn: 0.08 + 0.84 * rng(), cyn: 0.08 + 0.84 * rng(),     // chaos centre, normalised
         ang0: (rng() - 0.5) * Math.PI * 0.95,                   // chaos angle
@@ -121,10 +128,10 @@
         theta: rng() * TAU,        // temporal phase; integrated every frame
         hue0: hue0, dh: dh, sat0: 0.5 + 0.25 * rng(), lit0: 0.6 + 0.18 * rng(),
         j1: rng() * TAU, j2: rng() * TAU, j3: 0.5 + rng() * 0.9,
-        appear: rng() * 1.3, dA: rng() * 0.7, dF: dF,
+        appear: rng() * 1.3, dA: rng() * 0.7, dM: rng() * 0.7,
         wcore: 0.9 + rng() * 0.6,
         rev: rng() < 0.5 ? 1 : -1,
-        uA: 0, uF: 0
+        uA: 0, m: 0
       });
     }
 
@@ -137,34 +144,59 @@
       phi1: 0, theta0: 0,
       time: 0, tl: 0,            // wall clock (oscillators) / build clock (timeline)
       speed: o.speed, fastForward: false, reduced: false,
-      tLock: T.lockStart + maxDF + T.lockDur,
-      unityFired: false
+      Rm: 0, Psi: 0, mbar: 0, meanSwing: 0, C: 0,   // ensemble coherence (order parameter)
+      locked: false, tLock: Infinity
     };
   }
 
   // Advance oscillators and timeline by dt seconds.
   function step(scene, dt) {
     if (dt > 0.05) dt = 0.05;
-    var th0 = scene.theta0;   // reference phase at the old time, so a locked string has zero lag
+    var h = dt * scene.speed * (scene.fastForward ? 4 : 1);   // build-time step
+    var th0 = scene.theta0;                                    // reference phase at the old time
     scene.time += dt;
-    if (scene.fastForward && scene.tl >= scene.tLock) scene.fastForward = false;
-    scene.tl += dt * scene.speed * (scene.fastForward ? 4 : 1);
+    scene.tl += h;
+    var S = scene.strings, n = S.length, tl = scene.tl, i, s;
 
-    var S = scene.strings, tl = scene.tl;
-    for (var i = 0; i < S.length; i++) {
-      var s = S[i];
+    // where is the ensemble? (merge-weighted Kuramoto order parameter)
+    var sx = 0, sy = 0, msum = 0;
+    for (i = 0; i < n; i++) {
+      s = S[i];
       s.uA = easeInOutCubic((tl - (T.alignStart + s.dA)) / T.alignDur);
-      s.uF = easeInCubic((tl - (T.lockStart + s.dF)) / T.lockDur);
-      // frequency glides toward the fundamental while a coupling term pulls the
-      // phase onto the shared oscillator — free-running at uF=0, locked at uF=1.
-      var w = lerp(s.w0, scene.w1, s.uF);
-      var kappa = 14 * s.uF * s.uF;
-      s.theta = (s.theta + (w + kappa * Math.sin(th0 - s.theta)) * dt) % TAU;
+      s.m = smooth((tl - (T.mergeStart + s.dM)) / T.mergeDur);
+      sx += s.m * Math.cos(s.theta); sy += s.m * Math.sin(s.theta); msum += s.m;
+    }
+    var Rm = msum > 1e-6 ? Math.hypot(sx, sy) / msum : 0, Psi = Math.atan2(sy, sx);
+    scene.Rm = Rm; scene.Psi = Psi; scene.mbar = msum / n;
+    scene.meanSwing = msum > 1e-6 ? sy / msum : 0;             // = Rm·sin(Psi), the cluster's swing
+    scene.C = Rm * scene.mbar;                                 // 0 = noise … 1 = one voice
+
+    // coupling ramps: first the strings find each other, then the cluster settles on the fundamental
+    var K = 12 * smooth((tl - T.coupleStart) / T.coupleDur);
+    var Kref = 8 * Math.pow(smooth((tl - T.refStart) / T.refDur), 2);
+    for (i = 0; i < n; i++) {
+      s = S[i];
+      var w = lerp(s.w0, scene.w1, s.m);                       // frequency glides as the ripple fades
+      var cK = Math.min(0.9, s.m * K * Rm * h), cR = Math.min(0.9, s.m * Kref * h);
+      var th = s.theta + w * dt + cK * Math.sin(Psi - s.theta) + cR * Math.sin(th0 - s.theta);
+      s.theta = ((th % TAU) + TAU) % TAU;
     }
     scene.theta0 = (scene.w1 * scene.time + scene.phi1) % TAU;
-    if (!scene.unityFired && tl >= scene.tLock) {
-      scene.unityFired = true;
-      if (typeof scene.opts.onUnity === 'function') scene.opts.onUnity();
+
+    // re-measure the ensemble at the new time so the drawn halo never trails the strings
+    sx = 0; sy = 0;
+    for (i = 0; i < n; i++) { s = S[i]; sx += s.m * Math.cos(s.theta); sy += s.m * Math.sin(s.theta); }
+    scene.Rm = Rm = msum > 1e-6 ? Math.hypot(sx, sy) / msum : 0;
+    scene.Psi = Psi = Math.atan2(sy, sx);
+    scene.meanSwing = msum > 1e-6 ? sy / msum : 0;
+    scene.C = Rm * scene.mbar;
+
+    if (!scene.locked) {
+      var onRef = (1 + Math.cos(Psi - scene.theta0)) / 2;
+      if ((scene.C > 0.975 && onRef > 0.99) || tl >= T.deadline) {
+        scene.locked = true; scene.tLock = tl; scene.fastForward = false;
+        if (typeof scene.opts.onUnity === 'function') scene.opts.onUnity();
+      }
     }
   }
 
@@ -181,28 +213,26 @@
   function draw(ctx, scene, W, H) {
     var o = scene.opts, S = scene.strings, tl = scene.tl, time = scene.time;
     var diag = Math.hypot(W, H), m = Math.min(W, H);
-    var post = tl - scene.tLock;                                   // seconds since unity
-    var swell = post < 0 ? smooth(1 + post / 1.1) : Math.exp(-post / 0.9); // crescendo into the lock
-    var flash = post < 0 ? smooth(1 + post / 0.3) : Math.exp(-post / 0.7);  // the bloom itself
+    var C = scene.C, Psi = scene.Psi, locked = scene.locked;
+    var post = locked ? tl - scene.tLock : -1;                                   // seconds since unity
+    var swell = locked ? Math.exp(-post / 0.9) : smooth((C - 0.5) / 0.5);        // crescendo with coherence
+    var flash = locked ? Math.exp(-post / 0.7) : 0.5 * smooth((C - 0.88) / 0.1); // pre-glow, then the bloom
     var gain = 1 + 0.45 * swell;
-    var breathe = post < 0 ? 0.78 + 0.22 * swell : 0.88 + 0.12 * Math.cos(TAU * post / 5.5);
+    var breathe = locked ? 0.88 + 0.12 * Math.cos(TAU * post / 5.5) : 0.78 + 0.22 * swell;
     var amp1 = Math.min(W * 0.22, H * 0.2) * breathe;
     var len1 = W + 6;
+    var unity = smooth((C - 0.25) / 0.75);                                       // how much of one wave exists
     var jitterOn = scene.reduced ? 0 : 1;
-    var lock = 0, i, s;
-    for (i = 0; i < S.length; i++) lock += S[i].uF;
-    lock = smooth(lock / S.length);                                 // how much of the ensemble has locked
-    var acc = scene.accRgb, hot = scene.hotRgb, deep = scene.deepRgb;
+    var acc = scene.accRgb, hot = scene.hotRgb, deep = scene.deepRgb, i, s;
 
     ctx.globalCompositeOperation = 'source-over';
-    ctx.fillStyle = o.background;
-    ctx.fillRect(0, 0, W, H);
+    ctx.clearRect(0, 0, W, H);   // canvas stays transparent; the host div carries the dim
     ctx.globalCompositeOperation = 'lighter';
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
     // light thrown by the wave: a soft band above and below the centre line
-    var band = 0.025 * lock + 0.11 * flash;
+    var band = 0.025 * unity + 0.11 * flash;
     if (band > 0.003) {
       var reach = amp1 * 2.4 + 40;
       var lg = ctx.createLinearGradient(0, H / 2 - reach, 0, H / 2 + reach);
@@ -215,26 +245,27 @@
       s = S[i];
       var vis = easeOutCubic((tl - s.appear) / T.appearDur);
       if (vis <= 0) continue;
-      var uA = s.uA, uF = s.uF, chaos = (1 - uA) * jitterOn, loose = (1 - uF) * jitterOn;
+      var uA = s.uA, mg = s.m, chaos = (1 - uA) * jitterOn;
 
       // geometry: drift and wobble while loose, then sweep to the centre line
       var cx = lerp(W * s.cxn, W / 2, uA) + chaos * 0.03 * m * Math.sin(time * 0.6 + s.j2);
       var cy = lerp(H * s.cyn, H / 2, uA) + chaos * 0.03 * m * Math.cos(time * 0.5 + s.j1);
       var ang = lerp(s.ang0, 0, uA) + chaos * 0.05 * Math.sin(time * 0.8 + s.j1);
       var len = lerp(diag * s.lenn, len1, uA);
-      var k = lerp(Math.PI * s.hw0 / len, Math.PI / len, uF);
-      var psi = lerp(s.psi0, Math.PI / 2, uF);
-      var amp = lerp(m * s.ampn * (1 + 0.5 * swell), amp1, uF);
+      var k = Math.PI * s.hw0 / len, psi = s.psi0;
+      // superposition: the string's own ripple decays (higher modes die first) while the fundamental grows
+      var aRip = m * s.ampn * Math.pow(1 - mg, 1 + s.hw0 / 5);
+      var aFun = amp1 * mg;
       var tempo = Math.sin(s.theta);
-      var jitAmp = loose * amp * 0.35, jitK = k * 2.618, jitT = time * s.j3 * 5 + s.j1;
+      var jitAmp = aRip * 0.35 * jitterOn, jitK = k * 2.618, jitT = time * s.j3 * 5 + s.j1;
       var jitEnv = Math.sin(time * 1.3 + s.j2);
 
-      // colour: cold and scattered → one warm note
-      var uC = smooth(uF);
-      var col = hslToRgb(s.hue0 + s.dh * uC, lerp(s.sat0, scene.accHsl[1], uC), lerp(s.lit0, scene.accHsl[2], uC));
+      // colour: cold and scattered → one warm note; brightness hands over to the shared wave as it joins the cluster
+      var col = hslToRgb(s.hue0 + s.dh * mg, lerp(s.sat0, scene.accHsl[1], mg), lerp(s.lit0, scene.accHsl[2], mg));
+      var coh = smooth(C * (1 + Math.cos(s.theta - Psi)) / 2);
       var fade = Math.min(1, vis * 3);
-      var aCore = Math.min(1, lerp(lerp(0.55, 0.25, uA), 0.03, uF) * gain * fade);
-      var aHalo = lerp(lerp(0.08, 0.04, uA), 0, uF) * gain * fade;
+      var aCore = Math.min(1, lerp(lerp(0.55, 0.22, uA), 0.035, coh) * gain * fade);
+      var aHalo = lerp(lerp(0.08, 0.04, uA), 0, coh) * gain * fade;
 
       var N = Math.max(60, Math.min(180, (len / 6) | 0));
       var reveal = Math.round(N * vis);
@@ -244,8 +275,9 @@
       ctx.beginPath();
       for (var j = j0; j <= jEnd; j++) {
         var q = j / N - 0.5, x = q * len;
-        var y = amp * taper(q) * Math.sin(k * x + psi) * tempo;
-        if (jitAmp > 0.001) y += jitAmp * taper(q) * Math.sin(jitK * x + jitT) * jitEnv;
+        var y = aFun * Math.cos(Math.PI * q) * tempo + aRip * Math.sin(k * x + psi) * tempo;
+        if (jitAmp > 0.001) y += jitAmp * Math.sin(jitK * x + jitT) * jitEnv;
+        y *= taper(q);
         var px = cx + x * ca - y * sa, py = cy + x * sa + y * ca;
         if (j === j0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
       }
@@ -253,11 +285,11 @@
       ctx.strokeStyle = rgba(col, aCore); ctx.lineWidth = s.wcore; ctx.stroke();
     }
 
-    // the unified wave: a graded halo that emerges as the voices lock, and flares at the moment of unity
-    var glow = 1.35 * lock + 0.7 * flash;
+    // the unified wave: a graded halo along the ensemble's mean displacement, growing with coherence, flaring at unity
+    var glow = 1.35 * unity + 0.7 * flash;
     if (glow > 0.003) {
-      var t0 = Math.sin(scene.theta0), spread = 1 + 1.3 * flash;
-      tracePath(ctx, W, H, len1, amp1, t0);
+      var spread = 1 + 1.3 * flash;
+      tracePath(ctx, W, H, len1, amp1, scene.meanSwing);
       for (i = 17; i >= 0; i--) {              // wide and faint first, hot core last
         var f = i / 17, cw = f < 0.3 ? 0 : (f - 0.3) / 0.7;
         var c = [lerp(hot[0], deep[0], cw), lerp(hot[1], deep[1], cw), lerp(hot[2], deep[2], cw)];
@@ -297,7 +329,8 @@
     host.setAttribute('role', 'dialog');
     host.setAttribute('aria-label', o.label || 'Celebration');
     host.tabIndex = 0;
-    host.style.cssText = 'position:fixed;inset:0;z-index:' + o.zIndex + ';background:' + o.background +
+    host.style.cssText = 'position:fixed;inset:0;z-index:' + o.zIndex +
+      ';background:' + rgba(hexToRgb(o.background), clamp01(o.backdropAlpha)) +
       ';opacity:0;transition:opacity .45s ease;cursor:pointer;overflow:hidden;touch-action:manipulation;' +
       '-webkit-tap-highlight-color:transparent;outline:none;';
 
@@ -338,7 +371,7 @@
       last = now;
       step(scene, dt);
       draw(ctx, scene, W, H);
-      var post = scene.tl - scene.tLock;
+      var post = scene.locked ? scene.tl - scene.tLock : -1;
       if (!labelOn && post > 0.9) { labelOn = true; label.style.opacity = '1'; }
       if (!subOn && post > 2.4) { subOn = true; sub.style.opacity = '1'; }
       raf = requestAnimationFrame(frame);
@@ -362,7 +395,7 @@
       }, 480);
     }
     function onTap() {
-      if (scene.tl < scene.tLock) {
+      if (!scene.locked) {
         if (o.tapDuringBuild === 'dismiss') dismiss(); else scene.fastForward = true;
       } else dismiss();
     }
