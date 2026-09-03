@@ -74,8 +74,15 @@ export default function ListView({ token }: { token: string }) {
   const copyBufTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // One shared undo toast for both destructive-feeling actions: deleting
   // a task and checking it done (which whisks it out of the active list).
-  const [lastUndo, setLastUndo] = useState<{ todo: Todo; kind: "deleted" | "done" } | null>(null);
+  const [lastUndo, setLastUndo] = useState<{
+    todo: Todo;
+    kind: "deleted" | "done" | "filed";
+    from?: string | null; // previous bucket, for undoing a drag filing
+    toName?: string; // destination name for the toast label
+  } | null>(null);
   const [undoVisible, setUndoVisible] = useState(false);
+  // Remounts the countdown ring so its drain animation restarts.
+  const [undoKey, setUndoKey] = useState(0);
   const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const undoClearTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [dragOverRow, setDragOverRow] = useState<string | null>(null);
@@ -229,10 +236,15 @@ export default function ListView({ token }: { token: string }) {
   // ---- todo actions ----
 
   // The toast fades out before it unmounts instead of vanishing.
-  function showUndo(todo: Todo, kind: "deleted" | "done") {
+  function showUndo(
+    todo: Todo,
+    kind: "deleted" | "done" | "filed",
+    extra?: { from: string | null; toName: string }
+  ) {
     if (undoTimer.current) clearTimeout(undoTimer.current);
     if (undoClearTimer.current) clearTimeout(undoClearTimer.current);
-    setLastUndo({ todo, kind });
+    setLastUndo({ todo, kind, ...extra });
+    setUndoKey((k) => k + 1);
     setUndoVisible(true);
     undoTimer.current = setTimeout(() => setUndoVisible(false), 8000);
     undoClearTimer.current = setTimeout(() => setLastUndo(null), 8600);
@@ -263,6 +275,10 @@ export default function ListView({ token }: { token: string }) {
     if (u.kind === "deleted") {
       await call("todos", "PATCH", { id: u.todo.id, restore: true });
       setTodos((ts) => (ts ? [...ts, u.todo] : ts));
+    } else if (u.kind === "filed") {
+      const back = u.from ?? null;
+      setTodos((ts) => ts!.map((t) => (t.id === u.todo.id ? { ...t, bucket_id: back } : t)));
+      await call("todos", "PATCH", { id: u.todo.id, bucket_id: back });
     } else {
       setTodos((ts) => ts!.map((t) => (t.id === u.todo.id ? { ...t, done: false } : t)));
       await call("todos", "PATCH", { id: u.todo.id, done: false });
@@ -331,6 +347,13 @@ export default function ListView({ token }: { token: string }) {
   }
 
   async function moveToBucket(id: string, bucketId: string | null) {
+    // Only reached from drag drops, where a misdrop on the wrong chip is
+    // the easiest mistake to make: give filing the same undo window.
+    const todo = todos?.find((t) => t.id === id);
+    if (todo && todo.bucket_id !== bucketId) {
+      const toName = bucketId ? bucketName(bucketId) ?? "bucket" : "Unsorted";
+      showUndo(todo, "filed", { from: todo.bucket_id, toName });
+    }
     setTodos((ts) => ts!.map((t) => (t.id === id ? { ...t, bucket_id: bucketId } : t)));
     await call("todos", "PATCH", { id, bucket_id: bucketId });
   }
@@ -500,8 +523,8 @@ export default function ListView({ token }: { token: string }) {
                 if (dragId.current) moveToBucket(dragId.current, id === UNSORTED ? null : id);
               }
         }
-        className={`flex min-h-16 flex-col items-start justify-between rounded-lg border p-3 text-left transition-colors ${
-          over ? "scale-105" : ""
+        className={`flex min-h-16 flex-col items-start justify-between rounded-lg border p-3 text-left transition-all duration-150 ${
+          over ? "scale-105" : "hover:-translate-y-px"
         } ${
           c
             ? "text-neutral-200 hover:brightness-125"
@@ -565,7 +588,7 @@ export default function ListView({ token }: { token: string }) {
           dragId.current = null;
           setDragOverRow(null);
         }}
-        className={`relative flex items-center gap-3 border-b border-neutral-800 py-3 transition-colors duration-1000 ${
+        className={`group relative flex items-center gap-3 border-b border-neutral-800 py-3 transition-colors duration-1000 ${
           copyBuf ? "pr-24" : "pr-16"
         }`}
       // Fresh captures glow briefly; in All, rows carry a whisper of their
@@ -626,7 +649,7 @@ export default function ListView({ token }: { token: string }) {
       {copyBuf && (
         <button
           onClick={() => appendCopy(todo)}
-          className="absolute right-16 top-0.5 p-2 text-neutral-600 hover:text-neutral-300"
+          className="absolute right-16 top-0.5 p-2 text-neutral-600 transition-opacity duration-150 hover:text-neutral-300 sm:opacity-0 sm:group-hover:opacity-100"
           aria-label="Add to copied text"
           title="Add to copied text (new line)"
         >
@@ -635,7 +658,7 @@ export default function ListView({ token }: { token: string }) {
       )}
       <button
         onClick={() => copyText(todo)}
-        className="absolute right-8 top-0.5 p-2 text-neutral-600 hover:text-neutral-300"
+        className="absolute right-8 top-0.5 p-2 text-neutral-600 transition-opacity duration-150 hover:text-neutral-300 sm:opacity-0 sm:group-hover:opacity-100"
         aria-label="Copy text"
         title="Copy text"
       >
@@ -645,7 +668,7 @@ export default function ListView({ token }: { token: string }) {
           require moving the pointer. */}
       <button
         onClick={() => remove(todo)}
-        className="absolute right-0 top-0.5 p-2 text-red-900 hover:text-red-600"
+        className="absolute right-0 top-0.5 p-2 text-red-900 transition-opacity duration-150 hover:text-red-600 sm:opacity-0 sm:group-hover:opacity-100"
         aria-label="Delete"
       >
         x
@@ -763,7 +786,7 @@ export default function ListView({ token }: { token: string }) {
               onChange={(e) => setNewText(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && add()}
               placeholder={view === UNSORTED || view === ALL ? "Add an item" : "Add to this bucket"}
-              className="flex-1 rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 placeholder:text-neutral-500"
+              className="flex-1 rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 outline-none transition-colors duration-150 placeholder:text-neutral-500 focus:border-neutral-400"
             />
             <button onClick={add} className="rounded-md bg-neutral-700 px-4 py-2 hover:bg-neutral-600">
               Add
@@ -774,7 +797,7 @@ export default function ListView({ token }: { token: string }) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search"
-            className="mb-4 w-full rounded-md border border-neutral-800 bg-neutral-900 px-3 py-1.5 text-sm placeholder:text-neutral-600"
+            className="mb-4 w-full rounded-md border border-neutral-800 bg-neutral-900 px-3 py-1.5 text-sm outline-none transition-colors duration-150 placeholder:text-neutral-600 focus:border-neutral-500"
           />
 
           {active.length === 0 && done.length === 0 && (
@@ -798,15 +821,33 @@ export default function ListView({ token }: { token: string }) {
         </>
       )}
 
-      {touchGhost && (
-        <div
-          className="pointer-events-none fixed z-20 max-w-[70vw] -translate-x-1/2 truncate rounded-md border border-neutral-600 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-200 shadow-lg"
-          // Held above the finger so it stays visible while dragging.
-          style={{ left: touchGhost.x, top: touchGhost.y - 48 }}
-        >
-          {touchGhost.text}
-        </div>
-      )}
+      {touchGhost &&
+        (() => {
+          // Hovering a bucket tints the ghost that bucket's color as a
+          // preview of where the drop will file it, like the iOS app.
+          const tint =
+            dragOverChip && dragOverChip !== UNSORTED
+              ? colorOf(dragOverChip)
+              : dragOverChip === UNSORTED
+                ? "#9ca3af"
+                : null;
+          return (
+            <div
+              className="pointer-events-none fixed z-20 max-w-[70vw] truncate rounded-md border bg-neutral-800 px-3 py-1.5 text-sm text-neutral-200 shadow-xl transition-colors duration-150"
+              // Held above the finger so it stays visible while dragging;
+              // a slight lift and tilt sell that the card left the list.
+              style={{
+                left: touchGhost.x,
+                top: touchGhost.y - 48,
+                transform: "translateX(-50%) rotate(1.5deg) scale(1.03)",
+                borderColor: tint ?? "#525252",
+                backgroundImage: tint ? `linear-gradient(${tint}40, ${tint}40)` : undefined,
+              }}
+            >
+              {touchGhost.text}
+            </div>
+          );
+        })()}
 
       {lastUndo && (
         <div
@@ -815,7 +856,34 @@ export default function ListView({ token }: { token: string }) {
           // it behind Safari's bottom bar on the phone.
           style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 4.5rem)" }}
         >
-          <span className="text-neutral-300">{lastUndo.kind === "deleted" ? "Deleted" : "Marked done"}</span>
+          {/* The undo window drains as a ring around the toast itself,
+              matching the iOS app. Keyed so the animation restarts. */}
+          <svg key={undoKey} className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden>
+            <rect
+              x="1"
+              y="1"
+              rx="6"
+              fill="none"
+              stroke="#60a5fa"
+              strokeWidth="2"
+              strokeLinecap="round"
+              pathLength={100}
+              strokeDasharray={100}
+              style={{
+                width: "calc(100% - 2px)",
+                height: "calc(100% - 2px)",
+                animation: "undo-drain 8s linear forwards",
+              }}
+            />
+          </svg>
+          <style>{`@keyframes undo-drain { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 100; } }`}</style>
+          <span className="text-neutral-300">
+            {lastUndo.kind === "deleted"
+              ? "Deleted"
+              : lastUndo.kind === "done"
+                ? "Marked done"
+                : `Filed to ${lastUndo.toName}`}
+          </span>
           <button onClick={undoLast} className="font-medium text-blue-400 hover:text-blue-200">
             Undo
           </button>
