@@ -3,6 +3,13 @@
 // solid even when the main thread hiccups (especially on mobile).
 export type ClickSound = "beep" | "wood" | "tick";
 
+// Quick anchored release so a drone can be cut without a click.
+function fadeOut(gain: GainNode, t: number) {
+  gain.gain.cancelScheduledValues(t);
+  gain.gain.setValueAtTime(gain.gain.value, t);
+  gain.gain.linearRampToValueAtTime(0.0001, t + 0.05);
+}
+
 export class Metronome {
   private ctx: AudioContext | null = null;
   private timer: ReturnType<typeof setInterval> | null = null;
@@ -44,6 +51,39 @@ export class Metronome {
       this.nextNoteTime += 60 / this.bpm;
       this.beat++;
     }
+  }
+
+  private droneGain: GainNode | null = null;
+
+  /** Sustain the given pitch for one bar, retriggered on each downbeat. */
+  playDrone(freq: number) {
+    if (!this.ctx || !this.timer) return;
+    const ctx = this.ctx;
+    const time = ctx.currentTime;
+    const dur = (60 / this.bpm) * this.beatsPerBar;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "triangle";
+    osc.frequency.value = freq;
+    const level = Math.max(0.0001, 0.14 * this.volume);
+    // Soft attack, hold for the bar, release just before the next downbeat.
+    gain.gain.setValueAtTime(0.0001, time);
+    gain.gain.exponentialRampToValueAtTime(level, time + 0.05);
+    gain.gain.setValueAtTime(level, Math.max(time + 0.05, time + dur - 0.15));
+    gain.gain.exponentialRampToValueAtTime(0.0001, time + dur);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(time);
+    osc.stop(time + dur + 0.02);
+    if (this.droneGain) fadeOut(this.droneGain, time); // retrigger cuts the old tail
+    this.droneGain = gain;
+  }
+
+  /** Silence the current drone immediately (mute button). */
+  stopDrone() {
+    if (!this.ctx || !this.droneGain) return;
+    fadeOut(this.droneGain, this.ctx.currentTime);
+    this.droneGain = null;
   }
 
   private click(time: number, accent: boolean) {

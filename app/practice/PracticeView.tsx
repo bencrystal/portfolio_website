@@ -306,6 +306,9 @@ export default function PracticeView() {
   const noteSyncRef = useRef(0);
   const barCount = useRef(-1); // bars since start; -1 until the first downbeat
   const [noteMorph, setNoteMorph] = useState<number | null>(null); // ms of the lead-in animation
+  // Downbeat drone of the current note; muted by default and not persisted.
+  const [droneOn, setDroneOn] = useState(false);
+  const droneRef = useRef(false);
 
   // --- stopwatch ---
   const [selectedEx, setSelectedEx] = useState<string | null>(null);
@@ -611,6 +614,12 @@ export default function PracticeView() {
         const lead = Math.min(4, every);
         if ((beatIndex + lead) % every === 0) setNoteMorph((lead * 60000) / m.bpm);
       }
+      // Drone rides the downbeat, after any note swap above so it always
+      // matches the pitch on screen. A2-rooted so it sits under the clicks.
+      if (b === 0 && droneRef.current) {
+        const cur = noteRef.current.cur;
+        if (cur) m.playDrone(110 * Math.pow(2, cur.idx / 12));
+      }
     };
     if (m.running) {
       m.stop();
@@ -644,6 +653,10 @@ export default function PracticeView() {
   useEffect(() => {
     noteSyncRef.current = noteSync;
   }, [noteSync]);
+  useEffect(() => {
+    droneRef.current = droneOn;
+    if (!droneOn) metro.current?.stopDrone();
+  }, [droneOn]);
 
   const nudgeBpm = (d: number) => setBpm((b) => clampBpm(b + d));
 
@@ -1641,6 +1654,17 @@ export default function PracticeView() {
                     </option>
                   ))}
                 </select>
+                <button
+                  onClick={() => setDroneOn((v) => !v)}
+                  title="drone the current note on each downbeat"
+                  className={`rounded-md border px-2 py-0.5 ${
+                    droneOn
+                      ? "border-amber-500/60 text-amber-400"
+                      : "border-neutral-700 text-neutral-500 hover:border-neutral-500"
+                  }`}
+                >
+                  drone {droneOn ? "on" : "muted"}
+                </button>
               </label>
             </div>
             </div>
@@ -1668,6 +1692,17 @@ export default function PracticeView() {
                     </option>
                   ))}
                 </select>
+                <button
+                  onClick={() => setDroneOn((v) => !v)}
+                  title="drone the current note on each downbeat"
+                  className={`rounded-md border px-2 py-0.5 ${
+                    droneOn
+                      ? "border-amber-500/60 text-amber-400"
+                      : "border-neutral-700 text-neutral-500 hover:border-neutral-500"
+                  }`}
+                >
+                  drone {droneOn ? "on" : "muted"}
+                </button>
               </label>
             </div>
             <button
