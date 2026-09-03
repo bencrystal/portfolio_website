@@ -167,12 +167,17 @@ export default function TreeView() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null); // node id mid-request
-  const [preview, setPreview] = useState<string | null>(null); // compressed node peeked open
+  const [preview, setPreview] = useState<string | null>(null); // compressed node peeked open (hover)
+  const [pinned, setPinned] = useState<string | null>(null); // peek held open by click/tap
   const peekTimer = useRef(0); // hover-intent delay so sweeping past doesn't flicker peeks
+  const [hintOpen, setHintOpen] = useState(false); // how-it-works line, first-visit + "?"
   const [openBranch, setOpenBranch] = useState<string | null>(null); // mobile accordion
   const [wide, setWide] = useState(false); // lg+: all branches always open, side by side
 
   useEffect(() => {
+    // Same first-visit-hint pattern as the main page: shown once, then
+    // tucked behind the "?" so the header isn't permanent explainer noise.
+    setHintOpen(localStorage.getItem("practice_tree_hint") !== "1");
     const mq = window.matchMedia("(min-width: 1024px)");
     const sync = () => setWide(mq.matches);
     sync();
@@ -268,19 +273,39 @@ export default function TreeView() {
   return (
     <main className="min-h-screen bg-neutral-950 px-4 py-4 text-neutral-100">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-1 flex items-center justify-between">
+        <div className="mb-3 flex items-center justify-between gap-2">
           <h1 className="text-xl font-semibold">Skill tree</h1>
-          <a
-            className="rounded-md border border-neutral-700 px-3 py-1 text-sm text-neutral-300 hover:border-neutral-500"
-            href="/practice"
-          >
-            ✕ close
-          </a>
+          <div className="flex items-center gap-2">
+            <button
+              className="h-7 w-7 rounded-full border border-neutral-700 text-sm text-neutral-400 hover:border-neutral-500"
+              title="How it works"
+              onClick={() => setHintOpen((h) => !h)}
+            >
+              ?
+            </button>
+            <a
+              className="rounded-md border border-neutral-700 px-3 py-1 text-sm text-neutral-300 hover:border-neutral-500"
+              href="/practice"
+            >
+              ✕ close
+            </a>
+          </div>
         </div>
-        <p className="mb-4 text-xs text-neutral-500">
-          Pick 1–2 per branch. Starting a node adds it to your exercises; hit its gate and it evolves, unlocking the
-          next one.
-        </p>
+        <Reveal open={hintOpen}>
+          <div className="mb-4 rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-xs text-neutral-400">
+            Pick 1–2 per branch. Starting a node adds it to your exercises; hit its gate and it evolves, unlocking
+            the next one.
+            <button
+              className="ml-2 rounded border border-neutral-700 px-1.5 py-0.5 text-neutral-300 hover:border-neutral-500"
+              onClick={() => {
+                setHintOpen(false);
+                localStorage.setItem("practice_tree_hint", "1");
+              }}
+            >
+              got it
+            </button>
+          </div>
+        </Reveal>
 
         {error && (
           <div className="mb-4 rounded-md border border-red-900 bg-red-950 px-3 py-2 text-sm text-red-300">
@@ -340,10 +365,12 @@ export default function TreeView() {
                       <Icon paths={b.icon.paths} circles={"circles" in b.icon ? b.icon.circles : undefined} />
                     </span>
                     {b.label}
-                    <span className="ml-auto font-mono text-xs text-neutral-500">
-                      {evolvedCount} / {branchNodes.length}
+                    {/* Count snug against the label — right-aligned it floated
+                        in space and read as unrelated. */}
+                    <span className="font-mono text-xs text-neutral-500">
+                      {evolvedCount}/{branchNodes.length}
                     </span>
-                    <span className="text-xs text-neutral-500 lg:hidden">{bodyOpen ? "▾" : "▸"}</span>
+                    <span className="ml-auto text-xs text-neutral-500 lg:hidden">{bodyOpen ? "▾" : "▸"}</span>
                   </button>
                   <Reveal open={bodyOpen}>
                   <p className="mb-2 h-4 text-[10px] text-amber-400/80">
@@ -360,7 +387,9 @@ export default function TreeView() {
                       const { best, secs } = statsFor(prog?.exercise_id ?? null);
                       // Compressed rows peek open on hover (or tap, where
                       // there's no hover) to preview what's coming.
-                      const previewed = preview === n.id;
+                      // Hover previews; click/tap pins (click again unpins), so
+                      // desktop can hold a peek open too.
+                      const previewed = preview === n.id || pinned === n.id;
                       const peekHandlers = {
                         onPointerEnter: (e: React.PointerEvent) => {
                           if (e.pointerType !== "mouse") return;
@@ -372,8 +401,11 @@ export default function TreeView() {
                           clearTimeout(peekTimer.current);
                           setPreview(null);
                         },
-                        onPointerUp: (e: React.PointerEvent) =>
-                          e.pointerType !== "mouse" && setPreview(previewed ? null : n.id),
+                        onPointerUp: (e: React.PointerEvent) => {
+                          // Buttons inside the row (start etc.) shouldn't toggle the pin.
+                          if ((e.target as HTMLElement).closest("button")) return;
+                          setPinned((p) => (p === n.id ? null : n.id));
+                        },
                       };
                       const met =
                         n.gate_type === "bpm"
@@ -433,7 +465,7 @@ export default function TreeView() {
 
                           {tier === "card" && (
                             <div
-                              className="rounded-lg border bg-neutral-900/40 p-3"
+                              className="rounded-lg border bg-neutral-900/40 p-3 lg:flex lg:min-h-[11rem] lg:flex-col"
                               style={{ borderColor: prog ? b.color : "#404040" }}
                             >
                               <p className="text-xs" style={{ color: prog ? b.color : "#737373" }}>
@@ -441,6 +473,9 @@ export default function TreeView() {
                               </p>
                               <p className="mt-0.5 text-sm font-medium">{n.name}</p>
                               {n.description && <p className="mt-1 text-xs text-neutral-400">{n.description}</p>}
+                              {/* Gate + actions pinned to the bottom so the five
+                                  frontier cards line up across branches. */}
+                              <div className="lg:mt-auto">
                               <div className="mt-2 flex items-center gap-1.5 text-xs text-neutral-400">
                                 <GateIcon type={n.gate_type} />
                                 {prog && gateNum ? (
@@ -484,6 +519,7 @@ export default function TreeView() {
                                   />
                                 </div>
                               )}
+                              </div>
                             </div>
                           )}
 
@@ -495,12 +531,15 @@ export default function TreeView() {
                               base={
                                 <>
                                   <span className="text-neutral-300">{n.name}</span>
-                                  <p className="mt-0.5 flex items-center gap-1.5 text-xs text-neutral-500">
-                                    <GateIcon type={n.gate_type} />
-                                    {gateShort(n)}
-                                    <span>·</span>
+                                  {/* Gate and action wrap as whole units — the long
+                                      self-gate text was colliding with the link. */}
+                                  <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-neutral-500">
+                                    <span className="flex items-center gap-1.5 whitespace-nowrap">
+                                      <GateIcon type={n.gate_type} />
+                                      {gateShort(n)}
+                                    </span>
                                     <button
-                                      className="underline hover:text-neutral-300"
+                                      className="whitespace-nowrap underline hover:text-neutral-300"
                                       disabled={busy === n.id}
                                       onClick={() => startNode(n)}
                                     >

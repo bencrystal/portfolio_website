@@ -1445,8 +1445,10 @@ export default function PracticeView() {
             </div>
             {/* While a session runs the live timer takes over and the
                 set-and-forget bpm number steps back. */}
-            <div className="flex items-end justify-between">
-              <div>
+            {/* Two aligned rows: numbers on top (bpm | timer), their small
+                companions below (beat dots | "session" label). */}
+            <div className="flex items-stretch justify-between">
+              <div className="flex flex-col justify-between">
                 <div className={`font-bold tabular-nums transition-all ${swRunning ? "text-2xl" : "text-4xl"}`}>
                   {bpm}
                   <span className="ml-1 text-sm font-normal text-neutral-500">bpm</span>
@@ -1470,7 +1472,7 @@ export default function PracticeView() {
                   ))}
                 </div>
               </div>
-              <div className="pb-0.5 text-right">
+              <div className="flex flex-col justify-between text-right">
                 <div
                   className={`font-bold tabular-nums transition-all ${
                     swRunning ? "text-5xl text-amber-400" : swElapsed > 0 ? "text-3xl" : "text-3xl text-neutral-600"
@@ -1528,15 +1530,16 @@ export default function PracticeView() {
             {/* Tuning lives behind one small toggle so the hero stays at
                 exercise → tempo → Start for anyone new to the page. */}
             <button
-              className="mt-2 text-xs text-neutral-500 hover:text-neutral-300"
+              className="mt-2 rounded text-xs text-neutral-500 outline-none hover:text-neutral-300 focus-visible:ring-1 focus-visible:ring-neutral-500"
               onClick={() => setExtrasOpen((o) => !o)}
             >
               options {extrasOpen ? "▾" : "▸"}
             </button>
-            {extrasOpen && (
-            <>
-            {/* Session extras: opt-in behaviors for the Start button. */}
-            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-neutral-400">
+            {/* Session extras: opt-in behaviors for the Start button. Inset
+                sub-panel so the pile of small controls reads as one group. */}
+            <Reveal open={extrasOpen}>
+            <div className="mt-2 rounded-lg border border-neutral-800 bg-neutral-950/50 p-2.5">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-neutral-400">
               <label className="flex items-center gap-1.5">
                 <input
                   type="checkbox"
@@ -1587,7 +1590,7 @@ export default function PracticeView() {
                 </span>
               )}
             </div>
-            <div className="mt-3 flex flex-wrap items-center gap-3">
+            <div className="mt-2.5 flex flex-wrap items-center gap-3 border-t border-neutral-800/60 pt-2.5">
               <select
                 value={beatsPerBar}
                 onChange={(e) => setBeatsPerBar(Number(e.target.value))}
@@ -1640,16 +1643,17 @@ export default function PracticeView() {
                 </select>
               </label>
             </div>
-            </>
-            )}
+            </div>
+            </Reveal>
           </section>
 
           {/* Random note: its own card on desktop; lives in the strip on mobile. */}
+          {/* One compact row — the tall version was mostly dead space. The
+              keyboard hint moved into the button's title. */}
           <section className={`${card} mb-4 hidden items-center justify-between gap-3 lg:flex`}>
             <div>
               <h2 className="text-sm font-medium text-neutral-400">Random note</h2>
-              <p className="text-xs text-neutral-600">press N or tap the note</p>
-              <label className="mt-2 flex items-center gap-1.5 text-xs text-neutral-500">
+              <label className="mt-1 flex items-center gap-1.5 text-xs text-neutral-500">
                 change every
                 <select
                   value={noteSync}
@@ -1668,18 +1672,19 @@ export default function PracticeView() {
             </div>
             <button
               onClick={advanceNote}
-              className="min-w-[5.5rem] rounded-lg bg-neutral-800 px-4 py-3 text-center hover:bg-neutral-700"
+              title="press N or tap"
+              className="min-w-[4.5rem] rounded-lg bg-neutral-800 px-3 py-2 text-center hover:bg-neutral-700"
             >
               {noteCur ? (
                 <NoteMorph
                   cur={noteCur.label}
                   next={noteSync > 0 ? noteNext?.label ?? null : null}
                   morphMs={noteMorph}
-                  curClass="inline-block text-3xl font-bold"
+                  curClass="inline-block text-2xl font-bold"
                   nextClass="ml-2 inline-block align-middle text-sm text-neutral-500"
                 />
               ) : (
-                <span className="text-3xl font-bold">?</span>
+                <span className="text-2xl font-bold">?</span>
               )}
             </button>
           </section>
@@ -1715,22 +1720,29 @@ export default function PracticeView() {
           {/* Exercise cards: last vs today at a glance; tap = arm stopwatch + metronome. */}
           <div className="mb-2 flex items-center justify-between">
             <h2 className="text-sm font-medium text-neutral-400">Exercises</h2>
-            <div className="flex gap-3">
-              <a className="text-xs text-neutral-500 underline hover:text-neutral-300" href="/practice/tree">
+            {/* Chips, not footnote links — the skill tree is a whole feature
+                and manage is the main edit surface. */}
+            <div className="flex gap-2">
+              <a
+                className="rounded-md border border-neutral-700 px-2.5 py-1 text-xs text-neutral-300 hover:border-neutral-500"
+                href="/practice/tree"
+              >
                 🌳 skill tree
               </a>
               <button
-                className="text-xs text-neutral-500 underline hover:text-neutral-300"
+                className="rounded-md border border-neutral-700 px-2.5 py-1 text-xs text-neutral-300 hover:border-neutral-500"
                 onClick={() => setManageOpen((o) => !o)}
               >
                 {manageOpen ? "close manage" : "manage"}
               </button>
             </div>
           </div>
-          <section className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+          {/* CSS columns instead of a grid so cards pack by height — a grid
+              left a hole under the shorter column. */}
+          <section className="mb-4 sm:columns-2 sm:gap-2">
             {/* Said once, up here — the cards below just show a quiet "—". */}
             {!loading && (sessions ?? []).length === 0 && active.length > 0 && (
-              <p className="text-xs text-neutral-600 sm:col-span-2">
+              <p className="mb-2 text-xs text-neutral-600">
                 Nothing logged yet — tap an exercise to arm it, then Start session.
               </p>
             )}
@@ -1751,7 +1763,7 @@ export default function PracticeView() {
               return (
                 <div
                   key={ex.id}
-                  className={`cursor-pointer rounded-xl border bg-neutral-900 p-3 transition-colors ${
+                  className={`mb-2 break-inside-avoid cursor-pointer rounded-xl border bg-neutral-900 p-3 transition-colors ${
                     selected ? "" : "border-neutral-800 hover:border-neutral-700"
                   }`}
                   style={selected ? { borderColor: colorOf(ex.id) } : undefined}
@@ -1925,7 +1937,7 @@ export default function PracticeView() {
               );
             })}
             {!loading && active.length === 0 && (
-              <p className={`${card} text-sm text-neutral-500 sm:col-span-2`}>
+              <p className={`${card} text-sm text-neutral-500`}>
                 No exercises yet — open “manage” above to add one.
               </p>
             )}
