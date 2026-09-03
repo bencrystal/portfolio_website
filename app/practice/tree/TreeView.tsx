@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Reveal from "../Reveal";
 
 // Full-screen skill-tree takeover: five linear paths of nodes. Starting a
@@ -116,6 +116,7 @@ function Peek({
   dim,
   previewed,
   handlers,
+  color,
   base,
   overlayBase,
   extra,
@@ -123,6 +124,7 @@ function Peek({
   dim?: boolean;
   previewed: boolean;
   handlers: React.DOMAttributes<HTMLDivElement>;
+  color: string; // branch accent, tints the peeked border
   base: React.ReactNode;
   overlayBase?: React.ReactNode; // un-truncated variant for the expanded clone
   extra: React.ReactNode;
@@ -138,14 +140,15 @@ function Peek({
       {/* Purely visual — pointer-events-none keeps the hover zone at the
           original footprint (so covered rows reappear the moment you head
           for them) and lets clicks fall through to the real row beneath.
-          On close the opacity fade waits for the mask to redact, so it
-          retracts the same way it expanded instead of just vanishing. */}
+          Opens with a slight lift (scale + shadow); on close the fade waits
+          for the mask to redact, so it retracts the way it expanded. */}
       <div
-        className={`pointer-events-none absolute inset-x-0 top-0 z-10 rounded-lg border px-2.5 py-1.5 text-sm text-neutral-300 shadow-xl transition-opacity ${
+        className={`pointer-events-none absolute inset-x-0 top-0 z-10 origin-top rounded-lg border bg-neutral-900 px-2.5 py-1.5 text-sm text-neutral-300 transition-[opacity,transform,box-shadow] ${
           previewed
-            ? "border-neutral-700 bg-neutral-900 opacity-100 duration-200"
-            : "border-transparent opacity-0 delay-200 duration-200"
+            ? "scale-100 opacity-100 shadow-xl shadow-black/40 duration-200"
+            : "scale-[0.98] opacity-0 shadow-none delay-200 duration-200"
         }`}
+        style={{ borderColor: previewed ? `${color}80` : "transparent" }}
       >
         {overlayBase ?? base}
         <Reveal open={previewed}>{extra}</Reveal>
@@ -161,6 +164,17 @@ export default function TreeView() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null); // node id mid-request
   const [preview, setPreview] = useState<string | null>(null); // compressed node peeked open
+  const peekTimer = useRef(0); // hover-intent delay so sweeping past doesn't flicker peeks
+  const [openBranch, setOpenBranch] = useState<string | null>(null); // mobile accordion
+  const [wide, setWide] = useState(false); // lg+: all branches always open, side by side
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const sync = () => setWide(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
 
   const token = typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null;
 
@@ -172,6 +186,10 @@ export default function TreeView() {
     setNodes(tr.nodes);
     setProgress(tr.progress);
     setSessions(se.sessions);
+    // Mobile accordion opens on the branch you're mid-way through.
+    const activeProg = (tr.progress as Progress[]).find((p) => p.status === "active");
+    const activeNode = (tr.nodes as TreeNode[]).find((n) => n.id === activeProg?.node_id);
+    setOpenBranch(activeNode?.branch ?? BRANCHES[0].key);
   }
 
   useEffect(() => {
@@ -272,7 +290,9 @@ export default function TreeView() {
         {nodes === null ? (
           <p className="py-16 text-center text-sm text-neutral-500">Loading…</p>
         ) : (
-          <div className="flex gap-6 overflow-x-auto pb-8">
+          // Desktop: five columns side by side. Mobile: an accordion stack —
+          // horizontal scrolling hid most of the tree.
+          <div className="flex flex-col gap-3 pb-8 lg:flex-row lg:gap-6">
             {BRANCHES.map((b) => {
               const branchNodes = nodes
                 .filter((n) => n.branch === b.key)
@@ -304,9 +324,14 @@ export default function TreeView() {
                 return { n, prog, locked, tier };
               });
 
+              const bodyOpen = wide || openBranch === b.key;
               return (
-                <div key={b.key} className="w-60 shrink-0 lg:flex-1">
-                  <h2 className="mb-1 flex items-center gap-2 text-sm font-medium text-neutral-200">
+                <div key={b.key} className="min-w-0 lg:flex-1">
+                  {/* Header doubles as the accordion toggle on mobile. */}
+                  <button
+                    className="mb-1 flex w-full items-center gap-2 py-1 text-sm font-medium text-neutral-200 lg:cursor-default lg:py-0"
+                    onClick={() => !wide && setOpenBranch(bodyOpen ? null : b.key)}
+                  >
                     <span style={{ color: b.color }}>
                       <Icon paths={b.icon.paths} circles={"circles" in b.icon ? b.icon.circles : undefined} />
                     </span>
@@ -314,7 +339,9 @@ export default function TreeView() {
                     <span className="ml-auto font-mono text-xs text-neutral-500">
                       {evolvedCount} / {branchNodes.length}
                     </span>
-                  </h2>
+                    <span className="text-xs text-neutral-500 lg:hidden">{bodyOpen ? "▾" : "▸"}</span>
+                  </button>
+                  <Reveal open={bodyOpen}>
                   <p className="mb-2 h-4 text-[10px] text-amber-400/80">
                     {activeCount > 2 ? `${activeCount} active — consider focusing on 1–2` : ""}
                   </p>
@@ -331,8 +358,16 @@ export default function TreeView() {
                       // there's no hover) to preview what's coming.
                       const previewed = preview === n.id;
                       const peekHandlers = {
-                        onPointerEnter: (e: React.PointerEvent) => e.pointerType === "mouse" && setPreview(n.id),
-                        onPointerLeave: (e: React.PointerEvent) => e.pointerType === "mouse" && setPreview(null),
+                        onPointerEnter: (e: React.PointerEvent) => {
+                          if (e.pointerType !== "mouse") return;
+                          clearTimeout(peekTimer.current);
+                          peekTimer.current = window.setTimeout(() => setPreview(n.id), 120);
+                        },
+                        onPointerLeave: (e: React.PointerEvent) => {
+                          if (e.pointerType !== "mouse") return;
+                          clearTimeout(peekTimer.current);
+                          setPreview(null);
+                        },
                         onPointerUp: (e: React.PointerEvent) =>
                           e.pointerType !== "mouse" && setPreview(previewed ? null : n.id),
                       };
@@ -452,6 +487,7 @@ export default function TreeView() {
                             <Peek
                               previewed={previewed}
                               handlers={peekHandlers}
+                              color={b.color}
                               base={
                                 <>
                                   <span className="text-neutral-300">{n.name}</span>
@@ -482,6 +518,7 @@ export default function TreeView() {
                               dim
                               previewed={previewed}
                               handlers={peekHandlers}
+                              color={b.color}
                               base={<p className="truncate">{n.name}</p>}
                               overlayBase={<p>{n.name}</p>}
                               extra={
@@ -508,6 +545,7 @@ export default function TreeView() {
                   >
                     + add your own
                   </button>
+                  </Reveal>
                 </div>
               );
             })}

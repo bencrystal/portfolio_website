@@ -6,9 +6,10 @@ import { useEffect, useRef, useState } from "react";
 // grid-row mask lerps open over it — like dragging a mask in an editor, the
 // text is uncovered rather than arriving. While the mask is moving, its edge
 // is feathered to transparent (~12px alpha mask) so the clip line reads as an
-// ombre instead of a hard cut; it sharpens again once settled. Use for any
-// progressive-disclosure expansion on /practice so they all move the same
-// way (Apple-style curve).
+// ombre instead of a hard cut; it sharpens again once settled. There's no
+// opacity fade — mask + fade at once read as two competing animations and
+// felt mushy. Use for any progressive-disclosure expansion on /practice so
+// they all move the same way (Apple-style curve).
 const FEATHER = "linear-gradient(to bottom, black calc(100% - 12px), transparent)";
 
 export default function Reveal({ open, children }: { open: boolean; children: React.ReactNode }) {
@@ -16,7 +17,7 @@ export default function Reveal({ open, children }: { open: boolean; children: Re
   const first = useRef(true);
   useEffect(() => {
     if (first.current) {
-      first.current = false; // don't feather the initial render
+      first.current = false; // don't animate the initial render
       return;
     }
     setMoving(true);
@@ -28,8 +29,10 @@ export default function Reveal({ open, children }: { open: boolean; children: Re
       style={{ gridTemplateRows: open ? "1fr" : "0fr" }}
       onTransitionEnd={(e) => e.propertyName === "grid-template-rows" && setMoving(false)}
     >
+      {/* Clip only while closed or moving — settled-open content may cast
+          shadows or float overlays past the container edge. */}
       <div
-        className={`overflow-hidden transition-opacity duration-300 ${open ? "opacity-100" : "opacity-0"}`}
+        className={moving || !open ? "overflow-hidden" : ""}
         style={moving ? { maskImage: FEATHER, WebkitMaskImage: FEATHER } : undefined}
       >
         {children}
