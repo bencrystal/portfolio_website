@@ -89,9 +89,10 @@ export default function ListView({ token }: { token: string }) {
   // a task and checking it done (which whisks it out of the active list).
   const [lastUndo, setLastUndo] = useState<{
     todo: Todo;
-    kind: "deleted" | "done" | "filed";
+    kind: "deleted" | "done" | "filed" | "routed";
     from?: string | null; // previous bucket, for undoing a drag filing
     toName?: string; // destination name for the toast label
+    text?: string; // original capture text, for undoing keyword routing
   } | null>(null);
   const [undoVisible, setUndoVisible] = useState(false);
   // Remounts the countdown ring so its drain animation restarts.
@@ -251,8 +252,8 @@ export default function ListView({ token }: { token: string }) {
   // The toast fades out before it unmounts instead of vanishing.
   function showUndo(
     todo: Todo,
-    kind: "deleted" | "done" | "filed",
-    extra?: { from: string | null; toName: string }
+    kind: "deleted" | "done" | "filed" | "routed",
+    extra?: { from: string | null; toName: string; text?: string }
   ) {
     if (undoTimer.current) clearTimeout(undoTimer.current);
     if (undoClearTimer.current) clearTimeout(undoClearTimer.current);
@@ -292,6 +293,12 @@ export default function ListView({ token }: { token: string }) {
       const back = u.from ?? null;
       setTodos((ts) => ts!.map((t) => (t.id === u.todo.id ? { ...t, bucket_id: back } : t)));
       await call("todos", "PATCH", { id: u.todo.id, bucket_id: back });
+    } else if (u.kind === "routed") {
+      // Undo keyword routing: back to Unsorted, with the original text
+      // (a leading trigger word may have been stripped on the way in).
+      const text = u.text ?? u.todo.text;
+      setTodos((ts) => ts!.map((t) => (t.id === u.todo.id ? { ...t, bucket_id: null, text } : t)));
+      await call("todos", "PATCH", { id: u.todo.id, bucket_id: null, text });
     } else {
       setTodos((ts) => ts!.map((t) => (t.id === u.todo.id ? { ...t, done: false } : t)));
       await call("todos", "PATCH", { id: u.todo.id, done: false });
@@ -341,6 +348,20 @@ export default function ListView({ token }: { token: string }) {
         },
       ]);
       return;
+    }
+    // Keyword routing happens server-side on unsorted adds; surface where
+    // the capture landed with an undo, since a misfile into a quiet bucket
+    // would otherwise vanish from All without a trace.
+    if (res.ok && bucket_id === null) {
+      const data = await res.json();
+      const routed: Todo | undefined = data?.todo;
+      if (routed?.bucket_id) {
+        showUndo(routed, "routed", {
+          from: null,
+          toName: bucketName(routed.bucket_id) ?? "bucket",
+          text,
+        });
+      }
     }
     refresh();
   }
@@ -929,7 +950,9 @@ export default function ListView({ token }: { token: string }) {
               ? "Deleted"
               : lastUndo.kind === "done"
                 ? "Marked done"
-                : `Filed to ${lastUndo.toName}`}
+                : lastUndo.kind === "routed"
+                  ? `Auto-filed to ${lastUndo.toName}`
+                  : `Filed to ${lastUndo.toName}`}
           </span>
           <button onClick={undoLast} className="font-medium text-blue-400 hover:text-blue-200">
             Undo
