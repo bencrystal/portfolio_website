@@ -117,6 +117,14 @@ function gateShort(n: TreeNode) {
 }
 
 // Compressed row whose preview floats as an overlay clone above the list —
+// Branch body wrapper: on desktop the children must land directly in the
+// branch's subgrid (Reveal's wrapper divs would swallow the shared rows), and
+// the columns are always open there anyway — the animated Reveal only serves
+// the mobile accordion.
+function BranchBody({ flat, open, children }: { flat: boolean; open: boolean; children: React.ReactNode }) {
+  return flat ? <>{children}</> : <Reveal open={open}>{children}</Reveal>;
+}
+
 // expanding never shifts the rows below it, so hovering down a column can't
 // yank the next target out from under the cursor. The clone repeats the base
 // content pixel-aligned on top, then mask-reveals the extra lines.
@@ -389,9 +397,11 @@ export default function TreeView() {
         {nodes === null ? (
           <p className="py-16 text-center text-sm text-neutral-500">Loading…</p>
         ) : (
-          // Desktop: five columns side by side. Mobile: an accordion stack —
-          // horizontal scrolling hid most of the tree.
-          <div className="flex flex-col gap-3 pb-8 lg:flex-row lg:gap-6">
+          // Desktop: five subgrid columns sharing rows, so every tier band
+          // (Development, Fluency, Mastery) starts at the same height in all
+          // branches. Mobile: an accordion stack — horizontal scrolling hid
+          // most of the tree.
+          <div className={wide ? "grid grid-cols-5 gap-x-6 pb-8" : "flex flex-col gap-3 pb-8"}>
             {BRANCHES.map((b) => {
               const branchNodes = nodes
                 .filter((n) => n.branch === b.key)
@@ -425,7 +435,12 @@ export default function TreeView() {
 
               const bodyOpen = wide || openBranch === b.key;
               return (
-                <div key={b.key} className="min-w-0 lg:flex-1">
+                <div
+                  key={b.key}
+                  className={wide ? "grid min-w-0" : "min-w-0"}
+                  // 7 shared rows: header, warning, tier ×4, add-your-own.
+                  style={wide ? { gridTemplateRows: "subgrid", gridRow: "span 7" } : undefined}
+                >
                   {/* Header doubles as the accordion toggle on mobile. */}
                   <button
                     className="mb-1 flex w-full items-center gap-2 py-1 text-sm font-medium text-neutral-200 lg:cursor-default lg:py-0"
@@ -442,18 +457,31 @@ export default function TreeView() {
                     </span>
                     <span className="ml-auto text-xs text-neutral-500 lg:hidden">{bodyOpen ? "▾" : "▸"}</span>
                   </button>
-                  <Reveal open={bodyOpen}>
+                  <BranchBody flat={wide} open={bodyOpen}>
                   <p className="mb-2 h-4 text-[10px] text-amber-400/80">
                     {activeCount > 2 ? `${activeCount} active — consider focusing on 1–2` : ""}
                   </p>
 
+                  {/* One block per tier; on desktop each block sits on a shared
+                      subgrid row across all five branches. */}
+                  {[1, 2, 3, 4].map((t) => {
+                    const group = rows.filter((r) => (r.n.tier ?? 1) === t);
+                    return (
+                  <div key={t}>
+                  {t > 1 && group.length > 0 && (
+                    <p className="mb-1.5 pl-7 text-[10px] uppercase tracking-widest" style={{ color: `${b.color}90` }}>
+                      {tierName(t)}
+                    </p>
+                  )}
                   {/* Rail of dots down the left; the line carries the branch hue. */}
                   <div className="relative">
+                    {group.length > 0 && (
                     <div
                       className="absolute bottom-2 left-[7px] top-2 w-px"
                       style={{ background: `${b.color}30` }}
                     />
-                    {rows.map(({ n, prog, locked, tier }, idx) => {
+                    )}
+                    {group.map(({ n, prog, locked, tier }) => {
                       const { best, secs } = statsFor(prog?.exercise_id ?? null);
                       // Compressed rows peek open on hover (or tap, where
                       // there's no hover) to preview what's coming.
@@ -512,15 +540,6 @@ export default function TreeView() {
 
                       return (
                         <div key={n.id} className="relative pb-4 pl-7">
-                          {/* Quiet divider where a new tier begins. */}
-                          {idx > 0 && (rows[idx - 1].n.tier ?? 1) !== (n.tier ?? 1) && (
-                            <p
-                              className="mb-1.5 text-[10px] uppercase tracking-widest"
-                              style={{ color: `${b.color}90` }}
-                            >
-                              {tierName(n.tier)}
-                            </p>
-                          )}
                           {dot}
 
                           {tier === "done" && (
@@ -691,6 +710,9 @@ export default function TreeView() {
                       );
                     })}
                   </div>
+                  </div>
+                    );
+                  })}
 
                   <button
                     className="mt-1 w-full rounded-lg border border-dashed border-neutral-800 py-1.5 text-xs text-neutral-600 hover:border-neutral-600 hover:text-neutral-400"
@@ -698,7 +720,7 @@ export default function TreeView() {
                   >
                     + add your own
                   </button>
-                  </Reveal>
+                  </BranchBody>
                 </div>
               );
             })}
