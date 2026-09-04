@@ -352,6 +352,9 @@ export default function PracticeView() {
   const [logOpen, setLogOpen] = useState(false); // log shows ~2 entries until expanded
   // Armed mode: everything but the hero retracts behind these headers.
   const [openPanels, setOpenPanels] = useState({ progress: false, log: false, tools: false });
+  // Set when "done" is tapped on the last exercise in the queue — shows the
+  // day summary card in browse mode.
+  const [dayDone, setDayDone] = useState(false);
   // Hero stays compact for daily use: the big bpm ruler and the write-up both
   // live behind toggles. Details auto-open while an exercise is still new
   // (fewer than ~3 practiced days) and collapse once it's routine.
@@ -1044,6 +1047,7 @@ export default function PracticeView() {
   // BPM you last used on it, so you can start (or +5) without hunting.
   function armExercise(ex: Exercise, aggs: DayAgg[]) {
     setSelectedEx(ex.id);
+    setDayDone(false);
     if (ex.track_variants) {
       // Suggest whichever stroke-start you haven't done yet today.
       const todays = (sessions ?? []).filter((s) => s.exercise_id === ex.id && s.date === today);
@@ -1087,6 +1091,10 @@ export default function PracticeView() {
     armedAggs[0] && armedAggs[1] && armedAggs[0].bpm > 0 && armedAggs[1].bpm > 0
       ? armedAggs[0].bpm - armedAggs[1].bpm
       : null;
+  // Position in today's queue ("2 of 5"): the pills below the hero are the
+  // rest of the queue, in the order you dragged them into.
+  const queueIdx = armed ? active.findIndex((e) => e.id === armed.id) : -1;
+  const queueLast = queueIdx === active.length - 1;
 
   // Identity colors: hash gives each exercise a stable starting slot, then we
   // walk to the next free one so no two dots collide (until the palette runs
@@ -1205,6 +1213,7 @@ export default function PracticeView() {
   const todayTotal = (sessions ?? [])
     .filter((s) => s.date === today)
     .reduce((sum, s) => sum + (s.seconds ?? 0), 0);
+  const todayExCount = new Set((sessions ?? []).filter((s) => s.date === today).map((s) => s.exercise_id)).size;
 
   // Today's time on the armed exercise, shown in the session hero.
   const selTodaySecs = (sessions ?? [])
@@ -1405,7 +1414,8 @@ export default function PracticeView() {
         </button>
       </div>
 
-      <div className="flex items-center justify-between py-4">
+      {/* While the timer runs, the page header steps out of the way. */}
+      <div className={`flex items-center justify-between py-4 transition-opacity duration-500 ${swRunning ? "opacity-25" : ""}`}>
         <h1 className="text-xl font-semibold">Guitar Practice</h1>
         <div className="flex items-center gap-3">
           <button
@@ -1482,7 +1492,7 @@ export default function PracticeView() {
             <span className="font-medium">Log it</span> saves your tempo and time.
           </p>
           <p className="mt-1.5 text-xs text-neutral-500">
-            More, when you want it: “options” under Start holds count-in, tempo trainer, sound and meter · ↓↑ in
+            More, when you want it: the settings line under Start (bpm · meter · sound) opens count-in, tempo trainer and more · ↓↑ in
             manage tracks down/up-stroke starts separately · “goal” draws a target line on the chart ·{" "}
             <span className="text-neutral-400">Log in</span> with your password to edit your own log.
           </p>
@@ -1494,6 +1504,29 @@ export default function PracticeView() {
             }}
           >
             got it
+          </button>
+        </div>
+      )}
+
+      {/* Day-done: tapping "done ✓" on the last queued exercise lands here. */}
+      {dayDone && !armed && (
+        <div className={`${card} mb-4 flex items-center justify-between gap-3 border-amber-500/40`}>
+          <p className="text-sm">
+            <span className="font-medium text-amber-400">Done for today ✓</span>{" "}
+            {todayTotal > 0 && (
+              <span className="text-neutral-400">
+                <span className="tabular-nums text-neutral-200">{fmtDur(todayTotal)}</span> across{" "}
+                {todayExCount} exercise{todayExCount === 1 ? "" : "s"}
+                {streak > 1 && <> · {streak}-day streak</>}
+              </span>
+            )}
+          </p>
+          <button
+            className="rounded px-1.5 text-lg leading-none text-neutral-500 hover:text-neutral-200"
+            onClick={() => setDayDone(false)}
+            aria-label="dismiss day summary"
+          >
+            ×
           </button>
         </div>
       )}
@@ -1519,20 +1552,30 @@ export default function PracticeView() {
                     <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: colorOf(armed.id) }} />
                     <span className="break-words text-lg font-semibold">{armed.name}</span>
                   </button>
-                  <div className="flex shrink-0 items-center gap-1">
-                    {/* Straight to the next exercise in your order — no disarm detour. */}
+                  <div className="flex shrink-0 items-center gap-1.5">
+                    {/* Straight to the next exercise in your order — no disarm
+                        detour. On the last one, "done" wraps up the day. */}
                     {active.length > 1 && (
-                      <button
-                        className="rounded border border-neutral-700 px-2 py-0.5 text-xs text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
-                        onClick={() => {
-                          const i = active.findIndex((e) => e.id === armed.id);
-                          const nxt = active[(i + 1) % active.length];
-                          armExercise(nxt, aggByDate(sessions ?? [], nxt.id));
-                        }}
-                        aria-label="arm next exercise"
-                      >
-                        next →
-                      </button>
+                      <>
+                        <span className="text-[10px] tabular-nums text-neutral-600">
+                          {queueIdx + 1} of {active.length}
+                        </span>
+                        <button
+                          className="rounded border border-neutral-700 px-2 py-0.5 text-xs text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
+                          onClick={() => {
+                            if (queueLast) {
+                              setSelectedEx(null);
+                              setDayDone(true);
+                            } else {
+                              const nxt = active[queueIdx + 1];
+                              armExercise(nxt, aggByDate(sessions ?? [], nxt.id));
+                            }
+                          }}
+                          aria-label={queueLast ? "finish for today" : "arm next exercise"}
+                        >
+                          {queueLast ? "done ✓" : "next →"}
+                        </button>
+                      </>
                     )}
                     <button
                       className="rounded px-1.5 text-lg leading-none text-neutral-500 hover:text-neutral-200"
@@ -1604,18 +1647,46 @@ export default function PracticeView() {
               </button>
               )}
               <div className="flex flex-col justify-between text-right">
+                {/* Before the first Start this slot answers "where am I today?"
+                    instead of showing a dead 0:00. */}
                 <div
                   className={`font-bold tabular-nums transition-all ${
                     swRunning ? "text-5xl text-amber-400" : swElapsed > 0 ? "text-3xl" : "text-3xl text-neutral-600"
                   }`}
                 >
-                  {fmtSecs(swElapsed / 1000)}
+                  {swRunning || swElapsed > 0
+                    ? fmtSecs(swElapsed / 1000)
+                    : selTodaySecs > 0
+                      ? fmtDur(selTodaySecs)
+                      : fmtSecs(0)}
                 </div>
                 <div className={`text-[10px] ${countingIn ? "text-amber-400" : "text-neutral-600"}`}>
-                  {countingIn ? "count-in…" : "session"}
+                  {countingIn
+                    ? "count-in…"
+                    : swRunning || swElapsed > 0
+                      ? "session"
+                      : selTodaySecs > 0
+                        ? "today"
+                        : armedLast
+                          ? `last · ${fmtAgg(armedLast)}`
+                          : "session"}
                 </div>
               </div>
             </div>
+            {/* Goal in sight: how today's dial compares to the exercise's target. */}
+            {armed?.target_bpm && heroTools.metronome ? (
+              <div className="mt-2.5">
+                <div className="h-1 overflow-hidden rounded-full bg-neutral-800">
+                  <div
+                    className="h-full rounded-full bg-amber-500/70 transition-all"
+                    style={{ width: `${Math.min(100, (bpm / armed.target_bpm) * 100)}%` }}
+                  />
+                </div>
+                <div className="mt-1 text-right text-[10px] tabular-nums text-neutral-600">
+                  {bpm} / {armed.target_bpm} bpm target
+                </div>
+              </div>
+            ) : null}
             {/* The full ruler + tap/nudge controls unfold from the bpm number;
                 day-to-day the tempo is already right and stays out of the way. */}
             {heroTools.metronome && (
@@ -1653,22 +1724,6 @@ export default function PracticeView() {
                 </>
               )}
             </div>
-            {/* A mode, not a setting — its own row, quieter than Start. */}
-            {heroTools.metronome && (
-            <div className="mt-2">
-              <button
-                className={`w-full rounded-md border px-3 py-1.5 text-xs ${
-                  running
-                    ? "border-amber-500/50 text-amber-400 hover:bg-neutral-800"
-                    : "border-neutral-700 text-neutral-300 hover:bg-neutral-800"
-                }`}
-                onClick={toggleMetronome}
-                aria-pressed={running}
-              >
-                {running ? "stop metronome" : "metronome only"}
-              </button>
-            </div>
-            )}
             {/* Random key: only for exercises that ask for it (or freeform). */}
             {heroTools.random_key && (
             <div className="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-md border border-neutral-800 px-2.5 py-1.5">
@@ -1720,14 +1775,42 @@ export default function PracticeView() {
               </button>
             </div>
             )}
-            {/* Tuning lives behind one small toggle so the hero stays at
-                exercise → tempo → Start for anyone new to the page. */}
-            <button
-              className="mt-2 rounded text-xs text-neutral-500 outline-none hover:text-neutral-300 focus-visible:ring-1 focus-visible:ring-neutral-500"
-              onClick={() => setExtrasOpen((o) => !o)}
-            >
-              options {extrasOpen ? "▾" : "▸"}
-            </button>
+            {/* The current config is the options toggle: reading it tells you
+                what Start will do, tapping it opens the knobs that change it.
+                "Metronome only" sits demoted beside it — a mode, not a headline. */}
+            <div className="mt-2 flex items-center justify-between gap-2">
+              <button
+                className="min-w-0 truncate rounded text-left text-xs text-neutral-500 outline-none hover:text-neutral-300 focus-visible:ring-1 focus-visible:ring-neutral-500"
+                onClick={() => setExtrasOpen((o) => !o)}
+                aria-expanded={extrasOpen}
+              >
+                <span className="text-xs">{extrasOpen ? "▾" : "▸"}</span>{" "}
+                {heroTools.metronome
+                  ? [
+                      `${bpm} bpm`,
+                      `${beatsPerBar}/4`,
+                      sound,
+                      countIn ? "count-in" : "",
+                      trainer ? `+${trainerAdd} every ${trainerBars} bars` : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")
+                  : "options"}
+              </button>
+              {heroTools.metronome && (
+                <button
+                  className={`shrink-0 rounded-md border px-2 py-1 text-[11px] ${
+                    running
+                      ? "border-amber-500/50 text-amber-400 hover:bg-neutral-800"
+                      : "border-neutral-700 text-neutral-500 hover:border-neutral-500 hover:text-neutral-300"
+                  }`}
+                  onClick={toggleMetronome}
+                  aria-pressed={running}
+                >
+                  {running ? "stop metronome" : "metronome only"}
+                </button>
+              )}
+            </div>
             {/* Session extras: opt-in behaviors for the Start button. Inset
                 sub-panel so the pile of small controls reads as one group. */}
             <Reveal open={extrasOpen}>
@@ -1842,7 +1925,7 @@ export default function PracticeView() {
                   onClick={() => setDetailsOpen((o) => !(o ?? armedAggs.length < 3))}
                   aria-expanded={detailsOpen ?? armedAggs.length < 3}
                 >
-                  details {(detailsOpen ?? armedAggs.length < 3) ? "▾" : "▸"}
+                  <span className="text-xs">{(detailsOpen ?? armedAggs.length < 3) ? "▾" : "▸"}</span> details
                 </button>
                 <Reveal open={detailsOpen ?? armedAggs.length < 3}>
                   <div className="mt-2 rounded-lg border border-neutral-800 bg-neutral-950/50 p-2.5">
@@ -1857,17 +1940,8 @@ export default function PracticeView() {
                         {isUpload(armed.ref_url) ? "📄 reference" : "🔗 reference"}
                       </button>
                     )}
-                    <div className="mt-1.5 text-xs text-neutral-500">
-                      {heroTools.metronome ? `${bpm} bpm · ${beatsPerBar}/4 · ${sound}` : "timer only"}
-                      {selTodaySecs > 0 && (
-                        <>
-                          {" · "}
-                          <span className="tabular-nums text-neutral-300">{fmtDur(selTodaySecs)}</span> today
-                        </>
-                      )}
-                    </div>
                     {armedLast && (
-                      <div className="mt-0.5 text-xs text-neutral-500">
+                      <div className="mt-1.5 text-xs text-neutral-500">
                         <span className="text-neutral-600">{fmtDateShort(armedLast.date)} </span>
                         <span className="tabular-nums text-neutral-400">{fmtAgg(armedLast)}</span>
                         <span className="text-neutral-600"> · today </span>
@@ -2507,6 +2581,15 @@ export default function PracticeView() {
                 </div>
               </>
             )}
+            {/* Lifetime totals, relocated from the page footer so the bottom
+                of the page stays calm. */}
+            {!loading && totalSecs > 0 && (
+              <p className="mt-3 border-t border-neutral-800/60 pt-2 text-[10px] leading-relaxed text-neutral-600">
+                this week <span className="tabular-nums">{fmtDur(weekSecs)}</span> · all-time{" "}
+                <span className="tabular-nums">{fmtDur(totalSecs)}</span> · days practiced {daysPracticed} · best
+                streak {bestStreak} · avg <span className="tabular-nums">{fmtDur(totalSecs / daysPracticed)}</span>/day
+              </p>
+            )}
           </section>
           </Reveal>
 
@@ -2673,26 +2756,44 @@ export default function PracticeView() {
         </div>
       </div>
 
-      {/* Tiny lifetime stats, tucked at the bottom so they never crowd the tools.
-          Mobile also gets streak/week/all-time here since the header hides them. */}
-      {!loading && totalSecs > 0 && (
-        <footer className="mt-8 text-center text-[10px] leading-relaxed text-neutral-600">
-          {streak > 1 && <span className="text-amber-400/80">streak {streak} · </span>}
-          {todayTotal > 0 && (
+      {/* Sticky Start bar: on a phone the primary control stays under the
+          thumb no matter how far the page has scrolled. */}
+      {armed && (
+        <div className="fixed inset-x-0 bottom-0 z-20 flex items-center gap-2 border-t border-neutral-800 bg-neutral-950/95 px-4 py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] backdrop-blur lg:hidden">
+          {sessionBtn("flex-1 py-3")}
+          {swElapsed > 0 && !swRunning && (
             <>
-              today <span className="tabular-nums">{fmtDur(todayTotal)}</span> ·{" "}
+              <button
+                className="rounded-md bg-amber-500 px-4 py-3 text-sm font-semibold text-neutral-950 hover:bg-amber-400"
+                onClick={swLog}
+              >
+                Log it
+              </button>
+              <button className={btn} onClick={swReset}>
+                Reset
+              </button>
             </>
           )}
-          this week <span className="tabular-nums">{fmtDur(weekSecs)}</span> · all-time{" "}
-          <span className="tabular-nums">{fmtDur(totalSecs)}</span> · days practiced {daysPracticed} · best streak{" "}
-          {bestStreak} · avg <span className="tabular-nums">{fmtDur(totalSecs / daysPracticed)}</span>/day
+        </div>
+      )}
+
+      {/* Just the two numbers that matter today; lifetime totals live in Progress. */}
+      {!loading && totalSecs > 0 && (
+        <footer className="mt-8 text-center text-[10px] leading-relaxed text-neutral-600">
+          {streak > 1 && <span className="text-amber-400/80">streak {streak}</span>}
+          {streak > 1 && todayTotal > 0 && " · "}
+          {todayTotal > 0 && (
+            <>
+              today <span className="tabular-nums">{Math.max(1, Math.round(todayTotal / 60))}m</span>
+            </>
+          )}
         </footer>
       )}
 
       {/* Undo toast for one-tap logging (amber celebration on a personal best) */}
       {justLogged && (
         <div
-          className={`fixed bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-3 whitespace-nowrap rounded-full px-4 py-2 text-sm shadow-lg ${
+          className={`fixed left-1/2 z-30 flex -translate-x-1/2 items-center gap-3 whitespace-nowrap rounded-full px-4 py-2 text-sm shadow-lg ${armed ? "bottom-20 lg:bottom-4" : "bottom-4"} ${
             justLogged.pb ? "bg-amber-400 text-neutral-950" : "bg-neutral-800"
           }`}
         >
