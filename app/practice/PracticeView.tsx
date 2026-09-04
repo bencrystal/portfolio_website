@@ -472,6 +472,11 @@ export default function PracticeView() {
   const [coach, setCoach] = useState<number | null>(null); // 0 arm · 1 start · 2 log
   const coachListRef = useRef<HTMLElement | null>(null);
   const coachStartRef = useRef<HTMLDivElement | null>(null);
+  // Desktop tool strip: the tuner unfolds under it.
+  const [tunerOpen, setTunerOpen] = useState(false);
+  // ?fresh — dev preview of the first-visit experience: empty space, starter
+  // picks, coach-marks. Read-only; nothing touches the network or localStorage.
+  const [fresh, setFresh] = useState(false);
 
   function getMetro() {
     metro.current ??= new Metronome();
@@ -503,6 +508,15 @@ export default function PracticeView() {
   }
 
   useEffect(() => {
+    // ?fresh: pretend this device has never seen the page. Empty space,
+    // pristine localStorage-derived UI, no data fetch, no writes anywhere.
+    if (new URLSearchParams(location.search).has("fresh")) {
+      setFresh(true);
+      setExercises([]);
+      setSessions([]);
+      setHintOpen(true);
+      return;
+    }
     // Flush queued offline writes before reading, so the server catches up
     // before its state overwrites ours. Re-run whenever the network returns.
     const sync = () => {
@@ -548,7 +562,7 @@ export default function PracticeView() {
   const noExercises = exercises !== null && exercises.filter((e) => !e.archived).length === 0;
   useEffect(() => {
     if (!noExercises || starters !== null) return;
-    const token = localStorage.getItem(TOKEN_KEY);
+    const token = fresh ? null : localStorage.getItem(TOKEN_KEY);
     const q = token ? `?token=${encodeURIComponent(token)}` : "";
     fetch(`/api/practice/tree${q}`)
       .then((r) => r.json())
@@ -568,6 +582,24 @@ export default function PracticeView() {
 
   // One tap on a starter spawns the exercise exactly like the tree page does.
   async function startStarter(nodeId: string) {
+    // Fresh preview: fake the spawn locally so the whole first-visit flow
+    // (starter → coach-marks → arm) is walkable without writing anything.
+    if (fresh) {
+      const n = starters?.find((s) => s.id === nodeId);
+      if (!n) return;
+      setExercises((ex) => [
+        ...(ex ?? []),
+        {
+          id: `fresh-${n.id}`,
+          name: n.name,
+          position: (ex?.length ?? 0) + 1,
+          archived: false,
+          description: n.description,
+          tools: { metronome: true },
+        },
+      ]);
+      return;
+    }
     const token = localStorage.getItem(TOKEN_KEY) ?? "";
     setStarterBusy(nodeId);
     try {
@@ -587,6 +619,9 @@ export default function PracticeView() {
   }
 
   useEffect(() => {
+    // Checked via the URL (not state) so the very first run can't clobber
+    // real prefs before the fresh flag lands.
+    if (new URLSearchParams(location.search).has("fresh")) return;
     localStorage.setItem(
       PREFS_KEY,
       JSON.stringify({ bpm, beatsPerBar, sound, volume, noteSync, countIn, trainer, trainerAdd, trainerBars, extrasOpen })
@@ -1247,17 +1282,20 @@ export default function PracticeView() {
   // today before the last one offers to wrap up.
   const loggedTodayIds = new Set((sessions ?? []).filter((s) => s.date === today).map((s) => s.exercise_id));
   const allLoggedToday = active.length > 0 && active.every((e) => loggedTodayIds.has(e.id));
+  // Browse-mode CTA: the first exercise in queue order without a log today —
+  // one tap drops you into the routine where you left off.
+  const nextUp = active.find((e) => !loggedTodayIds.has(e.id)) ?? null;
 
   // ---------- coach-marks ----------
   // Three spotlights for a first-timer: arm → Start → Log it. Dim-only (the
   // page stays tappable) so doing the thing advances the tour by itself.
   function endCoach() {
     setCoach(null);
-    localStorage.setItem(COACH_KEY, "1");
+    if (!fresh) localStorage.setItem(COACH_KEY, "1");
   }
   useEffect(() => {
     if (exercises === null || sessions === null || coach !== null) return;
-    if (localStorage.getItem(COACH_KEY)) return;
+    if (!fresh && localStorage.getItem(COACH_KEY)) return;
     if (sessions.length > 0) {
       localStorage.setItem(COACH_KEY, "1"); // already knows the loop
       return;
@@ -1627,6 +1665,98 @@ export default function PracticeView() {
         </div>
       </div>
 
+      {/* Desktop tool strip: the always-available tools live up here — one
+          click away in browse AND armed mode, never buried in a card. The
+          armed exercise's flagged tools light up; the rest stay quiet.
+          (Mobile keeps its own sticky strip + tools section.) */}
+      <div className="mb-4 hidden items-center gap-2 rounded-xl border border-neutral-800 bg-neutral-900 px-3 py-2 lg:flex">
+        <div
+          className={`flex items-center gap-2 rounded-md border px-2 py-1 ${
+            heroTools.random_key ? "border-amber-500/50" : "border-neutral-800"
+          }`}
+        >
+          <span className="text-[10px] uppercase tracking-widest text-neutral-600">random key</span>
+          <button
+            onClick={advanceNote}
+            title="press N or tap for a new key"
+            aria-label="new random key"
+            className="min-w-[3rem] rounded-md bg-neutral-800 px-2.5 py-0.5 text-center hover:bg-neutral-700"
+          >
+            {noteCur ? (
+              <NoteMorph
+                cur={noteCur.label}
+                next={noteSync > 0 ? noteNext?.label ?? null : null}
+                morphMs={noteMorph}
+                curClass="inline-block font-bold"
+                nextClass="ml-1.5 inline-block align-middle text-xs text-neutral-500"
+              />
+            ) : (
+              <span className="font-bold">♪?</span>
+            )}
+          </button>
+          <label className="flex items-center gap-1.5 text-xs text-neutral-500">
+            every
+            <select
+              value={noteSync}
+              onChange={(e) => setNoteSync(Number(e.target.value))}
+              className={input}
+              aria-label="auto key change interval"
+            >
+              <option value={0}>off</option>
+              {[1, 2, 4, 8, 16, 32].map((n) => (
+                <option key={n} value={n}>
+                  {n} beat{n > 1 ? "s" : ""}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            onClick={() => setDroneOn((v) => !v)}
+            title="drone the current key on each downbeat"
+            aria-pressed={droneOn}
+            className={`rounded-md border px-2 py-1 text-xs ${
+              droneOn
+                ? "border-amber-500/60 text-amber-400"
+                : "border-neutral-700 text-neutral-500 hover:border-neutral-500"
+            }`}
+          >
+            drone {droneOn ? "on" : "muted"}
+          </button>
+        </div>
+        <button
+          className="rounded-md border border-neutral-800 px-2.5 py-1.5 text-xs text-neutral-400 hover:border-neutral-600 hover:text-neutral-200"
+          onClick={() => setTunerOpen((o) => !o)}
+          aria-expanded={tunerOpen}
+        >
+          {tunerOpen ? "▾" : "▸"} tuner
+        </button>
+        <div className="ml-auto flex gap-1.5 text-xs">
+          <a
+            className="rounded-md border border-neutral-800 bg-neutral-800/40 px-2 py-1 text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
+            href="https://www.oolimo.com/en/guitar-chords/analyze"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            chord analyzer ↗
+          </a>
+          <a
+            className="rounded-md border border-neutral-800 bg-neutral-800/40 px-2 py-1 text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
+            href="https://www.all-guitar-chords.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            chords &amp; scales ↗
+          </a>
+        </div>
+      </div>
+      <div className="hidden lg:block">
+        <Reveal open={tunerOpen}>
+          <div className={`${card} mb-4`}>
+            <Tuner />
+          </div>
+        </Reveal>
+      </div>
+
       {unlockOpen && !unlocked && (
         <div className={`${card} mb-4`}>
           <p className="mb-2 text-sm text-neutral-400">
@@ -1668,6 +1798,15 @@ export default function PracticeView() {
         </div>
       )}
 
+      {fresh && (
+        <div role="status" className="mb-4 rounded-md border border-amber-900 bg-amber-950/40 px-3 py-2 text-xs text-amber-300">
+          Fresh preview — simulated first visit, nothing is saved.{" "}
+          <a className="underline" href="/practice">
+            back to your data
+          </a>
+        </div>
+      )}
+
       {hintOpen && (
         <div className={`${card} mb-4 text-sm text-neutral-300`}>
           <p>
@@ -1684,7 +1823,7 @@ export default function PracticeView() {
             <button
               className="rounded-md bg-neutral-800 px-3 py-1 text-xs hover:bg-neutral-700"
               onClick={() => {
-                localStorage.setItem(HINT_KEY, "1");
+                if (!fresh) localStorage.setItem(HINT_KEY, "1");
                 setHintOpen(false);
               }}
             >
@@ -1789,11 +1928,32 @@ export default function PracticeView() {
                 </div>
               ) : (
                 <div className="break-words font-medium">
-                  {/* The page's #1 action shouldn't read as disabled text —
-                      it's a prompt, pointing at the cards. */}
-                  <span className="text-neutral-300">
-                    Tap an exercise to arm it <span className="text-amber-400/80">↓</span>
-                  </span>
+                  {/* One tap back into the routine: arm the first exercise
+                      that hasn't been logged today. */}
+                  {nextUp ? (
+                    <button
+                      className="flex w-full min-w-0 items-center gap-2 rounded text-left outline-none hover:text-white focus-visible:ring-1 focus-visible:ring-neutral-400"
+                      onClick={() => armExercise(nextUp, aggByDate(sessions ?? [], nextUp.id))}
+                    >
+                      <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: colorOf(nextUp.id) }} />
+                      <span className="min-w-0 flex-1 break-words">
+                        <span className="text-amber-400">▶</span> {loggedTodayIds.size > 0 ? "Resume" : "Start"}:{" "}
+                        {nextUp.name}
+                      </span>
+                      <span className="shrink-0 text-[10px] tabular-nums text-neutral-600">
+                        {active.indexOf(nextUp) + 1} of {active.length}
+                      </span>
+                    </button>
+                  ) : allLoggedToday ? (
+                    <span className="text-neutral-300">
+                      All logged today <span className="text-amber-400">✓</span>
+                      <span className="ml-1.5 text-xs font-normal text-neutral-500">free play below</span>
+                    </span>
+                  ) : (
+                    <span className="text-neutral-300">
+                      Tap an exercise to arm it <span className="text-amber-400/80">↓</span>
+                    </span>
+                  )}
                 </div>
               )}
               {selectedEx && exById.get(selectedEx)?.track_variants && (
@@ -1929,9 +2089,11 @@ export default function PracticeView() {
                 </>
               )}
             </div>
-            {/* Random key: only for exercises that ask for it (or freeform). */}
+            {/* Random key: only for exercises that ask for it (or freeform).
+                Desktop has it in the tool strip up top — this row is the
+                mobile home. */}
             {heroTools.random_key && (
-            <div className="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-md border border-neutral-800 px-2.5 py-1.5">
+            <div className="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-md border border-neutral-800 px-2.5 py-1.5 lg:hidden">
               {/* Group label so the interval/drone/note trio reads as one tool. */}
               <span className="text-[10px] uppercase tracking-widest text-neutral-600">random key</span>
               <label className="flex items-center gap-1.5 text-xs text-neutral-500">
@@ -2179,9 +2341,8 @@ export default function PracticeView() {
           {/* The random key generator lives inside the session hero now,
               shown only for exercises that flag it (or freeform practice). */}
 
-          {/* Tools (tuner) stay out here in browse mode; armed mode tucks
-              them behind a header down in the content flow. */}
-          {!armed && toolsSection}
+          {/* Tools (tuner) here on mobile only — desktop has the strip. */}
+          {!armed && <div className="lg:hidden">{toolsSection}</div>}
         </div>
 
         {/* ---- Content column ---- */}
@@ -2236,9 +2397,9 @@ export default function PracticeView() {
               </button>
             </div>
           </div>
-          {/* CSS columns instead of a grid so cards pack by height — a grid
-              left a hole under the shorter column. */}
-          <section className="mb-4 sm:columns-2 sm:gap-2" ref={coachListRef}>
+          {/* One column in queue order — the list IS the routine, and uniform
+              cards read as a set instead of a masonry puzzle. */}
+          <section className="mb-4" ref={coachListRef}>
             {/* Said once, up here — the cards below just show a quiet "—". */}
             {!loading && (sessions ?? []).length === 0 && active.length > 0 && (
               <p className="mb-2 text-xs text-neutral-600">
@@ -2262,7 +2423,7 @@ export default function PracticeView() {
               return (
                 <div
                   key={ex.id}
-                  className={`mb-2 break-inside-avoid cursor-pointer rounded-xl border bg-neutral-900 p-3 transition-colors ${
+                  className={`mb-2 cursor-pointer rounded-xl border bg-neutral-900 p-3 transition-colors ${
                     selected ? "" : "border-neutral-800 hover:border-neutral-700"
                   }`}
                   style={selected ? { borderColor: colorOf(ex.id) } : undefined}
@@ -2309,8 +2470,10 @@ export default function PracticeView() {
                     )}
                   </button>
                   {/* Numbers first — they're what a glance is for; the prose
-                      teaser follows and the full text sits behind the arrow. */}
-                  {aggs.length === 0 ? null : ex.track_variants ? (
+                      teaser follows and the full text sits behind the arrow.
+                      Unpracticed cards keep the row (with —) so every card in
+                      the single-column list shares one silhouette. */}
+                  {ex.track_variants ? (
                     // One row per stroke-start so both tempos are visible at a glance.
                     <div className="mt-2 space-y-0.5 text-sm">
                       {(["down", "up"] as const).map((v) => {
@@ -2460,7 +2623,7 @@ export default function PracticeView() {
                     {starters.map((n) => (
                       <button
                         key={n.id}
-                        disabled={!unlocked || starterBusy !== null}
+                        disabled={(!unlocked && !fresh) || starterBusy !== null}
                         onClick={() => void startStarter(n.id)}
                         className="rounded-md border border-neutral-700 bg-neutral-800/40 px-3 py-2 text-left hover:border-neutral-500 hover:bg-neutral-800 disabled:opacity-50"
                       >
@@ -2477,7 +2640,7 @@ export default function PracticeView() {
                   >
                     🌳 or browse the full skill tree
                   </a>
-                  {!unlocked && <span className="text-xs text-neutral-600">log in above to add exercises</span>}
+                  {!unlocked && !fresh && <span className="text-xs text-neutral-600">log in above to add exercises</span>}
                 </div>
               </div>
             )}
@@ -2988,9 +3151,10 @@ export default function PracticeView() {
           </section>
           </Reveal>
 
-          {/* Tools (tuner + links) retract behind a header while an exercise is armed. */}
+          {/* Tools retract behind a header while armed — mobile only; the
+              desktop strip keeps them one click away at all times. */}
           {armed && (
-            <>
+            <div className="lg:hidden">
               <button
                 className="mb-1 flex items-center gap-1 text-sm font-medium text-neutral-400 hover:text-neutral-200"
                 onClick={() => setOpenPanels((p) => ({ ...p, tools: !p.tools }))}
@@ -2999,7 +3163,7 @@ export default function PracticeView() {
                 <span className="text-xs">{openPanels.tools ? "▾" : "▸"}</span> Tools
               </button>
               <Reveal open={openPanels.tools}>{toolsSection}</Reveal>
-            </>
+            </div>
           )}
 
         </div>
