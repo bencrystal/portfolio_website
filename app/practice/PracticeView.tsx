@@ -250,7 +250,7 @@ function NoteMorph({
                   transition: ease,
                   transform: `translate(${target.x}px, ${target.y}px) scale(${target.s})`,
                   transformOrigin: "center",
-                  color: "#f5f5f5",
+                  color: "#f0ebe3",
                 }
               : { transform: "none" }
           }
@@ -280,13 +280,13 @@ function DescriptionBody({ text }: { text: string }) {
         b.mono ? (
           <pre
             key={i}
-            className="overflow-x-auto whitespace-pre rounded bg-neutral-950 p-2 font-mono text-[11px] leading-4 text-neutral-300"
+            className="overflow-x-auto whitespace-pre rounded bg-wood-950 p-2 font-mono text-[11px] leading-4 text-wood-300"
           >
             {b.lines.join("\n")}
           </pre>
         ) : (
           b.lines.join("\n").trim() && (
-            <p key={i} className="whitespace-pre-line text-xs text-neutral-400">
+            <p key={i} className="whitespace-pre-line text-xs text-wood-400">
               {b.lines.join("\n").trim()}
             </p>
           )
@@ -341,17 +341,17 @@ function CoachMark({
   return (
     <div className="pointer-events-none fixed inset-0 z-50">
       <div
-        className="absolute rounded-xl ring-2 ring-amber-400/90 transition-all duration-300"
+        className="absolute rounded-xl ring-2 ring-brass-400/90 transition-all duration-300"
         style={{
           left: rect.left - 6,
           top: rect.top - 6,
           width: rect.width + 12,
           height: rect.height + 12,
-          boxShadow: "0 0 0 9999px rgba(10,10,10,0.72)",
+          boxShadow: "0 0 0 9999px rgba(20,17,16,0.78)",
         }}
       />
       <div
-        className="pointer-events-auto absolute w-64 max-w-[calc(100vw-2rem)] rounded-lg border border-neutral-700 bg-neutral-900 p-3 text-sm text-neutral-200 shadow-2xl"
+        className="pointer-events-auto absolute w-64 max-w-[calc(100vw-2rem)] rounded-lg border border-wood-700 bg-wood-900 p-3 text-sm text-wood-200 shadow-2xl"
         style={{
           left: Math.min(Math.max(16, rect.left), Math.max(16, window.innerWidth - 272)),
           top: below ? rect.bottom + 14 : Math.max(16, rect.top - 132),
@@ -359,14 +359,14 @@ function CoachMark({
       >
         <p>{text}</p>
         <div className="mt-2.5 flex items-center justify-between text-xs">
-          <button className="text-neutral-500 hover:text-neutral-300" onClick={onSkip}>
+          <button className="text-wood-500 hover:text-wood-300" onClick={onSkip}>
             skip
           </button>
-          <span className="tabular-nums text-neutral-600">
+          <span className="tabular-nums text-wood-600">
             {step + 1} / {total}
           </span>
           <button
-            className="rounded-md bg-neutral-100 px-2.5 py-1 font-semibold text-neutral-950 hover:bg-white"
+            className="rounded-md bg-wood-100 px-2.5 py-1 font-semibold text-wood-950 hover:bg-white"
             onClick={onNext}
           >
             {nextLabel}
@@ -1449,17 +1449,17 @@ export default function PracticeView() {
 
   // ---------- render ----------
 
-  const card = "rounded-xl border border-neutral-800 bg-neutral-900 p-4";
-  const btn = "rounded-md bg-neutral-800 px-3 py-2 text-sm hover:bg-neutral-700 active:bg-neutral-600";
+  const card = "rounded-xl border border-wood-800 bg-wood-900 p-4";
+  const btn = "rounded-md bg-wood-800 px-3 py-2 text-sm hover:bg-wood-700 active:bg-wood-600";
   const input =
-    "rounded-md border border-neutral-700 bg-neutral-950 px-2 py-1.5 text-sm placeholder:text-neutral-600";
+    "rounded-md border border-wood-700 bg-wood-950 px-2 py-1.5 text-sm placeholder:text-wood-600";
 
   const sessionBtn = (extra = "") => (
     <button
       className={`rounded-md px-4 py-2 text-sm font-semibold ${
         swRunning || countingIn
-          ? "bg-amber-500 text-neutral-950 hover:bg-amber-400"
-          : "bg-neutral-100 text-neutral-950 hover:bg-white"
+          ? "bg-brass-500 text-wood-950 hover:bg-brass-400"
+          : "bg-wood-100 text-wood-950 hover:bg-white"
       } ${extra}`}
       onClick={startSession}
     >
@@ -1472,12 +1472,12 @@ export default function PracticeView() {
   // browse mode and behind a collapsed header in armed mode.
   const toolsSection = (
     <section className={`${card} mb-4`}>
-      <h2 className="mb-2 text-sm font-medium text-neutral-400">Tools</h2>
+      <h2 className="mb-2 text-sm font-medium text-wood-400">Tools</h2>
       <Tuner />
-      <div className="mt-2 flex flex-wrap gap-1.5 border-t border-neutral-800 pt-2 text-xs">
+      <div className="mt-2 flex flex-wrap gap-1.5 border-t border-wood-800 pt-2 text-xs">
         {/* Pill chips like every other tappable thing on the page. */}
         <a
-          className="rounded-md border border-neutral-700 bg-neutral-800/60 px-2 py-1 text-neutral-300 hover:border-neutral-400 hover:bg-neutral-700"
+          className="rounded-md border border-wood-700 bg-wood-800/60 px-2 py-1 text-wood-300 hover:border-wood-400 hover:bg-wood-700"
           href="https://www.oolimo.com/en/guitar-chords/analyze"
           target="_blank"
           rel="noopener noreferrer"
@@ -1485,7 +1485,7 @@ export default function PracticeView() {
           chord analyzer ↗
         </a>
         <a
-          className="rounded-md border border-neutral-700 bg-neutral-800/60 px-2 py-1 text-neutral-300 hover:border-neutral-400 hover:bg-neutral-700"
+          className="rounded-md border border-wood-700 bg-wood-800/60 px-2 py-1 text-wood-300 hover:border-wood-400 hover:bg-wood-700"
           href="https://www.all-guitar-chords.com/"
           target="_blank"
           rel="noopener noreferrer"
@@ -1497,8 +1497,8 @@ export default function PracticeView() {
   );
 
   const entryForm = form && (
-    <section className={`${card} mb-4 border-neutral-600`}>
-      <h2 className="mb-3 text-sm font-medium text-neutral-300">{form.id ? "Edit entry" : "New entry"}</h2>
+    <section className={`${card} mb-4 border-wood-600`}>
+      <h2 className="mb-3 text-sm font-medium text-wood-300">{form.id ? "Edit entry" : "New entry"}</h2>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         <select
           value={form.exercise_id}
@@ -1547,7 +1547,7 @@ export default function PracticeView() {
       </div>
       <div className="mt-3 flex gap-2">
         <button
-          className="rounded-md bg-neutral-100 px-4 py-2 text-sm font-semibold text-neutral-950 hover:bg-white disabled:opacity-50"
+          className="rounded-md bg-wood-100 px-4 py-2 text-sm font-semibold text-wood-950 hover:bg-white disabled:opacity-50"
           disabled={saving}
           onClick={saveForm}
         >
@@ -1561,16 +1561,16 @@ export default function PracticeView() {
   );
 
   return (
-    <main className="mx-auto min-h-screen max-w-2xl bg-neutral-950 px-4 pb-24 text-neutral-100 lg:max-w-7xl lg:px-8">
+    <main className="mx-auto min-h-screen max-w-2xl bg-wood-950 px-4 pb-24 text-wood-100 lg:max-w-7xl lg:px-8">
       {/* Mobile: sticky control strip — bpm (tap to expand), nudge, start, note. */}
       <div
-        className={`sticky top-0 z-20 -mx-4 items-center gap-2 border-b border-neutral-800 bg-neutral-950/95 px-4 py-2 backdrop-blur lg:hidden ${
+        className={`sticky top-0 z-20 -mx-4 items-center gap-2 border-b border-wood-800 bg-wood-950/95 px-4 py-2 backdrop-blur lg:hidden ${
           armed ? "hidden" : "flex"
         }`}
       >
         <button onClick={() => setMetroOpen((o) => !o)} className="flex items-baseline gap-1">
-          <span className="text-2xl font-bold tabular-nums">{bpm}</span>
-          <span className="text-[10px] text-neutral-500">bpm {metroOpen ? "▾" : "▸"}</span>
+          <span className="font-display text-2xl font-bold tabular-nums">{bpm}</span>
+          <span className="text-[10px] text-wood-500">bpm {metroOpen ? "▾" : "▸"}</span>
         </button>
         <button className={btn} onClick={() => nudgeBpm(-5)}>
           −5
@@ -1581,7 +1581,7 @@ export default function PracticeView() {
         {sessionBtn()}
         <button
           onClick={advanceNote}
-          className="ml-auto flex min-w-[3.25rem] items-baseline justify-center gap-1.5 rounded-md bg-neutral-800 px-2 py-1.5 text-center text-xl font-bold hover:bg-neutral-700"
+          className="ml-auto flex min-w-[3.25rem] items-baseline justify-center gap-1.5 rounded-md bg-wood-800 px-2 py-1.5 text-center text-xl font-bold hover:bg-wood-700"
           aria-label="random note"
         >
           {noteCur ? (
@@ -1590,7 +1590,7 @@ export default function PracticeView() {
               next={noteSync > 0 ? noteNext?.label ?? null : null}
               morphMs={noteMorph}
               curClass="inline-block"
-              nextClass="inline-block text-xs font-normal text-neutral-500"
+              nextClass="inline-block text-xs font-normal text-wood-500"
             />
           ) : (
             "♪?"
@@ -1603,22 +1603,22 @@ export default function PracticeView() {
         <h1 className="text-xl font-semibold">Guitar Practice</h1>
         <div className="flex items-center gap-3">
           <button
-            className="rounded-full border border-neutral-700 px-2 text-xs text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
+            className="rounded-full border border-wood-700 px-2 text-xs text-wood-400 hover:border-wood-500 hover:text-wood-200"
             title="How it works"
             onClick={() => setHintOpen((o) => !o)}
           >
             ?
           </button>
           {unlocked ? (
-            <span className="text-xs text-neutral-500">
+            <span className="text-xs text-wood-500">
               logged in ·{" "}
-              <button className="underline hover:text-neutral-300" onClick={signOut}>
+              <button className="underline hover:text-wood-300" onClick={signOut}>
                 log out
               </button>
             </span>
           ) : (
             <button
-              className="rounded-md border border-neutral-600 px-3 py-1 text-xs font-semibold text-neutral-200 hover:border-neutral-400 hover:bg-neutral-800"
+              className="rounded-md border border-wood-600 px-3 py-1 text-xs font-semibold text-wood-200 hover:border-wood-400 hover:bg-wood-800"
               onClick={() => setUnlockOpen(true)}
             >
               Log in
@@ -1629,7 +1629,7 @@ export default function PracticeView() {
 
       {unlockOpen && !unlocked && (
         <div className={`${card} mb-4`}>
-          <p className="mb-2 text-sm text-neutral-400">
+          <p className="mb-2 text-sm text-wood-400">
             Log in with your password — it opens your own practice log and stays saved on this device.
           </p>
           <div className="flex gap-2">
@@ -1663,26 +1663,26 @@ export default function PracticeView() {
       )}
 
       {offline && (
-        <div role="status" className="mb-4 rounded-md border border-amber-900 bg-amber-950/40 px-3 py-2 text-sm text-amber-300">
+        <div role="status" className="mb-4 rounded-md border border-brass-900 bg-brass-950/40 px-3 py-2 text-sm text-brass-300">
           Offline — edits are saved on this device and sync when you're back.
         </div>
       )}
 
       {hintOpen && (
-        <div className={`${card} mb-4 text-sm text-neutral-300`}>
+        <div className={`${card} mb-4 text-sm text-wood-300`}>
           <p>
             <span className="font-medium">How it works:</span> tap an exercise to arm it →{" "}
             <span className="font-medium">Start session</span> runs the metronome and timer together →{" "}
             <span className="font-medium">Log it</span> saves your tempo and time.
           </p>
-          <p className="mt-1.5 text-xs text-neutral-500">
+          <p className="mt-1.5 text-xs text-wood-500">
             More, when you want it: the settings line under Start (bpm · meter · sound) opens count-in, tempo trainer and more · ↓↑ in
             manage tracks down/up-stroke starts separately · “goal” draws a target line on the chart ·{" "}
-            <span className="text-neutral-400">Log in</span> with your password to edit your own log.
+            <span className="text-wood-400">Log in</span> with your password to edit your own log.
           </p>
           <div className="mt-2 flex gap-2">
             <button
-              className="rounded-md bg-neutral-800 px-3 py-1 text-xs hover:bg-neutral-700"
+              className="rounded-md bg-wood-800 px-3 py-1 text-xs hover:bg-wood-700"
               onClick={() => {
                 localStorage.setItem(HINT_KEY, "1");
                 setHintOpen(false);
@@ -1692,7 +1692,7 @@ export default function PracticeView() {
             </button>
             {active.length > 0 && (
               <button
-                className="rounded-md border border-neutral-700 px-3 py-1 text-xs text-neutral-300 hover:border-neutral-500"
+                className="rounded-md border border-wood-700 px-3 py-1 text-xs text-wood-300 hover:border-wood-500"
                 onClick={() => {
                   setHintOpen(false);
                   setCoach(selectedEx ? 1 : 0);
@@ -1707,22 +1707,22 @@ export default function PracticeView() {
 
       {/* Day-done: tapping "done ✓" on the last queued exercise lands here. */}
       {dayDone && !armed && (
-        <div className={`${card} mb-4 flex items-center justify-between gap-3 border-amber-500/40`}>
+        <div className={`${card} mb-4 flex items-center justify-between gap-3 border-brass-500/40`}>
           <p className="text-sm">
             {/* The victory lap has to be earned — under 5 minutes it's just a log note. */}
-            <span className="font-medium text-amber-400">
+            <span className="font-medium text-brass-400">
               {todayTotal >= 300 ? "Done for today ✓" : "Session logged ✓"}
             </span>{" "}
             {todayTotal > 0 && (
-              <span className="text-neutral-400">
-                <span className="tabular-nums text-neutral-200">{fmtDur(todayTotal)}</span> across{" "}
+              <span className="text-wood-400">
+                <span className="tabular-nums text-wood-200">{fmtDur(todayTotal)}</span> across{" "}
                 {todayExCount} exercise{todayExCount === 1 ? "" : "s"}
                 {streak > 1 && <> · {streak}-day streak</>}
               </span>
             )}
           </p>
           <button
-            className="rounded px-1.5 text-lg leading-none text-neutral-500 hover:text-neutral-200"
+            className="rounded px-1.5 text-lg leading-none text-wood-500 hover:text-wood-200"
             onClick={() => setDayDone(false)}
             aria-label="dismiss day summary"
           >
@@ -1739,13 +1739,15 @@ export default function PracticeView() {
           {/* Session hero: armed exercise + tempo + one primary control.
               Armed: always visible, the page's headline. Browse: always on
               desktop, expanded-only on mobile (the strip drives it). */}
-          <section className={`${card} mb-4 border-amber-500/25 ${armed || metroOpen ? "" : "hidden lg:block"}`}>
+          {/* The hero is "the instrument": a slightly lifted warm surface with
+              a brass hairline, unlike the flat wood-900 cards around it. */}
+          <section className={`mb-4 rounded-xl border border-brass-500/40 bg-wood-850 p-4 ${armed || metroOpen ? "" : "hidden lg:block"}`}>
             <div className="mb-3">
               {armed ? (
                 <div className="flex items-start justify-between gap-2">
                   {/* Same spot arms and disarms: tapping the headline (or ×) relaxes the page. */}
                   <button
-                    className="flex min-w-0 items-center gap-2 rounded text-left outline-none focus-visible:ring-1 focus-visible:ring-neutral-400"
+                    className="flex min-w-0 items-center gap-2 rounded text-left outline-none focus-visible:ring-1 focus-visible:ring-wood-400"
                     onClick={() => setSelectedEx(null)}
                     title="tap to disarm"
                   >
@@ -1757,11 +1759,11 @@ export default function PracticeView() {
                         detour. On the last one, "done" wraps up the day. */}
                     {active.length > 1 && (
                       <>
-                        <span className="text-[10px] tabular-nums text-neutral-600">
+                        <span className="text-[10px] tabular-nums text-wood-600">
                           {queueIdx + 1} of {active.length}
                         </span>
                         <button
-                          className="rounded border border-neutral-700 px-2 py-0.5 text-xs text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
+                          className="rounded border border-wood-700 px-2 py-0.5 text-xs text-wood-400 hover:border-wood-500 hover:text-wood-200"
                           onClick={() => {
                             if (queueLast && allLoggedToday) {
                               setSelectedEx(null);
@@ -1779,7 +1781,7 @@ export default function PracticeView() {
                       </>
                     )}
                     <button
-                      className="rounded px-1.5 text-lg leading-none text-neutral-500 hover:text-neutral-200"
+                      className="rounded px-1.5 text-lg leading-none text-wood-500 hover:text-wood-200"
                       onClick={() => setSelectedEx(null)}
                       aria-label="disarm exercise"
                     >
@@ -1791,8 +1793,8 @@ export default function PracticeView() {
                 <div className="break-words font-medium">
                   {/* The page's #1 action shouldn't read as disabled text —
                       it's a prompt, pointing at the cards. */}
-                  <span className="text-neutral-300">
-                    Tap an exercise to arm it <span className="text-amber-400/80">↓</span>
+                  <span className="text-wood-300">
+                    Tap an exercise to arm it <span className="text-brass-400/80">↓</span>
                   </span>
                 </div>
               )}
@@ -1805,8 +1807,8 @@ export default function PracticeView() {
                       aria-pressed={variant === v}
                       className={`rounded px-2 py-1 text-xs ${
                         variant === v
-                          ? "bg-neutral-200 font-semibold text-neutral-950"
-                          : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700"
+                          ? "bg-wood-200 font-semibold text-wood-950"
+                          : "bg-wood-800 text-wood-400 hover:bg-wood-700"
                       }`}
                     >
                       {v === "down" ? "↓ down" : "↑ up"}
@@ -1822,14 +1824,14 @@ export default function PracticeView() {
             <div className="flex items-stretch justify-between">
               {heroTools.metronome && (
               <button
-                className="flex flex-col justify-between rounded text-left outline-none focus-visible:ring-1 focus-visible:ring-neutral-400"
+                className="flex flex-col justify-between rounded text-left outline-none focus-visible:ring-1 focus-visible:ring-wood-400"
                 onClick={() => setTempoOpen((o) => !o)}
                 aria-expanded={tempoOpen}
                 title="adjust tempo"
               >
-                <div className={`font-bold tabular-nums transition-all ${swRunning ? "text-2xl" : "text-3xl"}`}>
+                <div className={`font-display font-bold tabular-nums transition-all ${swRunning ? "text-2xl" : "text-3xl"}`}>
                   {bpm}
-                  <span className="ml-1 text-sm font-normal text-neutral-500">bpm {tempoOpen ? "▾" : "▸"}</span>
+                  <span className="ml-1 text-sm font-normal text-wood-500">bpm {tempoOpen ? "▾" : "▸"}</span>
                 </div>
                 {/* Beat dots live right under the number they describe; the
                     downbeat is amber even at rest so "1" reads at a glance. */}
@@ -1840,11 +1842,11 @@ export default function PracticeView() {
                       className={`h-3.5 w-3.5 rounded-full transition-all ${
                         running && pulse === i
                           ? i === 0
-                            ? "scale-125 bg-amber-400"
-                            : "bg-neutral-200"
+                            ? "bg-brass-400 shadow-[0_0_10px_2px_rgba(226,176,74,0.45)]"
+                            : "bg-wood-200"
                           : i === 0
-                            ? "bg-amber-500/40"
-                            : "bg-neutral-700"
+                            ? "bg-brass-500/40"
+                            : "bg-wood-700"
                       }`}
                     />
                   ))}
@@ -1855,8 +1857,8 @@ export default function PracticeView() {
                 {/* Before the first Start this slot answers "where am I today?"
                     instead of showing a dead 0:00. */}
                 <div
-                  className={`font-bold tabular-nums transition-all ${
-                    swRunning ? "text-5xl text-amber-400" : swElapsed > 0 ? "text-3xl" : "text-3xl text-neutral-600"
+                  className={`font-display font-bold tabular-nums transition-all ${
+                    swRunning ? "text-5xl text-brass-400" : swElapsed > 0 ? "text-3xl" : "text-3xl text-wood-600"
                   }`}
                 >
                   {swRunning || swElapsed > 0
@@ -1865,7 +1867,7 @@ export default function PracticeView() {
                       ? fmtDur(selTodaySecs)
                       : fmtSecs(0)}
                 </div>
-                <div className={`text-[10px] ${countingIn ? "text-amber-400" : "text-neutral-600"}`}>
+                <div className={`text-[10px] ${countingIn ? "text-brass-400" : "text-wood-600"}`}>
                   {countingIn
                     ? "count-in…"
                     : swRunning || swElapsed > 0
@@ -1881,13 +1883,13 @@ export default function PracticeView() {
             {/* Goal in sight: how today's dial compares to the exercise's target. */}
             {armed?.target_bpm && heroTools.metronome ? (
               <div className="mt-2.5">
-                <div className="h-1 overflow-hidden rounded-full bg-neutral-800">
+                <div className="h-1 overflow-hidden rounded-full bg-wood-800">
                   <div
-                    className="h-full rounded-full bg-amber-500/70 transition-all"
+                    className="h-full rounded-full bg-brass-500/70 transition-all"
                     style={{ width: `${Math.min(100, (bpm / armed.target_bpm) * 100)}%` }}
                   />
                 </div>
-                <div className="mt-1 text-right text-[10px] tabular-nums text-neutral-600">
+                <div className="mt-1 text-right text-[10px] tabular-nums text-wood-600">
                   {bpm} / {armed.target_bpm} bpm target
                 </div>
               </div>
@@ -1918,7 +1920,7 @@ export default function PracticeView() {
               {swElapsed > 0 && !swRunning && (
                 <>
                   <button
-                    className="rounded-md bg-amber-500 px-4 py-3 text-sm font-semibold text-neutral-950 hover:bg-amber-400"
+                    className="rounded-md bg-brass-500 px-4 py-3 text-sm font-semibold text-wood-950 hover:bg-brass-400"
                     onClick={swLog}
                   >
                     Log it
@@ -1931,10 +1933,10 @@ export default function PracticeView() {
             </div>
             {/* Random key: only for exercises that ask for it (or freeform). */}
             {heroTools.random_key && (
-            <div className="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-md border border-neutral-800 px-2.5 py-1.5">
+            <div className="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-md border border-wood-800 px-2.5 py-1.5">
               {/* Group label so the interval/drone/note trio reads as one tool. */}
-              <span className="text-[10px] uppercase tracking-widest text-neutral-600">random key</span>
-              <label className="flex items-center gap-1.5 text-xs text-neutral-500">
+              <span className="text-[10px] uppercase tracking-widest text-wood-600">random key</span>
+              <label className="flex items-center gap-1.5 text-xs text-wood-500">
                 every
                 <select
                   value={noteSync}
@@ -1956,8 +1958,8 @@ export default function PracticeView() {
                 aria-pressed={droneOn}
                 className={`rounded-md border px-2 py-1 text-xs ${
                   droneOn
-                    ? "border-amber-500/60 text-amber-400"
-                    : "border-neutral-700 text-neutral-500 hover:border-neutral-500"
+                    ? "border-brass-500/60 text-brass-400"
+                    : "border-wood-700 text-wood-500 hover:border-wood-500"
                 }`}
               >
                 drone {droneOn ? "on" : "muted"}
@@ -1966,7 +1968,7 @@ export default function PracticeView() {
                 onClick={advanceNote}
                 title="press N or tap for a new key"
                 aria-label="new random key"
-                className="min-w-[3.5rem] rounded-md bg-neutral-800 px-3 py-1 text-center hover:bg-neutral-700"
+                className="min-w-[3.5rem] rounded-md bg-wood-800 px-3 py-1 text-center hover:bg-wood-700"
               >
                 {noteCur ? (
                   <NoteMorph
@@ -1974,7 +1976,7 @@ export default function PracticeView() {
                     next={noteSync > 0 ? noteNext?.label ?? null : null}
                     morphMs={noteMorph}
                     curClass="inline-block text-lg font-bold"
-                    nextClass="ml-1.5 inline-block align-middle text-xs text-neutral-500"
+                    nextClass="ml-1.5 inline-block align-middle text-xs text-wood-500"
                   />
                 ) : (
                   <span className="text-lg font-bold">♪?</span>
@@ -1990,7 +1992,7 @@ export default function PracticeView() {
             <>
             <div className="mt-2 flex items-center justify-between gap-2">
               <button
-                className="min-w-0 truncate rounded text-left text-xs text-neutral-500 outline-none hover:text-neutral-300 focus-visible:ring-1 focus-visible:ring-neutral-500"
+                className="min-w-0 truncate rounded text-left text-xs text-wood-500 outline-none hover:text-wood-300 focus-visible:ring-1 focus-visible:ring-wood-500"
                 onClick={() => setExtrasOpen((o) => !o)}
                 aria-expanded={extrasOpen}
               >
@@ -2011,8 +2013,8 @@ export default function PracticeView() {
                 <button
                   className={`shrink-0 rounded-md border px-2 py-1 text-[11px] ${
                     running
-                      ? "border-amber-500/50 text-amber-400 hover:bg-neutral-800"
-                      : "border-neutral-700 text-neutral-500 hover:border-neutral-500 hover:text-neutral-300"
+                      ? "border-brass-500/50 text-brass-400 hover:bg-wood-800"
+                      : "border-wood-700 text-wood-500 hover:border-wood-500 hover:text-wood-300"
                   }`}
                   onClick={toggleMetronome}
                   aria-pressed={running}
@@ -2024,13 +2026,13 @@ export default function PracticeView() {
             {/* Session extras: opt-in behaviors for the Start button. Inset
                 sub-panel so the pile of small controls reads as one group. */}
             <Reveal open={extrasOpen}>
-            <div className="mt-2 rounded-lg border border-neutral-800 bg-neutral-950/50 p-2.5">
+            <div className="mt-2 rounded-lg border border-wood-800 bg-wood-950/50 p-2.5">
             {heroTools.metronome && (
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-neutral-400">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-wood-400">
               <label className="flex items-center gap-1.5">
                 <input
                   type="checkbox"
-                  className="accent-amber-500"
+                  className="accent-brass-500"
                   checked={countIn}
                   onChange={(e) => setCountIn(e.target.checked)}
                 />
@@ -2039,14 +2041,14 @@ export default function PracticeView() {
               <label className="flex items-center gap-1.5">
                 <input
                   type="checkbox"
-                  className="accent-amber-500"
+                  className="accent-brass-500"
                   checked={trainer}
                   onChange={(e) => setTrainer(e.target.checked)}
                 />
                 tempo trainer
               </label>
               {trainer && (
-                <span className="flex items-center gap-1 text-neutral-500">
+                <span className="flex items-center gap-1 text-wood-500">
                   +
                   <select
                     value={trainerAdd}
@@ -2080,7 +2082,7 @@ export default function PracticeView() {
             )}
             <div
               className={`flex flex-wrap items-center gap-3 ${
-                heroTools.metronome ? "mt-2.5 border-t border-neutral-800/60 pt-2.5" : ""
+                heroTools.metronome ? "mt-2.5 border-t border-wood-800/60 pt-2.5" : ""
               }`}
             >
               {heroTools.metronome && (
@@ -2097,13 +2099,13 @@ export default function PracticeView() {
                   </option>
                 ))}
               </select>
-              <div className="flex overflow-hidden rounded-md border border-neutral-700 text-xs">
+              <div className="flex overflow-hidden rounded-md border border-wood-700 text-xs">
                 {(["beep", "wood", "tick"] as const).map((s) => (
                   <button
                     key={s}
                     onClick={() => setSound(s)}
                     aria-pressed={sound === s}
-                    className={`px-2.5 py-1.5 ${sound === s ? "bg-neutral-200 text-neutral-950" : "text-neutral-400"}`}
+                    className={`px-2.5 py-1.5 ${sound === s ? "bg-wood-200 text-wood-950" : "text-wood-400"}`}
                   >
                     {s}
                   </button>
@@ -2111,7 +2113,7 @@ export default function PracticeView() {
               </div>
               </>
               )}
-              <label className="flex items-center gap-1 text-xs text-neutral-500">
+              <label className="flex items-center gap-1 text-xs text-wood-500">
                 🔊
                 <input
                   type="range"
@@ -2119,7 +2121,7 @@ export default function PracticeView() {
                   max={100}
                   value={Math.round(volume * 100)}
                   onChange={(e) => setVolume(Number(e.target.value) / 100)}
-                  className="w-24 accent-amber-500"
+                  className="w-24 accent-brass-500"
                   aria-label="volume"
                 />
               </label>
@@ -2133,34 +2135,34 @@ export default function PracticeView() {
             {armed && (
               <>
                 <button
-                  className="mt-2 block rounded text-xs text-neutral-500 outline-none hover:text-neutral-300 focus-visible:ring-1 focus-visible:ring-neutral-500"
+                  className="mt-2 block rounded text-xs text-wood-500 outline-none hover:text-wood-300 focus-visible:ring-1 focus-visible:ring-wood-500"
                   onClick={() => setDetailsOpen((o) => !(o ?? armedAggs.length < 3))}
                   aria-expanded={detailsOpen ?? armedAggs.length < 3}
                 >
                   <span className="text-xs">{(detailsOpen ?? armedAggs.length < 3) ? "▾" : "▸"}</span> details
                 </button>
                 <Reveal open={detailsOpen ?? armedAggs.length < 3}>
-                  <div className="mt-2 rounded-lg border border-neutral-800 bg-neutral-950/50 p-2.5">
+                  <div className="mt-2 rounded-lg border border-wood-800 bg-wood-950/50 p-2.5">
                     {armed.description && (
-                      <p className="whitespace-pre-wrap text-sm text-neutral-300">{armed.description}</p>
+                      <p className="whitespace-pre-wrap text-sm text-wood-300">{armed.description}</p>
                     )}
                     {armed.ref_url && (
                       <button
-                        className={`rounded-md border border-neutral-700 bg-neutral-800/60 px-2 py-0.5 text-xs hover:border-neutral-400 hover:bg-neutral-700 ${armed.description ? "mt-1.5" : ""}`}
+                        className={`rounded-md border border-wood-700 bg-wood-800/60 px-2 py-0.5 text-xs hover:border-wood-400 hover:bg-wood-700 ${armed.description ? "mt-1.5" : ""}`}
                         onClick={() => openRef(armed.ref_url!)}
                       >
                         {isUpload(armed.ref_url) ? "📄 reference" : "🔗 reference"}
                       </button>
                     )}
                     {armedLast && (
-                      <div className="mt-1.5 text-xs text-neutral-500">
-                        <span className="text-neutral-600">{fmtDateShort(armedLast.date)} </span>
-                        <span className="tabular-nums text-neutral-400">{fmtAgg(armedLast)}</span>
-                        <span className="text-neutral-600"> · today </span>
+                      <div className="mt-1.5 text-xs text-wood-500">
+                        <span className="text-wood-600">{fmtDateShort(armedLast.date)} </span>
+                        <span className="tabular-nums text-wood-400">{fmtAgg(armedLast)}</span>
+                        <span className="text-wood-600"> · today </span>
                         {armedToday ? (
-                          <span className="tabular-nums text-neutral-400">{fmtAgg(armedToday)}</span>
+                          <span className="tabular-nums text-wood-400">{fmtAgg(armedToday)}</span>
                         ) : (
-                          <span className="text-neutral-600">—</span>
+                          <span className="text-wood-600">—</span>
                         )}
                         {armedDelta !== null && armedDelta !== 0 && (
                           <span className={`ml-1 ${armedDelta > 0 ? "text-green-400" : "text-red-400"}`}>
@@ -2206,7 +2208,7 @@ export default function PracticeView() {
                       if (dragEx.current && dragEx.current !== e.id) reorder(dragEx.current, e.id);
                       dragEx.current = null;
                     }}
-                    className="flex items-center gap-1.5 rounded-full border border-neutral-800 bg-neutral-900 px-3 py-1.5 text-xs text-neutral-300 hover:border-neutral-600"
+                    className="flex items-center gap-1.5 rounded-full border border-wood-800 bg-wood-900 px-3 py-1.5 text-xs text-wood-300 hover:border-wood-600"
                   >
                     <span className="h-2 w-2 rounded-full" style={{ background: colorOf(e.id) }} />
                     {e.name}
@@ -2218,18 +2220,18 @@ export default function PracticeView() {
           <>
           {/* Exercise cards: last vs today at a glance; tap = arm stopwatch + metronome. */}
           <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-sm font-medium text-neutral-400">Exercises</h2>
+            <h2 className="text-sm font-medium text-wood-400">Exercises</h2>
             {/* Chips, not footnote links — the skill tree is a whole feature
                 and manage is the main edit surface. */}
             <div className="flex gap-2">
               <a
-                className="rounded-md border border-neutral-700 px-2.5 py-1 text-xs text-neutral-300 hover:border-neutral-500"
+                className="rounded-md border border-wood-700 px-2.5 py-1 text-xs text-wood-300 hover:border-wood-500"
                 href="/practice/tree"
               >
                 🌳 skill tree
               </a>
               <button
-                className="rounded-md border border-neutral-700 px-2.5 py-1 text-xs text-neutral-300 hover:border-neutral-500"
+                className="rounded-md border border-wood-700 px-2.5 py-1 text-xs text-wood-300 hover:border-wood-500"
                 onClick={() => setManageOpen((o) => !o)}
               >
                 {manageOpen ? "close manage" : "manage"}
@@ -2241,7 +2243,7 @@ export default function PracticeView() {
           <section className="mb-4 sm:columns-2 sm:gap-2" ref={coachListRef}>
             {/* Said once, up here — the cards below just show a quiet "—". */}
             {!loading && (sessions ?? []).length === 0 && active.length > 0 && (
-              <p className="mb-2 text-xs text-neutral-600">
+              <p className="mb-2 text-xs text-wood-600">
                 Nothing logged yet — tap an exercise to arm it, then Start session.
               </p>
             )}
@@ -2262,8 +2264,8 @@ export default function PracticeView() {
               return (
                 <div
                   key={ex.id}
-                  className={`mb-2 break-inside-avoid cursor-pointer rounded-xl border bg-neutral-900 p-3 transition-colors ${
-                    selected ? "" : "border-neutral-800 hover:border-neutral-700"
+                  className={`mb-2 break-inside-avoid cursor-pointer rounded-xl border bg-wood-900 p-3 transition-colors ${
+                    selected ? "" : "border-wood-800 hover:border-wood-700"
                   }`}
                   style={selected ? { borderColor: colorOf(ex.id) } : undefined}
                   onClick={() => armExercise(ex, aggs)}
@@ -2279,7 +2281,7 @@ export default function PracticeView() {
                   }}
                 >
                   <button
-                    className="flex w-full items-center gap-2 rounded text-left outline-none focus-visible:ring-1 focus-visible:ring-neutral-400"
+                    className="flex w-full items-center gap-2 rounded text-left outline-none focus-visible:ring-1 focus-visible:ring-wood-400"
                     onClick={() => armExercise(ex, aggs)}
                     aria-pressed={selected}
                   >
@@ -2294,7 +2296,7 @@ export default function PracticeView() {
                             ? "Attached reference — click to view"
                             : "Reference link — opens in a new tab"
                         }
-                        className="rounded-md border border-neutral-700 bg-neutral-800/60 px-1.5 py-0.5 text-xs hover:border-neutral-400 hover:bg-neutral-700"
+                        className="rounded-md border border-wood-700 bg-wood-800/60 px-1.5 py-0.5 text-xs hover:border-wood-400 hover:bg-wood-700"
                         onClick={(e) => {
                           e.stopPropagation();
                           setHoverRef(null);
@@ -2325,23 +2327,23 @@ export default function PracticeView() {
                             : null;
                         return (
                           <div key={v} className="grid grid-cols-[1rem_1fr_1fr] gap-1">
-                            <span className="text-neutral-500">{v === "down" ? "↓" : "↑"}</span>
-                            <span className="text-neutral-400">
-                              <span className="text-xs text-neutral-600">
+                            <span className="text-wood-500">{v === "down" ? "↓" : "↑"}</span>
+                            <span className="text-wood-400">
+                              <span className="text-xs text-wood-600">
                                 {vLast ? fmtDateShort(vLast.date) : "last"}{" "}
                               </span>
                               {vLast ? (
                                 <span className="tabular-nums">{fmtAgg(vLast)}</span>
                               ) : (
-                                <span className="text-neutral-600">—</span>
+                                <span className="text-wood-600">—</span>
                               )}
                             </span>
                             <span>
-                              <span className="text-xs text-neutral-600">today </span>
+                              <span className="text-xs text-wood-600">today </span>
                               {vToday ? (
                                 <span className="tabular-nums">{fmtAgg(vToday)}</span>
                               ) : (
-                                <span className="text-neutral-600">—</span>
+                                <span className="text-wood-600">—</span>
                               )}
                               {vDelta !== null && vDelta !== 0 && (
                                 <span className={`ml-1 text-xs ${vDelta > 0 ? "text-green-400" : "text-red-400"}`}>
@@ -2355,8 +2357,8 @@ export default function PracticeView() {
                     </div>
                   ) : (
                     <div className="mt-2 grid grid-cols-2 gap-1 text-sm">
-                      <div className="text-neutral-400">
-                        <span className="text-xs text-neutral-600">
+                      <div className="text-wood-400">
+                        <span className="text-xs text-wood-600">
                           {lastAgg ? fmtDateShort(lastAgg.date) : "last"}{" "}
                         </span>
                         {lastAgg ? (
@@ -2365,18 +2367,18 @@ export default function PracticeView() {
                             {lastAgg.seconds > 0 && fmtDur(lastAgg.seconds)}
                           </span>
                         ) : (
-                          <span className="text-neutral-600">—</span>
+                          <span className="text-wood-600">—</span>
                         )}
                       </div>
                       <div>
-                        <span className="text-xs text-neutral-600">today </span>
+                        <span className="text-xs text-wood-600">today </span>
                         {todayAgg ? (
                           <span className="tabular-nums">
                             {todayAgg.bpm > 0 && `${todayAgg.bpm} bpm · `}
                             {todayAgg.seconds > 0 && fmtDur(todayAgg.seconds)}
                           </span>
                         ) : (
-                          <span className="text-neutral-600">—</span>
+                          <span className="text-wood-600">—</span>
                         )}
                       </div>
                     </div>
@@ -2393,7 +2395,7 @@ export default function PracticeView() {
                       {/* Practicing more or less isn't better or worse, so the
                           time trend stays neutral. */}
                       {timeDelta !== null && Math.abs(timeDelta) >= 0.005 && (
-                        <span className="text-neutral-500">
+                        <span className="text-wood-500">
                           {timeDelta < 0 ? "▼" : "▲"} {Math.abs(Math.round(timeDelta * 100))}% time
                         </span>
                       )}
@@ -2403,7 +2405,7 @@ export default function PracticeView() {
                     // Two-line teaser; long text fades out instead of chopping
                     // mid-sentence — the arrow's detail view has the rest.
                     <p
-                      className={`mt-1.5 line-clamp-2 whitespace-pre-line text-xs text-neutral-500 ${
+                      className={`mt-1.5 line-clamp-2 whitespace-pre-line text-xs text-wood-500 ${
                         ex.description.length > 90
                           ? "[mask-image:linear-gradient(180deg,#000_45%,#00000030_100%)]"
                           : ""
@@ -2417,7 +2419,7 @@ export default function PracticeView() {
                       arrow so the toggle never moves: click the same spot
                       twice, no chasing the minimize button. */}
                   <button
-                    className={`-mx-3 mt-0.5 w-[calc(100%+1.5rem)] py-2 text-center text-xs text-neutral-600 hover:text-neutral-300 ${expanded ? "" : "-mb-3"}`}
+                    className={`-mx-3 mt-0.5 w-[calc(100%+1.5rem)] py-2 text-center text-xs text-wood-600 hover:text-wood-300 ${expanded ? "" : "-mb-3"}`}
                     title="History & full description"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -2427,7 +2429,7 @@ export default function PracticeView() {
                     {expanded ? "▴" : "▾"}
                   </button>
                   <Reveal open={expanded}>
-                    <div className="border-t border-neutral-800 pt-2 text-xs text-neutral-400">
+                    <div className="border-t border-wood-800 pt-2 text-xs text-wood-400">
                       {ex.description && (
                         <div className="mb-2">
                           <DescriptionBody text={ex.description} />
@@ -2440,7 +2442,7 @@ export default function PracticeView() {
                           <span>{a.seconds > 0 ? fmtDur(a.seconds) : ""}</span>
                         </div>
                       ))}
-                      {aggs.length === 0 && <p className="py-1 text-neutral-600">no sessions yet</p>}
+                      {aggs.length === 0 && <p className="py-1 text-wood-600">no sessions yet</p>}
                     </div>
                   </Reveal>
                 </div>
@@ -2450,11 +2452,11 @@ export default function PracticeView() {
               <div className={`${card} text-sm`}>
                 {/* An empty screen is an invitation to act: the tree's opening
                     moves, one per branch, so the first step is a tap. */}
-                <p className="text-neutral-300">Fresh start — pick a first exercise:</p>
+                <p className="text-wood-300">Fresh start — pick a first exercise:</p>
                 {starters === null ? (
-                  <p className="mt-2 text-xs text-neutral-600">loading suggestions…</p>
+                  <p className="mt-2 text-xs text-wood-600">loading suggestions…</p>
                 ) : starters.length === 0 ? (
-                  <p className="mt-2 text-xs text-neutral-600">Open “manage” above to add your first exercise.</p>
+                  <p className="mt-2 text-xs text-wood-600">Open “manage” above to add your first exercise.</p>
                 ) : (
                   <div className="mt-2.5 flex flex-col gap-1.5">
                     {starters.map((n) => (
@@ -2462,22 +2464,22 @@ export default function PracticeView() {
                         key={n.id}
                         disabled={!unlocked || starterBusy !== null}
                         onClick={() => void startStarter(n.id)}
-                        className="rounded-md border border-neutral-700 bg-neutral-800/40 px-3 py-2 text-left hover:border-neutral-500 hover:bg-neutral-800 disabled:opacity-50"
+                        className="rounded-md border border-wood-700 bg-wood-800/40 px-3 py-2 text-left hover:border-wood-500 hover:bg-wood-800 disabled:opacity-50"
                       >
                         <span className="font-medium">{starterBusy === n.id ? "adding…" : n.name}</span>
-                        <span className="ml-1.5 text-xs text-neutral-500">{STARTER_BRANCHES[n.branch] ?? n.branch}</span>
+                        <span className="ml-1.5 text-xs text-wood-500">{STARTER_BRANCHES[n.branch] ?? n.branch}</span>
                       </button>
                     ))}
                   </div>
                 )}
                 <div className="mt-2.5 flex items-center gap-2">
                   <a
-                    className="rounded-md border border-neutral-700 px-2.5 py-1 text-xs text-neutral-300 hover:border-neutral-500"
+                    className="rounded-md border border-wood-700 px-2.5 py-1 text-xs text-wood-300 hover:border-wood-500"
                     href="/practice/tree"
                   >
                     🌳 or browse the full skill tree
                   </a>
-                  {!unlocked && <span className="text-xs text-neutral-600">log in above to add exercises</span>}
+                  {!unlocked && <span className="text-xs text-wood-600">log in above to add exercises</span>}
                 </div>
               </div>
             )}
@@ -2487,7 +2489,7 @@ export default function PracticeView() {
           {manageOpen && (
           <section className={card}>
             <button
-              className="flex w-full items-center justify-between text-sm font-medium text-neutral-400"
+              className="flex w-full items-center justify-between text-sm font-medium text-wood-400"
               onClick={() => setManageOpen(false)}
             >
               Manage exercises
@@ -2495,38 +2497,38 @@ export default function PracticeView() {
             </button>
               <div className="mt-3">
                 {(exercises ?? []).map((ex) => (
-                  <div key={ex.id} className="border-b border-neutral-800/60">
+                  <div key={ex.id} className="border-b border-wood-800/60">
                   <div className="flex items-center gap-2 py-1.5 text-sm">
                     <span className="h-2 w-2 rounded-full" style={{ background: colorOf(ex.id) }} />
-                    <span className={`flex-1 ${ex.archived ? "text-neutral-600 line-through" : ""}`}>{ex.name}</span>
+                    <span className={`flex-1 ${ex.archived ? "text-wood-600 line-through" : ""}`}>{ex.name}</span>
                     {unlocked && (
                       <>
                         <button
-                          className="px-0.5 text-xs text-neutral-500 hover:text-neutral-200"
+                          className="px-0.5 text-xs text-wood-500 hover:text-wood-200"
                           onClick={() => moveBy(ex, -1)}
                           title="Move up"
                         >
                           ↑
                         </button>
                         <button
-                          className="px-0.5 text-xs text-neutral-500 hover:text-neutral-200"
+                          className="px-0.5 text-xs text-wood-500 hover:text-wood-200"
                           onClick={() => moveBy(ex, 1)}
                           title="Move down"
                         >
                           ↓
                         </button>
                         {uploading === ex.id ? (
-                          <span className="text-xs text-neutral-500">uploading…</span>
+                          <span className="text-xs text-wood-500">uploading…</span>
                         ) : ex.ref_url ? (
                           <>
                             <button
-                              className="text-xs text-neutral-500 hover:text-neutral-200"
+                              className="text-xs text-wood-500 hover:text-wood-200"
                               onClick={() => openRef(ex.ref_url!)}
                             >
                               ref
                             </button>
                             <button
-                              className="text-xs text-neutral-500 hover:text-red-400"
+                              className="text-xs text-wood-500 hover:text-red-400"
                               title="Remove reference"
                               onClick={() =>
                                 confirm(`Remove the reference from “${ex.name}”? This can't be undone.`) &&
@@ -2539,13 +2541,13 @@ export default function PracticeView() {
                         ) : (
                           <>
                             <button
-                              className="text-xs text-neutral-500 hover:text-neutral-200"
+                              className="text-xs text-wood-500 hover:text-wood-200"
                               onClick={() => pickFile(ex.id)}
                             >
                               attach
                             </button>
                             <button
-                              className="text-xs text-neutral-500 hover:text-neutral-200"
+                              className="text-xs text-wood-500 hover:text-wood-200"
                               onClick={() => linkRef(ex)}
                             >
                               link
@@ -2554,7 +2556,7 @@ export default function PracticeView() {
                         )}
                         <button
                           className={`text-xs ${
-                            ex.track_variants ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
+                            ex.track_variants ? "text-brass-400" : "text-wood-500 hover:text-wood-200"
                           }`}
                           title="Track down/up-stroke starts separately"
                           onClick={() => patchExercise(ex.id, { track_variants: !ex.track_variants })}
@@ -2564,7 +2566,7 @@ export default function PracticeView() {
                         {/* Which tools this exercise puts in the session hero. */}
                         <button
                           className={`text-xs ${
-                            toolsOf(ex).metronome ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
+                            toolsOf(ex).metronome ? "text-brass-400" : "text-wood-500 hover:text-wood-200"
                           }`}
                           title="Metronome in the session card"
                           aria-pressed={toolsOf(ex).metronome}
@@ -2574,7 +2576,7 @@ export default function PracticeView() {
                         </button>
                         <button
                           className={`text-xs ${
-                            toolsOf(ex).random_key ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
+                            toolsOf(ex).random_key ? "text-brass-400" : "text-wood-500 hover:text-wood-200"
                           }`}
                           title="Random key generator in the session card"
                           aria-pressed={toolsOf(ex).random_key}
@@ -2584,7 +2586,7 @@ export default function PracticeView() {
                         </button>
                         <button
                           className={`text-xs ${
-                            ex.target_bpm ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
+                            ex.target_bpm ? "text-brass-400" : "text-wood-500 hover:text-wood-200"
                           }`}
                           title="Target BPM — draws a goal line on the chart"
                           onClick={() => {
@@ -2596,7 +2598,7 @@ export default function PracticeView() {
                           goal
                         </button>
                         <button
-                          className="text-xs text-neutral-500 hover:text-neutral-200"
+                          className="text-xs text-wood-500 hover:text-wood-200"
                           onClick={() => {
                             const name = prompt("Rename exercise", ex.name);
                             if (name?.trim()) void patchExercise(ex.id, { name: name.trim() });
@@ -2606,7 +2608,7 @@ export default function PracticeView() {
                         </button>
                         <button
                           className={`text-xs ${
-                            descEdit?.id === ex.id ? "text-neutral-200" : "text-neutral-500 hover:text-neutral-200"
+                            descEdit?.id === ex.id ? "text-wood-200" : "text-wood-500 hover:text-wood-200"
                           }`}
                           onClick={() =>
                             setDescEdit(descEdit?.id === ex.id ? null : { id: ex.id, text: ex.description ?? "" })
@@ -2615,7 +2617,7 @@ export default function PracticeView() {
                           desc
                         </button>
                         <button
-                          className="text-xs text-neutral-500 hover:text-neutral-200"
+                          className="text-xs text-wood-500 hover:text-wood-200"
                           onClick={() =>
                             (ex.archived || confirm(`Archive “${ex.name}”? Its history stays and it can be restored here.`)) &&
                             patchExercise(ex.id, { archived: !ex.archived })
@@ -2638,7 +2640,7 @@ export default function PracticeView() {
                       />
                       <div className="mt-1 flex gap-2">
                         <button
-                          className="rounded-md bg-neutral-100 px-3 py-1 text-xs font-semibold text-neutral-950 hover:bg-white"
+                          className="rounded-md bg-wood-100 px-3 py-1 text-xs font-semibold text-wood-950 hover:bg-white"
                           onClick={() => {
                             void patchExercise(ex.id, { description: descEdit.text });
                             setDescEdit(null);
@@ -2647,7 +2649,7 @@ export default function PracticeView() {
                           Save
                         </button>
                         <button
-                          className="rounded-md bg-neutral-800 px-3 py-1 text-xs hover:bg-neutral-700"
+                          className="rounded-md bg-wood-800 px-3 py-1 text-xs hover:bg-wood-700"
                           onClick={() => setDescEdit(null)}
                         >
                           Cancel
@@ -2670,12 +2672,12 @@ export default function PracticeView() {
                   </button>
                 </div>
                 {/* Which tools the new exercise shows in the session hero. */}
-                <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-neutral-500">
+                <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-wood-500">
                   with:
                   <label className="flex items-center gap-1.5">
                     <input
                       type="checkbox"
-                      className="accent-amber-500"
+                      className="accent-brass-500"
                       checked={newExTools.metronome}
                       onChange={(e) => setNewExTools((t) => ({ ...t, metronome: e.target.checked }))}
                     />
@@ -2684,7 +2686,7 @@ export default function PracticeView() {
                   <label className="flex items-center gap-1.5">
                     <input
                       type="checkbox"
-                      className="accent-amber-500"
+                      className="accent-brass-500"
                       checked={newExTools.random_key}
                       onChange={(e) => setNewExTools((t) => ({ ...t, random_key: e.target.checked }))}
                     />
@@ -2703,7 +2705,7 @@ export default function PracticeView() {
               strip + streak, which says more than a scatter of single dots. */}
           {armed && !(!loading && byDateDesc.length === 0) && (
             <button
-              className="mb-1 flex items-center gap-1 text-sm font-medium text-neutral-400 hover:text-neutral-200"
+              className="mb-1 flex items-center gap-1 text-sm font-medium text-wood-400 hover:text-wood-200"
               onClick={() => setOpenPanels((p) => ({ ...p, progress: !p.progress }))}
               aria-expanded={openPanels.progress}
             >
@@ -2713,14 +2715,14 @@ export default function PracticeView() {
           <Reveal open={!armed || openPanels.progress}>
           <section className={`${card} mb-4 ${!loading && byDateDesc.length === 0 ? "hidden" : ""}`}>
             <div className="mb-2 flex items-center justify-between">
-              <h2 className="text-sm font-medium text-neutral-400">Progress</h2>
+              <h2 className="text-sm font-medium text-wood-400">Progress</h2>
               {chartReady && (
-                <div className="flex overflow-hidden rounded-md border border-neutral-700 text-xs">
+                <div className="flex overflow-hidden rounded-md border border-wood-700 text-xs">
                   {(["seconds", "bpm"] as const).map((m) => (
                     <button
                       key={m}
                       onClick={() => setMetric(m)}
-                      className={`px-3 py-1 ${metric === m ? "bg-neutral-200 text-neutral-950" : "text-neutral-400"}`}
+                      className={`px-3 py-1 ${metric === m ? "bg-wood-200 text-wood-950" : "text-wood-400"}`}
                     >
                       {m === "seconds" ? "Time" : "BPM"}
                     </button>
@@ -2729,7 +2731,7 @@ export default function PracticeView() {
               )}
             </div>
             {loading ? (
-              <p className="py-8 text-center text-sm text-neutral-500">Loading…</p>
+              <p className="py-8 text-center text-sm text-wood-500">Loading…</p>
             ) : !chartReady ? (
               <div>
                 <div className="flex gap-1.5">
@@ -2737,14 +2739,14 @@ export default function PracticeView() {
                     <div key={d.iso} className="flex-1 text-center">
                       <div
                         className={`h-8 rounded ${
-                          d.done ? "bg-amber-500/80" : "bg-neutral-800"
-                        } ${d.iso === today ? "ring-1 ring-neutral-600" : ""}`}
+                          d.done ? "bg-brass-500/80" : "bg-wood-800"
+                        } ${d.iso === today ? "ring-1 ring-wood-600" : ""}`}
                       />
-                      <div className="mt-1 text-[10px] text-neutral-600">{d.label}</div>
+                      <div className="mt-1 text-[10px] text-wood-600">{d.label}</div>
                     </div>
                   ))}
                 </div>
-                <p className="mt-2 text-xs text-neutral-600">
+                <p className="mt-2 text-xs text-wood-600">
                   {streak > 1 ? `${streak}-day streak · ` : ""}charts unlock after 5 practiced days ({dates.length}/5)
                 </p>
               </div>
@@ -2761,7 +2763,7 @@ export default function PracticeView() {
                       <button
                         key={s.name}
                         onClick={() => setFocusEx(focusEx === s.name ? null : s.name)}
-                        className={`flex items-center gap-1.5 text-xs ${dim ? "text-neutral-600" : "text-neutral-400"}`}
+                        className={`flex items-center gap-1.5 text-xs ${dim ? "text-wood-600" : "text-wood-400"}`}
                       >
                         {!s.dash ? (
                           <span className="h-2 w-4 rounded-sm" style={{ background: dim ? s.color + "40" : s.color }} />
@@ -2780,7 +2782,7 @@ export default function PracticeView() {
                 <div className="mt-4 overflow-x-auto">
                   <div className="inline-block min-w-full">
                     {/* Month labels sit over the first column of each month. */}
-                    <div className="mb-1 ml-[19px] flex text-[9px] leading-none text-neutral-600">
+                    <div className="mb-1 ml-[19px] flex text-[9px] leading-none text-wood-600">
                       {heatWeeks.map((week, i) => {
                         const month = week[0].iso.slice(5, 7);
                         const newMonth = i > 0 && heatWeeks[i - 1][0].iso.slice(5, 7) !== month;
@@ -2793,7 +2795,7 @@ export default function PracticeView() {
                       })}
                     </div>
                     <div className="flex gap-[3px]">
-                      <div className="flex w-4 shrink-0 flex-col gap-[3px] text-[9px] leading-none text-neutral-600">
+                      <div className="flex w-4 shrink-0 flex-col gap-[3px] text-[9px] leading-none text-wood-600">
                         {["", "M", "", "W", "", "F", ""].map((l, i) => (
                           <span key={i} className="flex h-2.5 items-center">
                             {l}
@@ -2811,17 +2813,17 @@ export default function PracticeView() {
                                 background: d.future
                                   ? "transparent"
                                   : d.secs === 0
-                                    ? "#26262666"
-                                    : `rgba(245,158,11,${0.25 + 0.75 * Math.min(1, d.secs / heatMax)})`,
+                                    ? "#2b242066"
+                                    : `rgba(217,164,65,${0.25 + 0.75 * Math.min(1, d.secs / heatMax)})`,
                               }}
                             />
                           ))}
                         </div>
                       ))}
                     </div>
-                    <div className="mt-1.5 flex items-center justify-end gap-[3px] text-[9px] text-neutral-600">
+                    <div className="mt-1.5 flex items-center justify-end gap-[3px] text-[9px] text-wood-600">
                       less
-                      {["#26262666", "rgba(245,158,11,0.4)", "rgba(245,158,11,0.7)", "rgba(245,158,11,1)"].map((c) => (
+                      {["#2b242066", "rgba(217,164,65,0.4)", "rgba(217,164,65,0.7)", "rgba(217,164,65,1)"].map((c) => (
                         <span key={c} className="h-2.5 w-2.5 rounded-[2px]" style={{ background: c }} />
                       ))}
                       more
@@ -2833,7 +2835,7 @@ export default function PracticeView() {
             {/* Lifetime totals, relocated from the page footer so the bottom
                 of the page stays calm. */}
             {!loading && totalSecs > 0 && (
-              <p className="mt-3 border-t border-neutral-800/60 pt-2 text-[10px] leading-relaxed text-neutral-600">
+              <p className="mt-3 border-t border-wood-800/60 pt-2 text-[10px] leading-relaxed text-wood-600">
                 this week <span className="tabular-nums">{fmtDur(weekSecs)}</span> · all-time{" "}
                 <span className="tabular-nums">{fmtDur(totalSecs)}</span> · days practiced {daysPracticed} · best
                 streak {bestStreak} · avg <span className="tabular-nums">{fmtDur(totalSecs / daysPracticed)}</span>/day
@@ -2845,7 +2847,7 @@ export default function PracticeView() {
           {/* Log */}
           {armed && (
             <button
-              className="mb-1 flex items-center gap-1 text-sm font-medium text-neutral-400 hover:text-neutral-200"
+              className="mb-1 flex items-center gap-1 text-sm font-medium text-wood-400 hover:text-wood-200"
               onClick={() => setOpenPanels((p) => ({ ...p, log: !p.log }))}
               aria-expanded={openPanels.log}
             >
@@ -2855,15 +2857,15 @@ export default function PracticeView() {
           <Reveal open={!armed || openPanels.log}>
           <section className={`${card} mb-4`}>
             <div className="mb-2 flex items-center justify-between">
-              <h2 className="text-sm font-medium text-neutral-400">Log</h2>
+              <h2 className="text-sm font-medium text-wood-400">Log</h2>
               <div className="flex gap-3">
                 {byDateDesc.length > 0 && (
-                  <button className="text-xs text-neutral-500 underline hover:text-neutral-300" onClick={exportCsv}>
+                  <button className="text-xs text-wood-500 underline hover:text-wood-300" onClick={exportCsv}>
                     export csv
                   </button>
                 )}
                 <button
-                  className="text-xs text-neutral-400 underline"
+                  className="text-xs text-wood-400 underline"
                   onClick={() =>
                     requireUnlock() &&
                     setForm({ exercise_id: selectedEx ?? "", date: todayISO(), bpm: "", dur: "", note: "" })
@@ -2874,7 +2876,7 @@ export default function PracticeView() {
               </div>
             </div>
             {!loading && byDateDesc.length === 0 && (
-              <p className="text-sm text-neutral-600">Nothing logged yet.</p>
+              <p className="text-sm text-wood-600">Nothing logged yet.</p>
             )}
             {/* Collapsed by default: a couple of entries fading out under an
                 expand arrow — the log is a receipt, not the main event. */}
@@ -2897,7 +2899,7 @@ export default function PracticeView() {
                 <div key={date} className="mb-3">
                   {/* The year is noise for recent entries; the day's total
                       lives up here so it reads without adding rows. */}
-                  <h3 className="mb-1 flex items-baseline justify-between text-xs font-semibold text-neutral-500">
+                  <h3 className="mb-1 flex items-baseline justify-between text-xs font-semibold text-wood-500">
                     <span>
                       {new Date(date + "T00:00:00").toLocaleDateString(undefined, {
                         weekday: "short",
@@ -2909,7 +2911,7 @@ export default function PracticeView() {
                     {daySecs > 0 && <span className="font-normal tabular-nums">{fmtDur(daySecs)}</span>}
                   </h3>
                   {daySessions.map((s) => (
-                    <div key={s.id} className="group border-b border-neutral-800/60 py-1.5 text-sm">
+                    <div key={s.id} className="group border-b border-wood-800/60 py-1.5 text-sm">
                       <div className="flex items-baseline gap-2">
                         <span
                           className="h-2 w-2 shrink-0 self-center rounded-full"
@@ -2920,17 +2922,17 @@ export default function PracticeView() {
                               the name every row says nothing. */}
                           {manyEx && (exById.get(s.exercise_id)?.name ?? "?")}
                           {s.variant && (
-                            <span className={`text-xs text-neutral-500 ${manyEx ? "ml-1" : ""}`}>
+                            <span className={`text-xs text-wood-500 ${manyEx ? "ml-1" : ""}`}>
                               {s.variant === "up" ? "↑ up" : "↓ down"}
                             </span>
                           )}
                         </span>
                         {pbIds.has(s.id) && (
-                          <span className="text-xs text-amber-400" title="personal best at the time">
+                          <span className="text-xs text-brass-400" title="personal best at the time">
                             ✦ PB
                           </span>
                         )}
-                        <span className="tabular-nums text-neutral-400">{s.bpm != null ? `${s.bpm} bpm` : ""}</span>
+                        <span className="tabular-nums text-wood-400">{s.bpm != null ? `${s.bpm} bpm` : ""}</span>
                         <span className="w-14 text-right tabular-nums">
                           {s.seconds != null ? fmtDur(s.seconds) : ""}
                         </span>
@@ -2939,7 +2941,7 @@ export default function PracticeView() {
                         {unlocked && (
                           <span className="flex gap-1.5 text-xs transition-opacity [@media(hover:hover)]:opacity-40 [@media(hover:hover)]:group-hover:opacity-100">
                             <button
-                              className="text-neutral-500 hover:text-neutral-200"
+                              className="text-wood-500 hover:text-wood-200"
                               onClick={() =>
                                 setForm({
                                   id: s.id,
@@ -2955,7 +2957,7 @@ export default function PracticeView() {
                               edit
                             </button>
                             <button
-                              className="text-neutral-500 hover:text-red-400"
+                              className="text-wood-500 hover:text-red-400"
                               onClick={() => deleteSession(s.id)}
                             >
                               ×
@@ -2965,7 +2967,7 @@ export default function PracticeView() {
                       </div>
                       {/* Notes are the part written by a human — full line,
                           readable color, never truncated. */}
-                      {s.note && <p className="pl-4 text-xs text-neutral-300">{s.note}</p>}
+                      {s.note && <p className="pl-4 text-xs text-wood-300">{s.note}</p>}
                     </div>
                   ))}
                 </div>
@@ -2973,13 +2975,13 @@ export default function PracticeView() {
             })}
             {byDateDesc.length > 3 && (
               <div
-                className={`pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-neutral-900 to-transparent transition-opacity duration-500 ${logOpen ? "opacity-0" : "opacity-100"}`}
+                className={`pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-wood-900 to-transparent transition-opacity duration-500 ${logOpen ? "opacity-0" : "opacity-100"}`}
               />
             )}
             </div>
             {byDateDesc.length > 3 && (
               <button
-                className="-mx-4 -mb-4 w-[calc(100%+2rem)] py-2 text-center text-xs text-neutral-500 hover:text-neutral-300"
+                className="-mx-4 -mb-4 w-[calc(100%+2rem)] py-2 text-center text-xs text-wood-500 hover:text-wood-300"
                 onClick={() => setLogOpen((o) => !o)}
               >
                 {logOpen ? "▴ collapse" : "▾ show all"}
@@ -2992,7 +2994,7 @@ export default function PracticeView() {
           {armed && (
             <>
               <button
-                className="mb-1 flex items-center gap-1 text-sm font-medium text-neutral-400 hover:text-neutral-200"
+                className="mb-1 flex items-center gap-1 text-sm font-medium text-wood-400 hover:text-wood-200"
                 onClick={() => setOpenPanels((p) => ({ ...p, tools: !p.tools }))}
                 aria-expanded={openPanels.tools}
               >
@@ -3008,12 +3010,12 @@ export default function PracticeView() {
       {/* Sticky Start bar: on a phone the primary control stays under the
           thumb no matter how far the page has scrolled. */}
       {armed && (
-        <div className="fixed inset-x-0 bottom-0 z-20 flex items-center gap-2 border-t border-neutral-800 bg-neutral-950/95 px-4 py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] backdrop-blur lg:hidden">
+        <div className="fixed inset-x-0 bottom-0 z-20 flex items-center gap-2 border-t border-wood-800 bg-wood-950/95 px-4 py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] backdrop-blur lg:hidden">
           {sessionBtn("flex-1 py-3")}
           {swElapsed > 0 && !swRunning && (
             <>
               <button
-                className="rounded-md bg-amber-500 px-4 py-3 text-sm font-semibold text-neutral-950 hover:bg-amber-400"
+                className="rounded-md bg-brass-500 px-4 py-3 text-sm font-semibold text-wood-950 hover:bg-brass-400"
                 onClick={swLog}
               >
                 Log it
@@ -3028,8 +3030,8 @@ export default function PracticeView() {
 
       {/* Just the two numbers that matter today; lifetime totals live in Progress. */}
       {!loading && totalSecs > 0 && (
-        <footer className="mt-8 text-center text-[10px] leading-relaxed text-neutral-600">
-          {streak > 1 && <span className="text-amber-400/80">streak {streak}</span>}
+        <footer className="mt-8 text-center text-[10px] leading-relaxed text-wood-600">
+          {streak > 1 && <span className="text-brass-400/80">streak {streak}</span>}
           {streak > 1 && todayTotal > 0 && " · "}
           {todayTotal > 0 && (
             <>
@@ -3072,7 +3074,7 @@ export default function PracticeView() {
       {justLogged && (
         <div
           className={`fixed left-1/2 z-30 flex -translate-x-1/2 items-center gap-3 whitespace-nowrap rounded-full px-4 py-2 text-sm shadow-lg ${armed ? "bottom-20 lg:bottom-4" : "bottom-4"} ${
-            justLogged.pb ? "bg-amber-400 text-neutral-950" : "bg-neutral-800"
+            justLogged.pb ? "bg-brass-400 text-wood-950" : "bg-wood-800"
           }`}
         >
           <span>
@@ -3083,7 +3085,7 @@ export default function PracticeView() {
             {justLogged.session.seconds != null && ` · ${fmtDur(justLogged.session.seconds)}`}
           </span>
           <button
-            className={`font-semibold ${justLogged.pb ? "text-neutral-950 underline" : "text-amber-400"}`}
+            className={`font-semibold ${justLogged.pb ? "text-wood-950 underline" : "text-brass-400"}`}
             onClick={undoLog}
           >
             Undo
@@ -3098,7 +3100,7 @@ export default function PracticeView() {
             <iframe
               src={hoverRef}
               title="reference preview"
-              className="h-full w-full max-w-4xl rounded border border-neutral-700 bg-neutral-900"
+              className="h-full w-full max-w-4xl rounded border border-wood-700 bg-wood-900"
             />
           ) : (
             // eslint-disable-next-line @next/next/no-img-element

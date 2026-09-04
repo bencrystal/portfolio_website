@@ -31,7 +31,34 @@ const config: Config = {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
+  		fontFamily: {
+  			display: ['var(--font-display)', 'system-ui', 'sans-serif']
+  		},
   		colors: {
+  			// /practice "rehearsal room" palette: warm near-blacks (wood) lit
+  			// by a brass accent, replacing the stock neutral/amber pairing.
+  			wood: {
+  				'50': '#f7f3ec',
+  				'100': '#ece7e1',
+  				'200': '#ded6ca',
+  				'300': '#c6bcb0',
+  				'400': '#a89f94',
+  				'500': '#857b70',
+  				'600': '#6b6259',
+  				'700': '#3a332c',
+  				'800': '#2b2420',
+  				'850': '#221c17',
+  				'900': '#1c1815',
+  				'950': '#141110'
+  			},
+  			brass: {
+  				'300': '#ecc36a',
+  				'400': '#e2b04a',
+  				'500': '#d9a441',
+  				'600': '#b98a34',
+  				'900': '#4a3a14',
+  				'950': '#2b2109'
+  			},
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

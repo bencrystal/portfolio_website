@@ -151,7 +151,7 @@ function Peek({
           pointer arrives — immediate acknowledgement while the peek itself
           waits out the hover-intent delay. */}
       <div
-        className={`rounded-lg border border-neutral-800/60 px-2.5 py-1.5 text-sm transition-colors duration-150 hover:border-[var(--hue)] ${dim ? "text-neutral-600" : ""}`}
+        className={`rounded-lg border border-wood-800/60 px-2.5 py-1.5 text-sm transition-colors duration-150 hover:border-[var(--hue)] ${dim ? "text-wood-600" : ""}`}
         style={{ "--hue": `${color}55` } as React.CSSProperties}
         {...handlers}
       >
@@ -163,7 +163,7 @@ function Peek({
           Opens with a slight lift (scale + shadow); on close the fade waits
           for the mask to redact, so it retracts the way it expanded. */}
       <div
-        className={`pointer-events-none absolute inset-x-0 top-0 z-10 origin-top rounded-lg border bg-neutral-900 px-2.5 py-1.5 text-sm text-neutral-300 transition-[opacity,transform,box-shadow] ${
+        className={`pointer-events-none absolute inset-x-0 top-0 z-10 origin-top rounded-lg border bg-wood-900 px-2.5 py-1.5 text-sm text-wood-300 transition-[opacity,transform,box-shadow] ${
           previewed
             ? "scale-100 opacity-100 shadow-xl shadow-black/40 duration-200"
             : "scale-[0.98] opacity-0 shadow-none delay-200 duration-200"
@@ -280,7 +280,7 @@ export default function TreeView() {
     if (tierNodes.length === 0 || !tierNodes.every((x) => byId.get(x.id)?.status === "evolved")) return;
     StringUnison.play({
       accent: b.color,
-      background: "#0a0a0a", // the page's neutral-950 — reads as the room dimming
+      background: "#141110", // the page's wood-950 — reads as the room dimming
       label: `${b.label} — ${tierName(n.tier)} complete`,
       sublabel: "tap to continue",
     });
@@ -349,20 +349,20 @@ export default function TreeView() {
   const progByNode = new Map(progress.map((p) => [p.node_id, p]));
 
   return (
-    <main className="min-h-screen bg-neutral-950 px-4 py-4 text-neutral-100">
+    <main className="min-h-screen bg-wood-950 px-4 py-4 text-wood-100">
       <div className="mx-auto max-w-7xl">
         <div className="mb-3 flex items-center justify-between gap-2">
           <h1 className="text-xl font-semibold">Skill tree</h1>
           <div className="flex items-center gap-2">
             <button
-              className="h-7 w-7 rounded-full border border-neutral-700 text-sm text-neutral-400 hover:border-neutral-500"
+              className="h-7 w-7 rounded-full border border-wood-700 text-sm text-wood-400 hover:border-wood-500"
               title="How it works"
               onClick={() => setHintOpen((h) => !h)}
             >
               ?
             </button>
             <a
-              className="rounded-md border border-neutral-700 px-3 py-1 text-sm text-neutral-300 hover:border-neutral-500"
+              className="rounded-md border border-wood-700 px-3 py-1 text-sm text-wood-300 hover:border-wood-500"
               href="/practice"
             >
               ✕ close
@@ -370,11 +370,11 @@ export default function TreeView() {
           </div>
         </div>
         <Reveal open={hintOpen}>
-          <div className="mb-4 rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-xs text-neutral-400">
+          <div className="mb-4 rounded-lg border border-wood-800 bg-wood-900 px-3 py-2 text-xs text-wood-400">
             Pick 1–2 per branch. Starting a node adds it to your exercises; hit its gate and it evolves, unlocking
             the next one.
             <button
-              className="ml-2 rounded border border-neutral-700 px-1.5 py-0.5 text-neutral-300 hover:border-neutral-500"
+              className="ml-2 rounded border border-wood-700 px-1.5 py-0.5 text-wood-300 hover:border-wood-500"
               onClick={() => {
                 setHintOpen(false);
                 localStorage.setItem("practice_tree_hint", "1");
@@ -395,7 +395,7 @@ export default function TreeView() {
         )}
 
         {nodes === null ? (
-          <p className="py-16 text-center text-sm text-neutral-500">Loading…</p>
+          <p className="py-16 text-center text-sm text-wood-500">Loading…</p>
         ) : (
           // Desktop: five subgrid columns sharing rows, so every tier band
           // (Development, Fluency, Mastery) starts at the same height in all
@@ -443,7 +443,7 @@ export default function TreeView() {
                 >
                   {/* Header doubles as the accordion toggle on mobile. */}
                   <button
-                    className="mb-1 flex w-full items-center gap-2 py-1 text-sm font-medium text-neutral-200 lg:cursor-default lg:py-0"
+                    className="mb-1 flex w-full items-center gap-2 py-1 text-sm font-medium text-wood-200 lg:cursor-default lg:py-0"
                     onClick={() => !wide && setOpenBranch(bodyOpen ? null : b.key)}
                   >
                     <span style={{ color: b.color }}>
@@ -452,13 +452,13 @@ export default function TreeView() {
                     {b.label}
                     {/* Count snug against the label — right-aligned it floated
                         in space and read as unrelated. */}
-                    <span className="font-mono text-xs text-neutral-500">
+                    <span className="font-mono text-xs text-wood-500">
                       {evolvedCount}/{branchNodes.length}
                     </span>
-                    <span className="ml-auto text-xs text-neutral-500 lg:hidden">{bodyOpen ? "▾" : "▸"}</span>
+                    <span className="ml-auto text-xs text-wood-500 lg:hidden">{bodyOpen ? "▾" : "▸"}</span>
                   </button>
                   <BranchBody flat={wide} open={bodyOpen}>
-                  <p className="mb-2 h-4 text-[10px] text-amber-400/80">
+                  <p className="mb-2 h-4 text-[10px] text-brass-400/80">
                     {activeCount > 2 ? `${activeCount} active — consider focusing on 1–2` : ""}
                   </p>
 
@@ -529,13 +529,13 @@ export default function TreeView() {
                           />
                         ) : tier === "card" ? (
                           <span
-                            className="absolute left-0 top-1.5 h-4 w-4 rounded-full border-2 bg-neutral-950"
+                            className="absolute left-0 top-1.5 h-4 w-4 rounded-full border-2 bg-wood-950"
                             style={{ borderColor: b.color }}
                           />
                         ) : tier === "next" ? (
-                          <span className="absolute left-[2px] top-2 h-3 w-3 rounded-full border border-neutral-600 bg-neutral-950" />
+                          <span className="absolute left-[2px] top-2 h-3 w-3 rounded-full border border-wood-600 bg-wood-950" />
                         ) : (
-                          <span className="absolute left-[5px] top-3 h-1.5 w-1.5 rounded-full bg-neutral-700" />
+                          <span className="absolute left-[5px] top-3 h-1.5 w-1.5 rounded-full bg-wood-700" />
                         );
 
                       return (
@@ -544,15 +544,15 @@ export default function TreeView() {
 
                           {tier === "done" && (
                             <div className="text-sm">
-                              <span className="text-neutral-300">{n.name}</span>
-                              <p className="text-xs text-neutral-500">
+                              <span className="text-wood-300">{n.name}</span>
+                              <p className="text-xs text-wood-500">
                                 {n.gate_type === "bpm" && best > 0
                                   ? `cleared at ${best} bpm`
                                   : n.gate_type === "time"
                                     ? `${fmtDur(secs)} practiced`
                                     : "cleared"}
                                 <button
-                                  className="ml-2 text-neutral-700 underline hover:text-neutral-400"
+                                  className="ml-2 text-wood-700 underline hover:text-wood-400"
                                   disabled={busy === n.id}
                                   onClick={() => setStatus(n, "active")}
                                 >
@@ -564,17 +564,17 @@ export default function TreeView() {
 
                           {tier === "card" && (
                             <div
-                              className="rounded-lg border bg-neutral-900/40 p-3 lg:flex lg:min-h-[11rem] lg:flex-col"
-                              style={{ borderColor: prog && !paused ? b.color : "#404040" }}
+                              className="rounded-lg border bg-wood-900/40 p-3 lg:flex lg:min-h-[11rem] lg:flex-col"
+                              style={{ borderColor: prog && !paused ? b.color : "#453d35" }}
                             >
                               <div className="flex items-start justify-between gap-2 text-xs">
-                                <span style={{ color: prog && !paused ? b.color : "#737373" }}>
+                                <span style={{ color: prog && !paused ? b.color : "#857b70" }}>
                                   {prog ? (paused ? "paused" : "in progress") : "not started"}
                                 </span>
                                 {prog && (
-                                  <span className="flex gap-2 text-[10px] text-neutral-600">
+                                  <span className="flex gap-2 text-[10px] text-wood-600">
                                     <button
-                                      className="hover:text-neutral-300"
+                                      className="hover:text-wood-300"
                                       disabled={busy === n.id}
                                       onClick={() => togglePause(n, prog)}
                                     >
@@ -591,13 +591,13 @@ export default function TreeView() {
                                 )}
                               </div>
                               <p className="mt-0.5 text-sm font-medium">{n.name}</p>
-                              {n.description && <p className="mt-1 text-xs text-neutral-400">{n.description}</p>}
+                              {n.description && <p className="mt-1 text-xs text-wood-400">{n.description}</p>}
                               {n.ref_url && (
                                 <a
                                   href={n.ref_url}
                                   target="_blank"
                                   rel="noreferrer"
-                                  className="mt-1 inline-block text-[11px] text-neutral-500 underline hover:text-neutral-300"
+                                  className="mt-1 inline-block text-[11px] text-wood-500 underline hover:text-wood-300"
                                 >
                                   🔗 lesson / reference
                                 </a>
@@ -605,12 +605,12 @@ export default function TreeView() {
                               {/* Gate + actions pinned to the bottom so the five
                                   frontier cards line up across branches. */}
                               <div className="lg:mt-auto">
-                              <div className="mt-2 flex items-center gap-1.5 text-xs text-neutral-400">
+                              <div className="mt-2 flex items-center gap-1.5 text-xs text-wood-400">
                                 <GateIcon type={n.gate_type} />
                                 {prog && gateNum ? (
                                   <>
                                     <span>{n.gate_type === "bpm" ? "clean tempo" : "practiced"}</span>
-                                    <span className="ml-auto font-mono tabular-nums text-neutral-200">
+                                    <span className="ml-auto font-mono tabular-nums text-wood-200">
                                       {gateNum.label}
                                     </span>
                                   </>
@@ -619,7 +619,7 @@ export default function TreeView() {
                                 )}
                                 {!prog && (
                                   <button
-                                    className="ml-auto rounded bg-neutral-100 px-2.5 py-1 font-semibold text-neutral-950 hover:bg-white disabled:opacity-50"
+                                    className="ml-auto rounded bg-wood-100 px-2.5 py-1 font-semibold text-wood-950 hover:bg-white disabled:opacity-50"
                                     disabled={busy === n.id}
                                     onClick={() => startNode(n)}
                                   >
@@ -628,7 +628,7 @@ export default function TreeView() {
                                 )}
                                 {ready && (
                                   <button
-                                    className={`rounded px-2.5 py-1 font-semibold text-neutral-950 disabled:opacity-50 ${gateNum ? "" : "ml-auto"}`}
+                                    className={`rounded px-2.5 py-1 font-semibold text-wood-950 disabled:opacity-50 ${gateNum ? "" : "ml-auto"}`}
                                     style={{ background: b.color }}
                                     disabled={busy === n.id}
                                     onClick={() => setStatus(n, "evolved")}
@@ -638,7 +638,7 @@ export default function TreeView() {
                                 )}
                               </div>
                               {prog && gateNum && gateNum.max > 0 && (
-                                <div className="mt-1.5 h-1 rounded bg-neutral-800">
+                                <div className="mt-1.5 h-1 rounded bg-wood-800">
                                   <div
                                     className="h-1 rounded"
                                     style={{
@@ -659,16 +659,16 @@ export default function TreeView() {
                               color={b.color}
                               base={
                                 <>
-                                  <span className="text-neutral-300">{n.name}</span>
+                                  <span className="text-wood-300">{n.name}</span>
                                   {/* Gate and action wrap as whole units — the long
                                       self-gate text was colliding with the link. */}
-                                  <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-neutral-500">
+                                  <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-wood-500">
                                     <span className="flex items-center gap-1.5 whitespace-nowrap">
                                       <GateIcon type={n.gate_type} />
                                       {gateShort(n)}
                                     </span>
                                     <button
-                                      className="whitespace-nowrap underline hover:text-neutral-300"
+                                      className="whitespace-nowrap underline hover:text-wood-300"
                                       disabled={busy === n.id}
                                       onClick={() => startNode(n)}
                                     >
@@ -679,7 +679,7 @@ export default function TreeView() {
                               }
                               extra={
                                 n.description ? (
-                                  <p className="mt-0.5 text-xs text-neutral-500">{n.description}</p>
+                                  <p className="mt-0.5 text-xs text-wood-500">{n.description}</p>
                                 ) : null
                               }
                             />
@@ -696,9 +696,9 @@ export default function TreeView() {
                               extra={
                                 <>
                                   {n.description && (
-                                    <p className="mt-0.5 text-xs text-neutral-500">{n.description}</p>
+                                    <p className="mt-0.5 text-xs text-wood-500">{n.description}</p>
                                   )}
-                                  <p className="mt-0.5 flex items-center gap-1.5 text-xs text-neutral-500">
+                                  <p className="mt-0.5 flex items-center gap-1.5 text-xs text-wood-500">
                                     <GateIcon type={n.gate_type} />
                                     {gateShort(n)}
                                   </p>
@@ -715,7 +715,7 @@ export default function TreeView() {
                   })}
 
                   <button
-                    className="mt-1 w-full rounded-lg border border-dashed border-neutral-800 py-1.5 text-xs text-neutral-600 hover:border-neutral-600 hover:text-neutral-400"
+                    className="mt-1 w-full rounded-lg border border-dashed border-wood-800 py-1.5 text-xs text-wood-600 hover:border-wood-600 hover:text-wood-400"
                     onClick={() => addNode(b.key)}
                   >
                     + add your own
@@ -731,8 +731,8 @@ export default function TreeView() {
       {/* Dev bar (visit /practice/tree?demo): preview the tier celebration
           for any branch/tier without having to actually clear one. */}
       {demo && (
-        <div className="fixed bottom-3 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2.5 rounded-full border border-neutral-700 bg-neutral-900/95 px-3.5 py-1.5 text-xs">
-          <span className="text-neutral-500">celebrate:</span>
+        <div className="fixed bottom-3 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2.5 rounded-full border border-wood-700 bg-wood-900/95 px-3.5 py-1.5 text-xs">
+          <span className="text-wood-500">celebrate:</span>
           {BRANCHES.map((b) => (
             <button
               key={b.key}
@@ -741,7 +741,7 @@ export default function TreeView() {
               onClick={() =>
                 StringUnison.play({
                   accent: b.color,
-                  background: "#0a0a0a",
+                  background: "#141110",
                   label: `${b.label} — ${tierName(demoTier)} complete`,
                   sublabel: "tap to continue",
                 })
@@ -751,7 +751,7 @@ export default function TreeView() {
             </button>
           ))}
           <select
-            className="rounded border border-neutral-700 bg-neutral-900 px-1 py-0.5 text-[10px] text-neutral-400"
+            className="rounded border border-wood-700 bg-wood-900 px-1 py-0.5 text-[10px] text-wood-400"
             value={demoTier}
             onChange={(e) => setDemoTier(Number(e.target.value))}
             aria-label="tier"

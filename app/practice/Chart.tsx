@@ -32,7 +32,7 @@ function niceTicks(min: number, max: number, count: number): number[] {
 export default function Chart({ series, fmtY }: { series: Series[]; fmtY: (y: number) => string }) {
   const all = series.flatMap((s) => s.points);
   if (all.length === 0) {
-    return <p className="py-8 text-center text-sm text-neutral-500">No data yet</p>;
+    return <p className="py-8 text-center text-sm text-wood-500">No data yet</p>;
   }
 
   const xs = all.map((p) => p.x);
@@ -57,14 +57,14 @@ export default function Chart({ series, fmtY }: { series: Series[]; fmtY: (y: nu
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
       {yTicks.map((t) => (
         <g key={t}>
-          <line x1={PAD.left} x2={W - PAD.right} y1={py(t)} y2={py(t)} stroke="#262626" strokeWidth={1} />
-          <text x={PAD.left - 6} y={py(t) + 4} textAnchor="end" fontSize={11} fill="#737373">
+          <line x1={PAD.left} x2={W - PAD.right} y1={py(t)} y2={py(t)} stroke="#2b2420" strokeWidth={1} />
+          <text x={PAD.left - 6} y={py(t) + 4} textAnchor="end" fontSize={11} fill="#857b70">
             {fmtY(t)}
           </text>
         </g>
       ))}
       {xTicks.map((t, i) => (
-        <text key={i} x={px(t)} y={H - 8} textAnchor="middle" fontSize={11} fill="#737373">
+        <text key={i} x={px(t)} y={H - 8} textAnchor="middle" fontSize={11} fill="#857b70">
           {new Date(t).toLocaleDateString(undefined, { month: "numeric", day: "numeric" })}
         </text>
       ))}
