@@ -61,20 +61,20 @@ export default function BpmRuler({ value, onChange }: { value: number; onChange:
         // Ticks fade toward the edges so the ruler feels like it emerges
         // from the card rather than being clipped by it.
         const opacity = Math.min(1, Math.max(0, Math.min(x, width - x) / edgeFade));
-        g.strokeStyle = `rgba(168,159,148,${(isMajor ? 0.85 : isMid ? 0.55 : 0.35) * opacity})`;
+        g.strokeStyle = `rgba(163,163,163,${(isMajor ? 0.85 : isMid ? 0.55 : 0.35) * opacity})`;
         g.lineWidth = isMajor ? 2 : 1;
         g.beginPath();
         g.moveTo(x, HEIGHT - 14);
         g.lineTo(x, HEIGHT - 14 - tickHeight);
         g.stroke();
         if (isMajor) {
-          g.fillStyle = `rgba(222,214,202,${opacity})`;
+          g.fillStyle = `rgba(212,212,212,${opacity})`;
           g.fillText(String(bpm), x, HEIGHT - 2);
         }
       }
 
       // Fixed center indicator.
-      g.fillStyle = "#d9a441";
+      g.fillStyle = "#f59e0b";
       g.beginPath();
       g.roundRect(center - 1.5, 4, 3, HEIGHT - 26, 1.5);
       g.fill();

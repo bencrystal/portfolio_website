@@ -213,8 +213,8 @@ export default function Tuner() {
       title={`${STRINGS[i].label} — ${STRINGS[i].freq} Hz reference tone`}
       className={`h-8 w-8 rounded-full border text-xs font-semibold transition-colors ${
         playing === i
-          ? "border-brass-400 bg-brass-500 text-wood-950"
-          : "border-wood-600 bg-wood-800 text-wood-300 hover:border-wood-400"
+          ? "border-amber-400 bg-amber-500 text-neutral-950"
+          : "border-neutral-600 bg-neutral-800 text-neutral-300 hover:border-neutral-400"
       }`}
     >
       {STRINGS[i].label}
@@ -224,7 +224,7 @@ export default function Tuner() {
   return (
     <div>
       <button
-        className="flex w-full items-center justify-between text-sm font-medium text-wood-400"
+        className="flex w-full items-center justify-between text-sm font-medium text-neutral-400"
         onClick={() => {
           if (open) {
             stopTone();
@@ -246,25 +246,25 @@ export default function Tuner() {
             <svg viewBox="0 0 56 128" className="h-32 w-14" aria-hidden>
               <path
                 d="M12 112 L4 24 Q4 8 14 8 L42 8 Q52 8 52 24 L44 112 Z"
-                fill="#2b2420"
-                stroke="#453d35"
+                fill="#262626"
+                stroke="#404040"
                 strokeWidth="1"
               />
               {STRING_GEO.map((g, i) => (
-                <g key={i} stroke={playing === i ? "#d9a441" : "#59524b"} strokeWidth={1.4 - i * 0.12}>
+                <g key={i} stroke={playing === i ? "#f59e0b" : "#525252"} strokeWidth={1.4 - i * 0.12}>
                   <line x1={g.post[0]} y1={g.post[1]} x2={g.nut} y2={110} />
                   <line x1={g.nut} y1={114} x2={g.nut} y2={128} />
                 </g>
               ))}
-              <rect x="10" y="110" width="36" height="4" rx="1" fill="#857b70" />
-              <rect x="13" y="114" width="30" height="14" fill="none" stroke="#453d35" strokeWidth="1" />
+              <rect x="10" y="110" width="36" height="4" rx="1" fill="#737373" />
+              <rect x="13" y="114" width="30" height="14" fill="none" stroke="#404040" strokeWidth="1" />
               {STRING_GEO.map((g, i) => (
                 <circle
                   key={i}
                   cx={g.post[0]}
                   cy={g.post[1]}
                   r={2.5}
-                  fill={playing === i ? "#d9a441" : "#a89f94"}
+                  fill={playing === i ? "#f59e0b" : "#a3a3a3"}
                 />
               ))}
             </svg>
@@ -274,8 +274,8 @@ export default function Tuner() {
             <button
               className={`rounded-md border px-2 py-1 text-xs ${
                 micOn
-                  ? "border-brass-500/50 text-brass-400"
-                  : "border-wood-700 text-wood-400 hover:border-wood-500"
+                  ? "border-amber-500/50 text-amber-400"
+                  : "border-neutral-700 text-neutral-400 hover:border-neutral-500"
               }`}
               onClick={() => (micOn ? stopMic() : startMic(deviceId || undefined))}
             >
@@ -289,7 +289,7 @@ export default function Tuner() {
                   stopMic();
                   void startMic(e.target.value || undefined);
                 }}
-                className="w-20 rounded border border-wood-700 bg-wood-900 px-1 py-0.5 text-[10px] text-wood-400"
+                className="w-20 rounded border border-neutral-700 bg-neutral-900 px-1 py-0.5 text-[10px] text-neutral-400"
                 title="Microphone"
               >
                 <option value="">default</option>
@@ -303,18 +303,18 @@ export default function Tuner() {
             {micOn && (
               <div className="flex items-center gap-2">
                 {/* ±50¢ needle; green in the middle means in tune. */}
-                <div className="relative h-1.5 w-24 rounded bg-wood-800">
-                  <span className="absolute left-1/2 top-[-3px] h-3 w-px bg-wood-500" />
+                <div className="relative h-1.5 w-24 rounded bg-neutral-800">
+                  <span className="absolute left-1/2 top-[-3px] h-3 w-px bg-neutral-500" />
                   {heard && (
                     <span
                       className={`absolute top-[-3px] h-3 w-1 -translate-x-1/2 rounded ${
-                        inTune ? "bg-green-400" : "bg-brass-400"
+                        inTune ? "bg-green-400" : "bg-amber-400"
                       }`}
                       style={{ left: `${50 + (Math.max(-50, Math.min(50, heard.cents)) / 50) * 48}%` }}
                     />
                   )}
                 </div>
-                <span className={`w-16 text-xs tabular-nums ${inTune ? "text-green-400" : "text-wood-400"}`}>
+                <span className={`w-16 text-xs tabular-nums ${inTune ? "text-green-400" : "text-neutral-400"}`}>
                   {heard ? `${heard.name} ${heard.cents > 0 ? "+" : ""}${heard.cents}¢` : "…"}
                 </span>
               </div>

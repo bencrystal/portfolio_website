@@ -1,10 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import { Archivo } from "next/font/google";
-
-// Display face for the numbers that ARE the interface (bpm, timer) — a touch
-// of engraved-faceplate character without touching body text.
-const archivo = Archivo({ subsets: ["latin"], weight: ["500", "600", "700"], variable: "--font-display" });
 
 export const metadata: Metadata = {
   title: "Practice",
@@ -23,5 +18,5 @@ export const viewport: Viewport = {
 };
 
 export default function PracticeLayout({ children }: { children: ReactNode }) {
-  return <div className={archivo.variable}>{children}</div>;
+  return children;
 }
