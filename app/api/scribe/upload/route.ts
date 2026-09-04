@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { scribeDb } from "@/lib/scribe-db";
+import { routeCapture } from "@/lib/scribe-routing";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -50,10 +51,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: capErr.message }, { status: 500 });
   }
 
+  // Keyword routing: a leading trigger word or a unique bucket alias in
+  // the transcript files the todo automatically (see lib/scribe-routing).
+  const { data: routable } = await scribeDb.from("buckets").select("id, name, aliases");
+  const routed = routeCapture(transcript, routable ?? []);
+
   // One todo per capture for v1. Later: LLM pass to split multi-item captures.
   const { data: todo, error: todoErr } = await scribeDb
     .from("todos")
-    .insert({ text: transcript, capture_id: capture.id, position: Date.now() / 1000, all_position: Date.now() / 1000 })
+    .insert({
+      text: routed.text,
+      bucket_id: routed.bucketId,
+      capture_id: capture.id,
+      position: Date.now() / 1000,
+      all_position: Date.now() / 1000,
+    })
     .select()
     .single();
   if (todoErr) {

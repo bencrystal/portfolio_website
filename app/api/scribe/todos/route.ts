@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { scribeDb, validListToken } from "@/lib/scribe-db";
+import { routeCapture } from "@/lib/scribe-routing";
 
 function unauthorized() {
   return NextResponse.json({ error: "unauthorized" }, { status: 401 });
@@ -52,9 +53,17 @@ export async function POST(req: NextRequest) {
   if (!validListToken(req.nextUrl.searchParams.get("token"))) return unauthorized();
   const { text, bucket_id } = await req.json();
   if (!text?.trim()) return NextResponse.json({ error: "missing text" }, { status: 400 });
+  // Unsorted adds (voice or typed, any client) run through keyword routing;
+  // adds made from inside a bucket keep their explicit bucket.
+  let finalText = text.trim();
+  let finalBucket: string | null = bucket_id ?? null;
+  if (!finalBucket) {
+    const { data: routable } = await scribeDb.from("buckets").select("id, name, aliases");
+    ({ text: finalText, bucketId: finalBucket } = routeCapture(finalText, routable ?? []));
+  }
   const { data, error } = await scribeDb
     .from("todos")
-    .insert({ text: text.trim(), bucket_id: bucket_id ?? null, position: nowPosition(), all_position: nowPosition() })
+    .insert({ text: finalText, bucket_id: finalBucket, position: nowPosition(), all_position: nowPosition() })
     .select()
     .single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

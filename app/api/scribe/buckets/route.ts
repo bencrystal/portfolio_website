@@ -70,7 +70,7 @@ export async function GET(req: NextRequest) {
   if (!validListToken(req.nextUrl.searchParams.get("token"))) return unauthorized();
   const { data, error } = await scribeDb
     .from("buckets")
-    .select("id, name, position, hidden, color, quiet")
+    .select("id, name, position, hidden, color, quiet, aliases")
     .order("position", { ascending: true });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ buckets: data });
@@ -92,7 +92,8 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ bucket: data });
 }
 
-// PATCH { id, name?, position?, hidden?, quiet?, color? ("#rrggbb" or null for auto) }
+// PATCH { id, name?, position?, hidden?, quiet?, aliases? (string or null),
+//         color? ("#rrggbb" or null for auto) }
 export async function PATCH(req: NextRequest) {
   if (!validListToken(req.nextUrl.searchParams.get("token"))) return unauthorized();
   const { id, ...fields } = await req.json();
@@ -101,6 +102,11 @@ export async function PATCH(req: NextRequest) {
   if (typeof fields.position === "number") updates.position = fields.position;
   if (typeof fields.hidden === "boolean") updates.hidden = fields.hidden;
   if (typeof fields.quiet === "boolean") updates.quiet = fields.quiet;
+  // Comma-separated routing keywords; empty/null falls back to the name.
+  if ("aliases" in fields) {
+    if (fields.aliases === null) updates.aliases = null;
+    else if (typeof fields.aliases === "string") updates.aliases = fields.aliases.trim() || null;
+  }
   if ("color" in fields) {
     if (fields.color === null) updates.color = null;
     else if (typeof fields.color === "string" && /^#[0-9a-fA-F]{6}$/.test(fields.color)) {

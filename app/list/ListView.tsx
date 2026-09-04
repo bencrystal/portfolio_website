@@ -22,6 +22,9 @@ type Bucket = {
   // stay off the front page.
   quiet?: boolean;
   color?: string | null;
+  // Comma-separated routing keywords; null/empty means the bucket name
+  // is the only alias. Matching happens server-side at capture time.
+  aliases?: string | null;
 };
 
 const ALL = "all";
@@ -450,6 +453,14 @@ export default function ListView({ token }: { token: string }) {
     await call("buckets", "PATCH", { id, quiet });
   }
 
+  // Routing keywords: a leading trigger or unique match anywhere in a new
+  // capture files it into this bucket automatically.
+  async function setBucketAliases(id: string, aliases: string) {
+    const value = aliases.trim() || null;
+    setBuckets((bs) => bs.map((b) => (b.id === id ? { ...b, aliases: value } : b)));
+    await call("buckets", "PATCH", { id, aliases: value });
+  }
+
   // null resets to the automatic hash-derived color.
   async function setBucketColor(id: string, color: string | null) {
     setBuckets((bs) => bs.map((b) => (b.id === id ? { ...b, color } : b)));
@@ -720,7 +731,8 @@ export default function ListView({ token }: { token: string }) {
         <section>
           <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-neutral-500">Buckets</h2>
           {buckets.map((b) => (
-            <div key={b.id} className="flex items-center gap-2 border-b border-neutral-800 py-2">
+            <div key={b.id} className="border-b border-neutral-800 py-2">
+              <div className="flex items-center gap-2">
               <input
                 type="color"
                 value={colorOf(b.id)}
@@ -763,6 +775,15 @@ export default function ListView({ token }: { token: string }) {
               <button onClick={() => deleteBucket(b.id)} className="text-red-900 hover:text-red-600">
                 Delete
               </button>
+              </div>
+              <input
+                defaultValue={b.aliases ?? ""}
+                placeholder={`Routing words (default: ${b.name.toLowerCase()})`}
+                title="Comma-separated keywords. Say one as the first word (or uniquely anywhere) and the capture files here automatically."
+                onBlur={(e) => (e.target.value.trim() || null) !== (b.aliases ?? null) && setBucketAliases(b.id, e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
+                className="mt-1 w-full rounded border border-transparent bg-transparent px-2 py-0.5 text-xs text-neutral-400 placeholder:text-neutral-600 hover:border-neutral-700 focus:border-neutral-600 focus:bg-neutral-900"
+              />
             </div>
           ))}
           <div className="mt-2 flex gap-2">
