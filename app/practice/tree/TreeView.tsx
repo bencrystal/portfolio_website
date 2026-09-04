@@ -352,7 +352,7 @@ export default function TreeView() {
     <main className="min-h-screen bg-neutral-950 px-4 py-4 text-neutral-100">
       <div className="mx-auto max-w-7xl">
         <div className="mb-3 flex items-center justify-between gap-2">
-          <h1 className="text-xl font-semibold">Skill tree</h1>
+          <h1 className="text-xl font-semibold">Syllabus</h1>
           <div className="flex items-center gap-2">
             <button
               className="h-7 w-7 rounded-full border border-neutral-700 text-sm text-neutral-400 hover:border-neutral-500"

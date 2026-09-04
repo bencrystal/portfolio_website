@@ -454,6 +454,10 @@ export default function PracticeView() {
   // live behind toggles. Details auto-open while an exercise is still new
   // (fewer than ~3 practiced days) and collapse once it's routine.
   const [tempoOpen, setTempoOpen] = useState(false);
+  // One-shot "same / +2 / +5" prompt after arming: the dial already sits on
+  // the last bpm, this row just asks whether today pushes it. Any answer
+  // (or starting a session) retires it until the next arm.
+  const [bpmPromptSeen, setBpmPromptSeen] = useState(true);
   const [detailsOpen, setDetailsOpen] = useState<boolean | null>(null); // null = auto by age
   useEffect(() => setDetailsOpen(null), [selectedEx]);
   const logRef = useRef<HTMLDivElement | null>(null); // measured so max-height can lerp open
@@ -469,7 +473,7 @@ export default function PracticeView() {
   // Empty-space starters + first-visit coach-marks.
   const [starters, setStarters] = useState<StarterNode[] | null>(null);
   const [starterBusy, setStarterBusy] = useState<string | null>(null);
-  const [coach, setCoach] = useState<number | null>(null); // 0 arm · 1 start · 2 log
+  const [coach, setCoach] = useState<number | null>(null); // -1 welcome · 0 arm · 1 start · 2 log
   const coachListRef = useRef<HTMLElement | null>(null);
   const coachStartRef = useRef<HTMLDivElement | null>(null);
   // Desktop tool strip: the tuner unfolds under it.
@@ -1227,6 +1231,7 @@ export default function PracticeView() {
   function armExercise(ex: Exercise, aggs: DayAgg[]) {
     setSelectedEx(ex.id);
     setDayDone(false);
+    setBpmPromptSeen(false);
     if (ex.track_variants) {
       // Suggest whichever stroke-start you haven't done yet today.
       const todays = (sessions ?? []).filter((s) => s.exercise_id === ex.id && s.date === today);
@@ -1301,7 +1306,7 @@ export default function PracticeView() {
       return;
     }
     if (exercises.some((e) => !e.archived) && !selectedEx) {
-      setCoach(0);
+      setCoach(-1); // welcome card first, then the three spotlights
       setHintOpen(false); // one guide at a time
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1815,7 +1820,7 @@ export default function PracticeView() {
             <span className="font-medium">Log it</span> saves your tempo and time.
           </p>
           <p className="mt-1.5 text-xs text-neutral-500">
-            More, when you want it: the settings line under Start (bpm · meter · sound) opens count-in, tempo trainer and more · ↓↑ in
+            More, when you want it: the &quot;advanced&quot; line under Start (bpm · meter · sound) opens count-in, tempo trainer and more · ↓↑ in
             manage tracks down/up-stroke starts separately · “goal” draws a target line on the chart ·{" "}
             <span className="text-neutral-400">Log in</span> with your password to edit your own log.
           </p>
@@ -2038,6 +2043,30 @@ export default function PracticeView() {
                 </div>
               </div>
             </div>
+            {/* Tempo nudge on arm: dial already sits at last time's bpm, these
+                chips ask whether today matches it or pushes on. */}
+            {armed && heroTools.metronome && !bpmPromptSeen && !armedToday && armedLast && armedLast.bpm > 0 && !swRunning && swElapsed === 0 && (
+              <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-neutral-500">
+                <span>
+                  last time <span className="tabular-nums text-neutral-400">{armedLast.bpm} bpm</span> —
+                </span>
+                <button className={btn} onClick={() => setBpmPromptSeen(true)}>
+                  same
+                </button>
+                {[2, 5].map((d) => (
+                  <button
+                    key={d}
+                    className={btn}
+                    onClick={() => {
+                      nudgeBpm(d);
+                      setBpmPromptSeen(true);
+                    }}
+                  >
+                    +{d}
+                  </button>
+                ))}
+              </div>
+            )}
             {/* Goal in sight: how today's dial compares to the exercise's target. */}
             {armed?.target_bpm && heroTools.metronome ? (
               <div className="mt-2.5">
@@ -2157,8 +2186,9 @@ export default function PracticeView() {
                 aria-expanded={extrasOpen}
               >
                 <span className="text-xs">{extrasOpen ? "▾" : "▸"}</span>{" "}
-                {heroTools.metronome
-                  ? [
+                {heroTools.metronome ? (
+                  <>
+                    {[
                       `${bpm} bpm`,
                       `${beatsPerBar}/4`,
                       sound,
@@ -2166,8 +2196,12 @@ export default function PracticeView() {
                       trainer ? `+${trainerAdd} every ${trainerBars} bars` : "",
                     ]
                       .filter(Boolean)
-                      .join(" · ")
-                  : "options"}
+                      .join(" · ")}
+                    <span className="text-neutral-600"> · advanced</span>
+                  </>
+                ) : (
+                  "advanced"
+                )}
               </button>
               {heroTools.metronome && (
                 <button
@@ -2387,7 +2421,7 @@ export default function PracticeView() {
                 className="rounded-md border border-neutral-700 px-2.5 py-1 text-xs text-neutral-300 hover:border-neutral-500"
                 href="/practice/tree"
               >
-                🌳 skill tree
+                🌳 syllabus
               </a>
               <button
                 className="rounded-md border border-neutral-700 px-2.5 py-1 text-xs text-neutral-300 hover:border-neutral-500"
@@ -2638,7 +2672,7 @@ export default function PracticeView() {
                     className="rounded-md border border-neutral-700 px-2.5 py-1 text-xs text-neutral-300 hover:border-neutral-500"
                     href="/practice/tree"
                   >
-                    🌳 or browse the full skill tree
+                    🌳 or browse the full syllabus
                   </a>
                   {!unlocked && !fresh && <span className="text-xs text-neutral-600">log in above to add exercises</span>}
                 </div>
@@ -3191,21 +3225,68 @@ export default function PracticeView() {
       )}
 
       {/* Just the two numbers that matter today; lifetime totals live in Progress. */}
-      {!loading && totalSecs > 0 && (
+      {!loading && (
         <footer className="mt-8 text-center text-[10px] leading-relaxed text-neutral-600">
-          {streak > 1 && <span className="text-amber-400/80">streak {streak}</span>}
-          {streak > 1 && todayTotal > 0 && " · "}
-          {todayTotal > 0 && (
-            <>
-              today <span className="tabular-nums">{Math.max(1, Math.round(todayTotal / 60))}m</span>
-            </>
+          {totalSecs > 0 && (
+            <div>
+              {streak > 1 && <span className="text-amber-400/80">streak {streak}</span>}
+              {streak > 1 && todayTotal > 0 && " · "}
+              {todayTotal > 0 && (
+                <>
+                  today <span className="tabular-nums">{Math.max(1, Math.round(todayTotal / 60))}m</span>
+                </>
+              )}
+            </div>
           )}
+          <div className="mt-1 text-neutral-700">
+            suggestions →{" "}
+            <a className="hover:text-neutral-400" href="mailto:benjamincrystal8@gmail.com">
+              benjamincrystal8@gmail.com
+            </a>
+          </div>
         </footer>
       )}
 
       {/* First-visit walkthrough: three spotlights, or tap through the real
           controls — either advances it. */}
-      {coach !== null && (
+      {/* Step 0 of the walkthrough: the pitch, before any spotlights. Blocks
+          the page (unlike the dim-only marks) so it reads as a front door. */}
+      {coach === -1 && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-950/85 p-4">
+          <div className="w-full max-w-sm rounded-xl border border-neutral-700 bg-neutral-900 p-5 text-sm text-neutral-200 shadow-2xl">
+            <h2 className="text-lg font-semibold">Welcome</h2>
+            <p className="mt-2 text-neutral-300">
+              The idea: about five short exercises a day, so you never have to decide what to practice. Arm one, hit
+              Start, and it&apos;s logged in one tap.
+            </p>
+            <p className="mt-2 text-neutral-400">
+              Tools show up only when an exercise needs them, with references along the way. The{" "}
+              <a className="text-neutral-200 underline decoration-neutral-600 hover:decoration-neutral-300" href="/practice/tree">
+                syllabus
+              </a>{" "}
+              has the whole path.
+            </p>
+            <p className="mt-2 text-xs text-neutral-500">
+              It&apos;s early days — all suggestions welcome:{" "}
+              <a className="underline decoration-neutral-700 hover:text-neutral-300" href="mailto:benjamincrystal8@gmail.com">
+                benjamincrystal8@gmail.com
+              </a>
+            </p>
+            <div className="mt-4 flex items-center justify-between">
+              <button className="text-xs text-neutral-500 hover:text-neutral-300" onClick={endCoach}>
+                skip
+              </button>
+              <button
+                className="rounded-md bg-neutral-100 px-3 py-1.5 text-xs font-semibold text-neutral-950 hover:bg-white"
+                onClick={() => setCoach(0)}
+              >
+                show me around
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {coach !== null && coach >= 0 && (
         <CoachMark
           target={coach === 0 ? coachListRef : coachStartRef}
           text={
