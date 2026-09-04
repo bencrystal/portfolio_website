@@ -1295,22 +1295,23 @@ export default function PracticeView() {
     <section className={`${card} mb-4`}>
       <h2 className="mb-2 text-sm font-medium text-neutral-400">Tools</h2>
       <Tuner />
-      <div className="mt-2 flex flex-col gap-1 border-t border-neutral-800 pt-2 text-xs">
+      <div className="mt-2 flex flex-wrap gap-1.5 border-t border-neutral-800 pt-2 text-xs">
+        {/* Pill chips like every other tappable thing on the page. */}
         <a
-          className="text-neutral-500 underline hover:text-neutral-300"
+          className="rounded-md border border-neutral-700 bg-neutral-800/60 px-2 py-1 text-neutral-300 hover:border-neutral-400 hover:bg-neutral-700"
           href="https://www.oolimo.com/en/guitar-chords/analyze"
           target="_blank"
           rel="noopener noreferrer"
         >
-          chord analyzer (oolimo) ↗
+          chord analyzer ↗
         </a>
         <a
-          className="text-neutral-500 underline hover:text-neutral-300"
+          className="rounded-md border border-neutral-700 bg-neutral-800/60 px-2 py-1 text-neutral-300 hover:border-neutral-400 hover:bg-neutral-700"
           href="https://www.all-guitar-chords.com/"
           target="_blank"
           rel="noopener noreferrer"
         >
-          chords &amp; scales reference (all-guitar-chords) ↗
+          chords &amp; scales ↗
         </a>
       </div>
     </section>
@@ -1516,7 +1517,10 @@ export default function PracticeView() {
       {dayDone && !armed && (
         <div className={`${card} mb-4 flex items-center justify-between gap-3 border-amber-500/40`}>
           <p className="text-sm">
-            <span className="font-medium text-amber-400">Done for today ✓</span>{" "}
+            {/* The victory lap has to be earned — under 5 minutes it's just a log note. */}
+            <span className="font-medium text-amber-400">
+              {todayTotal >= 300 ? "Done for today ✓" : "Session logged ✓"}
+            </span>{" "}
             {todayTotal > 0 && (
               <span className="text-neutral-400">
                 <span className="tabular-nums text-neutral-200">{fmtDur(todayTotal)}</span> across{" "}
@@ -1593,7 +1597,11 @@ export default function PracticeView() {
                 </div>
               ) : (
                 <div className="break-words font-medium">
-                  <span className="text-neutral-500">no exercise armed</span>
+                  {/* The page's #1 action shouldn't read as disabled text —
+                      it's a prompt, pointing at the cards. */}
+                  <span className="text-neutral-300">
+                    Tap an exercise to arm it <span className="text-amber-400/80">↓</span>
+                  </span>
                 </div>
               )}
               {selectedEx && exById.get(selectedEx)?.track_variants && (
@@ -1732,8 +1740,10 @@ export default function PracticeView() {
             {/* Random key: only for exercises that ask for it (or freeform). */}
             {heroTools.random_key && (
             <div className="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-md border border-neutral-800 px-2.5 py-1.5">
+              {/* Group label so the interval/drone/note trio reads as one tool. */}
+              <span className="text-[10px] uppercase tracking-widest text-neutral-600">random key</span>
               <label className="flex items-center gap-1.5 text-xs text-neutral-500">
-                key every
+                every
                 <select
                   value={noteSync}
                   onChange={(e) => setNoteSync(Number(e.target.value))}
@@ -2193,8 +2203,15 @@ export default function PracticeView() {
                     </div>
                   )}
                   {ex.description && !expanded && (
-                    // Two-line teaser; the arrow's detail view has the rest.
-                    <p className="mt-1.5 line-clamp-2 whitespace-pre-line text-xs text-neutral-500">
+                    // Two-line teaser; long text fades out instead of chopping
+                    // mid-sentence — the arrow's detail view has the rest.
+                    <p
+                      className={`mt-1.5 line-clamp-2 whitespace-pre-line text-xs text-neutral-500 ${
+                        ex.description.length > 90
+                          ? "[mask-image:linear-gradient(180deg,#000_45%,#00000030_100%)]"
+                          : ""
+                      }`}
+                    >
                       {ex.description}
                     </p>
                   )}
