@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 import BpmRuler from "./BpmRuler";
 import Chart, { Series } from "./Chart";
 import Reveal from "./Reveal";
@@ -72,6 +72,20 @@ const PREFS_KEY = "practice_prefs";
 // First visit shows a short how-it-works card; dismissing it is remembered
 // and the header's "?" brings it back.
 const HINT_KEY = "practice_hint_dismissed";
+// Three coach-marks (arm → Start → Log it) shown once per device to a user
+// with no logged sessions; the hint card can replay them.
+const COACH_KEY = "practice_coach_v1";
+
+// Starter suggestions for an empty space come from the skill tree's first
+// tier — one per branch, so the first tap already has direction.
+const STARTER_BRANCHES: Record<string, string> = {
+  picking: "Picking",
+  fingerpicking: "Fingerpicking",
+  rhythm: "Rhythm & time",
+  theory: "Theory & ears",
+  repertoire: "Repertoire",
+};
+type StarterNode = { id: string; branch: string; position: number; tier: number | null; name: string; description: string | null };
 
 // Mutations that fail because the network is down get queued here and
 // replayed in order once the connection returns (same pattern as /list).
@@ -282,6 +296,87 @@ function DescriptionBody({ text }: { text: string }) {
   );
 }
 
+// One spotlight of the coach tour: dims everything except the target element
+// (giant box-shadow trick) and floats a small card beside it. The overlay is
+// pointer-transparent so tapping the highlighted control itself advances the
+// tour naturally.
+function CoachMark({
+  target,
+  text,
+  step,
+  total,
+  nextLabel,
+  onNext,
+  onSkip,
+}: {
+  target: RefObject<HTMLElement | null>;
+  text: string;
+  step: number;
+  total: number;
+  nextLabel: string;
+  onNext: () => void;
+  onSkip: () => void;
+}) {
+  const [rect, setRect] = useState<{ left: number; top: number; width: number; height: number; bottom: number } | null>(
+    null
+  );
+  useEffect(() => {
+    const el = target.current;
+    if (!el) return;
+    el.scrollIntoView({ block: "center" });
+    const update = () => {
+      const r = el.getBoundingClientRect();
+      setRect({ left: r.left, top: r.top, width: r.width, height: r.height, bottom: r.bottom });
+    };
+    update();
+    window.addEventListener("resize", update);
+    window.addEventListener("scroll", update, true);
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("scroll", update, true);
+    };
+  }, [target, step]);
+  if (!rect || rect.width === 0) return null;
+  const below = rect.bottom + 150 < window.innerHeight;
+  return (
+    <div className="pointer-events-none fixed inset-0 z-50">
+      <div
+        className="absolute rounded-xl ring-2 ring-amber-400/90 transition-all duration-300"
+        style={{
+          left: rect.left - 6,
+          top: rect.top - 6,
+          width: rect.width + 12,
+          height: rect.height + 12,
+          boxShadow: "0 0 0 9999px rgba(10,10,10,0.72)",
+        }}
+      />
+      <div
+        className="pointer-events-auto absolute w-64 max-w-[calc(100vw-2rem)] rounded-lg border border-neutral-700 bg-neutral-900 p-3 text-sm text-neutral-200 shadow-2xl"
+        style={{
+          left: Math.min(Math.max(16, rect.left), Math.max(16, window.innerWidth - 272)),
+          top: below ? rect.bottom + 14 : Math.max(16, rect.top - 132),
+        }}
+      >
+        <p>{text}</p>
+        <div className="mt-2.5 flex items-center justify-between text-xs">
+          <button className="text-neutral-500 hover:text-neutral-300" onClick={onSkip}>
+            skip
+          </button>
+          <span className="tabular-nums text-neutral-600">
+            {step + 1} / {total}
+          </span>
+          <button
+            className="rounded-md bg-neutral-100 px-2.5 py-1 font-semibold text-neutral-950 hover:bg-white"
+            onClick={onNext}
+          >
+            {nextLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function PracticeView() {
   const [exercises, setExercises] = useState<Exercise[] | null>(null);
   const [sessions, setSessions] = useState<Session[] | null>(null);
@@ -371,6 +466,12 @@ export default function PracticeView() {
   const attachTarget = useRef<string | null>(null);
   const [uploading, setUploading] = useState<string | null>(null);
   const [descEdit, setDescEdit] = useState<{ id: string; text: string } | null>(null);
+  // Empty-space starters + first-visit coach-marks.
+  const [starters, setStarters] = useState<StarterNode[] | null>(null);
+  const [starterBusy, setStarterBusy] = useState<string | null>(null);
+  const [coach, setCoach] = useState<number | null>(null); // 0 arm · 1 start · 2 log
+  const coachListRef = useRef<HTMLElement | null>(null);
+  const coachStartRef = useRef<HTMLDivElement | null>(null);
 
   function getMetro() {
     metro.current ??= new Metronome();
@@ -441,6 +542,49 @@ export default function PracticeView() {
     return () => window.removeEventListener("online", sync);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // A brand-new space is a blank page — fetch the skill tree's opening moves
+  // so the first decision is a tap, not a blinking cursor.
+  const noExercises = exercises !== null && exercises.filter((e) => !e.archived).length === 0;
+  useEffect(() => {
+    if (!noExercises || starters !== null) return;
+    const token = localStorage.getItem(TOKEN_KEY);
+    const q = token ? `?token=${encodeURIComponent(token)}` : "";
+    fetch(`/api/practice/tree${q}`)
+      .then((r) => r.json())
+      .then((j) => {
+        const nodes = (j.nodes ?? []) as StarterNode[];
+        const picks: StarterNode[] = [];
+        for (const b of Object.keys(STARTER_BRANCHES)) {
+          const first = nodes
+            .filter((n) => n.branch === b && (n.tier ?? 1) === 1)
+            .sort((a, z) => a.position - z.position)[0];
+          if (first) picks.push(first);
+        }
+        setStarters(picks);
+      })
+      .catch(() => setStarters([]));
+  }, [noExercises, starters]);
+
+  // One tap on a starter spawns the exercise exactly like the tree page does.
+  async function startStarter(nodeId: string) {
+    const token = localStorage.getItem(TOKEN_KEY) ?? "";
+    setStarterBusy(nodeId);
+    try {
+      const res = await fetch(`/api/practice/tree?token=${encodeURIComponent(token)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ node_id: nodeId }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? res.statusText);
+      setExercises((ex) => [...(ex ?? []), json.exercise as Exercise]);
+    } catch (e) {
+      setError(String((e as Error).message ?? e));
+    } finally {
+      setStarterBusy(null);
+    }
+  }
 
   useEffect(() => {
     localStorage.setItem(
@@ -1077,10 +1221,14 @@ export default function PracticeView() {
   const active = (exercises ?? []).filter((e) => !e.archived).sort((a, b) => a.position - b.position);
   const today = todayISO();
   // The hero shows only the armed exercise's tools; with nothing armed it's
-  // the freeform fallback with everything available.
+  // the freeform fallback. New players get just the metronome — random key
+  // and the settings line surface after a few practiced days, one module at
+  // a time instead of the whole cockpit at once.
+  const practicedDayCount = new Set((sessions ?? []).map((s) => s.date)).size;
+  const seasoned = practicedDayCount >= 3;
   const heroTools = selectedEx
     ? toolsOf(exById.get(selectedEx))
-    : { metronome: true, random_key: true };
+    : { metronome: true, random_key: seasoned };
   // Arming an exercise rearranges the whole page around it: the hero goes
   // full-width and headlined, everything else retracts to compact.
   const armed = selectedEx ? exById.get(selectedEx) ?? null : null;
@@ -1099,6 +1247,37 @@ export default function PracticeView() {
   // today before the last one offers to wrap up.
   const loggedTodayIds = new Set((sessions ?? []).filter((s) => s.date === today).map((s) => s.exercise_id));
   const allLoggedToday = active.length > 0 && active.every((e) => loggedTodayIds.has(e.id));
+
+  // ---------- coach-marks ----------
+  // Three spotlights for a first-timer: arm → Start → Log it. Dim-only (the
+  // page stays tappable) so doing the thing advances the tour by itself.
+  function endCoach() {
+    setCoach(null);
+    localStorage.setItem(COACH_KEY, "1");
+  }
+  useEffect(() => {
+    if (exercises === null || sessions === null || coach !== null) return;
+    if (localStorage.getItem(COACH_KEY)) return;
+    if (sessions.length > 0) {
+      localStorage.setItem(COACH_KEY, "1"); // already knows the loop
+      return;
+    }
+    if (exercises.some((e) => !e.archived) && !selectedEx) {
+      setCoach(0);
+      setHintOpen(false); // one guide at a time
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [exercises, sessions, coach, selectedEx]);
+  useEffect(() => {
+    if (coach === 0 && selectedEx) setCoach(1);
+  }, [coach, selectedEx]);
+  useEffect(() => {
+    if (coach === 1 && swRunning) setCoach(2);
+  }, [coach, swRunning]);
+  useEffect(() => {
+    if (coach === 2 && justLogged) endCoach();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [coach, justLogged]);
 
   // Identity colors: hash gives each exercise a stable starting slot, then we
   // walk to the next free one so no two dots collide (until the palette runs
@@ -1501,15 +1680,28 @@ export default function PracticeView() {
             manage tracks down/up-stroke starts separately · “goal” draws a target line on the chart ·{" "}
             <span className="text-neutral-400">Log in</span> with your password to edit your own log.
           </p>
-          <button
-            className="mt-2 rounded-md bg-neutral-800 px-3 py-1 text-xs hover:bg-neutral-700"
-            onClick={() => {
-              localStorage.setItem(HINT_KEY, "1");
-              setHintOpen(false);
-            }}
-          >
-            got it
-          </button>
+          <div className="mt-2 flex gap-2">
+            <button
+              className="rounded-md bg-neutral-800 px-3 py-1 text-xs hover:bg-neutral-700"
+              onClick={() => {
+                localStorage.setItem(HINT_KEY, "1");
+                setHintOpen(false);
+              }}
+            >
+              got it
+            </button>
+            {active.length > 0 && (
+              <button
+                className="rounded-md border border-neutral-700 px-3 py-1 text-xs text-neutral-300 hover:border-neutral-500"
+                onClick={() => {
+                  setHintOpen(false);
+                  setCoach(selectedEx ? 1 : 0);
+                }}
+              >
+                show me ▸
+              </button>
+            )}
+          </div>
         </div>
       )}
 
@@ -1721,7 +1913,7 @@ export default function PracticeView() {
             </div>
             </Reveal>
             )}
-            <div className="mt-3 flex items-center gap-2">
+            <div className="mt-3 flex items-center gap-2" ref={coachStartRef}>
               {sessionBtn("flex-1 py-3")}
               {swElapsed > 0 && !swRunning && (
                 <>
@@ -1792,7 +1984,10 @@ export default function PracticeView() {
             )}
             {/* The current config is the options toggle: reading it tells you
                 what Start will do, tapping it opens the knobs that change it.
-                "Metronome only" sits demoted beside it — a mode, not a headline. */}
+                "Metronome only" sits demoted beside it — a mode, not a headline.
+                Hidden in freeform for brand-new players (progressive reveal). */}
+            {(armed || seasoned) && (
+            <>
             <div className="mt-2 flex items-center justify-between gap-2">
               <button
                 className="min-w-0 truncate rounded text-left text-xs text-neutral-500 outline-none hover:text-neutral-300 focus-visible:ring-1 focus-visible:ring-neutral-500"
@@ -1931,6 +2126,8 @@ export default function PracticeView() {
             </div>
             </div>
             </Reveal>
+            </>
+            )}
             {/* The write-up and stats: auto-open while the exercise is new,
                 tucked behind "details" once it's part of the routine. */}
             {armed && (
@@ -2041,7 +2238,7 @@ export default function PracticeView() {
           </div>
           {/* CSS columns instead of a grid so cards pack by height — a grid
               left a hole under the shorter column. */}
-          <section className="mb-4 sm:columns-2 sm:gap-2">
+          <section className="mb-4 sm:columns-2 sm:gap-2" ref={coachListRef}>
             {/* Said once, up here — the cards below just show a quiet "—". */}
             {!loading && (sessions ?? []).length === 0 && active.length > 0 && (
               <p className="mb-2 text-xs text-neutral-600">
@@ -2250,9 +2447,39 @@ export default function PracticeView() {
               );
             })}
             {!loading && active.length === 0 && (
-              <p className={`${card} text-sm text-neutral-500`}>
-                No exercises yet — open “manage” above to add one.
-              </p>
+              <div className={`${card} text-sm`}>
+                {/* An empty screen is an invitation to act: the tree's opening
+                    moves, one per branch, so the first step is a tap. */}
+                <p className="text-neutral-300">Fresh start — pick a first exercise:</p>
+                {starters === null ? (
+                  <p className="mt-2 text-xs text-neutral-600">loading suggestions…</p>
+                ) : starters.length === 0 ? (
+                  <p className="mt-2 text-xs text-neutral-600">Open “manage” above to add your first exercise.</p>
+                ) : (
+                  <div className="mt-2.5 flex flex-col gap-1.5">
+                    {starters.map((n) => (
+                      <button
+                        key={n.id}
+                        disabled={!unlocked || starterBusy !== null}
+                        onClick={() => void startStarter(n.id)}
+                        className="rounded-md border border-neutral-700 bg-neutral-800/40 px-3 py-2 text-left hover:border-neutral-500 hover:bg-neutral-800 disabled:opacity-50"
+                      >
+                        <span className="font-medium">{starterBusy === n.id ? "adding…" : n.name}</span>
+                        <span className="ml-1.5 text-xs text-neutral-500">{STARTER_BRANCHES[n.branch] ?? n.branch}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <div className="mt-2.5 flex items-center gap-2">
+                  <a
+                    className="rounded-md border border-neutral-700 px-2.5 py-1 text-xs text-neutral-300 hover:border-neutral-500"
+                    href="/practice/tree"
+                  >
+                    🌳 or browse the full skill tree
+                  </a>
+                  {!unlocked && <span className="text-xs text-neutral-600">log in above to add exercises</span>}
+                </div>
+              </div>
             )}
           </section>
 
@@ -2810,6 +3037,35 @@ export default function PracticeView() {
             </>
           )}
         </footer>
+      )}
+
+      {/* First-visit walkthrough: three spotlights, or tap through the real
+          controls — either advances it. */}
+      {coach !== null && (
+        <CoachMark
+          target={coach === 0 ? coachListRef : coachStartRef}
+          text={
+            [
+              "Tap an exercise to arm it — the page rebuilds around what you're practicing.",
+              "Start session runs the metronome and timer together.",
+              "When you stop, Log it saves your tempo and time. That's the whole loop.",
+            ][coach]
+          }
+          step={coach}
+          total={3}
+          nextLabel={coach === 2 ? "got it" : "next"}
+          onNext={() => {
+            if (coach === 2) return endCoach();
+            if (coach === 0 && !armed && active[0]) {
+              // "next" without tapping = arm the first one for them, which
+              // also brings the (mobile-hidden) hero into view for step 2.
+              armExercise(active[0], aggByDate(sessions ?? [], active[0].id));
+            } else {
+              setCoach(coach + 1);
+            }
+          }}
+          onSkip={endCoach}
+        />
       )}
 
       {/* Undo toast for one-tap logging (amber celebration on a personal best) */}
