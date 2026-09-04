@@ -54,20 +54,24 @@ export class Metronome {
   }
 
   private droneGain: GainNode | null = null;
+  private droneOscs: OscillatorNode[] = [];
+  droneVolume = 0.5; // 0..1, independent of the click volume
 
-  /** Sustain the given pitch for one bar, retriggered on each downbeat. */
+  private droneLevel() {
+    return Math.max(0.0001, 0.45 * this.droneVolume);
+  }
+
+  /** Sustain the given pitch until stopped or retriggered at a new pitch.
+   *  Works with the metronome stopped — the drone is its own instrument. */
   playDrone(freq: number) {
-    if (!this.ctx || !this.timer) return;
+    this.ctx ??= new AudioContext();
+    void this.ctx.resume();
     const ctx = this.ctx;
     const time = ctx.currentTime;
-    const dur = (60 / this.bpm) * this.beatsPerBar;
     const gain = ctx.createGain();
-    const level = Math.max(0.0001, 0.22 * this.volume);
-    // Soft attack, hold for the bar, release just before the next downbeat.
+    // Soft attack, then hold until cut.
     gain.gain.setValueAtTime(0.0001, time);
-    gain.gain.exponentialRampToValueAtTime(level, time + 0.06);
-    gain.gain.setValueAtTime(level, Math.max(time + 0.06, time + dur - 0.15));
-    gain.gain.exponentialRampToValueAtTime(0.0001, time + dur);
+    gain.gain.exponentialRampToValueAtTime(this.droneLevel(), time + 0.06);
     // Warm and present rather than loud-and-sharp: two barely detuned
     // triangles thicken the fundamental, a quiet octave sine keeps it
     // audible on phone speakers, and a lowpass rounds off any edge.
@@ -81,6 +85,7 @@ export class Metronome {
       ["triangle", freq, -1],
       ["sine", freq * 2, 0],
     ];
+    const oscs: OscillatorNode[] = [];
     for (const [type, f, det] of voices) {
       const osc = ctx.createOscillator();
       osc.type = type;
@@ -91,17 +96,34 @@ export class Metronome {
       osc.connect(og);
       og.connect(lp);
       osc.start(time);
-      osc.stop(time + dur + 0.02);
+      oscs.push(osc);
     }
-    if (this.droneGain) fadeOut(this.droneGain, time); // retrigger cuts the old tail
+    this.cutDrone(time); // retrigger cuts the old tail
     this.droneGain = gain;
+    this.droneOscs = oscs;
   }
 
-  /** Silence the current drone immediately (mute button). */
-  stopDrone() {
-    if (!this.ctx || !this.droneGain) return;
-    fadeOut(this.droneGain, this.ctx.currentTime);
+  /** Adjust the drone level live without retriggering the attack. */
+  setDroneVolume(v: number) {
+    this.droneVolume = v;
+    if (this.ctx && this.droneGain) {
+      const t = this.ctx.currentTime;
+      this.droneGain.gain.cancelScheduledValues(t);
+      this.droneGain.gain.setTargetAtTime(this.droneLevel(), t, 0.03);
+    }
+  }
+
+  private cutDrone(t: number) {
+    if (!this.droneGain) return;
+    fadeOut(this.droneGain, t);
+    for (const o of this.droneOscs) o.stop(t + 0.1); // free the voices after the fade
     this.droneGain = null;
+    this.droneOscs = [];
+  }
+
+  /** Silence the current drone immediately (the on/off toggle). */
+  stopDrone() {
+    if (this.ctx) this.cutDrone(this.ctx.currentTime);
   }
 
   private click(time: number, accent: boolean) {

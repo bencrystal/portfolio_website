@@ -421,9 +421,11 @@ export default function PracticeView() {
   const noteSyncRef = useRef(0);
   const barCount = useRef(-1); // bars since start; -1 until the first downbeat
   const [noteMorph, setNoteMorph] = useState<number | null>(null); // ms of the lead-in animation
-  // Downbeat drone of the current note; muted by default and not persisted.
+  // Sustained drone of the current note; off by default and not persisted
+  // (its volume is), and independent of the metronome running.
   const [droneOn, setDroneOn] = useState(false);
   const droneRef = useRef(false);
+  const [droneVol, setDroneVol] = useState(0.5);
 
   // --- stopwatch ---
   const [selectedEx, setSelectedEx] = useState<string | null>(null);
@@ -562,6 +564,7 @@ export default function PracticeView() {
       if (typeof p.beatsPerBar === "number") setBeatsPerBar(p.beatsPerBar);
       if (["beep", "wood", "tick"].includes(p.sound)) setSound(p.sound);
       if (typeof p.volume === "number") setVolume(Math.min(1, Math.max(0, p.volume)));
+      if (typeof p.droneVol === "number") setDroneVol(Math.min(1, Math.max(0, p.droneVol)));
       if (typeof p.noteSync === "number") setNoteSync(p.noteSync);
       if (typeof p.countIn === "boolean") setCountIn(p.countIn);
       if (typeof p.trainer === "boolean") setTrainer(p.trainer);
@@ -644,9 +647,9 @@ export default function PracticeView() {
     if (new URLSearchParams(location.search).has("fresh")) return;
     localStorage.setItem(
       PREFS_KEY,
-      JSON.stringify({ bpm, beatsPerBar, sound, volume, noteSync, countIn, trainer, trainerAdd, trainerBars, extrasOpen, instFilter })
+      JSON.stringify({ bpm, beatsPerBar, sound, volume, droneVol, noteSync, countIn, trainer, trainerAdd, trainerBars, extrasOpen, instFilter })
     );
-  }, [bpm, beatsPerBar, sound, volume, noteSync, countIn, trainer, trainerAdd, trainerBars, extrasOpen, instFilter]);
+  }, [bpm, beatsPerBar, sound, volume, droneVol, noteSync, countIn, trainer, trainerAdd, trainerBars, extrasOpen, instFilter]);
 
   useEffect(() => {
     trainerRef.current = { on: trainer, add: trainerAdd, bars: trainerBars };
@@ -806,7 +809,7 @@ export default function PracticeView() {
     setNoteMorph(null);
     // The drone must always sound the note on screen, so every change —
     // auto-sync mid-bar or a manual tap — retriggers it at the new pitch.
-    if (droneRef.current && metro.current?.running) metro.current.playDrone(droneHz(cur.idx));
+    if (droneRef.current) getMetro().playDrone(droneHz(cur.idx));
   }, []);
 
   const toggleMetronome = useCallback(() => {
@@ -829,24 +832,15 @@ export default function PracticeView() {
         }
       }
       const every = noteSyncRef.current;
-      let swapped = false;
       if (every > 0 && barCount.current >= 0) {
         // Count beats from the bar structure (not a free-running counter) so
         // note changes stay anchored to the downbeat even if the interval is
         // switched on mid-run.
         const beatIndex = barCount.current * m.beatsPerBar + b;
-        if (beatIndex % every === 0) {
-          advanceNote(); // retriggers the drone itself at the new pitch
-          swapped = true;
-        }
+        if (beatIndex % every === 0) advanceNote(); // retriggers the drone at the new pitch
         // Up to 4 beats before the swap, start easing the upcoming note in.
         const lead = Math.min(4, every);
         if ((beatIndex + lead) % every === 0) setNoteMorph((lead * 60000) / m.bpm);
-      }
-      // Downbeats re-sound the held note so the drone never dies out mid-bar.
-      if (b === 0 && !swapped && droneRef.current) {
-        const cur = noteRef.current.cur;
-        if (cur) m.playDrone(droneHz(cur.idx));
       }
     };
     if (m.running) {
@@ -884,11 +878,14 @@ export default function PracticeView() {
   useEffect(() => {
     droneRef.current = droneOn;
     if (!droneOn) metro.current?.stopDrone();
-    // Unmuting mid-run sounds the current note right away rather than
-    // leaving silence until the next downbeat.
-    else if (metro.current?.running && noteRef.current.cur)
-      metro.current.playDrone(droneHz(noteRef.current.cur.idx));
-  }, [droneOn]);
+    // Turning it on sounds the current key immediately, metronome or not;
+    // with no key picked yet, generate one so the toggle always makes sound.
+    else if (noteRef.current.cur) getMetro().playDrone(droneHz(noteRef.current.cur.idx));
+    else advanceNote();
+  }, [droneOn, advanceNote]);
+  useEffect(() => {
+    getMetro().setDroneVolume(droneVol);
+  }, [droneVol]);
 
   const nudgeBpm = (d: number) => setBpm((b) => clampBpm(b + d));
 
@@ -1761,7 +1758,7 @@ export default function PracticeView() {
           </label>
           <button
             onClick={() => setDroneOn((v) => !v)}
-            title="drone the current key on each downbeat"
+            title="sustain a drone of the current key (works without the metronome)"
             aria-pressed={droneOn}
             className={`rounded-md border px-2 py-1 text-xs ${
               droneOn
@@ -1769,8 +1766,19 @@ export default function PracticeView() {
                 : "border-neutral-700 text-neutral-500 hover:border-neutral-500"
             }`}
           >
-            drone {droneOn ? "on" : "muted"}
+            drone {droneOn ? "on" : "off"}
           </button>
+          {droneOn && (
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={Math.round(droneVol * 100)}
+              onChange={(e) => setDroneVol(Number(e.target.value) / 100)}
+              className="w-16 accent-amber-500"
+              aria-label="drone volume"
+            />
+          )}
         </div>
         <button
           className="rounded-md border border-neutral-800 px-2.5 py-1.5 text-xs text-neutral-400 hover:border-neutral-600 hover:text-neutral-200"
@@ -2206,7 +2214,7 @@ export default function PracticeView() {
               </label>
               <button
                 onClick={() => setDroneOn((v) => !v)}
-                title="drone the current key on each downbeat"
+                title="sustain a drone of the current key (works without the metronome)"
                 aria-pressed={droneOn}
                 className={`rounded-md border px-2 py-1 text-xs ${
                   droneOn
@@ -2214,8 +2222,19 @@ export default function PracticeView() {
                     : "border-neutral-700 text-neutral-500 hover:border-neutral-500"
                 }`}
               >
-                drone {droneOn ? "on" : "muted"}
+                drone {droneOn ? "on" : "off"}
               </button>
+              {droneOn && (
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  value={Math.round(droneVol * 100)}
+                  onChange={(e) => setDroneVol(Number(e.target.value) / 100)}
+                  className="w-16 accent-amber-500"
+                  aria-label="drone volume"
+                />
+              )}
               <button
                 onClick={advanceNote}
                 title="press N or tap for a new key"
