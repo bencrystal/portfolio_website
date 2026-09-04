@@ -21,7 +21,14 @@ type Exercise = {
   track_variants?: boolean;
   description?: string | null;
   target_bpm?: number | null;
+  tools?: { metronome?: boolean; random_key?: boolean } | null;
 };
+
+// Which tools an exercise wants in the session hero. Metronome-only until
+// flagged otherwise, so existing exercises keep their current behavior.
+function toolsOf(e?: Exercise | null) {
+  return { metronome: true, random_key: false, ...(e?.tools ?? {}) };
+}
 type Session = {
   id: string;
   exercise_id: string;
@@ -345,6 +352,7 @@ export default function PracticeView() {
   const [logOpen, setLogOpen] = useState(false); // log shows ~2 entries until expanded
   const logRef = useRef<HTMLDivElement | null>(null); // measured so max-height can lerp open
   const [newExName, setNewExName] = useState("");
+  const [newExTools, setNewExTools] = useState({ metronome: true, random_key: false });
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [hoverRef, setHoverRef] = useState<string | null>(null); // desktop hover preview
   const dragEx = useRef<string | null>(null);
@@ -734,20 +742,22 @@ export default function PracticeView() {
   // metronome alone stays reachable via its own small affordance.
   function startSession() {
     const m = getMetro();
+    // Exercises can opt out of the metronome; Start then only runs the timer.
+    const wantMetro = !selectedEx || toolsOf((exercises ?? []).find((x) => x.id === selectedEx)).metronome;
     if (swRunning || countingIn) {
       // Stop everything (a stop during the count-in just cancels it).
       countInPending.current = false;
       setCountingIn(false);
       if (swRunning) swToggle();
       if (m.running) toggleMetronome();
-    } else if (countIn && !m.running) {
+    } else if (countIn && wantMetro && !m.running) {
       // One bar of clicks first; the beat handler starts the timer.
       countInPending.current = true;
       setCountingIn(true);
       toggleMetronome();
     } else {
       swToggle();
-      if (!m.running) toggleMetronome();
+      if (wantMetro && !m.running) toggleMetronome();
     }
   }
 
@@ -897,7 +907,7 @@ export default function PracticeView() {
     const name = newExName.trim();
     if (!name || !requireUnlock()) return;
     try {
-      const { exercise } = await api("exercises", "POST", { name });
+      const { exercise } = await api("exercises", "POST", { name, tools: newExTools });
       setExercises((ex) => [...(ex ?? []), exercise]);
       setNewExName("");
       setSelectedEx((cur) => cur ?? exercise.id);
@@ -1053,6 +1063,11 @@ export default function PracticeView() {
   const exById = new Map((exercises ?? []).map((e) => [e.id, e]));
   const active = (exercises ?? []).filter((e) => !e.archived).sort((a, b) => a.position - b.position);
   const today = todayISO();
+  // The hero shows only the armed exercise's tools; with nothing armed it's
+  // the freeform fallback with everything available.
+  const heroTools = selectedEx
+    ? toolsOf(exById.get(selectedEx))
+    : { metronome: true, random_key: true };
 
   // Identity colors: hash gives each exercise a stable starting slot, then we
   // walk to the next free one so no two dots collide (until the palette runs
@@ -1403,7 +1418,7 @@ export default function PracticeView() {
       )}
 
       {offline && (
-        <div className="mb-4 rounded-md border border-amber-900 bg-amber-950/40 px-3 py-2 text-sm text-amber-300">
+        <div role="status" className="mb-4 rounded-md border border-amber-900 bg-amber-950/40 px-3 py-2 text-sm text-amber-300">
           Offline — edits are saved on this device and sync when you're back.
         </div>
       )}
@@ -1443,7 +1458,7 @@ export default function PracticeView() {
                 {selectedEx ? exById.get(selectedEx)?.name : <span className="text-neutral-500">no exercise armed</span>}
               </div>
               <div className="text-xs text-neutral-500">
-                {bpm} bpm · {beatsPerBar}/4 · {sound}
+                {heroTools.metronome ? `${bpm} bpm · ${beatsPerBar}/4 · ${sound}` : "timer only"}
                 {selTodaySecs > 0 && (
                   <>
                     {" · "}
@@ -1457,6 +1472,7 @@ export default function PracticeView() {
                     <button
                       key={v}
                       onClick={() => selectVariant(v)}
+                      aria-pressed={variant === v}
                       className={`rounded px-2 py-1 text-xs ${
                         variant === v
                           ? "bg-neutral-200 font-semibold text-neutral-950"
@@ -1474,6 +1490,7 @@ export default function PracticeView() {
             {/* Two aligned rows: numbers on top (bpm | timer), their small
                 companions below (beat dots | "session" label). */}
             <div className="flex items-stretch justify-between">
+              {heroTools.metronome && (
               <div className="flex flex-col justify-between">
                 <div className={`font-bold tabular-nums transition-all ${swRunning ? "text-2xl" : "text-4xl"}`}>
                   {bpm}
@@ -1481,7 +1498,7 @@ export default function PracticeView() {
                 </div>
                 {/* Beat dots live right under the number they describe; the
                     downbeat is amber even at rest so "1" reads at a glance. */}
-                <div className="mt-1.5 flex items-center gap-2">
+                <div className="mt-1.5 flex items-center gap-2" aria-hidden="true">
                   {Array.from({ length: beatsPerBar }, (_, i) => (
                     <span
                       key={i}
@@ -1498,6 +1515,7 @@ export default function PracticeView() {
                   ))}
                 </div>
               </div>
+              )}
               <div className="flex flex-col justify-between text-right">
                 <div
                   className={`font-bold tabular-nums transition-all ${
@@ -1511,6 +1529,8 @@ export default function PracticeView() {
                 </div>
               </div>
             </div>
+            {heroTools.metronome && (
+            <>
             <BpmRuler value={bpm} onChange={setBpm} />
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <button className={btn} onClick={tapTempo}>
@@ -1518,12 +1538,14 @@ export default function PracticeView() {
               </button>
               <div className="flex gap-1">
                 {[-5, -1, +1, +5].map((d) => (
-                  <button key={d} className={btn} onClick={() => nudgeBpm(d)}>
+                  <button key={d} className={btn} onClick={() => nudgeBpm(d)} aria-label={`${d > 0 ? "+" : ""}${d} bpm`}>
                     {d > 0 ? `+${d}` : d}
                   </button>
                 ))}
               </div>
             </div>
+            </>
+            )}
             <div className="mt-3 flex items-center gap-2">
               {sessionBtn("flex-1 py-3")}
               {swElapsed > 0 && !swRunning && (
@@ -1541,6 +1563,7 @@ export default function PracticeView() {
               )}
             </div>
             {/* A mode, not a setting — its own row, quieter than Start. */}
+            {heroTools.metronome && (
             <div className="mt-2">
               <button
                 className={`w-full rounded-md border px-3 py-1.5 text-xs ${
@@ -1549,10 +1572,63 @@ export default function PracticeView() {
                     : "border-neutral-700 text-neutral-300 hover:bg-neutral-800"
                 }`}
                 onClick={toggleMetronome}
+                aria-pressed={running}
               >
                 {running ? "stop metronome" : "metronome only"}
               </button>
             </div>
+            )}
+            {/* Random key: only for exercises that ask for it (or freeform). */}
+            {heroTools.random_key && (
+            <div className="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-md border border-neutral-800 px-2.5 py-1.5">
+              <label className="flex items-center gap-1.5 text-xs text-neutral-500">
+                key every
+                <select
+                  value={noteSync}
+                  onChange={(e) => setNoteSync(Number(e.target.value))}
+                  className={input}
+                  aria-label="auto key change interval"
+                >
+                  <option value={0}>off</option>
+                  {[1, 2, 4, 8, 16, 32].map((n) => (
+                    <option key={n} value={n}>
+                      {n} beat{n > 1 ? "s" : ""}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button
+                onClick={() => setDroneOn((v) => !v)}
+                title="drone the current key on each downbeat"
+                aria-pressed={droneOn}
+                className={`rounded-md border px-2 py-1 text-xs ${
+                  droneOn
+                    ? "border-amber-500/60 text-amber-400"
+                    : "border-neutral-700 text-neutral-500 hover:border-neutral-500"
+                }`}
+              >
+                drone {droneOn ? "on" : "muted"}
+              </button>
+              <button
+                onClick={advanceNote}
+                title="press N or tap for a new key"
+                aria-label="new random key"
+                className="min-w-[3.5rem] rounded-md bg-neutral-800 px-3 py-1 text-center hover:bg-neutral-700"
+              >
+                {noteCur ? (
+                  <NoteMorph
+                    cur={noteCur.label}
+                    next={noteSync > 0 ? noteNext?.label ?? null : null}
+                    morphMs={noteMorph}
+                    curClass="inline-block text-lg font-bold"
+                    nextClass="ml-1.5 inline-block align-middle text-xs text-neutral-500"
+                  />
+                ) : (
+                  <span className="text-lg font-bold">♪?</span>
+                )}
+              </button>
+            </div>
+            )}
             {/* Tuning lives behind one small toggle so the hero stays at
                 exercise → tempo → Start for anyone new to the page. */}
             <button
@@ -1565,6 +1641,7 @@ export default function PracticeView() {
                 sub-panel so the pile of small controls reads as one group. */}
             <Reveal open={extrasOpen}>
             <div className="mt-2 rounded-lg border border-neutral-800 bg-neutral-950/50 p-2.5">
+            {heroTools.metronome && (
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-neutral-400">
               <label className="flex items-center gap-1.5">
                 <input
@@ -1616,7 +1693,14 @@ export default function PracticeView() {
                 </span>
               )}
             </div>
-            <div className="mt-2.5 flex flex-wrap items-center gap-3 border-t border-neutral-800/60 pt-2.5">
+            )}
+            <div
+              className={`flex flex-wrap items-center gap-3 ${
+                heroTools.metronome ? "mt-2.5 border-t border-neutral-800/60 pt-2.5" : ""
+              }`}
+            >
+              {heroTools.metronome && (
+              <>
               <select
                 value={beatsPerBar}
                 onChange={(e) => setBeatsPerBar(Number(e.target.value))}
@@ -1634,12 +1718,15 @@ export default function PracticeView() {
                   <button
                     key={s}
                     onClick={() => setSound(s)}
+                    aria-pressed={sound === s}
                     className={`px-2.5 py-1.5 ${sound === s ? "bg-neutral-200 text-neutral-950" : "text-neutral-400"}`}
                   >
                     {s}
                   </button>
                 ))}
               </div>
+              </>
+              )}
               <label className="flex items-center gap-1 text-xs text-neutral-500">
                 🔊
                 <input
@@ -1652,90 +1739,13 @@ export default function PracticeView() {
                   aria-label="volume"
                 />
               </label>
-              <label className="ml-auto flex items-center gap-1.5 text-xs text-neutral-500 lg:hidden">
-                note every
-                <select
-                  value={noteSync}
-                  onChange={(e) => setNoteSync(Number(e.target.value))}
-                  className={input}
-                  aria-label="auto note change"
-                >
-                  <option value={0}>off</option>
-                  {[1, 2, 4, 8, 16, 32].map((n) => (
-                    <option key={n} value={n}>
-                      {n} beat{n > 1 ? "s" : ""}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  onClick={() => setDroneOn((v) => !v)}
-                  title="drone the current note on each downbeat"
-                  className={`rounded-md border px-2 py-0.5 ${
-                    droneOn
-                      ? "border-amber-500/60 text-amber-400"
-                      : "border-neutral-700 text-neutral-500 hover:border-neutral-500"
-                  }`}
-                >
-                  drone {droneOn ? "on" : "muted"}
-                </button>
-              </label>
             </div>
             </div>
             </Reveal>
           </section>
 
-          {/* Random note: its own card on desktop; lives in the strip on mobile. */}
-          {/* One compact row — the tall version was mostly dead space. The
-              keyboard hint moved into the button's title. */}
-          <section className={`${card} mb-4 hidden items-center justify-between gap-3 lg:flex`}>
-            <div>
-              <h2 className="text-sm font-medium text-neutral-400">Random note</h2>
-              <label className="mt-1 flex items-center gap-1.5 text-xs text-neutral-500">
-                change every
-                <select
-                  value={noteSync}
-                  onChange={(e) => setNoteSync(Number(e.target.value))}
-                  className={input}
-                  aria-label="auto note change"
-                >
-                  <option value={0}>off</option>
-                  {[1, 2, 4, 8, 16, 32].map((n) => (
-                    <option key={n} value={n}>
-                      {n} beat{n > 1 ? "s" : ""}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  onClick={() => setDroneOn((v) => !v)}
-                  title="drone the current note on each downbeat"
-                  className={`rounded-md border px-2 py-0.5 ${
-                    droneOn
-                      ? "border-amber-500/60 text-amber-400"
-                      : "border-neutral-700 text-neutral-500 hover:border-neutral-500"
-                  }`}
-                >
-                  drone {droneOn ? "on" : "muted"}
-                </button>
-              </label>
-            </div>
-            <button
-              onClick={advanceNote}
-              title="press N or tap"
-              className="min-w-[4.5rem] rounded-lg bg-neutral-800 px-3 py-2 text-center hover:bg-neutral-700"
-            >
-              {noteCur ? (
-                <NoteMorph
-                  cur={noteCur.label}
-                  next={noteSync > 0 ? noteNext?.label ?? null : null}
-                  morphMs={noteMorph}
-                  curClass="inline-block text-2xl font-bold"
-                  nextClass="ml-2 inline-block align-middle text-sm text-neutral-500"
-                />
-              ) : (
-                <span className="text-2xl font-bold">?</span>
-              )}
-            </button>
-          </section>
+          {/* The random key generator lives inside the session hero now,
+              shown only for exercises that flag it (or freeform practice). */}
 
           {/* Tools: the tuner plus handy external references. Visible on
               mobile too — tuning is the tool you want on a phone. */}
@@ -1827,7 +1837,11 @@ export default function PracticeView() {
                     dragEx.current = null;
                   }}
                 >
-                  <button className="flex w-full items-center gap-2 text-left" onClick={() => armExercise(ex, aggs)}>
+                  <button
+                    className="flex w-full items-center gap-2 rounded text-left outline-none focus-visible:ring-1 focus-visible:ring-neutral-400"
+                    onClick={() => armExercise(ex, aggs)}
+                    aria-pressed={selected}
+                  >
                     <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: colorOf(ex.id) }} />
                     <span className="min-w-0 flex-1 break-words font-medium">{ex.name}</span>
                     {ex.ref_url && (
@@ -2069,6 +2083,27 @@ export default function PracticeView() {
                         >
                           ↓↑
                         </button>
+                        {/* Which tools this exercise puts in the session hero. */}
+                        <button
+                          className={`text-xs ${
+                            toolsOf(ex).metronome ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
+                          }`}
+                          title="Metronome in the session card"
+                          aria-pressed={toolsOf(ex).metronome}
+                          onClick={() => patchExercise(ex.id, { tools: { ...toolsOf(ex), metronome: !toolsOf(ex).metronome } })}
+                        >
+                          met
+                        </button>
+                        <button
+                          className={`text-xs ${
+                            toolsOf(ex).random_key ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
+                          }`}
+                          title="Random key generator in the session card"
+                          aria-pressed={toolsOf(ex).random_key}
+                          onClick={() => patchExercise(ex.id, { tools: { ...toolsOf(ex), random_key: !toolsOf(ex).random_key } })}
+                        >
+                          key
+                        </button>
                         <button
                           className={`text-xs ${
                             ex.target_bpm ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
@@ -2155,6 +2190,28 @@ export default function PracticeView() {
                   <button className={btn} onClick={addExercise}>
                     Add
                   </button>
+                </div>
+                {/* Which tools the new exercise shows in the session hero. */}
+                <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-neutral-500">
+                  with:
+                  <label className="flex items-center gap-1.5">
+                    <input
+                      type="checkbox"
+                      className="accent-amber-500"
+                      checked={newExTools.metronome}
+                      onChange={(e) => setNewExTools((t) => ({ ...t, metronome: e.target.checked }))}
+                    />
+                    metronome
+                  </label>
+                  <label className="flex items-center gap-1.5">
+                    <input
+                      type="checkbox"
+                      className="accent-amber-500"
+                      checked={newExTools.random_key}
+                      onChange={(e) => setNewExTools((t) => ({ ...t, random_key: e.target.checked }))}
+                    />
+                    random key
+                  </label>
                 </div>
               </div>
           </section>

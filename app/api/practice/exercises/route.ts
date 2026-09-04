@@ -9,6 +9,17 @@ function unauthorized() {
 // Reads show the token's space (or the default space without a token);
 // mutations require ?token=<space password> and are scoped to that space.
 
+// Per-exercise hero toolset flags; only known boolean keys survive.
+function cleanTools(t: unknown): Record<string, boolean> | null {
+  if (typeof t !== "object" || t === null) return null;
+  const src = t as Record<string, unknown>;
+  const out: Record<string, boolean> = {};
+  for (const k of ["metronome", "random_key"]) {
+    if (typeof src[k] === "boolean") out[k] = src[k] as boolean;
+  }
+  return Object.keys(out).length ? out : null;
+}
+
 async function readSpace(req: NextRequest): Promise<string | null | "bad-token"> {
   const token = req.nextUrl.searchParams.get("token");
   if (token) return (await spaceForToken(token)) ?? "bad-token";
@@ -21,7 +32,7 @@ export async function GET(req: NextRequest) {
   if (!space) return NextResponse.json({ exercises: [] });
   const { data, error } = await scribeDb
     .from("practice_exercises")
-    .select("id, name, position, archived, ref_url, track_variants, description, target_bpm")
+    .select("id, name, position, archived, ref_url, track_variants, description, target_bpm, tools")
     .eq("space_id", space)
     .order("position", { ascending: true });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -31,18 +42,19 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const space = await spaceForToken(req.nextUrl.searchParams.get("token"));
   if (!space) return unauthorized();
-  const { name } = await req.json();
+  const { name, tools } = await req.json();
   if (!name?.trim()) return NextResponse.json({ error: "missing name" }, { status: 400 });
+  const cleaned = cleanTools(tools);
   const { data, error } = await scribeDb
     .from("practice_exercises")
-    .insert({ name: name.trim(), position: Date.now() / 1000, space_id: space })
+    .insert({ name: name.trim(), position: Date.now() / 1000, space_id: space, ...(cleaned ? { tools: cleaned } : {}) })
     .select()
     .single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ exercise: data });
 }
 
-// PATCH { id, name?, position?, archived?, track_variants?, description?, ref_url? (null clears) }
+// PATCH { id, name?, position?, archived?, track_variants?, description?, tools?, ref_url? (null clears) }
 export async function PATCH(req: NextRequest) {
   const space = await spaceForToken(req.nextUrl.searchParams.get("token"));
   if (!space) return unauthorized();
@@ -52,6 +64,10 @@ export async function PATCH(req: NextRequest) {
   if (typeof fields.position === "number") updates.position = fields.position;
   if (typeof fields.archived === "boolean") updates.archived = fields.archived;
   if (typeof fields.track_variants === "boolean") updates.track_variants = fields.track_variants;
+  if ("tools" in fields) {
+    const cleaned = cleanTools(fields.tools);
+    if (cleaned) updates.tools = cleaned;
+  }
   if ("description" in fields) {
     updates.description =
       typeof fields.description === "string" && fields.description.trim() ? fields.description.trim() : null;
