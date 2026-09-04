@@ -14,7 +14,7 @@ function cleanTools(t: unknown): Record<string, boolean> | null {
   if (typeof t !== "object" || t === null) return null;
   const src = t as Record<string, unknown>;
   const out: Record<string, boolean> = {};
-  for (const k of ["metronome", "random_key"]) {
+  for (const k of ["metronome", "random_key", "check_off"]) {
     if (typeof src[k] === "boolean") out[k] = src[k] as boolean;
   }
   return Object.keys(out).length ? out : null;
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
   if (!space) return NextResponse.json({ exercises: [] });
   const { data, error } = await scribeDb
     .from("practice_exercises")
-    .select("id, name, position, archived, ref_url, track_variants, description, target_bpm, tools")
+    .select("id, name, position, archived, ref_url, track_variants, description, target_bpm, tools, instrument")
     .eq("space_id", space)
     .order("position", { ascending: true });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -71,6 +71,13 @@ export async function PATCH(req: NextRequest) {
   if ("description" in fields) {
     updates.description =
       typeof fields.description === "string" && fields.description.trim() ? fields.description.trim() : null;
+  }
+  if ("instrument" in fields) {
+    // Lowercased so "Guitar" and "guitar" collapse into one filter chip.
+    updates.instrument =
+      typeof fields.instrument === "string" && fields.instrument.trim()
+        ? fields.instrument.trim().toLowerCase()
+        : null;
   }
   if ("target_bpm" in fields) {
     updates.target_bpm =

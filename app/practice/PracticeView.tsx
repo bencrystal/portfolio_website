@@ -21,13 +21,19 @@ type Exercise = {
   track_variants?: boolean;
   description?: string | null;
   target_bpm?: number | null;
-  tools?: { metronome?: boolean; random_key?: boolean } | null;
+  // check_off: no bpm/timer apparatus — the exercise is a daily "did it ✓"
+  // (vocal warmups, listening drills). Logs a bpm-less session in one tap.
+  tools?: { metronome?: boolean; random_key?: boolean; check_off?: boolean } | null;
+  instrument?: string | null; // lowercase tag ("guitar", "vocals") for the filter chips
 };
 
 // Which tools an exercise wants in the session hero. Metronome-only until
 // flagged otherwise, so existing exercises keep their current behavior.
 function toolsOf(e?: Exercise | null) {
-  return { metronome: true, random_key: false, ...(e?.tools ?? {}) };
+  const t = { metronome: true, random_key: false, check_off: false, ...(e?.tools ?? {}) };
+  // A check-off exercise has no use for the session tools.
+  if (t.check_off) return { ...t, metronome: false, random_key: false };
+  return t;
 }
 type Session = {
   id: string;
@@ -158,9 +164,16 @@ function aggByDate(sessions: Session[], exId: string, variant?: Variant): DayAgg
   return Array.from(byDate.values()).sort((a, b) => b.date.localeCompare(a.date));
 }
 
-// "96 bpm · 4m 10s" — whichever parts an aggregate actually has.
+// "96 bpm · 4m 10s" — whichever parts an aggregate actually has. A day with
+// neither (a check-off log) reads as a plain ✓.
 function fmtAgg(a: DayAgg) {
-  return [a.bpm > 0 ? `${a.bpm} bpm` : "", a.seconds > 0 ? fmtDur(a.seconds) : ""].filter(Boolean).join(" · ");
+  return [a.bpm > 0 ? `${a.bpm} bpm` : "", a.seconds > 0 ? fmtDur(a.seconds) : ""].filter(Boolean).join(" · ") || "✓";
+}
+
+// YouTube watch/share/shorts/embed links all yield the 11-char video id.
+function ytId(url: string): string | null {
+  const m = url.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{11})/);
+  return m ? m[1] : null;
 }
 
 type FormState = {
@@ -462,7 +475,9 @@ export default function PracticeView() {
   useEffect(() => setDetailsOpen(null), [selectedEx]);
   const logRef = useRef<HTMLDivElement | null>(null); // measured so max-height can lerp open
   const [newExName, setNewExName] = useState("");
-  const [newExTools, setNewExTools] = useState({ metronome: true, random_key: false });
+  const [newExTools, setNewExTools] = useState({ metronome: true, random_key: false, check_off: false });
+  // Instrument filter chip ("all" or a lowercase tag); the queue follows it.
+  const [instFilter, setInstFilter] = useState("all");
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [hoverRef, setHoverRef] = useState<string | null>(null); // desktop hover preview
   const dragEx = useRef<string | null>(null);
@@ -553,6 +568,7 @@ export default function PracticeView() {
       if ([1, 2, 5].includes(p.trainerAdd)) setTrainerAdd(p.trainerAdd);
       if ([2, 4, 8, 16].includes(p.trainerBars)) setTrainerBars(p.trainerBars);
       if (typeof p.extrasOpen === "boolean") setExtrasOpen(p.extrasOpen);
+      if (typeof p.instFilter === "string") setInstFilter(p.instFilter);
     } catch {
       // Corrupt prefs — defaults are fine.
     }
@@ -628,9 +644,9 @@ export default function PracticeView() {
     if (new URLSearchParams(location.search).has("fresh")) return;
     localStorage.setItem(
       PREFS_KEY,
-      JSON.stringify({ bpm, beatsPerBar, sound, volume, noteSync, countIn, trainer, trainerAdd, trainerBars, extrasOpen })
+      JSON.stringify({ bpm, beatsPerBar, sound, volume, noteSync, countIn, trainer, trainerAdd, trainerBars, extrasOpen, instFilter })
     );
-  }, [bpm, beatsPerBar, sound, volume, noteSync, countIn, trainer, trainerAdd, trainerBars, extrasOpen]);
+  }, [bpm, beatsPerBar, sound, volume, noteSync, countIn, trainer, trainerAdd, trainerBars, extrasOpen, instFilter]);
 
   useEffect(() => {
     trainerRef.current = { on: trainer, add: trainerAdd, bars: trainerBars };
@@ -1004,6 +1020,29 @@ export default function PracticeView() {
     }
   }
 
+  // Check-off exercises: one tap = one bpm-less, timer-less log. The date
+  // alone carries the meaning ("did starr's warmup today"), and streaks
+  // count dates, not seconds, so these keep the chain alive.
+  async function checkOff() {
+    if (!requireUnlock()) return;
+    if (!selectedEx) return;
+    const exId = selectedEx;
+    try {
+      const { session } = await api("sessions", "POST", {
+        exercise_id: exId,
+        date: todayISO(),
+        bpm: null,
+        seconds: 0,
+        note: null,
+        variant: null,
+      });
+      setSessions((s) => [...(s ?? []), session]);
+      announceLog(session, 0);
+    } catch (e) {
+      setError(String((e as Error).message));
+    }
+  }
+
   async function undoLog() {
     if (!justLogged) return;
     const id = justLogged.session.id;
@@ -1258,7 +1297,12 @@ export default function PracticeView() {
   // ---------- derived ----------
 
   const exById = new Map((exercises ?? []).map((e) => [e.id, e]));
-  const active = (exercises ?? []).filter((e) => !e.archived).sort((a, b) => a.position - b.position);
+  const activeAll = (exercises ?? []).filter((e) => !e.archived).sort((a, b) => a.position - b.position);
+  // Instrument chips exist only once at least one exercise is tagged; the
+  // filter narrows the whole page (queue, Resume, chips), not just the list.
+  const instruments = Array.from(new Set(activeAll.map((e) => e.instrument ?? "").filter(Boolean))).sort();
+  const instApplied = instFilter !== "all" && instruments.includes(instFilter);
+  const active = instApplied ? activeAll.filter((e) => (e.instrument ?? "") === instFilter) : activeAll;
   const today = todayISO();
   // The hero shows only the armed exercise's tools; with nothing armed it's
   // the freeform fallback. New players get just the metronome — random key
@@ -1268,7 +1312,7 @@ export default function PracticeView() {
   const seasoned = practicedDayCount >= 3;
   const heroTools = selectedEx
     ? toolsOf(exById.get(selectedEx))
-    : { metronome: true, random_key: seasoned };
+    : { metronome: true, random_key: seasoned, check_off: false };
   // Arming an exercise rearranges the whole page around it: the hero goes
   // full-width and headlined, everything else retracts to compact.
   const armed = selectedEx ? exById.get(selectedEx) ?? null : null;
@@ -1983,7 +2027,9 @@ export default function PracticeView() {
             {/* While a session runs the live timer takes over and the
                 set-and-forget bpm number steps back. */}
             {/* Two aligned rows: numbers on top (bpm | timer), their small
-                companions below (beat dots | "session" label). */}
+                companions below (beat dots | "session" label). Check-off
+                exercises skip the whole apparatus — one button below. */}
+            {!heroTools.check_off && (
             <div className="flex items-stretch justify-between">
               {heroTools.metronome && (
               <button
@@ -2043,6 +2089,7 @@ export default function PracticeView() {
                 </div>
               </div>
             </div>
+            )}
             {/* Tempo nudge on arm: dial already sits at last time's bpm, these
                 chips ask whether today matches it or pushes on. */}
             {armed && heroTools.metronome && !bpmPromptSeen && !armedToday && armedLast && armedLast.bpm > 0 && !swRunning && swElapsed === 0 && (
@@ -2102,6 +2149,21 @@ export default function PracticeView() {
             </div>
             </Reveal>
             )}
+            {heroTools.check_off ? (
+              /* The whole exercise is one question: did it happen today? */
+              <div className="mt-3" ref={coachStartRef}>
+                <button
+                  className={
+                    armedToday
+                      ? "w-full rounded-md border border-amber-500/50 py-3 text-sm font-semibold text-amber-400 hover:bg-neutral-800"
+                      : "w-full rounded-md bg-amber-500 py-3 text-sm font-semibold text-neutral-950 hover:bg-amber-400"
+                  }
+                  onClick={checkOff}
+                >
+                  {armedToday ? "✓ done today — again?" : "Did it ✓"}
+                </button>
+              </div>
+            ) : (
             <div className="mt-3 flex items-center gap-2" ref={coachStartRef}>
               {sessionBtn("flex-1 py-3")}
               {swElapsed > 0 && !swRunning && (
@@ -2118,6 +2180,7 @@ export default function PracticeView() {
                 </>
               )}
             </div>
+            )}
             {/* Random key: only for exercises that ask for it (or freeform).
                 Desktop has it in the tool strip up top — this row is the
                 mobile home. */}
@@ -2177,7 +2240,7 @@ export default function PracticeView() {
                 what Start will do, tapping it opens the knobs that change it.
                 "Metronome only" sits demoted beside it — a mode, not a headline.
                 Hidden in freeform for brand-new players (progressive reveal). */}
-            {(armed || seasoned) && (
+            {(armed || seasoned) && !heroTools.check_off && (
             <>
             <div className="mt-2 flex items-center justify-between gap-2">
               <button
@@ -2340,14 +2403,26 @@ export default function PracticeView() {
                     {armed.description && (
                       <p className="whitespace-pre-wrap text-sm text-neutral-300">{armed.description}</p>
                     )}
-                    {armed.ref_url && (
+                    {armed.ref_url && ytId(armed.ref_url) ? (
+                      // A video reference plays right here — no tab-hopping
+                      // between the exercise and the thing it's copying.
+                      <div className={`overflow-hidden rounded-md ${armed.description ? "mt-2" : ""}`}>
+                        <iframe
+                          className="aspect-video w-full"
+                          src={`https://www.youtube-nocookie.com/embed/${ytId(armed.ref_url)}`}
+                          title="reference video"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                      </div>
+                    ) : armed.ref_url ? (
                       <button
                         className={`rounded-md border border-neutral-700 bg-neutral-800/60 px-2 py-0.5 text-xs hover:border-neutral-400 hover:bg-neutral-700 ${armed.description ? "mt-1.5" : ""}`}
                         onClick={() => openRef(armed.ref_url!)}
                       >
                         {isUpload(armed.ref_url) ? "📄 reference" : "🔗 reference"}
                       </button>
-                    )}
+                    ) : null}
                     {armedLast && (
                       <div className="mt-1.5 text-xs text-neutral-500">
                         <span className="text-neutral-600">{fmtDateShort(armedLast.date)} </span>
@@ -2431,6 +2506,26 @@ export default function PracticeView() {
               </button>
             </div>
           </div>
+          {/* Instrument chips: one routine per instrument (or everything).
+              Only appear once an exercise carries a tag. */}
+          {instruments.length > 0 && (
+            <div className="mb-2 flex flex-wrap gap-1.5">
+              {["all", ...instruments].map((i) => (
+                <button
+                  key={i}
+                  onClick={() => setInstFilter(i)}
+                  aria-pressed={i === (instApplied ? instFilter : "all")}
+                  className={`rounded-full border px-2.5 py-0.5 text-xs ${
+                    i === (instApplied ? instFilter : "all")
+                      ? "border-amber-500/60 text-amber-400"
+                      : "border-neutral-700 text-neutral-500 hover:border-neutral-500 hover:text-neutral-300"
+                  }`}
+                >
+                  {i}
+                </button>
+              ))}
+            </div>
+          )}
           {/* One column in queue order — the list IS the routine, and uniform
               cards read as a set instead of a masonry puzzle. */}
           <section className="mb-4" ref={coachListRef}>
@@ -2480,6 +2575,10 @@ export default function PracticeView() {
                   >
                     <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: colorOf(ex.id) }} />
                     <span className="min-w-0 flex-1 break-words font-medium">{ex.name}</span>
+                    {/* Redundant while its own chip is active, so hidden then. */}
+                    {ex.instrument && !instApplied && (
+                      <span className="shrink-0 text-[10px] text-neutral-600">{ex.instrument}</span>
+                    )}
                     {ex.ref_url && (
                       <span
                         role="button"
@@ -2557,10 +2656,7 @@ export default function PracticeView() {
                           {lastAgg ? fmtDateShort(lastAgg.date) : "last"}{" "}
                         </span>
                         {lastAgg ? (
-                          <span className="tabular-nums">
-                            {lastAgg.bpm > 0 && `${lastAgg.bpm} bpm · `}
-                            {lastAgg.seconds > 0 && fmtDur(lastAgg.seconds)}
-                          </span>
+                          <span className="tabular-nums">{fmtAgg(lastAgg)}</span>
                         ) : (
                           <span className="text-neutral-600">—</span>
                         )}
@@ -2568,10 +2664,7 @@ export default function PracticeView() {
                       <div>
                         <span className="text-xs text-neutral-600">today </span>
                         {todayAgg ? (
-                          <span className="tabular-nums">
-                            {todayAgg.bpm > 0 && `${todayAgg.bpm} bpm · `}
-                            {todayAgg.seconds > 0 && fmtDur(todayAgg.seconds)}
-                          </span>
+                          <span className="tabular-nums">{fmtAgg(todayAgg)}</span>
                         ) : (
                           <span className="text-neutral-600">—</span>
                         )}
@@ -2781,6 +2874,33 @@ export default function PracticeView() {
                         </button>
                         <button
                           className={`text-xs ${
+                            toolsOf(ex).check_off ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
+                          }`}
+                          title="Check-off exercise — one tap logs it done, no bpm or timer"
+                          aria-pressed={toolsOf(ex).check_off}
+                          onClick={() =>
+                            patchExercise(ex.id, { tools: { ...(ex.tools ?? {}), check_off: !toolsOf(ex).check_off } })
+                          }
+                        >
+                          ✓off
+                        </button>
+                        <button
+                          className={`text-xs ${
+                            ex.instrument ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
+                          }`}
+                          title="Instrument tag — groups exercises into filter chips"
+                          onClick={() => {
+                            const t = prompt("Instrument (e.g. guitar, vocals — empty clears)", ex.instrument ?? "");
+                            if (t === null) return;
+                            void patchExercise(ex.id, {
+                              instrument: t.trim() ? t.trim().toLowerCase() : null,
+                            } as Partial<Exercise>);
+                          }}
+                        >
+                          inst
+                        </button>
+                        <button
+                          className={`text-xs ${
                             ex.target_bpm ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
                           }`}
                           title="Target BPM — draws a goal line on the chart"
@@ -2886,6 +3006,15 @@ export default function PracticeView() {
                       onChange={(e) => setNewExTools((t) => ({ ...t, random_key: e.target.checked }))}
                     />
                     random key
+                  </label>
+                  <label className="flex items-center gap-1.5">
+                    <input
+                      type="checkbox"
+                      className="accent-amber-500"
+                      checked={newExTools.check_off}
+                      onChange={(e) => setNewExTools((t) => ({ ...t, check_off: e.target.checked }))}
+                    />
+                    check-off only
                   </label>
                 </div>
               </div>
@@ -3207,8 +3336,21 @@ export default function PracticeView() {
           thumb no matter how far the page has scrolled. */}
       {armed && (
         <div className="fixed inset-x-0 bottom-0 z-20 flex items-center gap-2 border-t border-neutral-800 bg-neutral-950/95 px-4 py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] backdrop-blur lg:hidden">
-          {sessionBtn("flex-1 py-3")}
-          {swElapsed > 0 && !swRunning && (
+          {heroTools.check_off ? (
+            <button
+              className={
+                armedToday
+                  ? "flex-1 rounded-md border border-amber-500/50 py-3 text-sm font-semibold text-amber-400"
+                  : "flex-1 rounded-md bg-amber-500 py-3 text-sm font-semibold text-neutral-950"
+              }
+              onClick={checkOff}
+            >
+              {armedToday ? "✓ done today — again?" : "Did it ✓"}
+            </button>
+          ) : (
+          sessionBtn("flex-1 py-3")
+          )}
+          {!heroTools.check_off && swElapsed > 0 && !swRunning && (
             <>
               <button
                 className="rounded-md bg-amber-500 px-4 py-3 text-sm font-semibold text-neutral-950 hover:bg-amber-400"
@@ -3325,7 +3467,8 @@ export default function PracticeView() {
             {exById.get(justLogged.session.exercise_id)?.name}
             {justLogged.session.variant && ` ${justLogged.session.variant === "up" ? "↑" : "↓"}`}
             {justLogged.session.bpm != null && ` · ${justLogged.session.bpm} bpm`}
-            {justLogged.session.seconds != null && ` · ${fmtDur(justLogged.session.seconds)}`}
+            {/* Check-off logs have no duration — "Logged <name>" says it all. */}
+            {justLogged.session.seconds != null && justLogged.session.seconds > 0 && ` · ${fmtDur(justLogged.session.seconds)}`}
           </span>
           <button
             className={`font-semibold ${justLogged.pb ? "text-neutral-950 underline" : "text-amber-400"}`}
