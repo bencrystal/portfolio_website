@@ -12,7 +12,17 @@ type Todo = {
   all_position: number;
   deleted_at?: string | null;
 };
-type Bucket = { id: string; name: string; position: number; hidden?: boolean; color?: string | null };
+type Bucket = {
+  id: string;
+  name: string;
+  position: number;
+  hidden?: boolean;
+  // Quiet buckets keep their tile but their tasks never appear in the
+  // All view (list, count, or search): lyrics and other personal notes
+  // stay off the front page.
+  quiet?: boolean;
+  color?: string | null;
+};
 
 const ALL = "all";
 const UNSORTED = "unsorted";
@@ -435,6 +445,11 @@ export default function ListView({ token }: { token: string }) {
     await call("buckets", "PATCH", { id, hidden });
   }
 
+  async function setBucketQuiet(id: string, quiet: boolean) {
+    setBuckets((bs) => bs.map((b) => (b.id === id ? { ...b, quiet } : b)));
+    await call("buckets", "PATCH", { id, quiet });
+  }
+
   // null resets to the automatic hash-derived color.
   async function setBucketColor(id: string, color: string | null) {
     setBuckets((bs) => bs.map((b) => (b.id === id ? { ...b, color } : b)));
@@ -463,8 +478,12 @@ export default function ListView({ token }: { token: string }) {
 
   // ---- derived lists ----
 
+  function isQuiet(bucketId: string | null) {
+    return !!bucketId && !!buckets.find((b) => b.id === bucketId)?.quiet;
+  }
   function inView(t: Todo) {
-    if (view === ALL) return true;
+    // Quiet buckets are fully absent from All: no rows, no search hits.
+    if (view === ALL) return !isQuiet(t.bucket_id);
     return view === UNSORTED ? t.bucket_id === null : t.bucket_id === view;
   }
   function matches(t: Todo) {
@@ -728,6 +747,13 @@ export default function ListView({ token }: { token: string }) {
                   b.hidden ? "text-neutral-600" : ""
                 }`}
               />
+              <label
+                className="flex shrink-0 cursor-pointer items-center gap-1 text-xs text-neutral-500 hover:text-neutral-300"
+                title="Uncheck to keep this bucket's tasks out of the All view"
+              >
+                <input type="checkbox" checked={!b.quiet} onChange={() => setBucketQuiet(b.id, !b.quiet)} />
+                Show in All
+              </label>
               <button
                 onClick={() => setBucketHidden(b.id, !b.hidden)}
                 className="text-sm text-neutral-500 hover:text-neutral-300"
@@ -771,7 +797,7 @@ export default function ListView({ token }: { token: string }) {
       ) : (
         <>
           <div className="mb-3 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
-            {chip(ALL, "All", todos.filter((t) => !t.done).length)}
+            {chip(ALL, "All", todos.filter((t) => !t.done && !isQuiet(t.bucket_id)).length)}
             {chip(UNSORTED, "Unsorted", todos.filter((t) => !t.done && t.bucket_id === null).length)}
             {buckets
               .filter((b) => !b.hidden)
