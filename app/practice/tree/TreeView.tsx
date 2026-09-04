@@ -437,7 +437,10 @@ export default function TreeView() {
               return (
                 <div
                   key={b.key}
-                  className={wide ? "grid min-w-0" : "min-w-0"}
+                  // minmax(0,1fr): without it the implicit column auto-sizes to
+                  // the widest nowrap (truncate) pill text and overflows into
+                  // the neighboring branch's rail.
+                  className={wide ? "grid min-w-0 grid-cols-[minmax(0,1fr)]" : "min-w-0"}
                   // 7 shared rows: header, warning, tier ×4, add-your-own.
                   style={wide ? { gridTemplateRows: "subgrid", gridRow: "span 7" } : undefined}
                 >
