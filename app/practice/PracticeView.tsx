@@ -1095,6 +1095,10 @@ export default function PracticeView() {
   // rest of the queue, in the order you dragged them into.
   const queueIdx = armed ? active.findIndex((e) => e.id === armed.id) : -1;
   const queueLast = queueIdx === active.length - 1;
+  // "Done for today" is earned, not positional: every exercise needs a log
+  // today before the last one offers to wrap up.
+  const loggedTodayIds = new Set((sessions ?? []).filter((s) => s.date === today).map((s) => s.exercise_id));
+  const allLoggedToday = active.length > 0 && active.every((e) => loggedTodayIds.has(e.id));
 
   // Identity colors: hash gives each exercise a stable starting slot, then we
   // walk to the next free one so no two dots collide (until the palette runs
@@ -1563,17 +1567,18 @@ export default function PracticeView() {
                         <button
                           className="rounded border border-neutral-700 px-2 py-0.5 text-xs text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
                           onClick={() => {
-                            if (queueLast) {
+                            if (queueLast && allLoggedToday) {
                               setSelectedEx(null);
                               setDayDone(true);
                             } else {
-                              const nxt = active[queueIdx + 1];
+                              // Wraps around until everything is logged today.
+                              const nxt = active[(queueIdx + 1) % active.length];
                               armExercise(nxt, aggByDate(sessions ?? [], nxt.id));
                             }
                           }}
-                          aria-label={queueLast ? "finish for today" : "arm next exercise"}
+                          aria-label={queueLast && allLoggedToday ? "finish for today" : "arm next exercise"}
                         >
-                          {queueLast ? "done ✓" : "next →"}
+                          {queueLast && allLoggedToday ? "done ✓" : "next →"}
                         </button>
                       </>
                     )}
