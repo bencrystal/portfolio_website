@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
   const [nodes, progress] = await Promise.all([
     scribeDb
       .from("practice_tree_nodes")
-      .select("id, branch, position, parent_node_id, name, description, gate_type, gate_value, space_id, tier")
+      .select("id, branch, position, parent_node_id, name, description, gate_type, gate_value, space_id, tier, ref_url")
       .or(`space_id.is.null,space_id.eq.${space}`)
       .order("branch", { ascending: true })
       .order("position", { ascending: true }),
@@ -90,6 +90,7 @@ export async function POST(req: NextRequest) {
     .insert({
       name: node.name,
       description: node.description,
+      ref_url: node.ref_url ?? null,
       target_bpm: node.gate_type === "bpm" ? node.gate_value : null,
       position: Date.now() / 1000,
       space_id: space,

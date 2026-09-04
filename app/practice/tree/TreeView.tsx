@@ -25,6 +25,7 @@ type TreeNode = {
   description: string | null;
   gate_type: "bpm" | "time" | "self";
   gate_value: number | null;
+  ref_url: string | null;
   space_id: string | null; // null = shared node, set = personal graft
   tier: number | null; // 1-based; null (pre-migration rows) reads as tier 1
 };
@@ -86,7 +87,7 @@ const BRANCHES = [
   { key: "picking", label: "Picking", color: "#60a5fa", icon: ICONS.pick },
   { key: "fingerpicking", label: "Fingerpicking", color: "#a78bfa", icon: ICONS.hand },
   { key: "rhythm", label: "Rhythm & time", color: "#fb7185", icon: ICONS.pulse },
-  { key: "theory", label: "Theory & fretboard", color: "#34d399", icon: ICONS.book },
+  { key: "theory", label: "Theory, fretboard & ears", color: "#34d399", icon: ICONS.book },
   { key: "repertoire", label: "Repertoire", color: "#fbbf24", icon: ICONS.music },
 ];
 
@@ -572,6 +573,16 @@ export default function TreeView() {
                               </div>
                               <p className="mt-0.5 text-sm font-medium">{n.name}</p>
                               {n.description && <p className="mt-1 text-xs text-neutral-400">{n.description}</p>}
+                              {n.ref_url && (
+                                <a
+                                  href={n.ref_url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="mt-1 inline-block text-[11px] text-neutral-500 underline hover:text-neutral-300"
+                                >
+                                  🔗 lesson / reference
+                                </a>
+                              )}
                               {/* Gate + actions pinned to the bottom so the five
                                   frontier cards line up across branches. */}
                               <div className="lg:mt-auto">

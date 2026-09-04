@@ -352,6 +352,12 @@ export default function PracticeView() {
   const [logOpen, setLogOpen] = useState(false); // log shows ~2 entries until expanded
   // Armed mode: everything but the hero retracts behind these headers.
   const [openPanels, setOpenPanels] = useState({ progress: false, log: false, tools: false });
+  // Hero stays compact for daily use: the big bpm ruler and the write-up both
+  // live behind toggles. Details auto-open while an exercise is still new
+  // (fewer than ~3 practiced days) and collapse once it's routine.
+  const [tempoOpen, setTempoOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState<boolean | null>(null); // null = auto by age
+  useEffect(() => setDetailsOpen(null), [selectedEx]);
   const logRef = useRef<HTMLDivElement | null>(null); // measured so max-height can lerp open
   const [newExName, setNewExName] = useState("");
   const [newExTools, setNewExTools] = useState({ metronome: true, random_key: false });
@@ -1513,57 +1519,33 @@ export default function PracticeView() {
                     <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: colorOf(armed.id) }} />
                     <span className="break-words text-lg font-semibold">{armed.name}</span>
                   </button>
-                  <button
-                    className="rounded px-1.5 text-lg leading-none text-neutral-500 hover:text-neutral-200"
-                    onClick={() => setSelectedEx(null)}
-                    aria-label="disarm exercise"
-                  >
-                    ×
-                  </button>
+                  <div className="flex shrink-0 items-center gap-1">
+                    {/* Straight to the next exercise in your order — no disarm detour. */}
+                    {active.length > 1 && (
+                      <button
+                        className="rounded border border-neutral-700 px-2 py-0.5 text-xs text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
+                        onClick={() => {
+                          const i = active.findIndex((e) => e.id === armed.id);
+                          const nxt = active[(i + 1) % active.length];
+                          armExercise(nxt, aggByDate(sessions ?? [], nxt.id));
+                        }}
+                        aria-label="arm next exercise"
+                      >
+                        next →
+                      </button>
+                    )}
+                    <button
+                      className="rounded px-1.5 text-lg leading-none text-neutral-500 hover:text-neutral-200"
+                      onClick={() => setSelectedEx(null)}
+                      aria-label="disarm exercise"
+                    >
+                      ×
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div className="break-words font-medium">
                   <span className="text-neutral-500">no exercise armed</span>
-                </div>
-              )}
-              {/* The write-up surfaces the moment the exercise is the task at hand. */}
-              {armed?.description && (
-                <p className="mt-1.5 whitespace-pre-wrap text-sm text-neutral-300">{armed.description}</p>
-              )}
-              {armed?.ref_url && (
-                <button
-                  className="mt-1.5 rounded-md border border-neutral-700 bg-neutral-800/60 px-2 py-0.5 text-xs hover:border-neutral-400 hover:bg-neutral-700"
-                  onClick={() => openRef(armed.ref_url!)}
-                >
-                  {isUpload(armed.ref_url) ? "📄 reference" : "🔗 reference"}
-                </button>
-              )}
-              <div className="mt-1 text-xs text-neutral-500">
-                {heroTools.metronome ? `${bpm} bpm · ${beatsPerBar}/4 · ${sound}` : "timer only"}
-                {selTodaySecs > 0 && (
-                  <>
-                    {" · "}
-                    <span className="tabular-nums text-neutral-300">{fmtDur(selTodaySecs)}</span> today
-                  </>
-                )}
-              </div>
-              {/* At-a-glance numbers ride along so the card view isn't missed. */}
-              {armed && armedLast && (
-                <div className="mt-0.5 text-xs text-neutral-500">
-                  <span className="text-neutral-600">{fmtDateShort(armedLast.date)} </span>
-                  <span className="tabular-nums text-neutral-400">{fmtAgg(armedLast)}</span>
-                  <span className="text-neutral-600"> · today </span>
-                  {armedToday ? (
-                    <span className="tabular-nums text-neutral-400">{fmtAgg(armedToday)}</span>
-                  ) : (
-                    <span className="text-neutral-600">—</span>
-                  )}
-                  {armedDelta !== null && armedDelta !== 0 && (
-                    <span className={`ml-1 ${armedDelta > 0 ? "text-green-400" : "text-red-400"}`}>
-                      {armedDelta > 0 ? "▲" : "▼"}
-                      {Math.abs(armedDelta)}
-                    </span>
-                  )}
                 </div>
               )}
               {selectedEx && exById.get(selectedEx)?.track_variants && (
@@ -1591,10 +1573,15 @@ export default function PracticeView() {
                 companions below (beat dots | "session" label). */}
             <div className="flex items-stretch justify-between">
               {heroTools.metronome && (
-              <div className="flex flex-col justify-between">
-                <div className={`font-bold tabular-nums transition-all ${swRunning ? "text-2xl" : "text-4xl"}`}>
+              <button
+                className="flex flex-col justify-between rounded text-left outline-none focus-visible:ring-1 focus-visible:ring-neutral-400"
+                onClick={() => setTempoOpen((o) => !o)}
+                aria-expanded={tempoOpen}
+                title="adjust tempo"
+              >
+                <div className={`font-bold tabular-nums transition-all ${swRunning ? "text-2xl" : "text-3xl"}`}>
                   {bpm}
-                  <span className="ml-1 text-sm font-normal text-neutral-500">bpm</span>
+                  <span className="ml-1 text-sm font-normal text-neutral-500">bpm {tempoOpen ? "▾" : "▸"}</span>
                 </div>
                 {/* Beat dots live right under the number they describe; the
                     downbeat is amber even at rest so "1" reads at a glance. */}
@@ -1614,7 +1601,7 @@ export default function PracticeView() {
                     />
                   ))}
                 </div>
-              </div>
+              </button>
               )}
               <div className="flex flex-col justify-between text-right">
                 <div
@@ -1629,8 +1616,11 @@ export default function PracticeView() {
                 </div>
               </div>
             </div>
+            {/* The full ruler + tap/nudge controls unfold from the bpm number;
+                day-to-day the tempo is already right and stays out of the way. */}
             {heroTools.metronome && (
-            <>
+            <Reveal open={tempoOpen}>
+            <div>
             <BpmRuler value={bpm} onChange={setBpm} />
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <button className={btn} onClick={tapTempo}>
@@ -1644,7 +1634,8 @@ export default function PracticeView() {
                 ))}
               </div>
             </div>
-            </>
+            </div>
+            </Reveal>
             )}
             <div className="mt-3 flex items-center gap-2">
               {sessionBtn("flex-1 py-3")}
@@ -1842,6 +1833,61 @@ export default function PracticeView() {
             </div>
             </div>
             </Reveal>
+            {/* The write-up and stats: auto-open while the exercise is new,
+                tucked behind "details" once it's part of the routine. */}
+            {armed && (
+              <>
+                <button
+                  className="mt-2 block rounded text-xs text-neutral-500 outline-none hover:text-neutral-300 focus-visible:ring-1 focus-visible:ring-neutral-500"
+                  onClick={() => setDetailsOpen((o) => !(o ?? armedAggs.length < 3))}
+                  aria-expanded={detailsOpen ?? armedAggs.length < 3}
+                >
+                  details {(detailsOpen ?? armedAggs.length < 3) ? "▾" : "▸"}
+                </button>
+                <Reveal open={detailsOpen ?? armedAggs.length < 3}>
+                  <div className="mt-2 rounded-lg border border-neutral-800 bg-neutral-950/50 p-2.5">
+                    {armed.description && (
+                      <p className="whitespace-pre-wrap text-sm text-neutral-300">{armed.description}</p>
+                    )}
+                    {armed.ref_url && (
+                      <button
+                        className={`rounded-md border border-neutral-700 bg-neutral-800/60 px-2 py-0.5 text-xs hover:border-neutral-400 hover:bg-neutral-700 ${armed.description ? "mt-1.5" : ""}`}
+                        onClick={() => openRef(armed.ref_url!)}
+                      >
+                        {isUpload(armed.ref_url) ? "📄 reference" : "🔗 reference"}
+                      </button>
+                    )}
+                    <div className="mt-1.5 text-xs text-neutral-500">
+                      {heroTools.metronome ? `${bpm} bpm · ${beatsPerBar}/4 · ${sound}` : "timer only"}
+                      {selTodaySecs > 0 && (
+                        <>
+                          {" · "}
+                          <span className="tabular-nums text-neutral-300">{fmtDur(selTodaySecs)}</span> today
+                        </>
+                      )}
+                    </div>
+                    {armedLast && (
+                      <div className="mt-0.5 text-xs text-neutral-500">
+                        <span className="text-neutral-600">{fmtDateShort(armedLast.date)} </span>
+                        <span className="tabular-nums text-neutral-400">{fmtAgg(armedLast)}</span>
+                        <span className="text-neutral-600"> · today </span>
+                        {armedToday ? (
+                          <span className="tabular-nums text-neutral-400">{fmtAgg(armedToday)}</span>
+                        ) : (
+                          <span className="text-neutral-600">—</span>
+                        )}
+                        {armedDelta !== null && armedDelta !== 0 && (
+                          <span className={`ml-1 ${armedDelta > 0 ? "text-green-400" : "text-red-400"}`}>
+                            {armedDelta > 0 ? "▲" : "▼"}
+                            {Math.abs(armedDelta)}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </Reveal>
+              </>
+            )}
           </section>
 
           {/* The random key generator lives inside the session hero now,
@@ -1864,6 +1910,16 @@ export default function PracticeView() {
                   <button
                     key={e.id}
                     onClick={() => armExercise(e, aggByDate(sessions ?? [], e.id))}
+                    draggable={unlocked}
+                    onDragStart={() => {
+                      dragEx.current = e.id;
+                    }}
+                    onDragOver={(ev) => ev.preventDefault()}
+                    onDrop={(ev) => {
+                      ev.preventDefault();
+                      if (dragEx.current && dragEx.current !== e.id) reorder(dragEx.current, e.id);
+                      dragEx.current = null;
+                    }}
                     className="flex items-center gap-1.5 rounded-full border border-neutral-800 bg-neutral-900 px-3 py-1.5 text-xs text-neutral-300 hover:border-neutral-600"
                   >
                     <span className="h-2 w-2 rounded-full" style={{ background: colorOf(e.id) }} />
