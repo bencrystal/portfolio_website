@@ -74,7 +74,7 @@ export default function Tuner() {
   const [deviceId, setDeviceId] = useState("");
 
   const ctx = useRef<AudioContext | null>(null);
-  const osc = useRef<{ node: OscillatorNode; gain: GainNode } | null>(null);
+  const osc = useRef<{ nodes: OscillatorNode[]; gain: GainNode } | null>(null);
   const stream = useRef<MediaStream | null>(null);
   const raf = useRef(0);
 
@@ -87,7 +87,7 @@ export default function Tuner() {
   function stopTone() {
     if (osc.current) {
       osc.current.gain.gain.setTargetAtTime(0, getCtx().currentTime, 0.02);
-      osc.current.node.stop(getCtx().currentTime + 0.1);
+      for (const n of osc.current.nodes) n.stop(getCtx().currentTime + 0.1);
       osc.current = null;
     }
     setPlaying(null);
@@ -98,15 +98,29 @@ export default function Tuner() {
     stopTone();
     if (wasPlaying) return;
     const ac = getCtx();
-    const node = ac.createOscillator();
     const gain = ac.createGain();
-    node.type = "triangle"; // a few harmonics so the low E carries on phone speakers
-    node.frequency.value = STRINGS[i].freq;
     gain.gain.value = 0;
-    gain.gain.setTargetAtTime(0.15, ac.currentTime, 0.02);
-    node.connect(gain).connect(ac.destination);
-    node.start();
-    osc.current = { node, gain };
+    gain.gain.setTargetAtTime(0.22, ac.currentTime, 0.02);
+    gain.connect(ac.destination);
+    // Triangle fundamental plus a quiet in-tune octave: carries on phone
+    // speakers without harsh highs, and no detune so the pitch stays a
+    // trustworthy tuning reference.
+    const nodes = (
+      [
+        ["triangle", STRINGS[i].freq, 1],
+        ["sine", STRINGS[i].freq * 2, 0.4],
+      ] as [OscillatorType, number, number][]
+    ).map(([type, freq, level]) => {
+      const node = ac.createOscillator();
+      const og = ac.createGain();
+      node.type = type;
+      node.frequency.value = freq;
+      og.gain.value = level;
+      node.connect(og).connect(gain);
+      node.start();
+      return node;
+    });
+    osc.current = { nodes, gain };
     setPlaying(i);
   }
 

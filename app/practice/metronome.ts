@@ -61,20 +61,38 @@ export class Metronome {
     const ctx = this.ctx;
     const time = ctx.currentTime;
     const dur = (60 / this.bpm) * this.beatsPerBar;
-    const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.type = "triangle";
-    osc.frequency.value = freq;
-    const level = Math.max(0.0001, 0.14 * this.volume);
+    const level = Math.max(0.0001, 0.22 * this.volume);
     // Soft attack, hold for the bar, release just before the next downbeat.
     gain.gain.setValueAtTime(0.0001, time);
-    gain.gain.exponentialRampToValueAtTime(level, time + 0.05);
-    gain.gain.setValueAtTime(level, Math.max(time + 0.05, time + dur - 0.15));
+    gain.gain.exponentialRampToValueAtTime(level, time + 0.06);
+    gain.gain.setValueAtTime(level, Math.max(time + 0.06, time + dur - 0.15));
     gain.gain.exponentialRampToValueAtTime(0.0001, time + dur);
-    osc.connect(gain);
+    // Warm and present rather than loud-and-sharp: two barely detuned
+    // triangles thicken the fundamental, a quiet octave sine keeps it
+    // audible on phone speakers, and a lowpass rounds off any edge.
+    const lp = ctx.createBiquadFilter();
+    lp.type = "lowpass";
+    lp.frequency.value = 1400;
+    lp.connect(gain);
     gain.connect(ctx.destination);
-    osc.start(time);
-    osc.stop(time + dur + 0.02);
+    const voices: [OscillatorType, number, number][] = [
+      ["triangle", freq, 1],
+      ["triangle", freq, -1],
+      ["sine", freq * 2, 0],
+    ];
+    for (const [type, f, det] of voices) {
+      const osc = ctx.createOscillator();
+      osc.type = type;
+      osc.frequency.value = f;
+      osc.detune.value = det * 3;
+      const og = ctx.createGain();
+      og.gain.value = type === "sine" ? 0.4 : 1;
+      osc.connect(og);
+      og.connect(lp);
+      osc.start(time);
+      osc.stop(time + dur + 0.02);
+    }
     if (this.droneGain) fadeOut(this.droneGain, time); // retrigger cuts the old tail
     this.droneGain = gain;
   }

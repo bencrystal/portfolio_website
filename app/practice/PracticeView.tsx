@@ -350,6 +350,8 @@ export default function PracticeView() {
   const [focusEx, setFocusEx] = useState<string | null>(null); // chart legend isolation
   const [manageOpen, setManageOpen] = useState(false);
   const [logOpen, setLogOpen] = useState(false); // log shows ~2 entries until expanded
+  // Armed mode: everything but the hero retracts behind these headers.
+  const [openPanels, setOpenPanels] = useState({ progress: false, log: false, tools: false });
   const logRef = useRef<HTMLDivElement | null>(null); // measured so max-height can lerp open
   const [newExName, setNewExName] = useState("");
   const [newExTools, setNewExTools] = useState({ metronome: true, random_key: false });
@@ -385,8 +387,9 @@ export default function PracticeView() {
     if (ex.error || se.error) throw new Error(ex.error ?? se.error);
     setExercises(ex.exercises);
     setSessions(se.sessions);
-    const first = (ex.exercises as Exercise[]).find((e) => !e.archived);
-    setSelectedEx((cur) => (cur && ex.exercises.some((e: Exercise) => e.id === cur) ? cur : first?.id ?? null));
+    // No auto-arm: the page opens in browse mode (all tools out) and only
+    // rearranges around an exercise once one is deliberately tapped.
+    setSelectedEx((cur) => (cur && ex.exercises.some((e: Exercise) => e.id === cur) ? cur : null));
   }
 
   useEffect(() => {
@@ -1068,6 +1071,16 @@ export default function PracticeView() {
   const heroTools = selectedEx
     ? toolsOf(exById.get(selectedEx))
     : { metronome: true, random_key: true };
+  // Arming an exercise rearranges the whole page around it: the hero goes
+  // full-width and headlined, everything else retracts to compact.
+  const armed = selectedEx ? exById.get(selectedEx) ?? null : null;
+  const armedAggs = armed ? aggByDate(sessions ?? [], armed.id) : [];
+  const armedToday = armedAggs[0]?.date === today ? armedAggs[0] : null;
+  const armedLast = armedToday ? armedAggs[1] : armedAggs[0];
+  const armedDelta =
+    armedAggs[0] && armedAggs[1] && armedAggs[0].bpm > 0 && armedAggs[1].bpm > 0
+      ? armedAggs[0].bpm - armedAggs[1].bpm
+      : null;
 
   // Identity colors: hash gives each exercise a stable starting slot, then we
   // walk to the next free one so no two dots collide (until the palette runs
@@ -1256,6 +1269,34 @@ export default function PracticeView() {
     </button>
   );
 
+  // Tools: the tuner plus handy external references. Visible on mobile too —
+  // tuning is the tool you want on a phone. Rendered in the tools column in
+  // browse mode and behind a collapsed header in armed mode.
+  const toolsSection = (
+    <section className={`${card} mb-4`}>
+      <h2 className="mb-2 text-sm font-medium text-neutral-400">Tools</h2>
+      <Tuner />
+      <div className="mt-2 flex flex-col gap-1 border-t border-neutral-800 pt-2 text-xs">
+        <a
+          className="text-neutral-500 underline hover:text-neutral-300"
+          href="https://www.oolimo.com/en/guitar-chords/analyze"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          chord analyzer (oolimo) ↗
+        </a>
+        <a
+          className="text-neutral-500 underline hover:text-neutral-300"
+          href="https://www.all-guitar-chords.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          chords &amp; scales reference (all-guitar-chords) ↗
+        </a>
+      </div>
+    </section>
+  );
+
   const entryForm = form && (
     <section className={`${card} mb-4 border-neutral-600`}>
       <h2 className="mb-3 text-sm font-medium text-neutral-300">{form.id ? "Edit entry" : "New entry"}</h2>
@@ -1323,7 +1364,11 @@ export default function PracticeView() {
   return (
     <main className="mx-auto min-h-screen max-w-2xl bg-neutral-950 px-4 pb-24 text-neutral-100 lg:max-w-7xl lg:px-8">
       {/* Mobile: sticky control strip — bpm (tap to expand), nudge, start, note. */}
-      <div className="sticky top-0 z-20 -mx-4 flex items-center gap-2 border-b border-neutral-800 bg-neutral-950/95 px-4 py-2 backdrop-blur lg:hidden">
+      <div
+        className={`sticky top-0 z-20 -mx-4 items-center gap-2 border-b border-neutral-800 bg-neutral-950/95 px-4 py-2 backdrop-blur lg:hidden ${
+          armed ? "hidden" : "flex"
+        }`}
+      >
         <button onClick={() => setMetroOpen((o) => !o)} className="flex items-baseline gap-1">
           <span className="text-2xl font-bold tabular-nums">{bpm}</span>
           <span className="text-[10px] text-neutral-500">bpm {metroOpen ? "▾" : "▸"}</span>
@@ -1447,17 +1492,53 @@ export default function PracticeView() {
         </div>
       )}
 
-      <div className="lg:grid lg:grid-cols-[24rem_minmax(0,1fr)] lg:items-start lg:gap-6">
-        {/* ---- Tools column ---- */}
-        <div className="lg:sticky lg:top-4">
+      {/* Armed = single centered column, hero above everything; browse = the
+          familiar two-column desktop layout. */}
+      <div className={armed ? "" : "lg:grid lg:grid-cols-[24rem_minmax(0,1fr)] lg:items-start lg:gap-6"}>
+        {/* ---- Tools column (browse) / full-width hero (armed) ---- */}
+        <div className={armed ? "" : "lg:sticky lg:top-4"}>
           {/* Session hero: armed exercise + tempo + one primary control.
-              Always on desktop, expanded-only on mobile (the strip drives it). */}
-          <section className={`${card} mb-4 border-amber-500/25 ${metroOpen ? "" : "hidden lg:block"}`}>
+              Armed: always visible, the page's headline. Browse: always on
+              desktop, expanded-only on mobile (the strip drives it). */}
+          <section className={`${card} mb-4 border-amber-500/25 ${armed || metroOpen ? "" : "hidden lg:block"}`}>
             <div className="mb-3">
-              <div className="break-words font-medium">
-                {selectedEx ? exById.get(selectedEx)?.name : <span className="text-neutral-500">no exercise armed</span>}
-              </div>
-              <div className="text-xs text-neutral-500">
+              {armed ? (
+                <div className="flex items-start justify-between gap-2">
+                  {/* Same spot arms and disarms: tapping the headline (or ×) relaxes the page. */}
+                  <button
+                    className="flex min-w-0 items-center gap-2 rounded text-left outline-none focus-visible:ring-1 focus-visible:ring-neutral-400"
+                    onClick={() => setSelectedEx(null)}
+                    title="tap to disarm"
+                  >
+                    <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: colorOf(armed.id) }} />
+                    <span className="break-words text-lg font-semibold">{armed.name}</span>
+                  </button>
+                  <button
+                    className="rounded px-1.5 text-lg leading-none text-neutral-500 hover:text-neutral-200"
+                    onClick={() => setSelectedEx(null)}
+                    aria-label="disarm exercise"
+                  >
+                    ×
+                  </button>
+                </div>
+              ) : (
+                <div className="break-words font-medium">
+                  <span className="text-neutral-500">no exercise armed</span>
+                </div>
+              )}
+              {/* The write-up surfaces the moment the exercise is the task at hand. */}
+              {armed?.description && (
+                <p className="mt-1.5 whitespace-pre-wrap text-sm text-neutral-300">{armed.description}</p>
+              )}
+              {armed?.ref_url && (
+                <button
+                  className="mt-1.5 rounded-md border border-neutral-700 bg-neutral-800/60 px-2 py-0.5 text-xs hover:border-neutral-400 hover:bg-neutral-700"
+                  onClick={() => openRef(armed.ref_url!)}
+                >
+                  {isUpload(armed.ref_url) ? "📄 reference" : "🔗 reference"}
+                </button>
+              )}
+              <div className="mt-1 text-xs text-neutral-500">
                 {heroTools.metronome ? `${bpm} bpm · ${beatsPerBar}/4 · ${sound}` : "timer only"}
                 {selTodaySecs > 0 && (
                   <>
@@ -1466,6 +1547,25 @@ export default function PracticeView() {
                   </>
                 )}
               </div>
+              {/* At-a-glance numbers ride along so the card view isn't missed. */}
+              {armed && armedLast && (
+                <div className="mt-0.5 text-xs text-neutral-500">
+                  <span className="text-neutral-600">{fmtDateShort(armedLast.date)} </span>
+                  <span className="tabular-nums text-neutral-400">{fmtAgg(armedLast)}</span>
+                  <span className="text-neutral-600"> · today </span>
+                  {armedToday ? (
+                    <span className="tabular-nums text-neutral-400">{fmtAgg(armedToday)}</span>
+                  ) : (
+                    <span className="text-neutral-600">—</span>
+                  )}
+                  {armedDelta !== null && armedDelta !== 0 && (
+                    <span className={`ml-1 ${armedDelta > 0 ? "text-green-400" : "text-red-400"}`}>
+                      {armedDelta > 0 ? "▲" : "▼"}
+                      {Math.abs(armedDelta)}
+                    </span>
+                  )}
+                </div>
+              )}
               {selectedEx && exById.get(selectedEx)?.track_variants && (
                 <div className="mt-1.5 flex gap-1">
                   {(["down", "up"] as const).map((v) => (
@@ -1747,34 +1847,33 @@ export default function PracticeView() {
           {/* The random key generator lives inside the session hero now,
               shown only for exercises that flag it (or freeform practice). */}
 
-          {/* Tools: the tuner plus handy external references. Visible on
-              mobile too — tuning is the tool you want on a phone. */}
-          <section className={`${card} mb-4`}>
-            <h2 className="mb-2 text-sm font-medium text-neutral-400">Tools</h2>
-            <Tuner />
-            <div className="mt-2 flex flex-col gap-1 border-t border-neutral-800 pt-2 text-xs">
-              <a
-                className="text-neutral-500 underline hover:text-neutral-300"
-                href="https://www.oolimo.com/en/guitar-chords/analyze"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                chord analyzer (oolimo) ↗
-              </a>
-              <a
-                className="text-neutral-500 underline hover:text-neutral-300"
-                href="https://www.all-guitar-chords.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                chords &amp; scales reference (all-guitar-chords) ↗
-              </a>
-            </div>
-          </section>
+          {/* Tools (tuner) stay out here in browse mode; armed mode tucks
+              them behind a header down in the content flow. */}
+          {!armed && toolsSection}
         </div>
 
         {/* ---- Content column ---- */}
         <div>
+          {/* Armed: the other exercises shrink to one-tap chips right under
+              the hero; the full cards wait in browse mode. */}
+          {armed && (
+            <div className="mb-4 flex flex-wrap items-center gap-1.5">
+              {active
+                .filter((e) => e.id !== armed.id)
+                .map((e) => (
+                  <button
+                    key={e.id}
+                    onClick={() => armExercise(e, aggByDate(sessions ?? [], e.id))}
+                    className="flex items-center gap-1.5 rounded-full border border-neutral-800 bg-neutral-900 px-3 py-1.5 text-xs text-neutral-300 hover:border-neutral-600"
+                  >
+                    <span className="h-2 w-2 rounded-full" style={{ background: colorOf(e.id) }} />
+                    {e.name}
+                  </button>
+                ))}
+            </div>
+          )}
+          {!armed && (
+          <>
           {/* Exercise cards: last vs today at a glance; tap = arm stopwatch + metronome. */}
           <div className="mb-2 flex items-center justify-between">
             <h2 className="text-sm font-medium text-neutral-400">Exercises</h2>
@@ -2216,11 +2315,23 @@ export default function PracticeView() {
               </div>
           </section>
           )}
+          </>
+          )}
 
           {entryForm}
 
           {/* Progress: a real chart once ~5 days exist; before that a week
               strip + streak, which says more than a scatter of single dots. */}
+          {armed && !(!loading && byDateDesc.length === 0) && (
+            <button
+              className="mb-1 flex items-center gap-1 text-sm font-medium text-neutral-400 hover:text-neutral-200"
+              onClick={() => setOpenPanels((p) => ({ ...p, progress: !p.progress }))}
+              aria-expanded={openPanels.progress}
+            >
+              <span className="text-xs">{openPanels.progress ? "▾" : "▸"}</span> Progress
+            </button>
+          )}
+          <Reveal open={!armed || openPanels.progress}>
           <section className={`${card} mb-4 ${!loading && byDateDesc.length === 0 ? "hidden" : ""}`}>
             <div className="mb-2 flex items-center justify-between">
               <h2 className="text-sm font-medium text-neutral-400">Progress</h2>
@@ -2341,8 +2452,19 @@ export default function PracticeView() {
               </>
             )}
           </section>
+          </Reveal>
 
           {/* Log */}
+          {armed && (
+            <button
+              className="mb-1 flex items-center gap-1 text-sm font-medium text-neutral-400 hover:text-neutral-200"
+              onClick={() => setOpenPanels((p) => ({ ...p, log: !p.log }))}
+              aria-expanded={openPanels.log}
+            >
+              <span className="text-xs">{openPanels.log ? "▾" : "▸"}</span> Log
+            </button>
+          )}
+          <Reveal open={!armed || openPanels.log}>
           <section className={`${card} mb-4`}>
             <div className="mb-2 flex items-center justify-between">
               <h2 className="text-sm font-medium text-neutral-400">Log</h2>
@@ -2476,6 +2598,21 @@ export default function PracticeView() {
               </button>
             )}
           </section>
+          </Reveal>
+
+          {/* Tools (tuner + links) retract behind a header while an exercise is armed. */}
+          {armed && (
+            <>
+              <button
+                className="mb-1 flex items-center gap-1 text-sm font-medium text-neutral-400 hover:text-neutral-200"
+                onClick={() => setOpenPanels((p) => ({ ...p, tools: !p.tools }))}
+                aria-expanded={openPanels.tools}
+              >
+                <span className="text-xs">{openPanels.tools ? "▾" : "▸"}</span> Tools
+              </button>
+              <Reveal open={openPanels.tools}>{toolsSection}</Reveal>
+            </>
+          )}
 
         </div>
       </div>
