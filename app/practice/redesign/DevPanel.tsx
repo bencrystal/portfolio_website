@@ -14,7 +14,7 @@ const ATTEMPTS = {
   a: { label: "A · Today", note: "the page is the checklist; rows expand into the session", View: AttemptA },
   b: { label: "B · Player", note: "one exercise full-screen; queue in a pull-up drawer", View: AttemptB },
   c: { label: "C · Console", note: "queue rail + workspace; all sound tools in one transport bar", View: AttemptC },
-  d: { label: "D · Hybrid", note: "A's checklist + B's dots/big timer + C's transport bar (timed only)", View: AttemptD },
+  d: { label: "D · Hybrid", note: "checklist, all-in-card, controls-first / ambient timer; done rows auto-sink", View: AttemptD },
 } as const;
 type Key = keyof typeof ATTEMPTS;
 
