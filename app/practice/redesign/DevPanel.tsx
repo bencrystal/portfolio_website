@@ -8,16 +8,18 @@ import { useState } from "react";
 import AttemptA from "./AttemptA";
 import AttemptB from "./AttemptB";
 import AttemptC from "./AttemptC";
+import AttemptD from "./AttemptD";
 
 const ATTEMPTS = {
   a: { label: "A · Today", note: "the page is the checklist; rows expand into the session", View: AttemptA },
   b: { label: "B · Player", note: "one exercise full-screen; queue in a pull-up drawer", View: AttemptB },
   c: { label: "C · Console", note: "queue rail + workspace; all sound tools in one transport bar", View: AttemptC },
+  d: { label: "D · Hybrid", note: "A's checklist + B's dots/big timer + C's transport bar (timed only)", View: AttemptD },
 } as const;
 type Key = keyof typeof ATTEMPTS;
 
 export default function DevPanel({ initial }: { initial?: string }) {
-  const [key, setKey] = useState<Key>(initial === "b" || initial === "c" ? (initial as Key) : "a");
+  const [key, setKey] = useState<Key>(initial && initial in ATTEMPTS ? (initial as Key) : "d");
   const { note, View } = ATTEMPTS[key];
 
   return (
