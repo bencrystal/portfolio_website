@@ -1349,7 +1349,9 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
   // Instrument chips exist only once at least one exercise is tagged; the
   // filter narrows the whole page (queue, Resume, chips), not just the list.
   const instruments = Array.from(new Set(activeAll.map((e) => e.instrument ?? "").filter(Boolean))).sort();
-  const instApplied = instFilter !== "all" && instruments.includes(instFilter);
+  // Only honor a saved filter while the chips are visible (>1 instrument) —
+  // otherwise a stuck filter could invisibly hide untagged exercises.
+  const instApplied = instFilter !== "all" && instruments.length > 1 && instruments.includes(instFilter);
   // Instrument dropdown options: starter set plus anything already in use
   // (archived included so a tag never vanishes from the menu).
   const instChoices = Array.from(
@@ -2459,10 +2461,10 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
               )}
             </div>
           )}
+          {/* mailto without the printed address — keeps screenshots clean. */}
           <div className="mt-1 text-neutral-700">
-            suggestions →{" "}
             <a className="hover:text-neutral-400" href="mailto:benjamincrystal8@gmail.com">
-              benjamincrystal8@gmail.com
+              suggestions →
             </a>
           </div>
         </footer>
@@ -2667,16 +2669,18 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
       <div className="mt-3 grid grid-cols-5 items-stretch gap-2">
         {t.metronome && (
           <div className="flex min-h-[3.75rem] items-stretch overflow-hidden rounded-md border border-neutral-700" style={span(bpmSpan)}>
+            {/* −/+ grow with the tile (roughly the outer quarters) so the
+                most-touched targets aren't fixed 36px strips. */}
             <button
               onClick={() => nudgeBpm(-2)}
-              className="w-9 shrink-0 text-sm text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200 sm:text-base"
+              className="min-w-9 flex-1 text-sm text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200 sm:text-base"
               aria-label="slower"
             >
               −
             </button>
             <button
               onClick={() => setTempoOpen((o) => !o)}
-              className={`min-w-0 flex-1 py-1 text-center ${tempoOpen ? "bg-neutral-800/60" : "hover:bg-neutral-800/40"}`}
+              className={`min-w-0 flex-[2] py-1 text-center ${tempoOpen ? "bg-neutral-800/60" : "hover:bg-neutral-800/40"}`}
               title="bpm ruler & tap tempo"
               aria-expanded={tempoOpen}
             >
@@ -2689,7 +2693,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
             </button>
             <button
               onClick={() => nudgeBpm(+2)}
-              className="w-9 shrink-0 text-sm text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200 sm:text-base"
+              className="min-w-9 flex-1 text-sm text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200 sm:text-base"
               aria-label="faster"
             >
               +
@@ -3059,8 +3063,9 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
 
         {banners}
 
-        {/* Instrument filter chips — only once at least one exercise is tagged. */}
-        {instruments.length > 0 && (
+        {/* Instrument filter chips — only once there are two groups to pick
+            between; a lone "all / guitar" pair is just scaffolding. */}
+        {instruments.length > 1 && (
           <div className="flex flex-wrap gap-1.5 pb-2 text-xs">
             {["all", ...instruments].map((tag) => (
               <button
@@ -3153,7 +3158,9 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                   </button>
 
                   {isOpen && (
-                    <div className="mb-4 rounded-xl border border-neutral-800 bg-neutral-900 p-4">
+                    /* One step brighter border than the section cards so the
+                       session card's edge reads instantly against the list. */
+                    <div className="mb-4 rounded-xl border border-neutral-700 bg-neutral-900 p-4">
                       {ex.track_variants && (
                         <div className="mb-3 flex gap-1.5 text-xs">
                           {(["down", "up"] as const).map((v) => (
@@ -4203,8 +4210,8 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
             </div>
           </div>
           {/* Instrument chips: one routine per instrument (or everything).
-              Only appear once an exercise carries a tag. */}
-          {instruments.length > 0 && (
+              Only appear once there are two groups to pick between. */}
+          {instruments.length > 1 && (
             <div className="mb-2 flex flex-wrap gap-1.5">
               {["all", ...instruments].map((i) => (
                 <button
