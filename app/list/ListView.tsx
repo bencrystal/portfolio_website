@@ -71,6 +71,15 @@ export default function ListView({ token }: { token: string }) {
   const [doneOpen, setDoneOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [deletedTodos, setDeletedTodos] = useState<Todo[] | null>(null);
+  // Settings: collapsed routing-word overview, which bucket's aliases are
+  // being edited, which row's "..." menu is open, and bucket-row dragging.
+  const [routingOpen, setRoutingOpen] = useState(false);
+  const [editingAliasesId, setEditingAliasesId] = useState<string | null>(null);
+  const [bucketMenuId, setBucketMenuId] = useState<string | null>(null);
+  const bucketDragId = useRef<string | null>(null);
+  const [bucketDragOver, setBucketDragOver] = useState<string | null>(null);
+  // AI-suggested routing words for one bucket; null words = request in flight.
+  const [suggest, setSuggest] = useState<{ bucketId: string; words: string[] | null } | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
   const [newBucketName, setNewBucketName] = useState("");
@@ -491,6 +500,44 @@ export default function ListView({ token }: { token: string }) {
     await call("buckets", "PATCH", { id, color });
   }
 
+  // Ask Haiku for routing words that point exclusively at this bucket;
+  // each suggestion becomes a chip the user can tap to adopt.
+  async function suggestWords(bucketId: string) {
+    setSuggest({ bucketId, words: null });
+    try {
+      const res = await fetch(`/api/scribe/suggest-words?token=${encodeURIComponent(token)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bucketId }),
+      });
+      const data = res.ok ? await res.json() : { words: [] };
+      setSuggest((s) => (s?.bucketId === bucketId ? { bucketId, words: data.words ?? [] } : s));
+    } catch {
+      setSuggest((s) => (s?.bucketId === bucketId ? { bucketId, words: [] } : s));
+    }
+  }
+
+  // Adopting a suggestion keeps the existing words (including the implicit
+  // bucket-name default) so nothing that routed before stops routing.
+  function acceptWord(b: Bucket, w: string) {
+    setBucketAliases(b.id, [...wordsOf(b), w].join(", "));
+    setSuggest((s) => (s?.bucketId === b.id ? { ...s, words: (s.words ?? []).filter((x) => x !== w) } : s));
+  }
+
+  // Drag a settings row onto another to reorder the bucket grid.
+  // Fractional positions mean no other rows need updating.
+  async function reorderBucket(id: string, overId: string) {
+    if (id === overId) return;
+    const rest = buckets.filter((b) => b.id !== id);
+    const idx = rest.findIndex((b) => b.id === overId);
+    const moved = buckets.find((b) => b.id === id);
+    if (idx < 0 || !moved) return;
+    const prev = rest[idx - 1]?.position;
+    const position = prev === undefined ? rest[idx].position - 1 : (prev + rest[idx].position) / 2;
+    setBuckets([...rest.slice(0, idx), { ...moved, position }, ...rest.slice(idx)]);
+    await call("buckets", "PATCH", { id, position });
+  }
+
   async function deleteBucket(id: string) {
     if (!confirm("Delete this bucket? Its items go back to Unsorted.")) return;
     setBuckets((bs) => bs.filter((b) => b.id !== id));
@@ -540,6 +587,17 @@ export default function ListView({ token }: { token: string }) {
   function colorOf(id: string) {
     return buckets.find((b) => b.id === id)?.color || bucketColor(id);
   }
+  // The routing keywords a bucket answers to; its name when none are set.
+  function wordsOf(b: Bucket) {
+    return (b.aliases ?? b.name)
+      .split(",")
+      .map((w) => w.trim().toLowerCase())
+      .filter(Boolean);
+  }
+  // Words claimed by 2+ buckets never route (the capture stays Unsorted),
+  // so the overview flags them.
+  const wordClaims = new Map<string, number>();
+  buckets.forEach((b) => wordsOf(b).forEach((w) => wordClaims.set(w, (wordClaims.get(w) ?? 0) + 1)));
 
   if (error) return <main className="p-10 text-neutral-200">{error}</main>;
   if (!todos) return <main className="p-10 text-neutral-200">Loading...</main>;
@@ -762,9 +820,69 @@ export default function ListView({ token }: { token: string }) {
       {settingsOpen ? (
         <section>
           <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-neutral-500">Buckets</h2>
+
+          <button
+            onClick={() => setRoutingOpen((o) => !o)}
+            className="mb-2 flex items-center gap-1 text-xs text-neutral-500 hover:text-neutral-300"
+            title="Every keyword that files new captures into a bucket automatically"
+          >
+            <span className="inline-block w-3">{routingOpen ? "\u25be" : "\u25b8"}</span>
+            Routing words
+          </button>
+          {routingOpen && (
+            <div className="mb-4 flex flex-wrap gap-1.5">
+              {buckets.flatMap((b) =>
+                wordsOf(b).map((w) => {
+                  const clash = (wordClaims.get(w) ?? 0) > 1;
+                  return (
+                    <button
+                      key={`${b.id}:${w}`}
+                      onClick={() => setEditingAliasesId(b.id)}
+                      title={clash ? `"${w}" is claimed by more than one bucket, so it never routes` : b.name}
+                      className={`rounded px-1.5 py-0.5 text-xs ${clash ? "ring-1 ring-amber-500" : ""}`}
+                      style={{ color: colorOf(b.id), backgroundColor: `${colorOf(b.id)}33` }}
+                    >
+                      {w}
+                    </button>
+                  );
+                }),
+              )}
+            </div>
+          )}
+
           {buckets.map((b) => (
-            <div key={b.id} className="border-b border-neutral-800 py-2">
+            <div
+              key={b.id}
+              onDragOver={(e) => {
+                if (bucketDragId.current) {
+                  e.preventDefault();
+                  setBucketDragOver(b.id);
+                }
+              }}
+              onDragLeave={() => setBucketDragOver((x) => (x === b.id ? null : x))}
+              onDrop={() => {
+                if (bucketDragId.current) reorderBucket(bucketDragId.current, b.id);
+                bucketDragId.current = null;
+                setBucketDragOver(null);
+              }}
+              className={`border-b py-2 ${bucketDragOver === b.id ? "border-neutral-400" : "border-neutral-800"}`}
+            >
               <div className="flex items-center gap-2">
+              <span
+                draggable
+                onDragStart={(e) => {
+                  bucketDragId.current = b.id;
+                  e.dataTransfer.effectAllowed = "move";
+                }}
+                onDragEnd={() => {
+                  bucketDragId.current = null;
+                  setBucketDragOver(null);
+                }}
+                className="cursor-grab select-none text-neutral-700"
+                title="Drag onto another bucket to reorder"
+              >
+                ::
+              </span>
               <input
                 type="color"
                 value={colorOf(b.id)}
@@ -787,35 +905,119 @@ export default function ListView({ token }: { token: string }) {
                 defaultValue={b.name}
                 onBlur={(e) => e.target.value !== b.name && renameBucket(b.id, e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
-                className={`flex-1 rounded border border-transparent bg-transparent px-2 py-1 hover:border-neutral-700 focus:border-neutral-600 focus:bg-neutral-900 ${
+                className={`min-w-0 flex-1 rounded border border-transparent bg-transparent px-2 py-1 hover:border-neutral-700 focus:border-neutral-600 focus:bg-neutral-900 ${
                   b.hidden ? "text-neutral-600" : ""
                 }`}
               />
-              <label
-                className="flex shrink-0 cursor-pointer items-center gap-1 text-xs text-neutral-500 hover:text-neutral-300"
-                title="Uncheck to keep this bucket's tasks out of the All view"
+              <button
+                onClick={() => setBucketQuiet(b.id, !b.quiet)}
+                title={b.quiet ? "Tasks stay out of the All view; tap to include them" : "Tasks appear in the All view; tap to keep them out"}
+                className={`shrink-0 rounded-full border px-2 py-0.5 text-xs ${
+                  b.quiet ? "border-neutral-800 text-neutral-600 hover:text-neutral-400" : "border-neutral-600 text-neutral-300"
+                }`}
               >
-                <input type="checkbox" checked={!b.quiet} onChange={() => setBucketQuiet(b.id, !b.quiet)} />
-                Show in All
-              </label>
+                {b.quiet ? "Quiet" : "In All"}
+              </button>
               <button
                 onClick={() => setBucketHidden(b.id, !b.hidden)}
-                className="text-sm text-neutral-500 hover:text-neutral-300"
+                title={b.hidden ? "Bucket is off the grid; tap to bring it back" : "Bucket shows on the grid; tap to tuck it away"}
+                className={`shrink-0 rounded-full border px-2 py-0.5 text-xs ${
+                  b.hidden ? "border-neutral-800 text-neutral-600 hover:text-neutral-400" : "border-neutral-600 text-neutral-300"
+                }`}
               >
-                {b.hidden ? "Show" : "Hide"}
+                {b.hidden ? "Hidden" : "Visible"}
               </button>
-              <button onClick={() => deleteBucket(b.id)} className="text-red-900 hover:text-red-600">
-                Delete
+              <button
+                onClick={() => setBucketMenuId((x) => (x === b.id ? null : b.id))}
+                className="shrink-0 rounded px-1 text-neutral-500 hover:text-neutral-300"
+                title="More"
+              >
+                ...
               </button>
               </div>
-              <input
-                defaultValue={b.aliases ?? ""}
-                placeholder={`Routing words (default: ${b.name.toLowerCase()})`}
-                title="Comma-separated keywords. Say one as the first word (or uniquely anywhere) and the capture files here automatically."
-                onBlur={(e) => (e.target.value.trim() || null) !== (b.aliases ?? null) && setBucketAliases(b.id, e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
-                className="mt-1 w-full rounded border border-transparent bg-transparent px-2 py-0.5 text-xs text-neutral-400 placeholder:text-neutral-600 hover:border-neutral-700 focus:border-neutral-600 focus:bg-neutral-900"
-              />
+              {bucketMenuId === b.id && (
+                <div className="mt-1 flex items-center gap-4 pl-6 text-xs">
+                  <button
+                    onClick={() => {
+                      setEditingAliasesId(b.id);
+                      setBucketMenuId(null);
+                    }}
+                    className="text-neutral-500 hover:text-neutral-300"
+                  >
+                    Edit routing words
+                  </button>
+                  <button
+                    onClick={() => {
+                      suggestWords(b.id);
+                      setBucketMenuId(null);
+                    }}
+                    className="text-neutral-500 hover:text-neutral-300"
+                    title="Ask AI for extra words that only ever mean this bucket"
+                  >
+                    Suggest words
+                  </button>
+                  <button onClick={() => deleteBucket(b.id)} className="text-red-900 hover:text-red-600">
+                    Delete
+                  </button>
+                </div>
+              )}
+              {suggest?.bucketId === b.id && (
+                <div className="mt-1 flex flex-wrap items-center gap-1 pl-6">
+                  {suggest.words === null ? (
+                    <span className="text-[11px] text-neutral-600">Thinking of words...</span>
+                  ) : suggest.words.length === 0 ? (
+                    <span className="text-[11px] text-neutral-600">No new words to suggest.</span>
+                  ) : (
+                    suggest.words.map((w) => (
+                      <button
+                        key={w}
+                        onClick={() => acceptWord(b, w)}
+                        title="Tap to add this routing word"
+                        className="rounded border border-dashed px-1.5 py-0.5 text-[11px]"
+                        style={{ color: colorOf(b.id), borderColor: `${colorOf(b.id)}66` }}
+                      >
+                        + {w}
+                      </button>
+                    ))
+                  )}
+                  <button
+                    onClick={() => setSuggest(null)}
+                    className="px-1 text-[11px] text-neutral-600 hover:text-neutral-400"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              )}
+              {editingAliasesId === b.id ? (
+                <input
+                  autoFocus
+                  defaultValue={b.aliases ?? ""}
+                  placeholder={`Routing words (default: ${b.name.toLowerCase()})`}
+                  title="Comma-separated keywords. Say one as the first word (or uniquely anywhere) and the capture files here automatically."
+                  onBlur={(e) => {
+                    if ((e.target.value.trim() || null) !== (b.aliases ?? null)) setBucketAliases(b.id, e.target.value);
+                    setEditingAliasesId(null);
+                  }}
+                  onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
+                  className="mt-1 w-full rounded border border-neutral-600 bg-neutral-900 px-2 py-0.5 text-xs text-neutral-400 placeholder:text-neutral-600"
+                />
+              ) : b.aliases ? (
+                // Condensed preview: only buckets with custom words show a
+                // chip line; defaulted buckets stay a single row.
+                <div className="mt-1 flex cursor-text flex-wrap gap-1 pl-6" onClick={() => setEditingAliasesId(b.id)}>
+                  {wordsOf(b).map((w) => (
+                    <span
+                      key={w}
+                      className={`rounded px-1.5 py-0.5 text-[11px] ${
+                        (wordClaims.get(w) ?? 0) > 1 ? "ring-1 ring-amber-500" : ""
+                      }`}
+                      style={{ color: colorOf(b.id), backgroundColor: `${colorOf(b.id)}26` }}
+                    >
+                      {w}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
             </div>
           ))}
           <div className="mt-2 flex gap-2">
