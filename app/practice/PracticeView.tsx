@@ -422,8 +422,10 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
   const [noteNext, setNoteNext] = useState<Note | null>(null);
   const noteRef = useRef<{ cur: Note | null; next: Note | null }>({ cur: null, next: null });
   // Auto-advance interval in beats while the metronome runs (0 = off).
-  const [noteSync, setNoteSync] = useState(0);
-  const noteSyncRef = useRef(0);
+  // First use defaults to every 8 beats — a musical two bars, not a frantic
+  // change on every beat; saved prefs override it.
+  const [noteSync, setNoteSync] = useState(8);
+  const noteSyncRef = useRef(8);
   const barCount = useRef(-1); // bars since start; -1 until the first downbeat
   const [noteMorph, setNoteMorph] = useState<number | null>(null); // ms of the lead-in animation
   // Sustained drone of the current note; off by default and not persisted
@@ -2705,8 +2707,10 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
   );
 
   // "advanced ▾": count-in, trainer, sound, meter — settings, not controls.
-  const advancedRow = (t: { metronome: boolean; random_key: boolean }) => (
-    <Reveal open={extrasOpen}>
+  // `open` override: the tools panel shows these permanently — it's the hub
+  // for every knob, no "advanced" toggle to find first.
+  const advancedRow = (t: { metronome: boolean; random_key: boolean }, open: boolean = extrasOpen) => (
+    <Reveal open={open}>
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-neutral-400 sm:text-sm">
         {t.metronome && (
           <>
@@ -2901,8 +2905,10 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                 )}
               </div>
             )}
-            {controlsRow({ metronome: true, random_key: seasoned })}
-            {advancedRow({ metronome: true, random_key: seasoned })}
+            {/* The full kit, always: bpm/click/key/drone plus every setting
+                (meter, sound, count-in, tempo trainer, new-key-every). */}
+            {controlsRow({ metronome: true, random_key: true })}
+            {advancedRow({ metronome: true, random_key: true }, true)}
             {!armed && (swRunning || swElapsed > 0) && (
               <p className="mt-3 flex items-center gap-1.5 font-mono text-[11px] tabular-nums text-neutral-500 sm:text-xs">
                 {swRunning && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500" />}
