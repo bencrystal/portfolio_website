@@ -502,7 +502,8 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
   const [fresh, setFresh] = useState(false);
   // --- redesigned checklist layout ---
   const [histOpen, setHistOpen] = useState(false); // header "history": charts + log
-  const [freeformOpen, setFreeformOpen] = useState(false); // quiet tools row after the list
+  const [freeformOpen, setFreeformOpen] = useState(false); // header "tools": freeform panel
+  const [sessionNote, setSessionNote] = useState(""); // optional one-liner attached on Log
   // Row that was just logged: it collapses in place, then reappears in the
   // done group below once this clears (the auto-sink animation).
   const [sinkingId, setSinkingId] = useState<string | null>(null);
@@ -1013,14 +1014,15 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
         date: todayISO(),
         bpm,
         seconds,
-        note: null,
+        note: sessionNote.trim() || null,
         variant: tracked ? variant : null,
       });
+      setSessionNote("");
       setSessions((s) => [...(s ?? []), session]);
       announceLog(session, prevBest);
     } catch (e) {
       // Fall back to the form so the measurement isn't lost.
-      setForm({ exercise_id: exId, date: todayISO(), bpm: String(bpm), dur: fmtSecs(seconds), note: "" });
+      setForm({ exercise_id: exId, date: todayISO(), bpm: String(bpm), dur: fmtSecs(seconds), note: sessionNote });
       setError(String((e as Error).message));
     }
   }
@@ -1038,9 +1040,10 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
         date: todayISO(),
         bpm: null,
         seconds: 0,
-        note: null,
+        note: sessionNote.trim() || null,
         variant: null,
       });
+      setSessionNote("");
       setSessions((s) => [...(s ?? []), session]);
       announceLog(session, 0);
     } catch (e) {
@@ -1276,6 +1279,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
     setSelectedEx(ex.id);
     setDayDone(false);
     setBpmPromptSeen(false);
+    setSessionNote(""); // notes are per-log, not per-day
     if (ex.track_variants) {
       // Suggest whichever stroke-start you haven't done yet today.
       const todays = (sessions ?? []).filter((s) => s.exercise_id === ex.id && s.date === today);
@@ -1542,6 +1546,9 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
   // ---------- render ----------
 
   const card = "rounded-xl border border-neutral-800 bg-neutral-900 p-4";
+  // Header nav chips; "on" = the subtle-fill active style used page-wide.
+  const navChip = "rounded-md border px-2 py-1";
+  const navChipOn = "border-neutral-600 bg-neutral-900 text-neutral-200";
   const btn = "rounded-md bg-neutral-800 px-3 py-2 text-sm hover:bg-neutral-700 active:bg-neutral-600";
   const input =
     "rounded-md border border-neutral-700 bg-neutral-950 px-2 py-1.5 text-sm placeholder:text-neutral-600";
@@ -2530,9 +2537,16 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
             >
               −
             </button>
-            <button onClick={() => setTempoOpen((o) => !o)} className="text-center" title="bpm ruler & tap tempo" aria-expanded={tempoOpen}>
+            <button
+              onClick={() => setTempoOpen((o) => !o)}
+              className={`rounded-md border px-2.5 py-1 text-center ${
+                tempoOpen ? "border-neutral-500" : "border-neutral-700 hover:border-neutral-500"
+              }`}
+              title="bpm ruler & tap tempo"
+              aria-expanded={tempoOpen}
+            >
               <span className="font-mono text-xl tabular-nums sm:text-2xl">{bpm}</span>
-              <span className="block text-[9px] uppercase tracking-widest text-neutral-600 sm:text-[10px]">bpm {tempoOpen ? "▾" : "▸"}</span>
+              <span className="block text-[9px] uppercase tracking-widest text-neutral-500 sm:text-[10px]">bpm {tempoOpen ? "▾" : "▸"}</span>
             </button>
             <button
               onClick={() => nudgeBpm(+2)}
@@ -2545,15 +2559,25 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
               onClick={toggleMetronome}
               aria-pressed={running}
               title="run the click by itself"
-              className={`ml-1 text-center ${running ? "text-amber-400" : "text-neutral-500 hover:text-neutral-300"}`}
+              className={`relative ml-1 rounded-md border px-2.5 py-1 text-center ${
+                running
+                  ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
+                  : "border-neutral-700 text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
+              }`}
             >
+              {running && <span className="absolute right-1 top-1 h-1 w-1 rounded-full bg-amber-400" />}
               <span className="text-xl leading-none sm:text-2xl">◆</span>
-              <span className="block text-[9px] uppercase tracking-widest text-neutral-600 sm:text-[10px]">click</span>
+              <span className="block text-[9px] uppercase tracking-widest text-neutral-500 sm:text-[10px]">click</span>
             </button>
           </div>
         )}
         {t.random_key && (
-          <button onClick={advanceNote} className="text-center" title="press N or tap for a new key" aria-label="random key">
+          <button
+            onClick={advanceNote}
+            className="rounded-md border border-neutral-700 px-2.5 py-1 text-center hover:border-neutral-500"
+            title="press N or tap for a new key"
+            aria-label="random key"
+          >
             <span className="font-mono text-xl text-neutral-200 sm:text-2xl">
               {noteCur ? (
                 <NoteMorph
@@ -2572,27 +2596,38 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
             </span>
           </button>
         )}
-        <button
-          onClick={() => setDroneOn((v) => !v)}
-          aria-pressed={droneOn}
-          title="sustain a drone of the current key (works without the metronome)"
-          className={`text-center ${droneOn ? "text-amber-400" : "text-neutral-500 hover:text-neutral-300"}`}
-        >
-          {/* ∿ is an operator glyph and renders a size smaller than ◆, so it
-              gets one text step up to match. */}
-          <span className="text-2xl leading-none sm:text-3xl">∿</span>
-          <span className="block text-[9px] uppercase tracking-widest text-neutral-600 sm:text-[10px]">drone</span>
-        </button>
-        {droneOn && (
-          <input
-            type="range"
-            min={0}
-            max={100}
-            value={Math.round(droneVol * 100)}
-            onChange={(e) => setDroneVol(Number(e.target.value) / 100)}
-            className="w-14 accent-amber-500"
-            aria-label="drone volume"
-          />
+        {/* The drone follows the random key, so it only appears alongside it —
+            unless it's already sounding, which must stay reachable to stop. */}
+        {(t.random_key || droneOn) && (
+          <>
+            <button
+              onClick={() => setDroneOn((v) => !v)}
+              aria-pressed={droneOn}
+              title="sustain a drone of the current key (works without the metronome)"
+              className={`relative rounded-md border px-2.5 py-1 text-center ${
+                droneOn
+                  ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
+                  : "border-neutral-700 text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
+              }`}
+            >
+              {droneOn && <span className="absolute right-1 top-1 h-1 w-1 rounded-full bg-amber-400" />}
+              {/* ∿ is an operator glyph and renders a size smaller than ◆, so it
+                  gets one text step up to match. */}
+              <span className="text-2xl leading-none sm:text-3xl">∿</span>
+              <span className="block text-[9px] uppercase tracking-widest text-neutral-500 sm:text-[10px]">drone</span>
+            </button>
+            {droneOn && (
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={Math.round(droneVol * 100)}
+                onChange={(e) => setDroneVol(Number(e.target.value) / 100)}
+                className="w-14 accent-amber-500"
+                aria-label="drone volume"
+              />
+            )}
+          </>
         )}
       </div>
       {t.metronome && (
@@ -2665,7 +2700,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
             <span className="flex items-center gap-1.5 whitespace-nowrap">
               <label className="flex items-center gap-1.5">
                 <input type="checkbox" className="accent-amber-500" checked={trainer} onChange={(e) => setTrainer(e.target.checked)} />
-                trainer
+                tempo trainer
               </label>
               {trainer && (
                 <>
@@ -2718,37 +2753,48 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
           }`}
         >
           <h1 className="text-sm font-medium tracking-wide text-neutral-300">practice</h1>
-          <nav className="flex items-center gap-4 text-xs text-neutral-500">
-            <a href="/practice/tree" className="hover:text-neutral-200">
+          {/* Everything up here is a chip so it reads as clickable. */}
+          <nav className="flex flex-wrap items-center justify-end gap-1.5 text-xs text-neutral-400">
+            <a href="/practice/tree" className={`${navChip} border-neutral-800 hover:border-neutral-600 hover:text-neutral-200`}>
               syllabus
             </a>
             <button
+              onClick={() => setFreeformOpen((o) => !o)}
+              aria-expanded={freeformOpen}
+              className={`${navChip} ${freeformOpen ? navChipOn : "border-neutral-800 hover:border-neutral-600 hover:text-neutral-200"}`}
+            >
+              tools
+            </button>
+            <button
               onClick={() => setHistOpen((o) => !o)}
               aria-expanded={histOpen}
-              className={histOpen ? "text-neutral-200" : "hover:text-neutral-200"}
+              className={`${navChip} ${histOpen ? navChipOn : "border-neutral-800 hover:border-neutral-600 hover:text-neutral-200"}`}
             >
               history
             </button>
             <button
               onClick={() => setManageOpen((o) => !o)}
               aria-expanded={manageOpen}
-              className={manageOpen ? "text-neutral-200" : "hover:text-neutral-200"}
+              className={`${navChip} ${manageOpen ? navChipOn : "border-neutral-800 hover:border-neutral-600 hover:text-neutral-200"}`}
             >
               edit
             </button>
             <button
               title="How it works"
               onClick={() => setHintOpen((o) => !o)}
-              className="rounded-full border border-neutral-700 px-1.5 text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
+              className="rounded-full border border-neutral-700 px-1.5 py-0.5 text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
             >
               ?
             </button>
             {unlocked ? (
-              <button className="hover:text-neutral-200" onClick={signOut}>
+              <button className={`${navChip} border-neutral-800 hover:border-neutral-600 hover:text-neutral-200`} onClick={signOut}>
                 log out
               </button>
             ) : (
-              <button className="text-neutral-300 hover:text-white" onClick={() => setUnlockOpen(true)}>
+              <button
+                className={`${navChip} border-neutral-700 text-neutral-300 hover:border-neutral-500 hover:text-white`}
+                onClick={() => setUnlockOpen(true)}
+              >
                 log in
               </button>
             )}
@@ -2779,6 +2825,62 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
           </div>
         )}
 
+        {/* "tools" opens right under its header trigger: freeform practice,
+            tuner and chord links — nothing armed, just sound. */}
+        <Reveal open={freeformOpen}>
+          <div className="mb-4 rounded-xl border border-neutral-800 bg-neutral-900 p-4">
+            {!armed && (
+              <div className="flex gap-2">
+                <button
+                  onClick={startSession}
+                  className={`flex-1 rounded-lg py-2.5 text-sm font-semibold sm:text-base ${
+                    swRunning || countingIn
+                      ? "bg-amber-500 text-neutral-950 hover:bg-amber-400"
+                      : "bg-neutral-100 text-neutral-950 hover:bg-white"
+                  }`}
+                >
+                  {countingIn ? "…" : swRunning ? "Stop" : swElapsed > 0 ? "Resume" : "Start"}
+                </button>
+                {swElapsed > 0 && !swRunning && (
+                  <button onClick={swReset} className="rounded-lg bg-neutral-800 px-3 text-xs text-neutral-400 hover:bg-neutral-700">
+                    Reset
+                  </button>
+                )}
+              </div>
+            )}
+            {controlsRow({ metronome: true, random_key: seasoned })}
+            {advancedRow({ metronome: true, random_key: seasoned })}
+            {!armed && (swRunning || swElapsed > 0) && (
+              <p className="mt-3 flex items-center gap-1.5 font-mono text-[11px] tabular-nums text-neutral-500 sm:text-xs">
+                {swRunning && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500" />}
+                {fmtSecs(swElapsed / 1000)}
+                <span className="font-sans text-neutral-700"> — tap an exercise below to log it</span>
+              </p>
+            )}
+            <div className="mt-4 border-t border-neutral-800 pt-3">
+              <Tuner />
+              <div className="mt-2 flex flex-wrap gap-1.5 border-t border-neutral-800 pt-2 text-xs">
+                <a
+                  className="rounded-md border border-neutral-700 bg-neutral-800/60 px-2 py-1 text-neutral-300 hover:border-neutral-400 hover:bg-neutral-700"
+                  href="https://www.oolimo.com/en/guitar-chords/analyze"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  chord analyzer ↗
+                </a>
+                <a
+                  className="rounded-md border border-neutral-700 bg-neutral-800/60 px-2 py-1 text-neutral-300 hover:border-neutral-400 hover:bg-neutral-700"
+                  href="https://www.all-guitar-chords.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  chords &amp; scales ↗
+                </a>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+
         {banners}
 
         {/* Instrument filter chips — only once at least one exercise is tagged. */}
@@ -2791,7 +2893,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                 aria-pressed={(instApplied ? instFilter : "all") === tag}
                 className={`rounded-full border px-2.5 py-0.5 ${
                   (instApplied ? instFilter : "all") === tag
-                    ? "border-amber-500/60 text-amber-400"
+                    ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
                     : "border-neutral-800 text-neutral-500 hover:border-neutral-600"
                 }`}
               >
@@ -2857,7 +2959,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                               aria-pressed={variant === v}
                               className={`rounded-md border px-2.5 py-1 ${
                                 variant === v
-                                  ? "border-amber-500/60 text-amber-400"
+                                  ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
                                   : "border-neutral-700 text-neutral-500 hover:border-neutral-500"
                               }`}
                             >
@@ -2875,6 +2977,12 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                           >
                             {done ? "✓ done today — again?" : "Did it ✓"}
                           </button>
+                          <input
+                            value={sessionNote}
+                            onChange={(e) => setSessionNote(e.target.value)}
+                            placeholder="note for this log (optional)"
+                            className="mt-2 w-full rounded-md border border-neutral-800 bg-transparent px-2 py-1.5 text-xs text-neutral-300 placeholder:text-neutral-700 focus:border-neutral-600 focus:outline-none sm:text-sm"
+                          />
                           {ex.description && (
                             <div className="mt-3">
                               <DescriptionBody text={ex.description} />
@@ -2969,19 +3077,34 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                                 />
                               </div>
                             )}
+                            {/* Optional one-liner that rides along with the next Log. */}
+                            <input
+                              value={sessionNote}
+                              onChange={(e) => setSessionNote(e.target.value)}
+                              placeholder="note for this log (optional)"
+                              className="mt-2 w-full rounded-md border border-neutral-800 bg-transparent px-2 py-1.5 text-xs text-neutral-300 placeholder:text-neutral-700 focus:border-neutral-600 focus:outline-none sm:text-sm"
+                            />
                             {/* Real tap targets, not 11px inline text. */}
                             <div className="mt-1.5 flex items-center gap-1 text-xs text-neutral-500 sm:text-sm">
                               <button
                                 onClick={() => setExtrasOpen((o) => !o)}
                                 aria-expanded={extrasOpen}
-                                className="-ml-2 rounded-md px-2 py-1.5 hover:bg-neutral-800 hover:text-neutral-300"
+                                className={`rounded-md border px-2.5 py-1.5 ${
+                                  extrasOpen
+                                    ? "border-neutral-600 text-neutral-300"
+                                    : "border-neutral-800 hover:border-neutral-600 hover:text-neutral-300"
+                                }`}
                               >
                                 advanced {extrasOpen ? "▾" : "▸"}
                               </button>
                               <button
                                 onClick={() => setDetailsOpen(!detOpen)}
                                 aria-expanded={detOpen}
-                                className="rounded-md px-2 py-1.5 hover:bg-neutral-800 hover:text-neutral-300"
+                                className={`rounded-md border px-2.5 py-1.5 ${
+                                  detOpen
+                                    ? "border-neutral-600 text-neutral-300"
+                                    : "border-neutral-800 hover:border-neutral-600 hover:text-neutral-300"
+                                }`}
                               >
                                 details {detOpen ? "▾" : "▸"}
                               </button>
@@ -3078,70 +3201,6 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
         )}
 
         {manageOpen && <div className="mt-4">{managePanel}</div>}
-
-        {/* Freeform practice + the quiet tools: nothing armed, just sound. */}
-        <div className="pt-5">
-          <button
-            onClick={() => setFreeformOpen((o) => !o)}
-            aria-expanded={freeformOpen}
-            className="rounded-md py-1.5 pr-2 text-xs text-neutral-600 hover:text-neutral-300 sm:text-sm"
-          >
-            ♪ freeform · tools {freeformOpen ? "▾" : "▸"}
-          </button>
-          <Reveal open={freeformOpen}>
-            <div className="mt-2 rounded-xl border border-neutral-800 bg-neutral-900 p-4">
-              {!armed && (
-                <div className="flex gap-2">
-                  <button
-                    onClick={startSession}
-                    className={`flex-1 rounded-lg py-2.5 text-sm font-semibold sm:text-base ${
-                      swRunning || countingIn
-                        ? "bg-amber-500 text-neutral-950 hover:bg-amber-400"
-                        : "bg-neutral-100 text-neutral-950 hover:bg-white"
-                    }`}
-                  >
-                    {countingIn ? "…" : swRunning ? "Stop" : swElapsed > 0 ? "Resume" : "Start"}
-                  </button>
-                  {swElapsed > 0 && !swRunning && (
-                    <button onClick={swReset} className="rounded-lg bg-neutral-800 px-3 text-xs text-neutral-400 hover:bg-neutral-700">
-                      Reset
-                    </button>
-                  )}
-                </div>
-              )}
-              {controlsRow({ metronome: true, random_key: seasoned })}
-              {advancedRow({ metronome: true, random_key: seasoned })}
-              {!armed && (swRunning || swElapsed > 0) && (
-                <p className="mt-3 flex items-center gap-1.5 font-mono text-[11px] tabular-nums text-neutral-500 sm:text-xs">
-                  {swRunning && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500" />}
-                  {fmtSecs(swElapsed / 1000)}
-                  <span className="font-sans text-neutral-700"> — tap an exercise above to log it</span>
-                </p>
-              )}
-              <div className="mt-4 border-t border-neutral-800 pt-3">
-                <Tuner />
-                <div className="mt-2 flex flex-wrap gap-1.5 border-t border-neutral-800 pt-2 text-xs">
-                  <a
-                    className="rounded-md border border-neutral-700 bg-neutral-800/60 px-2 py-1 text-neutral-300 hover:border-neutral-400 hover:bg-neutral-700"
-                    href="https://www.oolimo.com/en/guitar-chords/analyze"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    chord analyzer ↗
-                  </a>
-                  <a
-                    className="rounded-md border border-neutral-700 bg-neutral-800/60 px-2 py-1 text-neutral-300 hover:border-neutral-400 hover:bg-neutral-700"
-                    href="https://www.all-guitar-chords.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    chords &amp; scales ↗
-                  </a>
-                </div>
-              </div>
-            </div>
-          </Reveal>
-        </div>
 
         {form && <div className="mt-6">{entryForm}</div>}
 
@@ -3279,7 +3338,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
             aria-pressed={droneOn}
             className={`rounded-md border px-2 py-1 text-xs ${
               droneOn
-                ? "border-amber-500/60 text-amber-400"
+                ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
                 : "border-neutral-700 text-neutral-500 hover:border-neutral-500"
             }`}
           >
@@ -3624,7 +3683,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                 aria-pressed={droneOn}
                 className={`rounded-md border px-2 py-1 text-xs ${
                   droneOn
-                    ? "border-amber-500/60 text-amber-400"
+                    ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
                     : "border-neutral-700 text-neutral-500 hover:border-neutral-500"
                 }`}
               >
@@ -3942,7 +4001,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                   aria-pressed={i === (instApplied ? instFilter : "all")}
                   className={`rounded-full border px-2.5 py-0.5 text-xs ${
                     i === (instApplied ? instFilter : "all")
-                      ? "border-amber-500/60 text-amber-400"
+                      ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
                       : "border-neutral-700 text-neutral-500 hover:border-neutral-500 hover:text-neutral-300"
                   }`}
                 >
