@@ -2731,8 +2731,14 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
               className="block w-full"
             >
               {/* ∿ is an operator glyph and renders a size smaller than ◆, so it
-                  gets one text step up to match. */}
-              <span className="text-2xl leading-none sm:text-3xl">∿</span>
+                  gets one text step up to match. While sounding, the wave's
+                  visible amplitude follows the volume slider. */}
+              <span
+                className="block text-2xl leading-none transition-transform duration-150 sm:text-3xl"
+                style={droneOn ? { transform: `scaleY(${0.45 + droneVol * 0.8})` } : undefined}
+              >
+                ∿
+              </span>
               {!droneOn && <span className="block text-[9px] uppercase tracking-widest text-neutral-500 sm:text-[10px]">drone</span>}
             </button>
             {droneOn && (
