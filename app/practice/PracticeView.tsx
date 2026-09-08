@@ -484,6 +484,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
   useEffect(() => setDetailsOpen(null), [selectedEx]);
   const logRef = useRef<HTMLDivElement | null>(null); // measured so max-height can lerp open
   const [newExName, setNewExName] = useState("");
+  const [manageEditId, setManageEditId] = useState<string | null>(null); // one manage row's actions open at a time
   const [newExTools, setNewExTools] = useState({ metronome: true, random_key: false, check_off: false });
   // Instrument filter chip ("all" or a lowercase tag); the queue follows it.
   const [instFilter, setInstFilter] = useState("all");
@@ -1806,9 +1807,15 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
     </>
   );
 
-  // One manage row: name line up top, then every action in the same fixed
-  // order and position — no more hunting because a long name shoved things
-  // around. Active rows drag to reorder (arrows stay as the fallback).
+  // One manage row: just drag + name + archive until the name is tapped —
+  // then that row (and only that row) unfolds its full action line in a
+  // fixed order. Toggles render as chips with the page-wide fill+dot
+  // active state; plain-text actions stay plain.
+  const manageTgl = (on: boolean) =>
+    `relative rounded-md border px-2 py-0.5 ${
+      on ? "border-amber-500/40 bg-amber-500/10 text-amber-400" : "border-neutral-700 text-neutral-500 hover:border-neutral-500"
+    }`;
+  const manageDot = <span className="absolute right-0.5 top-0.5 h-1 w-1 rounded-full bg-amber-400" aria-hidden />;
   const manageRow = (ex: Exercise) => (
     <div
       key={ex.id}
@@ -1829,7 +1836,19 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
           </span>
         )}
         <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: colorOf(ex.id) }} />
-        <span className={`min-w-0 flex-1 ${ex.archived ? "text-neutral-600 line-through" : ""}`}>{ex.name}</span>
+        {unlocked ? (
+          <button
+            className="flex min-w-0 flex-1 items-center gap-1.5 text-left"
+            onClick={() => setManageEditId(manageEditId === ex.id ? null : ex.id)}
+            aria-expanded={manageEditId === ex.id}
+            title="Edit this exercise"
+          >
+            <span className={`min-w-0 truncate ${ex.archived ? "text-neutral-600 line-through" : ""}`}>{ex.name}</span>
+            <span className="shrink-0 text-[10px] text-neutral-600">{manageEditId === ex.id ? "▾" : "▸"}</span>
+          </button>
+        ) : (
+          <span className={`min-w-0 flex-1 ${ex.archived ? "text-neutral-600 line-through" : ""}`}>{ex.name}</span>
+        )}
         {unlocked && (
           <button
             className="shrink-0 text-xs text-neutral-500 hover:text-neutral-200"
@@ -1842,18 +1861,8 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
           </button>
         )}
       </div>
-      {unlocked && (
-        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 pl-8 text-xs">
-          {!ex.archived && (
-            <span className="flex gap-1">
-              <button className="px-0.5 text-neutral-500 hover:text-neutral-200" onClick={() => moveBy(ex, -1, activeAll)} title="Move up">
-                ↑
-              </button>
-              <button className="px-0.5 text-neutral-500 hover:text-neutral-200" onClick={() => moveBy(ex, 1, activeAll)} title="Move down">
-                ↓
-              </button>
-            </span>
-          )}
+      {unlocked && manageEditId === ex.id && (
+        <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1.5 pl-8 text-xs">
           {/* Fixed-width slot: attach/link and ref/×ref swap inside it without
               nudging everything after them. */}
           <span className="flex min-w-[4.5rem] gap-2">
@@ -1886,37 +1895,36 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
               </>
             )}
           </span>
-          <button
-            className={ex.track_variants ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"}
-            title="Track down/up-stroke starts separately"
-            onClick={() => patchExercise(ex.id, { track_variants: !ex.track_variants })}
-          >
-            ↓↑
-          </button>
+          {/* The "↓↑ strokes" (track_variants) toggle is retired from the UI —
+              Ben isn't sure split down/up tracking earns its place. Exercises
+              already flagged keep their variant buttons in the session card. */}
           {/* Which tools this exercise puts in the session card. */}
           <button
-            className={toolsOf(ex).metronome ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"}
+            className={manageTgl(toolsOf(ex).metronome)}
             title="Metronome in the session card"
             aria-pressed={toolsOf(ex).metronome}
             onClick={() => patchExercise(ex.id, { tools: { ...toolsOf(ex), metronome: !toolsOf(ex).metronome } })}
           >
             met
+            {toolsOf(ex).metronome && manageDot}
           </button>
           <button
-            className={toolsOf(ex).random_key ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"}
+            className={manageTgl(toolsOf(ex).random_key)}
             title="Random key generator in the session card"
             aria-pressed={toolsOf(ex).random_key}
             onClick={() => patchExercise(ex.id, { tools: { ...toolsOf(ex), random_key: !toolsOf(ex).random_key } })}
           >
             key
+            {toolsOf(ex).random_key && manageDot}
           </button>
           <button
-            className={toolsOf(ex).check_off ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"}
+            className={manageTgl(toolsOf(ex).check_off)}
             title="Check-off exercise — one tap logs it done, no bpm or timer"
             aria-pressed={toolsOf(ex).check_off}
             onClick={() => patchExercise(ex.id, { tools: { ...(ex.tools ?? {}), check_off: !toolsOf(ex).check_off } })}
           >
             ✓off
+            {toolsOf(ex).check_off && manageDot}
           </button>
           {/* Instrument tag as a dropdown; "add more…" grows the list. */}
           <select
