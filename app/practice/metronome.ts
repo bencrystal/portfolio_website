@@ -10,6 +10,15 @@ function fadeOut(gain: GainNode, t: number) {
   gain.gain.linearRampToValueAtTime(0.0001, t + 0.05);
 }
 
+// iOS Safari mutes Web Audio while the ring/silent switch is on unless the
+// page opts into "playback" audio (like a music app). Without this the
+// metronome appears broken on any iPhone that lives on silent.
+function wakeAudio(ctx: AudioContext) {
+  const nav = navigator as unknown as { audioSession?: { type: string } };
+  if (nav.audioSession) nav.audioSession.type = "playback";
+  void ctx.resume();
+}
+
 export class Metronome {
   private ctx: AudioContext | null = null;
   private timer: ReturnType<typeof setInterval> | null = null;
@@ -29,7 +38,7 @@ export class Metronome {
   start() {
     if (this.timer) return;
     this.ctx ??= new AudioContext();
-    void this.ctx.resume();
+    wakeAudio(this.ctx);
     this.beat = 0;
     this.nextNoteTime = this.ctx.currentTime + 0.08;
     this.timer = setInterval(() => this.schedule(), 25);
@@ -65,7 +74,7 @@ export class Metronome {
    *  Works with the metronome stopped — the drone is its own instrument. */
   playDrone(freq: number) {
     this.ctx ??= new AudioContext();
-    void this.ctx.resume();
+    wakeAudio(this.ctx);
     const ctx = this.ctx;
     const time = ctx.currentTime;
     const gain = ctx.createGain();

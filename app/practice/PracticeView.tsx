@@ -2525,18 +2525,18 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
           <div className="flex items-center gap-2">
             <button
               onClick={() => nudgeBpm(-2)}
-              className="grid h-8 w-8 place-items-center rounded-md bg-neutral-800 text-sm text-neutral-300 hover:bg-neutral-700"
+              className="grid h-8 w-8 place-items-center rounded-md bg-neutral-800 text-sm text-neutral-300 hover:bg-neutral-700 sm:h-9 sm:w-9 sm:text-base"
               aria-label="slower"
             >
               −
             </button>
             <button onClick={() => setTempoOpen((o) => !o)} className="text-center" title="bpm ruler & tap tempo" aria-expanded={tempoOpen}>
-              <span className="font-mono text-xl tabular-nums">{bpm}</span>
-              <span className="block text-[9px] uppercase tracking-widest text-neutral-600">bpm {tempoOpen ? "▾" : "▸"}</span>
+              <span className="font-mono text-xl tabular-nums sm:text-2xl">{bpm}</span>
+              <span className="block text-[9px] uppercase tracking-widest text-neutral-600 sm:text-[10px]">bpm {tempoOpen ? "▾" : "▸"}</span>
             </button>
             <button
               onClick={() => nudgeBpm(+2)}
-              className="grid h-8 w-8 place-items-center rounded-md bg-neutral-800 text-sm text-neutral-300 hover:bg-neutral-700"
+              className="grid h-8 w-8 place-items-center rounded-md bg-neutral-800 text-sm text-neutral-300 hover:bg-neutral-700 sm:h-9 sm:w-9 sm:text-base"
               aria-label="faster"
             >
               +
@@ -2547,14 +2547,14 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
               title="run the click by itself"
               className={`ml-1 text-center ${running ? "text-amber-400" : "text-neutral-500 hover:text-neutral-300"}`}
             >
-              <span className="text-xl leading-none">◆</span>
-              <span className="block text-[9px] uppercase tracking-widest text-neutral-600">click</span>
+              <span className="text-xl leading-none sm:text-2xl">◆</span>
+              <span className="block text-[9px] uppercase tracking-widest text-neutral-600 sm:text-[10px]">click</span>
             </button>
           </div>
         )}
         {t.random_key && (
           <button onClick={advanceNote} className="text-center" title="press N or tap for a new key" aria-label="random key">
-            <span className="font-mono text-xl text-neutral-200">
+            <span className="font-mono text-xl text-neutral-200 sm:text-2xl">
               {noteCur ? (
                 <NoteMorph
                   cur={noteCur.label}
@@ -2567,7 +2567,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                 "♪?"
               )}
             </span>
-            <span className="block text-[9px] uppercase tracking-widest text-neutral-600">
+            <span className="block text-[9px] uppercase tracking-widest text-neutral-600 sm:text-[10px]">
               key{noteSync > 0 ? ` · every ${noteSync}` : ""}
             </span>
           </button>
@@ -2578,8 +2578,10 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
           title="sustain a drone of the current key (works without the metronome)"
           className={`text-center ${droneOn ? "text-amber-400" : "text-neutral-500 hover:text-neutral-300"}`}
         >
-          <span className="text-xl leading-none">∿</span>
-          <span className="block text-[9px] uppercase tracking-widest text-neutral-600">drone</span>
+          {/* ∿ is an operator glyph and renders a size smaller than ◆, so it
+              gets one text step up to match. */}
+          <span className="text-2xl leading-none sm:text-3xl">∿</span>
+          <span className="block text-[9px] uppercase tracking-widest text-neutral-600 sm:text-[10px]">drone</span>
         </button>
         {droneOn && (
           <input
@@ -2617,7 +2619,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
   // "advanced ▾": count-in, trainer, sound, meter — settings, not controls.
   const advancedRow = (t: { metronome: boolean; random_key: boolean }) => (
     <Reveal open={extrasOpen}>
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-neutral-400">
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-neutral-400 sm:text-sm">
         {t.metronome && (
           <>
             <label className="flex items-center gap-1.5">
@@ -2659,36 +2661,39 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
               <input type="checkbox" className="accent-amber-500" checked={countIn} onChange={(e) => setCountIn(e.target.checked)} />
               count-in
             </label>
-            <label className="flex items-center gap-1.5">
-              <input type="checkbox" className="accent-amber-500" checked={trainer} onChange={(e) => setTrainer(e.target.checked)} />
-              trainer
-            </label>
-            {trainer && (
-              <span className="flex items-center gap-1.5">
-                +
-                <select value={trainerAdd} onChange={(e) => setTrainerAdd(Number(e.target.value))} className={input} aria-label="trainer bpm increment">
-                  {[1, 2, 5].map((n) => (
-                    <option key={n} value={n}>
-                      {n}
-                    </option>
-                  ))}
-                </select>
-                every
-                <select value={trainerBars} onChange={(e) => setTrainerBars(Number(e.target.value))} className={input} aria-label="trainer bar interval">
-                  {[2, 4, 8, 16].map((n) => (
-                    <option key={n} value={n}>
-                      {n}
-                    </option>
-                  ))}
-                </select>
-                bars
-              </span>
-            )}
+            {/* The whole trainer phrase stays on one line: "trainer +1 every 2 bars". */}
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
+              <label className="flex items-center gap-1.5">
+                <input type="checkbox" className="accent-amber-500" checked={trainer} onChange={(e) => setTrainer(e.target.checked)} />
+                trainer
+              </label>
+              {trainer && (
+                <>
+                  +
+                  <select value={trainerAdd} onChange={(e) => setTrainerAdd(Number(e.target.value))} className={input} aria-label="trainer bpm increment">
+                    {[1, 2, 5].map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                  every
+                  <select value={trainerBars} onChange={(e) => setTrainerBars(Number(e.target.value))} className={input} aria-label="trainer bar interval">
+                    {[2, 4, 8, 16].map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                  bars
+                </>
+              )}
+            </span>
           </>
         )}
         {t.random_key && (
-          <label className="flex items-center gap-1.5">
-            key every
+          <label className="flex items-center gap-1.5 whitespace-nowrap">
+            new key every
             <select value={noteSync} onChange={(e) => setNoteSync(Number(e.target.value))} className={input} aria-label="auto key change interval">
               <option value={0}>off</option>
               {[1, 2, 4, 8, 16, 32].map((n) => (
@@ -2833,7 +2838,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                     >
                       ✓
                     </span>
-                    <span className={`min-w-0 flex-1 truncate text-sm ${done && !isOpen ? "text-neutral-600" : ""}`}>
+                    <span className={`min-w-0 flex-1 truncate text-sm sm:text-base ${done && !isOpen ? "text-neutral-600" : ""}`}>
                       {ex.name}
                     </span>
                     <span className="shrink-0 text-xs text-neutral-600">
@@ -2866,7 +2871,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                         <>
                           <button
                             onClick={() => completeRow("check")}
-                            className="w-full rounded-lg border border-amber-500/60 py-3 text-sm font-semibold text-amber-400 hover:bg-amber-500/10"
+                            className="w-full rounded-lg border border-amber-500/60 py-3 text-sm font-semibold text-amber-400 hover:bg-amber-500/10 sm:text-base"
                           >
                             {done ? "✓ done today — again?" : "Did it ✓"}
                           </button>
@@ -2890,7 +2895,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                           <div ref={coachStartRef} className="flex gap-2">
                             <button
                               onClick={startSession}
-                              className={`flex-1 rounded-lg py-2.5 text-sm font-semibold ${
+                              className={`flex-1 rounded-lg py-2.5 text-sm font-semibold sm:text-base ${
                                 swRunning || countingIn
                                   ? "bg-amber-500 text-neutral-950 hover:bg-amber-400"
                                   : "bg-neutral-100 text-neutral-950 hover:bg-white"
@@ -2909,7 +2914,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                             <button
                               onClick={() => completeRow("log")}
                               disabled={swElapsed === 0 && !swRunning}
-                              className="rounded-lg bg-neutral-800 px-5 text-sm text-neutral-300 hover:bg-neutral-700 disabled:opacity-40"
+                              className="rounded-lg bg-neutral-800 px-5 text-sm text-neutral-300 hover:bg-neutral-700 disabled:opacity-40 sm:text-base"
                             >
                               Log
                             </button>
@@ -2939,7 +2944,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                           {/* Ambient status: the timer runs back here, it
                               doesn't stare at you. */}
                           <div className="mt-4 border-t border-neutral-800 pt-3">
-                            <div className="flex items-center justify-between text-[11px] text-neutral-500">
+                            <div className="flex items-center justify-between text-[11px] text-neutral-500 sm:text-xs">
                               <span className="flex items-center gap-1.5 font-mono tabular-nums">
                                 {swRunning && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500" />}
                                 {swRunning || swElapsed > 0
@@ -2964,29 +2969,24 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                                 />
                               </div>
                             )}
-                            <p className="mt-2 text-[11px] text-neutral-600">
-                              {todayAgg && (
-                                <>
-                                  today {fmtAgg(todayAgg)}
-                                  {" · "}
-                                </>
-                              )}
+                            {/* Real tap targets, not 11px inline text. */}
+                            <div className="mt-1.5 flex items-center gap-1 text-xs text-neutral-500 sm:text-sm">
                               <button
                                 onClick={() => setExtrasOpen((o) => !o)}
                                 aria-expanded={extrasOpen}
-                                className="hover:text-neutral-400"
+                                className="-ml-2 rounded-md px-2 py-1.5 hover:bg-neutral-800 hover:text-neutral-300"
                               >
                                 advanced {extrasOpen ? "▾" : "▸"}
                               </button>
-                              {" · "}
                               <button
                                 onClick={() => setDetailsOpen(!detOpen)}
                                 aria-expanded={detOpen}
-                                className="hover:text-neutral-400"
+                                className="rounded-md px-2 py-1.5 hover:bg-neutral-800 hover:text-neutral-300"
                               >
                                 details {detOpen ? "▾" : "▸"}
                               </button>
-                            </p>
+                              {todayAgg && <span className="ml-auto text-[11px] text-neutral-600 sm:text-xs">today {fmtAgg(todayAgg)}</span>}
+                            </div>
                             {advancedRow(t)}
                             <Reveal open={detOpen}>
                               <div className="mt-3 space-y-2">
@@ -3084,7 +3084,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
           <button
             onClick={() => setFreeformOpen((o) => !o)}
             aria-expanded={freeformOpen}
-            className="text-xs text-neutral-600 hover:text-neutral-300"
+            className="rounded-md py-1.5 pr-2 text-xs text-neutral-600 hover:text-neutral-300 sm:text-sm"
           >
             ♪ freeform · tools {freeformOpen ? "▾" : "▸"}
           </button>
@@ -3094,7 +3094,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                 <div className="flex gap-2">
                   <button
                     onClick={startSession}
-                    className={`flex-1 rounded-lg py-2.5 text-sm font-semibold ${
+                    className={`flex-1 rounded-lg py-2.5 text-sm font-semibold sm:text-base ${
                       swRunning || countingIn
                         ? "bg-amber-500 text-neutral-950 hover:bg-amber-400"
                         : "bg-neutral-100 text-neutral-950 hover:bg-white"
@@ -3112,7 +3112,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
               {controlsRow({ metronome: true, random_key: seasoned })}
               {advancedRow({ metronome: true, random_key: seasoned })}
               {!armed && (swRunning || swElapsed > 0) && (
-                <p className="mt-3 flex items-center gap-1.5 font-mono text-[11px] tabular-nums text-neutral-500">
+                <p className="mt-3 flex items-center gap-1.5 font-mono text-[11px] tabular-nums text-neutral-500 sm:text-xs">
                   {swRunning && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500" />}
                   {fmtSecs(swElapsed / 1000)}
                   <span className="font-sans text-neutral-700"> — tap an exercise above to log it</span>
