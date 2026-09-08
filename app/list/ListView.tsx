@@ -699,11 +699,13 @@ export default function ListView({ token }: { token: string }) {
         </span>
       )}
       <span className="text-xs text-neutral-600">{fmtDate(todo.created_at)}</span>
-      {/* Padded well past the glyphs so they are easy to hit on the phone. */}
+      {/* Bordered pills, vertically centered on the row (top-anchoring
+          looked offset on tasks that wrap to multiple lines). Padded well
+          past the glyphs so they are easy to hit on the phone. */}
       {copyBuf && (
         <button
           onClick={() => appendCopy(todo)}
-          className="absolute right-16 top-0.5 p-2 text-neutral-600 transition-opacity duration-150 hover:text-neutral-300 sm:opacity-0 sm:group-hover:opacity-100"
+          className="absolute right-20 top-1/2 -translate-y-1/2 rounded-md border border-neutral-700 bg-neutral-900 p-1.5 text-neutral-500 transition-opacity duration-150 hover:border-neutral-500 hover:text-neutral-200 sm:opacity-0 sm:group-hover:opacity-100"
           aria-label="Add to copied text"
           title="Add to copied text (new line)"
         >
@@ -712,17 +714,17 @@ export default function ListView({ token }: { token: string }) {
       )}
       <button
         onClick={() => copyText(todo)}
-        className="absolute right-8 top-0.5 p-2 text-neutral-600 transition-opacity duration-150 hover:text-neutral-300 sm:opacity-0 sm:group-hover:opacity-100"
+        className="absolute right-10 top-1/2 -translate-y-1/2 rounded-md border border-neutral-700 bg-neutral-900 p-1.5 text-neutral-500 transition-opacity duration-150 hover:border-neutral-500 hover:text-neutral-200 sm:opacity-0 sm:group-hover:opacity-100"
         aria-label="Copy text"
         title="Copy text"
       >
         {copied?.id === todo.id && copied.kind === "copy" ? "\u2713" : "\u29c9"}
       </button>
-      {/* Fixed top-right position on every row so repeated deletes do not
-          require moving the pointer. */}
+      {/* Same horizontal spot on every row so repeated deletes do not
+          require moving the pointer sideways. */}
       <button
         onClick={() => remove(todo)}
-        className="absolute right-0 top-0.5 p-2 text-red-900 transition-opacity duration-150 hover:text-red-600 sm:opacity-0 sm:group-hover:opacity-100"
+        className="absolute right-1 top-1/2 -translate-y-1/2 rounded-md border border-red-950 bg-neutral-900 p-1.5 text-red-800 transition-opacity duration-150 hover:border-red-700 hover:text-red-500 sm:opacity-0 sm:group-hover:opacity-100"
         aria-label="Delete"
       >
         x
@@ -732,7 +734,7 @@ export default function ListView({ token }: { token: string }) {
   );
 
   return (
-    <main className="mx-auto min-h-screen max-w-3xl bg-neutral-950 px-5 py-6 text-neutral-100 lg:max-w-6xl">
+    <main className="mx-auto min-h-screen max-w-3xl bg-neutral-950 px-5 py-6 text-neutral-100">
       {offline && (
         <p className="mb-2 rounded-md border border-amber-900 bg-amber-950/50 px-3 py-1.5 text-xs text-amber-400">
           Offline: changes are saved on this device and will sync when you reconnect.
@@ -840,11 +842,8 @@ export default function ListView({ token }: { token: string }) {
           ))}
         </section>
       ) : (
-        // Desktop: buckets move to a sticky left rail so the task list
-        // starts at the top of the viewport and drop targets stay visible
-        // while scrolling. Below lg everything keeps the stacked layout.
-        <div className="lg:flex lg:items-start lg:gap-6">
-          <div className="mb-3 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5 lg:sticky lg:top-6 lg:mb-0 lg:flex lg:w-56 lg:shrink-0 lg:flex-col">
+        <>
+          <div className="mb-3 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
             {chip(ALL, "All", todos.filter((t) => !t.done && !isQuiet(t.bucket_id)).length)}
             {chip(UNSORTED, "Unsorted", todos.filter((t) => !t.done && t.bucket_id === null).length)}
             {buckets
@@ -854,7 +853,6 @@ export default function ListView({ token }: { token: string }) {
               )}
           </div>
 
-          <div className="min-w-0 lg:flex-1">
           <div className="mb-3 flex gap-2">
             <input
               value={newText}
@@ -893,8 +891,7 @@ export default function ListView({ token }: { token: string }) {
               {doneOpen && done.map(row)}
             </div>
           )}
-          </div>
-        </div>
+        </>
       )}
 
       {touchGhost &&
