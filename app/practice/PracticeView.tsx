@@ -1230,9 +1230,11 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
     return (prev + next) / 2;
   }
 
-  function reorder(fromId: string, toId: string) {
+  // `within` defaults to the (possibly instrument-filtered) queue; the manage
+  // panel passes the unfiltered list so drags there always land.
+  function reorder(fromId: string, toId: string, within: Exercise[] = active) {
     if (fromId === toId) return;
-    const list = active.slice();
+    const list = within.slice();
     const from = list.findIndex((e) => e.id === fromId);
     const to = list.findIndex((e) => e.id === toId);
     if (from < 0 || to < 0) return;
@@ -1241,8 +1243,8 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
     void patchExercise(moved.id, { position: positionBetween(list, to) });
   }
 
-  function moveBy(ex: Exercise, dir: -1 | 1) {
-    const list = active.slice();
+  function moveBy(ex: Exercise, dir: -1 | 1, within: Exercise[] = active) {
+    const list = within.slice();
     const from = list.findIndex((e) => e.id === ex.id);
     const to = from + dir;
     if (from < 0 || to < 0 || to >= list.length) return;
@@ -1781,8 +1783,194 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
     </>
   );
 
+  // One manage row: name line up top, then every action in the same fixed
+  // order and position — no more hunting because a long name shoved things
+  // around. Active rows drag to reorder (arrows stay as the fallback).
+  const manageRow = (ex: Exercise) => (
+    <div
+      key={ex.id}
+      draggable={unlocked && !ex.archived}
+      onDragStart={() => (dragEx.current = ex.id)}
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={(e) => {
+        e.preventDefault();
+        if (dragEx.current && dragEx.current !== ex.id && !ex.archived) reorder(dragEx.current, ex.id, activeAll);
+        dragEx.current = null;
+      }}
+      className="border-b border-neutral-800/60 py-2"
+    >
+      <div className="flex items-center gap-2 text-sm">
+        {unlocked && !ex.archived && (
+          <span className="shrink-0 cursor-grab text-neutral-600" title="Drag to reorder" aria-hidden>
+            ⠿
+          </span>
+        )}
+        <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: colorOf(ex.id) }} />
+        <span className={`min-w-0 flex-1 ${ex.archived ? "text-neutral-600 line-through" : ""}`}>{ex.name}</span>
+        {unlocked && (
+          <button
+            className="shrink-0 text-xs text-neutral-500 hover:text-neutral-200"
+            onClick={() =>
+              (ex.archived || confirm(`Archive “${ex.name}”? Its history stays and it can be restored here.`)) &&
+              patchExercise(ex.id, { archived: !ex.archived })
+            }
+          >
+            {ex.archived ? "restore" : "archive"}
+          </button>
+        )}
+      </div>
+      {unlocked && (
+        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 pl-8 text-xs">
+          {!ex.archived && (
+            <span className="flex gap-1">
+              <button className="px-0.5 text-neutral-500 hover:text-neutral-200" onClick={() => moveBy(ex, -1, activeAll)} title="Move up">
+                ↑
+              </button>
+              <button className="px-0.5 text-neutral-500 hover:text-neutral-200" onClick={() => moveBy(ex, 1, activeAll)} title="Move down">
+                ↓
+              </button>
+            </span>
+          )}
+          {/* Fixed-width slot: attach/link and ref/×ref swap inside it without
+              nudging everything after them. */}
+          <span className="flex min-w-[4.5rem] gap-2">
+            {uploading === ex.id ? (
+              <span className="text-neutral-500">uploading…</span>
+            ) : ex.ref_url ? (
+              <>
+                <button className="text-neutral-500 hover:text-neutral-200" onClick={() => openRef(ex.ref_url!)}>
+                  ref
+                </button>
+                <button
+                  className="text-neutral-500 hover:text-red-400"
+                  title="Remove reference"
+                  onClick={() =>
+                    confirm(`Remove the reference from “${ex.name}”? This can't be undone.`) &&
+                    patchExercise(ex.id, { ref_url: null })
+                  }
+                >
+                  ×ref
+                </button>
+              </>
+            ) : (
+              <>
+                <button className="text-neutral-500 hover:text-neutral-200" onClick={() => pickFile(ex.id)}>
+                  attach
+                </button>
+                <button className="text-neutral-500 hover:text-neutral-200" onClick={() => linkRef(ex)}>
+                  link
+                </button>
+              </>
+            )}
+          </span>
+          <button
+            className={ex.track_variants ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"}
+            title="Track down/up-stroke starts separately"
+            onClick={() => patchExercise(ex.id, { track_variants: !ex.track_variants })}
+          >
+            ↓↑
+          </button>
+          {/* Which tools this exercise puts in the session card. */}
+          <button
+            className={toolsOf(ex).metronome ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"}
+            title="Metronome in the session card"
+            aria-pressed={toolsOf(ex).metronome}
+            onClick={() => patchExercise(ex.id, { tools: { ...toolsOf(ex), metronome: !toolsOf(ex).metronome } })}
+          >
+            met
+          </button>
+          <button
+            className={toolsOf(ex).random_key ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"}
+            title="Random key generator in the session card"
+            aria-pressed={toolsOf(ex).random_key}
+            onClick={() => patchExercise(ex.id, { tools: { ...toolsOf(ex), random_key: !toolsOf(ex).random_key } })}
+          >
+            key
+          </button>
+          <button
+            className={toolsOf(ex).check_off ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"}
+            title="Check-off exercise — one tap logs it done, no bpm or timer"
+            aria-pressed={toolsOf(ex).check_off}
+            onClick={() => patchExercise(ex.id, { tools: { ...(ex.tools ?? {}), check_off: !toolsOf(ex).check_off } })}
+          >
+            ✓off
+          </button>
+          <button
+            className={ex.instrument ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"}
+            title="Instrument tag — groups exercises into filter chips"
+            onClick={() => {
+              const t = prompt("Instrument (e.g. guitar, vocals — empty clears)", ex.instrument ?? "");
+              if (t === null) return;
+              void patchExercise(ex.id, {
+                instrument: t.trim() ? t.trim().toLowerCase() : null,
+              } as Partial<Exercise>);
+            }}
+          >
+            inst
+          </button>
+          <button
+            className={ex.target_bpm ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"}
+            title="Target BPM — draws a goal line on the chart"
+            onClick={() => {
+              const t = prompt("Target BPM (empty clears)", ex.target_bpm ? String(ex.target_bpm) : "");
+              if (t === null) return;
+              void patchExercise(ex.id, { target_bpm: t.trim() ? Number(t) : null } as Partial<Exercise>);
+            }}
+          >
+            goal
+          </button>
+          <button
+            className="text-neutral-500 hover:text-neutral-200"
+            onClick={() => {
+              const name = prompt("Rename exercise", ex.name);
+              if (name?.trim()) void patchExercise(ex.id, { name: name.trim() });
+            }}
+          >
+            rename
+          </button>
+          <button
+            className={descEdit?.id === ex.id ? "text-neutral-200" : "text-neutral-500 hover:text-neutral-200"}
+            onClick={() => setDescEdit(descEdit?.id === ex.id ? null : { id: ex.id, text: ex.description ?? "" })}
+          >
+            desc
+          </button>
+        </div>
+      )}
+      {descEdit?.id === ex.id && (
+        <div className="mb-2 pl-4">
+          <textarea
+            autoFocus
+            rows={3}
+            value={descEdit.text}
+            onChange={(e) => setDescEdit({ id: ex.id, text: e.target.value })}
+            placeholder="Description — what to focus on, steps, etc. (empty clears)"
+            className={`${input} w-full resize-y`}
+          />
+          <div className="mt-1 flex gap-2">
+            <button
+              className="rounded-md bg-neutral-100 px-3 py-1 text-xs font-semibold text-neutral-950 hover:bg-white"
+              onClick={() => {
+                void patchExercise(ex.id, { description: descEdit.text });
+                setDescEdit(null);
+              }}
+            >
+              Save
+            </button>
+            <button className="rounded-md bg-neutral-800 px-3 py-1 text-xs hover:bg-neutral-700" onClick={() => setDescEdit(null)}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   // Manage panel: add/rename/flag/reorder exercises. Opened from "manage"
-  // (classic layout) or the header's "edit" (new layout).
+  // (classic layout) or the header's "edit" (new layout). Active exercises
+  // sit on top (lightly grouped by instrument once tags exist); archived
+  // ones live under their own label at the bottom.
+  const manageArchived = (exercises ?? []).filter((e) => e.archived).sort((a, b) => a.position - b.position);
+  const manageTags = instruments.length > 0 ? Array.from(new Set(activeAll.map((e) => e.instrument ?? ""))) : [""];
   const managePanel = manageOpen && (
     <section className={card}>
       <button
@@ -1793,196 +1981,20 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
         <span className="text-xs">▾</span>
       </button>
       <div className="mt-3">
-        {(exercises ?? []).map((ex) => (
-          <div key={ex.id} className="border-b border-neutral-800/60">
-            <div className="flex items-center gap-2 py-1.5 text-sm">
-              <span className="h-2 w-2 rounded-full" style={{ background: colorOf(ex.id) }} />
-              <span className={`flex-1 ${ex.archived ? "text-neutral-600 line-through" : ""}`}>{ex.name}</span>
-              {unlocked && (
-                <>
-                  <button
-                    className="px-0.5 text-xs text-neutral-500 hover:text-neutral-200"
-                    onClick={() => moveBy(ex, -1)}
-                    title="Move up"
-                  >
-                    ↑
-                  </button>
-                  <button
-                    className="px-0.5 text-xs text-neutral-500 hover:text-neutral-200"
-                    onClick={() => moveBy(ex, 1)}
-                    title="Move down"
-                  >
-                    ↓
-                  </button>
-                  {uploading === ex.id ? (
-                    <span className="text-xs text-neutral-500">uploading…</span>
-                  ) : ex.ref_url ? (
-                    <>
-                      <button
-                        className="text-xs text-neutral-500 hover:text-neutral-200"
-                        onClick={() => openRef(ex.ref_url!)}
-                      >
-                        ref
-                      </button>
-                      <button
-                        className="text-xs text-neutral-500 hover:text-red-400"
-                        title="Remove reference"
-                        onClick={() =>
-                          confirm(`Remove the reference from “${ex.name}”? This can't be undone.`) &&
-                          patchExercise(ex.id, { ref_url: null })
-                        }
-                      >
-                        ×ref
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button
-                        className="text-xs text-neutral-500 hover:text-neutral-200"
-                        onClick={() => pickFile(ex.id)}
-                      >
-                        attach
-                      </button>
-                      <button
-                        className="text-xs text-neutral-500 hover:text-neutral-200"
-                        onClick={() => linkRef(ex)}
-                      >
-                        link
-                      </button>
-                    </>
-                  )}
-                  <button
-                    className={`text-xs ${
-                      ex.track_variants ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
-                    }`}
-                    title="Track down/up-stroke starts separately"
-                    onClick={() => patchExercise(ex.id, { track_variants: !ex.track_variants })}
-                  >
-                    ↓↑
-                  </button>
-                  {/* Which tools this exercise puts in the session card. */}
-                  <button
-                    className={`text-xs ${
-                      toolsOf(ex).metronome ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
-                    }`}
-                    title="Metronome in the session card"
-                    aria-pressed={toolsOf(ex).metronome}
-                    onClick={() => patchExercise(ex.id, { tools: { ...toolsOf(ex), metronome: !toolsOf(ex).metronome } })}
-                  >
-                    met
-                  </button>
-                  <button
-                    className={`text-xs ${
-                      toolsOf(ex).random_key ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
-                    }`}
-                    title="Random key generator in the session card"
-                    aria-pressed={toolsOf(ex).random_key}
-                    onClick={() => patchExercise(ex.id, { tools: { ...toolsOf(ex), random_key: !toolsOf(ex).random_key } })}
-                  >
-                    key
-                  </button>
-                  <button
-                    className={`text-xs ${
-                      toolsOf(ex).check_off ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
-                    }`}
-                    title="Check-off exercise — one tap logs it done, no bpm or timer"
-                    aria-pressed={toolsOf(ex).check_off}
-                    onClick={() =>
-                      patchExercise(ex.id, { tools: { ...(ex.tools ?? {}), check_off: !toolsOf(ex).check_off } })
-                    }
-                  >
-                    ✓off
-                  </button>
-                  <button
-                    className={`text-xs ${
-                      ex.instrument ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
-                    }`}
-                    title="Instrument tag — groups exercises into filter chips"
-                    onClick={() => {
-                      const t = prompt("Instrument (e.g. guitar, vocals — empty clears)", ex.instrument ?? "");
-                      if (t === null) return;
-                      void patchExercise(ex.id, {
-                        instrument: t.trim() ? t.trim().toLowerCase() : null,
-                      } as Partial<Exercise>);
-                    }}
-                  >
-                    inst
-                  </button>
-                  <button
-                    className={`text-xs ${
-                      ex.target_bpm ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
-                    }`}
-                    title="Target BPM — draws a goal line on the chart"
-                    onClick={() => {
-                      const t = prompt("Target BPM (empty clears)", ex.target_bpm ? String(ex.target_bpm) : "");
-                      if (t === null) return;
-                      void patchExercise(ex.id, { target_bpm: t.trim() ? Number(t) : null } as Partial<Exercise>);
-                    }}
-                  >
-                    goal
-                  </button>
-                  <button
-                    className="text-xs text-neutral-500 hover:text-neutral-200"
-                    onClick={() => {
-                      const name = prompt("Rename exercise", ex.name);
-                      if (name?.trim()) void patchExercise(ex.id, { name: name.trim() });
-                    }}
-                  >
-                    rename
-                  </button>
-                  <button
-                    className={`text-xs ${
-                      descEdit?.id === ex.id ? "text-neutral-200" : "text-neutral-500 hover:text-neutral-200"
-                    }`}
-                    onClick={() =>
-                      setDescEdit(descEdit?.id === ex.id ? null : { id: ex.id, text: ex.description ?? "" })
-                    }
-                  >
-                    desc
-                  </button>
-                  <button
-                    className="text-xs text-neutral-500 hover:text-neutral-200"
-                    onClick={() =>
-                      (ex.archived || confirm(`Archive “${ex.name}”? Its history stays and it can be restored here.`)) &&
-                      patchExercise(ex.id, { archived: !ex.archived })
-                    }
-                  >
-                    {ex.archived ? "restore" : "archive"}
-                  </button>
-                </>
-              )}
-            </div>
-            {descEdit?.id === ex.id && (
-              <div className="mb-2 pl-4">
-                <textarea
-                  autoFocus
-                  rows={3}
-                  value={descEdit.text}
-                  onChange={(e) => setDescEdit({ id: ex.id, text: e.target.value })}
-                  placeholder="Description — what to focus on, steps, etc. (empty clears)"
-                  className={`${input} w-full resize-y`}
-                />
-                <div className="mt-1 flex gap-2">
-                  <button
-                    className="rounded-md bg-neutral-100 px-3 py-1 text-xs font-semibold text-neutral-950 hover:bg-white"
-                    onClick={() => {
-                      void patchExercise(ex.id, { description: descEdit.text });
-                      setDescEdit(null);
-                    }}
-                  >
-                    Save
-                  </button>
-                  <button
-                    className="rounded-md bg-neutral-800 px-3 py-1 text-xs hover:bg-neutral-700"
-                    onClick={() => setDescEdit(null)}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
+        {manageTags.map((tag) => (
+          <div key={tag || "untagged"}>
+            {instruments.length > 0 && (
+              <p className="mt-2 text-[10px] uppercase tracking-widest text-neutral-600">{tag || "untagged"}</p>
             )}
+            {activeAll.filter((e) => (e.instrument ?? "") === tag).map(manageRow)}
           </div>
         ))}
+        {manageArchived.length > 0 && (
+          <>
+            <p className="mt-3 text-[10px] uppercase tracking-widest text-neutral-700">archived</p>
+            {manageArchived.map(manageRow)}
+          </>
+        )}
         <div className="mt-2 flex gap-2">
           <input
             value={newExName}
