@@ -2639,7 +2639,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
     <>
       <div className="mt-3 grid grid-cols-5 items-stretch gap-2">
         {t.metronome && (
-          <div className="flex items-stretch overflow-hidden rounded-md border border-neutral-700" style={span(bpmSpan)}>
+          <div className="flex min-h-[3.75rem] items-stretch overflow-hidden rounded-md border border-neutral-700" style={span(bpmSpan)}>
             <button
               onClick={() => nudgeBpm(-2)}
               className="w-9 shrink-0 text-sm text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200 sm:text-base"
@@ -2674,7 +2674,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
             onClick={toggleMetronome}
             aria-pressed={running}
             title="run the click by itself"
-            className={`relative rounded-md border px-2 py-1 text-center ${
+            className={`relative min-h-[3.75rem] rounded-md border px-2 py-1 text-center ${
               running
                 ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
                 : "border-neutral-700 text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
@@ -2687,7 +2687,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
         {showKey && (
           <button
             onClick={advanceNote}
-            className="rounded-md border border-neutral-700 px-2 py-1 text-center hover:border-neutral-500"
+            className="min-h-[3.75rem] rounded-md border border-neutral-700 px-2 py-1 text-center hover:border-neutral-500"
             style={!t.metronome ? span(showDrone ? 4 : 5) : undefined}
             title="press N or tap for a new key"
             aria-label="random key"
@@ -2696,7 +2696,9 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
               {noteCur ? (
                 <NoteMorph
                   cur={noteCur.label}
-                  next={noteSync > 0 ? noteNext?.label ?? null : null}
+                  /* The inline preview only appears while it's easing into the
+                     swap; the standing "next" lives in the label line below. */
+                  next={noteMorph != null ? noteNext?.label ?? null : null}
                   morphMs={noteMorph}
                   curClass="inline-block"
                   nextClass="ml-1 inline-block align-middle text-xs font-normal text-neutral-500"
@@ -2705,10 +2707,15 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                 "♪?"
               )}
             </span>
-            {/* The big note makes "key" self-evident; the label just says the
-                rotation ("8 beats") to save the truncating "key · every 8". */}
+            {/* The big note makes "key" self-evident; the label carries the
+                upcoming note and the rotation: "next F# · 8 beats". */}
             <span className="block truncate text-[9px] uppercase tracking-widest text-neutral-600 sm:text-[10px]">
-              {noteSync > 0 ? `${noteSync} beats` : "key"}
+              {[
+                noteCur && noteNext && noteSync > 0 ? `next ${noteNext.label}` : null,
+                noteSync > 0 ? `${noteSync} beats` : "key",
+              ]
+                .filter(Boolean)
+                .join(" · ")}
             </span>
           </button>
         )}
@@ -2717,13 +2724,12 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
              the control hangs off the thing it controls and the row never
              changes height. */
           <div
-            className={`relative flex flex-col justify-center rounded-md border px-2 py-1 text-center ${
+            className={`relative flex min-h-[3.75rem] flex-col justify-center rounded-md border px-2 py-1 text-center ${
               droneOn
                 ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
                 : "border-neutral-700 text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
             }`}
           >
-            {droneOn && <span className="absolute right-1 top-1 h-1 w-1 rounded-full bg-amber-400" />}
             <button
               onClick={() => setDroneOn((v) => !v)}
               aria-pressed={droneOn}
@@ -2732,25 +2738,40 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
             >
               {/* ∿ is an operator glyph and renders a size smaller than ◆, so it
                   gets one text step up to match. While sounding, the wave's
-                  visible amplitude follows the volume slider. */}
+                  visible amplitude follows the volume slider; it scales around
+                  the wave's own middle (the glyph's ink sits near the math
+                  axis, ~55% down the em box) and rides a touch higher. */}
               <span
-                className="block text-2xl leading-none transition-transform duration-150 sm:text-3xl"
-                style={droneOn ? { transform: `scaleY(${0.45 + droneVol * 0.8})` } : undefined}
+                className="relative -top-0.5 block text-2xl leading-none transition-transform duration-150 sm:text-3xl"
+                style={{
+                  transformOrigin: "50% 55%",
+                  transform: droneOn ? `scaleY(${0.45 + droneVol * 0.8})` : undefined,
+                }}
               >
                 ∿
               </span>
               {!droneOn && <span className="block text-[9px] uppercase tracking-widest text-neutral-500 sm:text-[10px]">drone</span>}
             </button>
             {droneOn && (
-              <input
-                type="range"
-                min={0}
-                max={100}
-                value={Math.round(droneVol * 100)}
-                onChange={(e) => setDroneVol(Number(e.target.value) / 100)}
-                className="mx-auto block h-3 w-[85%] accent-amber-500/70"
-                aria-label="drone volume"
-              />
+              <>
+                {/* Slim visual track/thumb, but a tall hit area for thumbs. */}
+                <style>{`
+                  input.drone-vol { -webkit-appearance: none; appearance: none; background: transparent; cursor: pointer; }
+                  input.drone-vol::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: rgb(64 64 64); }
+                  input.drone-vol::-webkit-slider-thumb { -webkit-appearance: none; margin-top: -5px; height: 14px; width: 14px; border-radius: 9999px; background: rgb(245 158 11 / 0.9); }
+                  input.drone-vol::-moz-range-track { height: 4px; border-radius: 2px; background: rgb(64 64 64); }
+                  input.drone-vol::-moz-range-thumb { height: 14px; width: 14px; border: 0; border-radius: 9999px; background: rgb(245 158 11 / 0.9); }
+                `}</style>
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  value={Math.round(droneVol * 100)}
+                  onChange={(e) => setDroneVol(Number(e.target.value) / 100)}
+                  className="drone-vol mx-auto block h-6 w-[85%]"
+                  aria-label="drone volume"
+                />
+              </>
             )}
           </div>
         )}
@@ -3272,7 +3293,12 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                                   </div>
                                 )}
                                 {aggs.length > 0 && (
-                                  <div className="text-[11px] text-neutral-500">
+                                  <div
+                                    className={`text-[11px] text-neutral-500 ${
+                                      // "what to do" above, "what you did" below the line
+                                      ex.description || (ex.ref_url && ytId(ex.ref_url)) ? "border-t border-neutral-800/60 pt-2" : ""
+                                    }`}
+                                  >
                                     {aggs.slice(0, 5).map((a) => (
                                       <p key={a.date} className="flex justify-between">
                                         <span>{fmtDateShort(a.date)}</span>
