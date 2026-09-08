@@ -510,6 +510,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
   const [histOpen, setHistOpen] = useState(false); // header "history": charts + log
   const [freeformOpen, setFreeformOpen] = useState(false); // header "tools": freeform panel
   const [sessionNote, setSessionNote] = useState(""); // optional one-liner attached on Log
+  const [noteOpen, setNoteOpen] = useState(false); // the note input hides behind "+ note" until asked for
   // Row that was just logged: it collapses in place, then reappears in the
   // done group below once this clears (the auto-sink animation).
   const [sinkingId, setSinkingId] = useState<string | null>(null);
@@ -1289,6 +1290,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
     setDayDone(false);
     setBpmPromptSeen(false);
     setSessionNote(""); // notes are per-log, not per-day
+    setNoteOpen(false);
     setExtrasOpen(trainer); // advanced starts folded unless the trainer runs
     if (ex.track_variants) {
       // Suggest whichever stroke-start you haven't done yet today.
@@ -2989,6 +2991,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
               const prev = i > 0 ? orderedRows[i - 1] : null;
               const prevDone = prev ? isDoneRow(prev.id) : false;
               const firstDone = isDoneRow(ex.id) && !prevDone;
+              const lastDone = isDoneRow(ex.id) && i === orderedRows.length - 1;
               const instBreak =
                 !isDoneRow(ex.id) &&
                 !instApplied &&
@@ -3004,20 +3007,26 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
               return (
                 <Fragment key={ex.id}>
                   {firstDone && (
-                    <li aria-hidden className="pb-1 pt-3 text-[10px] uppercase tracking-widest text-neutral-600">
+                    <li aria-hidden className="pb-1.5 pt-6 text-[10px] uppercase tracking-widest text-neutral-600">
                       done today
                     </li>
                   )}
                 <li
                   className={`overflow-hidden transition-all duration-300 ${
                     sinking ? "max-h-0 opacity-0" : "max-h-[80rem] opacity-100"
+                  } ${
+                    // Done rows sit on a faint tinted shelf, visually apart
+                    // from the still-to-do list above.
+                    isDoneRow(ex.id)
+                      ? `bg-neutral-900/40 px-3 ${firstDone ? "rounded-t-lg" : ""} ${lastDone ? "rounded-b-lg" : ""}`
+                      : ""
                   }`}
                   // divide-y's selector outranks a border class, so the
                   // brighter instrument-boundary rule goes inline.
                   style={instBreak ? { borderTopColor: "rgb(64 64 64)" } : undefined}
                 >
                   <button
-                    className="flex w-full items-center gap-3 py-3 text-left"
+                    className={`flex w-full items-center gap-3 text-left ${done && !isOpen ? "py-2.5" : "py-3"}`}
                     onClick={() => (isOpen ? setSelectedEx(null) : armExercise(ex, aggs))}
                     aria-expanded={isOpen}
                   >
@@ -3069,24 +3078,37 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                           >
                             {done ? "✓ done today — again?" : "Did it ✓"}
                           </button>
-                          <input
-                            value={sessionNote}
-                            onChange={(e) => setSessionNote(e.target.value)}
-                            placeholder="note for this log (optional)"
-                            className="mt-2 w-full rounded-md border border-neutral-800 bg-transparent px-2 py-1.5 text-xs text-neutral-300 placeholder:text-neutral-700 focus:border-neutral-600 focus:outline-none sm:text-sm"
-                          />
+                          <div className="mt-2 flex flex-wrap items-center gap-1 text-xs text-neutral-500 sm:text-sm">
+                            {ex.ref_url && (
+                              <button
+                                className="rounded-md border border-neutral-800 px-2.5 py-1.5 hover:border-neutral-600 hover:text-neutral-300"
+                                onClick={() => openRef(ex.ref_url!)}
+                              >
+                                reference ↗
+                              </button>
+                            )}
+                            {!noteOpen && sessionNote === "" && (
+                              <button
+                                className="rounded-md border border-neutral-800 px-2.5 py-1.5 hover:border-neutral-600 hover:text-neutral-300"
+                                onClick={() => setNoteOpen(true)}
+                              >
+                                + note
+                              </button>
+                            )}
+                          </div>
+                          {(noteOpen || sessionNote !== "") && (
+                            <input
+                              autoFocus
+                              value={sessionNote}
+                              onChange={(e) => setSessionNote(e.target.value)}
+                              placeholder="note for this log (optional)"
+                              className="mt-2 w-full rounded-md border border-neutral-800 bg-transparent px-2 py-1.5 text-xs text-neutral-300 placeholder:text-neutral-700 focus:border-neutral-600 focus:outline-none sm:text-sm"
+                            />
+                          )}
                           {ex.description && (
                             <div className="mt-3">
                               <DescriptionBody text={ex.description} />
                             </div>
-                          )}
-                          {ex.ref_url && (
-                            <button
-                              className="mt-2 text-xs text-neutral-400 underline hover:text-neutral-200"
-                              onClick={() => openRef(ex.ref_url!)}
-                            >
-                              open reference ↗
-                            </button>
                           )}
                         </>
                       ) : (
@@ -3122,43 +3144,11 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
 
                           {controlsRow(t, lastAgg && lastAgg.bpm > 0 ? lastAgg.bpm : null)}
 
-                          {/* Ambient status: the timer runs back here, it
-                              doesn't stare at you. */}
+                          {/* Below the rule everything is quiet: one chip row
+                              of folded extras, then the ambient status line
+                              the card runs in the background. */}
                           <div className="mt-4 border-t border-neutral-800 pt-3">
-                            <div className="flex items-center justify-between text-[11px] text-neutral-500 sm:text-xs">
-                              <span className="flex items-center gap-1.5 font-mono tabular-nums">
-                                {swRunning && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500" />}
-                                {swRunning || swElapsed > 0
-                                  ? fmtSecs(swElapsed / 1000)
-                                  : selTodaySecs > 0
-                                    ? `today ${fmtDur(selTodaySecs)}`
-                                    : lastAgg
-                                      ? `last ${fmtAgg(lastAgg)}`
-                                      : "no sessions yet"}
-                              </span>
-                              {ex.target_bpm && lastBpm && (
-                                <span>
-                                  {lastBpm} → {ex.target_bpm} bpm
-                                </span>
-                              )}
-                            </div>
-                            {ex.target_bpm && lastBpm && (
-                              <div className="mt-1.5 h-0.5 overflow-hidden rounded bg-neutral-800">
-                                <div
-                                  className="h-full bg-amber-500/50"
-                                  style={{ width: `${Math.min(100, (lastBpm / ex.target_bpm) * 100)}%` }}
-                                />
-                              </div>
-                            )}
-                            {/* Optional one-liner that rides along with the next Log. */}
-                            <input
-                              value={sessionNote}
-                              onChange={(e) => setSessionNote(e.target.value)}
-                              placeholder="note for this log (optional)"
-                              className="mt-2 w-full rounded-md border border-neutral-800 bg-transparent px-2 py-1.5 text-xs text-neutral-300 placeholder:text-neutral-700 focus:border-neutral-600 focus:outline-none sm:text-sm"
-                            />
-                            {/* Real tap targets, not 11px inline text. */}
-                            <div className="mt-1.5 flex items-center gap-1 text-xs text-neutral-500 sm:text-sm">
+                            <div className="flex flex-wrap items-center gap-1 text-xs text-neutral-500 sm:text-sm">
                               <button
                                 onClick={() => setExtrasOpen((o) => !o)}
                                 aria-expanded={extrasOpen}
@@ -3181,31 +3171,48 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                               >
                                 details {detOpen ? "▾" : "▸"}
                               </button>
-                              {todayAgg && <span className="ml-auto text-[11px] text-neutral-600 sm:text-xs">today {fmtAgg(todayAgg)}</span>}
+                              {ex.ref_url && !ytId(ex.ref_url) && (
+                                <button
+                                  className="rounded-md border border-neutral-800 px-2.5 py-1.5 hover:border-neutral-600 hover:text-neutral-300"
+                                  onClick={() => openRef(ex.ref_url!)}
+                                >
+                                  reference ↗
+                                </button>
+                              )}
+                              {!noteOpen && sessionNote === "" && (
+                                <button
+                                  className="rounded-md border border-neutral-800 px-2.5 py-1.5 hover:border-neutral-600 hover:text-neutral-300"
+                                  onClick={() => setNoteOpen(true)}
+                                >
+                                  + note
+                                </button>
+                              )}
                             </div>
                             {advancedRow(t)}
+                            {/* Optional one-liner that rides along with the next Log. */}
+                            {(noteOpen || sessionNote !== "") && (
+                              <input
+                                autoFocus
+                                value={sessionNote}
+                                onChange={(e) => setSessionNote(e.target.value)}
+                                placeholder="note for this log (optional)"
+                                className="mt-2 w-full rounded-md border border-neutral-800 bg-transparent px-2 py-1.5 text-xs text-neutral-300 placeholder:text-neutral-700 focus:border-neutral-600 focus:outline-none sm:text-sm"
+                              />
+                            )}
                             <Reveal open={detOpen}>
                               <div className="mt-3 space-y-2">
                                 {ex.description && <DescriptionBody text={ex.description} />}
-                                {ex.ref_url &&
-                                  (ytId(ex.ref_url) ? (
-                                    <div className="aspect-video overflow-hidden rounded-lg border border-neutral-800">
-                                      <iframe
-                                        className="h-full w-full"
-                                        src={`https://www.youtube-nocookie.com/embed/${ytId(ex.ref_url)}`}
-                                        title="reference video"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowFullScreen
-                                      />
-                                    </div>
-                                  ) : (
-                                    <button
-                                      className="text-xs text-neutral-400 underline hover:text-neutral-200"
-                                      onClick={() => openRef(ex.ref_url!)}
-                                    >
-                                      open reference ↗
-                                    </button>
-                                  ))}
+                                {ex.ref_url && ytId(ex.ref_url) && (
+                                  <div className="aspect-video overflow-hidden rounded-lg border border-neutral-800">
+                                    <iframe
+                                      className="h-full w-full"
+                                      src={`https://www.youtube-nocookie.com/embed/${ytId(ex.ref_url)}`}
+                                      title="reference video"
+                                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                      allowFullScreen
+                                    />
+                                  </div>
+                                )}
                                 {aggs.length > 0 && (
                                   <div className="text-[11px] text-neutral-500">
                                     {aggs.slice(0, 5).map((a) => (
@@ -3218,6 +3225,33 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                                 )}
                               </div>
                             </Reveal>
+                            {/* Ambient status: the timer runs down here, it
+                                doesn't stare at you. */}
+                            <div className="mt-3 flex items-center justify-between text-[11px] text-neutral-500 sm:text-xs">
+                              <span className="flex items-center gap-1.5 font-mono tabular-nums">
+                                {swRunning && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500" />}
+                                {swRunning || swElapsed > 0
+                                  ? fmtSecs(swElapsed / 1000)
+                                  : selTodaySecs > 0
+                                    ? `today ${fmtDur(selTodaySecs)}`
+                                    : lastAgg
+                                      ? `last: ${fmtDateShort(lastAgg.date)} · ${fmtAgg(lastAgg)}`
+                                      : "no sessions yet"}
+                              </span>
+                              {ex.target_bpm && lastBpm && (
+                                <span>
+                                  {lastBpm} → {ex.target_bpm} bpm
+                                </span>
+                              )}
+                            </div>
+                            {ex.target_bpm && lastBpm && (
+                              <div className="mt-1.5 h-0.5 overflow-hidden rounded bg-neutral-800">
+                                <div
+                                  className="h-full bg-amber-500/50"
+                                  style={{ width: `${Math.min(100, (lastBpm / ex.target_bpm) * 100)}%` }}
+                                />
+                              </div>
+                            )}
                           </div>
                         </>
                       )}
