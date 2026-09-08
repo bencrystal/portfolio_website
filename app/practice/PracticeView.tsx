@@ -1,6 +1,6 @@
 "use client";
 
-import { RefObject, useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, RefObject, useCallback, useEffect, useRef, useState } from "react";
 import BpmRuler from "./BpmRuler";
 import Chart, { Series } from "./Chart";
 import Reveal from "./Reveal";
@@ -580,7 +580,8 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
       if (typeof p.volume === "number") setVolume(Math.min(1, Math.max(0, p.volume)));
       if (typeof p.droneVol === "number") setDroneVol(Math.min(1, Math.max(0, p.droneVol)));
       if (typeof p.noteSync === "number") setNoteSync(p.noteSync);
-      if (typeof p.countIn === "boolean") setCountIn(p.countIn);
+      // countIn no longer loads from prefs — the option left the new layout
+      // (checkbox removed 2026-09-07); classic can still flip it per-session.
       if (typeof p.trainer === "boolean") setTrainer(p.trainer);
       if ([1, 2, 5].includes(p.trainerAdd)) setTrainerAdd(p.trainerAdd);
       if ([2, 4, 8, 16].includes(p.trainerBars)) setTrainerBars(p.trainerBars);
@@ -1287,6 +1288,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
     setDayDone(false);
     setBpmPromptSeen(false);
     setSessionNote(""); // notes are per-log, not per-day
+    setExtrasOpen(trainer); // advanced starts folded unless the trainer runs
     if (ex.track_variants) {
       // Suggest whichever stroke-start you haven't done yet today.
       const todays = (sessions ?? []).filter((s) => s.exercise_id === ex.id && s.date === today);
@@ -1355,6 +1357,20 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
   // Browse-mode CTA: the first exercise in queue order without a log today —
   // one tap drops you into the routine where you left off.
   const nextUp = active.find((e) => !loggedTodayIds.has(e.id)) ?? null;
+
+  // Auto-open the top unlogged exercise once on load, so the page lands
+  // ready to play. Skipped in classic/?fresh and for brand-new spaces
+  // (no sessions yet) so the first-visit coach flow starts from a closed list.
+  const autoArmed = useRef(false);
+  useEffect(() => {
+    if (autoArmed.current || classic || fresh) return;
+    if (exercises === null || sessions === null || sessions.length === 0 || selectedEx) return;
+    const first = active.find((e) => !loggedTodayIds.has(e.id)) ?? active[0];
+    if (!first) return;
+    autoArmed.current = true;
+    armExercise(first, aggByDate(sessions, first.id));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [exercises, sessions, classic, fresh]);
 
   // ---------- coach-marks ----------
   // Three spotlights for a first-timer: arm → Start → Log it. Dim-only (the
@@ -2580,7 +2596,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
 
   // Tier-1 controls — the things you touch. The timer and progress stay
   // ambient below; these get top billing (bpm, key, drone, click).
-  const controlsRow = (t: { metronome: boolean; random_key: boolean }) => (
+  const controlsRow = (t: { metronome: boolean; random_key: boolean }, lastBpm?: number | null) => (
     <>
       <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2">
         {t.metronome && (
@@ -2610,6 +2626,13 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
             >
               +
             </button>
+            {/* Where you left off, right beside where you are. */}
+            {lastBpm != null && lastBpm !== bpm && (
+              <span className="text-center" title="last session's bpm">
+                <span className="font-mono text-sm text-neutral-500 sm:text-base">{lastBpm}</span>
+                <span className="block text-[9px] uppercase tracking-widest text-neutral-600 sm:text-[10px]">last</span>
+              </span>
+            )}
             <button
               onClick={toggleMetronome}
               aria-pressed={running}
@@ -2749,10 +2772,6 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                 aria-label="click volume"
               />
             </label>
-            <label className="flex items-center gap-1.5">
-              <input type="checkbox" className="accent-amber-500" checked={countIn} onChange={(e) => setCountIn(e.target.checked)} />
-              count-in
-            </label>
             {/* The whole trainer phrase stays on one line: "trainer +1 every 2 bars". */}
             <span className="flex items-center gap-1.5 whitespace-nowrap">
               <label className="flex items-center gap-1.5">
@@ -2858,30 +2877,6 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
           </nav>
         </header>
 
-        {/* Queue dots + the two numbers that matter today. */}
-        {active.length > 0 && (
-          <div className="flex items-center justify-between gap-3 pb-4 pt-1">
-            <div className="flex flex-wrap items-center gap-1.5">
-              {orderedRows.map((e) => (
-                <button
-                  key={e.id}
-                  onClick={() => (selectedEx === e.id ? setSelectedEx(null) : armExercise(e, aggByDate(sessions ?? [], e.id)))}
-                  aria-label={e.name}
-                  title={e.name}
-                  className={`h-1.5 rounded-full transition-all ${
-                    e.id === selectedEx ? "w-6 bg-neutral-100" : loggedTodayIds.has(e.id) ? "w-1.5 bg-amber-500" : "w-1.5 bg-neutral-700"
-                  }`}
-                />
-              ))}
-            </div>
-            <p className="shrink-0 text-xs text-neutral-500">
-              {todayTotal > 0 && <span className="tabular-nums">{Math.max(1, Math.round(todayTotal / 60))} min</span>}
-              {todayTotal > 0 && streak > 1 && " · "}
-              {streak > 1 && <span className="text-amber-500">{streak}-day streak</span>}
-            </p>
-          </div>
-        )}
-
         {/* "tools" opens right under its header trigger: freeform practice,
             tuner and chord links — nothing armed, just sound. */}
         <Reveal open={freeformOpen}>
@@ -2940,6 +2935,15 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
           </div>
         </Reveal>
 
+        {/* "history" opens right under its header trigger too: charts,
+            heatmap and the full log. */}
+        <Reveal open={histOpen}>
+          <div>
+            {progressSection}
+            {logSection}
+          </div>
+        </Reveal>
+
         {banners}
 
         {/* Instrument filter chips — only once at least one exercise is tagged. */}
@@ -2966,10 +2970,23 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
             card; everything the exercise needs lives inside it. */}
         <section ref={coachListRef}>
           <ul className="divide-y divide-neutral-900">
-            {orderedRows.map((ex) => {
+            {orderedRows.map((ex, i) => {
               const isOpen = selectedEx === ex.id;
               const done = loggedTodayIds.has(ex.id);
               const sinking = sinkingId === ex.id;
+              // Two quiet group cues: a "done today" label before the sunk
+              // rows, and a slightly brighter rule where the instrument
+              // changes among the still-active rows (all done rows group
+              // together regardless of instrument).
+              const prev = i > 0 ? orderedRows[i - 1] : null;
+              const prevDone = prev ? isDoneRow(prev.id) : false;
+              const firstDone = isDoneRow(ex.id) && !prevDone;
+              const instBreak =
+                !isDoneRow(ex.id) &&
+                !instApplied &&
+                prev != null &&
+                !prevDone &&
+                (prev.instrument ?? "") !== (ex.instrument ?? "");
               const t = toolsOf(ex);
               const aggs = isOpen ? armedAggs : aggByDate(sessions ?? [], ex.id);
               const todayAgg = aggs[0]?.date === today ? aggs[0] : null;
@@ -2977,11 +2994,19 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
               const lastBpm = aggs.find((a) => a.bpm > 0)?.bpm ?? null;
               const detOpen = detailsOpen ?? aggs.length < 3;
               return (
+                <Fragment key={ex.id}>
+                  {firstDone && (
+                    <li aria-hidden className="pb-1 pt-3 text-[10px] uppercase tracking-widest text-neutral-600">
+                      done today
+                    </li>
+                  )}
                 <li
-                  key={ex.id}
                   className={`overflow-hidden transition-all duration-300 ${
                     sinking ? "max-h-0 opacity-0" : "max-h-[80rem] opacity-100"
                   }`}
+                  // divide-y's selector outranks a border class, so the
+                  // brighter instrument-boundary rule goes inline.
+                  style={instBreak ? { borderTopColor: "rgb(64 64 64)" } : undefined}
                 >
                   <button
                     className="flex w-full items-center gap-3 py-3 text-left"
@@ -3087,26 +3112,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                             </button>
                           </div>
 
-                          {/* One-shot nudge after arming: dial sits on last time's bpm. */}
-                          {!bpmPromptSeen && !todayAgg && lastAgg && lastAgg.bpm > 0 && t.metronome && !swRunning && swElapsed === 0 && (
-                            <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs text-neutral-500">
-                              last time {lastAgg.bpm} bpm —
-                              {[0, 2, 5].map((d) => (
-                                <button
-                                  key={d}
-                                  onClick={() => {
-                                    setBpm(clampBpm(lastAgg.bpm + d));
-                                    setBpmPromptSeen(true);
-                                  }}
-                                  className="rounded-full border border-neutral-700 px-2.5 py-0.5 text-neutral-300 hover:border-neutral-500"
-                                >
-                                  {d === 0 ? "same" : `+${d}`}
-                                </button>
-                              ))}
-                            </div>
-                          )}
-
-                          {controlsRow(t)}
+                          {controlsRow(t, lastAgg && lastAgg.bpm > 0 ? lastAgg.bpm : null)}
 
                           {/* Ambient status: the timer runs back here, it
                               doesn't stare at you. */}
@@ -3210,6 +3216,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                     </div>
                   )}
                 </li>
+                </Fragment>
               );
             })}
           </ul>
@@ -3262,16 +3269,6 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
         {manageOpen && <div className="mt-4">{managePanel}</div>}
 
         {form && <div className="mt-6">{entryForm}</div>}
-
-        {/* "history": charts, heatmap and the full log, folded below the list. */}
-        <div className="mt-6">
-          <Reveal open={histOpen}>
-            <div>
-              {progressSection}
-              {logSection}
-            </div>
-          </Reveal>
-        </div>
 
         {mobileBar}
         {pageFooter}
