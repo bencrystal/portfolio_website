@@ -195,12 +195,17 @@ function NoteMorph({
   morphMs,
   curClass,
   nextClass,
+  label,
 }: {
   cur: string;
   next: string | null;
   morphMs: number | null;
   curClass: string;
   nextClass: string;
+  /** Render the upcoming note inside a second (label) line instead of inline:
+   *  "{prefix}{next}{suffix}", or `empty` when there's no next. The morph then
+   *  flies the note from the label line up onto the current note's spot. */
+  label?: { prefix: string; suffix: string; empty: string; className: string };
 }) {
   const [active, setActive] = useState(false);
   // Measured end pose: how far (and how much bigger) the upcoming note must
@@ -240,37 +245,59 @@ function NoteMorph({
     };
   }, [morphMs, cur]);
   const ease = `all ${morphMs ?? 0}ms cubic-bezier(0.65, 0, 0.35, 1)`; // easeInOutCubic
+  const curSpan = (
+    <span
+      ref={curRef}
+      className={curClass}
+      style={
+        active
+          ? { transition: ease, opacity: 0, transform: "scale(0.55)", transformOrigin: "center" }
+          : { opacity: 1, transform: "none" }
+      }
+    >
+      {cur}
+    </span>
+  );
+  const nextSpan = next && (
+    <span
+      ref={nextRef}
+      className={nextClass}
+      style={
+        active && target
+          ? {
+              transition: ease,
+              transform: `translate(${target.x}px, ${target.y}px) scale(${target.s})`,
+              transformOrigin: "center",
+              color: "#f5f5f5",
+            }
+          : { transform: "none" }
+      }
+    >
+      {next}
+    </span>
+  );
+  if (label) {
+    return (
+      <>
+        {curSpan}
+        <span className={label.className}>
+          {next ? (
+            <>
+              {label.prefix}
+              {nextSpan}
+              {label.suffix}
+            </>
+          ) : (
+            label.empty
+          )}
+        </span>
+      </>
+    );
+  }
   return (
     <>
-      <span
-        ref={curRef}
-        className={curClass}
-        style={
-          active
-            ? { transition: ease, opacity: 0, transform: "scale(0.55)", transformOrigin: "center" }
-            : { opacity: 1, transform: "none" }
-        }
-      >
-        {cur}
-      </span>
-      {next && (
-        <span
-          ref={nextRef}
-          className={nextClass}
-          style={
-            active && target
-              ? {
-                  transition: ease,
-                  transform: `translate(${target.x}px, ${target.y}px) scale(${target.s})`,
-                  transformOrigin: "center",
-                  color: "#f5f5f5",
-                }
-              : { transform: "none" }
-          }
-        >
-          {next}
-        </span>
-      )}
+      {curSpan}
+      {nextSpan}
     </>
   );
 }
@@ -2692,31 +2719,32 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
             title="press N or tap for a new key"
             aria-label="random key"
           >
-            <span className="font-mono text-xl text-neutral-200 sm:text-2xl">
-              {noteCur ? (
-                <NoteMorph
-                  cur={noteCur.label}
-                  /* The inline preview only appears while it's easing into the
-                     swap; the standing "next" lives in the label line below. */
-                  next={noteMorph != null ? noteNext?.label ?? null : null}
-                  morphMs={noteMorph}
-                  curClass="inline-block"
-                  nextClass="ml-1 inline-block align-middle text-xs font-normal text-neutral-500"
-                />
-              ) : (
-                "♪?"
-              )}
-            </span>
             {/* The big note makes "key" self-evident; the label carries the
-                upcoming note and the rotation: "next F# · 8 beats". */}
-            <span className="block truncate text-[9px] uppercase tracking-widest text-neutral-600 sm:text-[10px]">
-              {[
-                noteCur && noteNext && noteSync > 0 ? `next ${noteNext.label}` : null,
-                noteSync > 0 ? `${noteSync} beats` : "key",
-              ]
-                .filter(Boolean)
-                .join(" · ")}
-            </span>
+                upcoming note and the rotation: "→ F# · 8 beats". At swap time
+                the label's note flies up onto the big note's spot. */}
+            {noteCur ? (
+              <NoteMorph
+                cur={noteCur.label}
+                next={noteSync > 0 ? noteNext?.label ?? null : null}
+                morphMs={noteMorph}
+                curClass="block font-mono text-xl text-neutral-200 sm:text-2xl"
+                nextClass="inline-block"
+                label={{
+                  prefix: "→ ",
+                  suffix: ` · ${noteSync} beats`,
+                  empty: noteSync > 0 ? `${noteSync} beats` : "key",
+                  className:
+                    "block truncate text-[9px] uppercase tracking-wide text-neutral-600 sm:text-[10px]",
+                }}
+              />
+            ) : (
+              <>
+                <span className="block font-mono text-xl text-neutral-200 sm:text-2xl">♪?</span>
+                <span className="block truncate text-[9px] uppercase tracking-wide text-neutral-600 sm:text-[10px]">
+                  key
+                </span>
+              </>
+            )}
           </button>
         )}
         {showDrone && (
