@@ -1831,33 +1831,51 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
       }}
       className="border-b border-neutral-800/60 py-2"
     >
-      <div className="flex items-center gap-2 text-sm">
+      {/* The whole line opens the row's actions (the ⠿ handle and the
+          archive/edit buttons stop the click); the "edit" chip is the
+          keyboard-reachable, can't-miss affordance. */}
+      <div
+        className={`flex items-center gap-2 text-sm ${
+          unlocked ? "-mx-1.5 cursor-pointer rounded-md px-1.5 py-0.5 hover:bg-neutral-800/40" : ""
+        }`}
+        onClick={() => unlocked && setManageEditId(manageEditId === ex.id ? null : ex.id)}
+      >
         {unlocked && !ex.archived && (
-          <span className="shrink-0 cursor-grab text-neutral-600" title="Drag to reorder" aria-hidden>
+          <span
+            className="shrink-0 cursor-grab text-neutral-600"
+            title="Drag to reorder"
+            aria-hidden
+            onClick={(e) => e.stopPropagation()}
+          >
             ⠿
           </span>
         )}
         <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: colorOf(ex.id) }} />
-        {unlocked ? (
+        <span className={`min-w-0 flex-1 truncate ${ex.archived ? "text-neutral-600 line-through" : ""}`}>{ex.name}</span>
+        {unlocked && (
           <button
-            className="flex min-w-0 flex-1 items-center gap-1.5 text-left"
-            onClick={() => setManageEditId(manageEditId === ex.id ? null : ex.id)}
+            className={`shrink-0 rounded-md border px-2 py-0.5 text-xs ${
+              manageEditId === ex.id
+                ? "border-neutral-600 text-neutral-300"
+                : "border-neutral-800 text-neutral-500 hover:border-neutral-600 hover:text-neutral-300"
+            }`}
             aria-expanded={manageEditId === ex.id}
-            title="Edit this exercise"
+            onClick={(e) => {
+              e.stopPropagation();
+              setManageEditId(manageEditId === ex.id ? null : ex.id);
+            }}
           >
-            <span className={`min-w-0 truncate ${ex.archived ? "text-neutral-600 line-through" : ""}`}>{ex.name}</span>
-            <span className="shrink-0 text-[10px] text-neutral-600">{manageEditId === ex.id ? "▾" : "▸"}</span>
+            edit {manageEditId === ex.id ? "▾" : "▸"}
           </button>
-        ) : (
-          <span className={`min-w-0 flex-1 ${ex.archived ? "text-neutral-600 line-through" : ""}`}>{ex.name}</span>
         )}
         {unlocked && (
           <button
             className="shrink-0 text-xs text-neutral-500 hover:text-neutral-200"
-            onClick={() =>
-              (ex.archived || confirm(`Archive “${ex.name}”? Its history stays and it can be restored here.`)) &&
-              patchExercise(ex.id, { archived: !ex.archived })
-            }
+            onClick={(e) => {
+              e.stopPropagation();
+              if (ex.archived || confirm(`Archive “${ex.name}”? Its history stays and it can be restored here.`))
+                void patchExercise(ex.id, { archived: !ex.archived });
+            }}
           >
             {ex.archived ? "restore" : "archive"}
           </button>
