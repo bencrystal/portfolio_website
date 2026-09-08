@@ -1316,6 +1316,11 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
   // filter narrows the whole page (queue, Resume, chips), not just the list.
   const instruments = Array.from(new Set(activeAll.map((e) => e.instrument ?? "").filter(Boolean))).sort();
   const instApplied = instFilter !== "all" && instruments.includes(instFilter);
+  // Instrument dropdown options: starter set plus anything already in use
+  // (archived included so a tag never vanishes from the menu).
+  const instChoices = Array.from(
+    new Set(["guitar", "singing", "djing", ...(exercises ?? []).map((e) => e.instrument ?? "").filter(Boolean)])
+  );
   const active = instApplied ? activeAll.filter((e) => (e.instrument ?? "") === instFilter) : activeAll;
   const today = todayISO();
   // The hero shows only the armed exercise's tools; with nothing armed it's
@@ -1895,19 +1900,34 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
           >
             ✓off
           </button>
-          <button
-            className={ex.instrument ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"}
+          {/* Instrument tag as a dropdown; "add more…" grows the list. */}
+          <select
+            value={ex.instrument ?? ""}
             title="Instrument tag — groups exercises into filter chips"
-            onClick={() => {
-              const t = prompt("Instrument (e.g. guitar, vocals — empty clears)", ex.instrument ?? "");
-              if (t === null) return;
-              void patchExercise(ex.id, {
-                instrument: t.trim() ? t.trim().toLowerCase() : null,
-              } as Partial<Exercise>);
+            aria-label="instrument"
+            className={`cursor-pointer appearance-none border-0 bg-transparent p-0 text-xs ${
+              ex.instrument ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
+            }`}
+            onChange={(e) => {
+              const v = e.target.value;
+              if (v === "__add") {
+                const t = prompt("New instrument tag");
+                e.target.value = ex.instrument ?? ""; // keep the select honest if cancelled
+                if (!t?.trim()) return;
+                void patchExercise(ex.id, { instrument: t.trim().toLowerCase() } as Partial<Exercise>);
+              } else {
+                void patchExercise(ex.id, { instrument: v || null } as Partial<Exercise>);
+              }
             }}
           >
-            inst
-          </button>
+            <option value="">inst</option>
+            {instChoices.map((i) => (
+              <option key={i} value={i}>
+                {i}
+              </option>
+            ))}
+            <option value="__add">add more…</option>
+          </select>
           <button
             className={ex.target_bpm ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"}
             title="Target BPM — draws a goal line on the chart"
