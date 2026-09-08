@@ -390,7 +390,9 @@ function CoachMark({
   );
 }
 
-export default function PracticeView() {
+// classic: the pre-redesign layout, reachable at /practice?classic until the
+// new checklist layout is signed off (then the old render path gets deleted).
+export default function PracticeView({ classic = false }: { classic?: boolean }) {
   const [exercises, setExercises] = useState<Exercise[] | null>(null);
   const [sessions, setSessions] = useState<Session[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -498,6 +500,12 @@ export default function PracticeView() {
   // ?fresh — dev preview of the first-visit experience: empty space, starter
   // picks, coach-marks. Read-only; nothing touches the network or localStorage.
   const [fresh, setFresh] = useState(false);
+  // --- redesigned checklist layout ---
+  const [histOpen, setHistOpen] = useState(false); // header "history": charts + log
+  const [freeformOpen, setFreeformOpen] = useState(false); // quiet tools row after the list
+  // Row that was just logged: it collapses in place, then reappears in the
+  // done group below once this clears (the auto-sink animation).
+  const [sinkingId, setSinkingId] = useState<string | null>(null);
 
   function getMetro() {
     metro.current ??= new Metronome();
@@ -1644,6 +1652,1515 @@ export default function PracticeView() {
     </section>
   );
 
+  // ---------- shared render blocks (used by both layouts) ----------
+
+  const banners = (
+    <>
+      {unlockOpen && !unlocked && (
+        <div className={`${card} mb-4`}>
+          <p className="mb-2 text-sm text-neutral-400">
+            Log in with your password — it opens your own practice log and stays saved on this device.
+          </p>
+          <div className="flex gap-2">
+            <input
+              type="password"
+              autoFocus
+              value={pwInput}
+              onChange={(e) => setPwInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && submitPassword()}
+              placeholder="Password"
+              className={`${input} flex-1`}
+            />
+            <button className={btn} onClick={submitPassword}>
+              Log in
+            </button>
+            <button className={btn} onClick={() => setUnlockOpen(false)}>
+              Cancel
+            </button>
+          </div>
+          {pwError && <p className="mt-2 text-sm text-red-400">Wrong password</p>}
+        </div>
+      )}
+
+      {error && (
+        <div className="mb-4 rounded-md border border-red-900 bg-red-950 px-3 py-2 text-sm text-red-300">
+          {error}
+          <button className="ml-3 underline" onClick={() => setError(null)}>
+            dismiss
+          </button>
+        </div>
+      )}
+
+      {offline && (
+        <div role="status" className="mb-4 rounded-md border border-amber-900 bg-amber-950/40 px-3 py-2 text-sm text-amber-300">
+          Offline — edits are saved on this device and sync when you're back.
+        </div>
+      )}
+
+      {fresh && (
+        <div role="status" className="mb-4 rounded-md border border-amber-900 bg-amber-950/40 px-3 py-2 text-xs text-amber-300">
+          Fresh preview — simulated first visit, nothing is saved.{" "}
+          <a className="underline" href="/practice">
+            back to your data
+          </a>
+        </div>
+      )}
+
+      {hintOpen && (
+        <div className={`${card} mb-4 text-sm text-neutral-300`}>
+          <p>
+            <span className="font-medium">How it works:</span> tap an exercise to arm it →{" "}
+            <span className="font-medium">Start session</span> runs the metronome and timer together →{" "}
+            <span className="font-medium">Log it</span> saves your tempo and time.
+          </p>
+          <p className="mt-1.5 text-xs text-neutral-500">
+            More, when you want it: the &quot;advanced&quot; line under Start (bpm · meter · sound) opens count-in, tempo trainer and more · ↓↑ in
+            manage tracks down/up-stroke starts separately · “goal” draws a target line on the chart ·{" "}
+            <span className="text-neutral-400">Log in</span> with your password to edit your own log.
+          </p>
+          <div className="mt-2 flex gap-2">
+            <button
+              className="rounded-md bg-neutral-800 px-3 py-1 text-xs hover:bg-neutral-700"
+              onClick={() => {
+                if (!fresh) localStorage.setItem(HINT_KEY, "1");
+                setHintOpen(false);
+              }}
+            >
+              got it
+            </button>
+            {active.length > 0 && (
+              <button
+                className="rounded-md border border-neutral-700 px-3 py-1 text-xs text-neutral-300 hover:border-neutral-500"
+                onClick={() => {
+                  setHintOpen(false);
+                  setCoach(selectedEx ? 1 : 0);
+                }}
+              >
+                show me ▸
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Day-done: logging the last open exercise of the day lands here. */}
+      {dayDone && !armed && (
+        <div className={`${card} mb-4 flex items-center justify-between gap-3 border-amber-500/40`}>
+          <p className="text-sm">
+            {/* The victory lap has to be earned — under 5 minutes it's just a log note. */}
+            <span className="font-medium text-amber-400">
+              {todayTotal >= 300 ? "Done for today ✓" : "Session logged ✓"}
+            </span>{" "}
+            {todayTotal > 0 && (
+              <span className="text-neutral-400">
+                <span className="tabular-nums text-neutral-200">{fmtDur(todayTotal)}</span> across{" "}
+                {todayExCount} exercise{todayExCount === 1 ? "" : "s"}
+                {streak > 1 && <> · {streak}-day streak</>}
+              </span>
+            )}
+          </p>
+          <button
+            className="rounded px-1.5 text-lg leading-none text-neutral-500 hover:text-neutral-200"
+            onClick={() => setDayDone(false)}
+            aria-label="dismiss day summary"
+          >
+            ×
+          </button>
+        </div>
+      )}
+    </>
+  );
+
+  // Manage panel: add/rename/flag/reorder exercises. Opened from "manage"
+  // (classic layout) or the header's "edit" (new layout).
+  const managePanel = manageOpen && (
+    <section className={card}>
+      <button
+        className="flex w-full items-center justify-between text-sm font-medium text-neutral-400"
+        onClick={() => setManageOpen(false)}
+      >
+        Manage exercises
+        <span className="text-xs">▾</span>
+      </button>
+      <div className="mt-3">
+        {(exercises ?? []).map((ex) => (
+          <div key={ex.id} className="border-b border-neutral-800/60">
+            <div className="flex items-center gap-2 py-1.5 text-sm">
+              <span className="h-2 w-2 rounded-full" style={{ background: colorOf(ex.id) }} />
+              <span className={`flex-1 ${ex.archived ? "text-neutral-600 line-through" : ""}`}>{ex.name}</span>
+              {unlocked && (
+                <>
+                  <button
+                    className="px-0.5 text-xs text-neutral-500 hover:text-neutral-200"
+                    onClick={() => moveBy(ex, -1)}
+                    title="Move up"
+                  >
+                    ↑
+                  </button>
+                  <button
+                    className="px-0.5 text-xs text-neutral-500 hover:text-neutral-200"
+                    onClick={() => moveBy(ex, 1)}
+                    title="Move down"
+                  >
+                    ↓
+                  </button>
+                  {uploading === ex.id ? (
+                    <span className="text-xs text-neutral-500">uploading…</span>
+                  ) : ex.ref_url ? (
+                    <>
+                      <button
+                        className="text-xs text-neutral-500 hover:text-neutral-200"
+                        onClick={() => openRef(ex.ref_url!)}
+                      >
+                        ref
+                      </button>
+                      <button
+                        className="text-xs text-neutral-500 hover:text-red-400"
+                        title="Remove reference"
+                        onClick={() =>
+                          confirm(`Remove the reference from “${ex.name}”? This can't be undone.`) &&
+                          patchExercise(ex.id, { ref_url: null })
+                        }
+                      >
+                        ×ref
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        className="text-xs text-neutral-500 hover:text-neutral-200"
+                        onClick={() => pickFile(ex.id)}
+                      >
+                        attach
+                      </button>
+                      <button
+                        className="text-xs text-neutral-500 hover:text-neutral-200"
+                        onClick={() => linkRef(ex)}
+                      >
+                        link
+                      </button>
+                    </>
+                  )}
+                  <button
+                    className={`text-xs ${
+                      ex.track_variants ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
+                    }`}
+                    title="Track down/up-stroke starts separately"
+                    onClick={() => patchExercise(ex.id, { track_variants: !ex.track_variants })}
+                  >
+                    ↓↑
+                  </button>
+                  {/* Which tools this exercise puts in the session card. */}
+                  <button
+                    className={`text-xs ${
+                      toolsOf(ex).metronome ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
+                    }`}
+                    title="Metronome in the session card"
+                    aria-pressed={toolsOf(ex).metronome}
+                    onClick={() => patchExercise(ex.id, { tools: { ...toolsOf(ex), metronome: !toolsOf(ex).metronome } })}
+                  >
+                    met
+                  </button>
+                  <button
+                    className={`text-xs ${
+                      toolsOf(ex).random_key ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
+                    }`}
+                    title="Random key generator in the session card"
+                    aria-pressed={toolsOf(ex).random_key}
+                    onClick={() => patchExercise(ex.id, { tools: { ...toolsOf(ex), random_key: !toolsOf(ex).random_key } })}
+                  >
+                    key
+                  </button>
+                  <button
+                    className={`text-xs ${
+                      toolsOf(ex).check_off ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
+                    }`}
+                    title="Check-off exercise — one tap logs it done, no bpm or timer"
+                    aria-pressed={toolsOf(ex).check_off}
+                    onClick={() =>
+                      patchExercise(ex.id, { tools: { ...(ex.tools ?? {}), check_off: !toolsOf(ex).check_off } })
+                    }
+                  >
+                    ✓off
+                  </button>
+                  <button
+                    className={`text-xs ${
+                      ex.instrument ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
+                    }`}
+                    title="Instrument tag — groups exercises into filter chips"
+                    onClick={() => {
+                      const t = prompt("Instrument (e.g. guitar, vocals — empty clears)", ex.instrument ?? "");
+                      if (t === null) return;
+                      void patchExercise(ex.id, {
+                        instrument: t.trim() ? t.trim().toLowerCase() : null,
+                      } as Partial<Exercise>);
+                    }}
+                  >
+                    inst
+                  </button>
+                  <button
+                    className={`text-xs ${
+                      ex.target_bpm ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
+                    }`}
+                    title="Target BPM — draws a goal line on the chart"
+                    onClick={() => {
+                      const t = prompt("Target BPM (empty clears)", ex.target_bpm ? String(ex.target_bpm) : "");
+                      if (t === null) return;
+                      void patchExercise(ex.id, { target_bpm: t.trim() ? Number(t) : null } as Partial<Exercise>);
+                    }}
+                  >
+                    goal
+                  </button>
+                  <button
+                    className="text-xs text-neutral-500 hover:text-neutral-200"
+                    onClick={() => {
+                      const name = prompt("Rename exercise", ex.name);
+                      if (name?.trim()) void patchExercise(ex.id, { name: name.trim() });
+                    }}
+                  >
+                    rename
+                  </button>
+                  <button
+                    className={`text-xs ${
+                      descEdit?.id === ex.id ? "text-neutral-200" : "text-neutral-500 hover:text-neutral-200"
+                    }`}
+                    onClick={() =>
+                      setDescEdit(descEdit?.id === ex.id ? null : { id: ex.id, text: ex.description ?? "" })
+                    }
+                  >
+                    desc
+                  </button>
+                  <button
+                    className="text-xs text-neutral-500 hover:text-neutral-200"
+                    onClick={() =>
+                      (ex.archived || confirm(`Archive “${ex.name}”? Its history stays and it can be restored here.`)) &&
+                      patchExercise(ex.id, { archived: !ex.archived })
+                    }
+                  >
+                    {ex.archived ? "restore" : "archive"}
+                  </button>
+                </>
+              )}
+            </div>
+            {descEdit?.id === ex.id && (
+              <div className="mb-2 pl-4">
+                <textarea
+                  autoFocus
+                  rows={3}
+                  value={descEdit.text}
+                  onChange={(e) => setDescEdit({ id: ex.id, text: e.target.value })}
+                  placeholder="Description — what to focus on, steps, etc. (empty clears)"
+                  className={`${input} w-full resize-y`}
+                />
+                <div className="mt-1 flex gap-2">
+                  <button
+                    className="rounded-md bg-neutral-100 px-3 py-1 text-xs font-semibold text-neutral-950 hover:bg-white"
+                    onClick={() => {
+                      void patchExercise(ex.id, { description: descEdit.text });
+                      setDescEdit(null);
+                    }}
+                  >
+                    Save
+                  </button>
+                  <button
+                    className="rounded-md bg-neutral-800 px-3 py-1 text-xs hover:bg-neutral-700"
+                    onClick={() => setDescEdit(null)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+        <div className="mt-2 flex gap-2">
+          <input
+            value={newExName}
+            onChange={(e) => setNewExName(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && addExercise()}
+            placeholder="New exercise"
+            className={`${input} flex-1`}
+          />
+          <button className={btn} onClick={addExercise}>
+            Add
+          </button>
+        </div>
+        {/* Which tools the new exercise shows in the session card. */}
+        <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-neutral-500">
+          with:
+          <label className="flex items-center gap-1.5">
+            <input
+              type="checkbox"
+              className="accent-amber-500"
+              checked={newExTools.metronome}
+              onChange={(e) => setNewExTools((t) => ({ ...t, metronome: e.target.checked }))}
+            />
+            metronome
+          </label>
+          <label className="flex items-center gap-1.5">
+            <input
+              type="checkbox"
+              className="accent-amber-500"
+              checked={newExTools.random_key}
+              onChange={(e) => setNewExTools((t) => ({ ...t, random_key: e.target.checked }))}
+            />
+            random key
+          </label>
+          <label className="flex items-center gap-1.5">
+            <input
+              type="checkbox"
+              className="accent-amber-500"
+              checked={newExTools.check_off}
+              onChange={(e) => setNewExTools((t) => ({ ...t, check_off: e.target.checked }))}
+            />
+            check-off only
+          </label>
+        </div>
+      </div>
+    </section>
+  );
+
+  // Progress card: chart/heatmap once ~5 days exist, week strip before.
+  const progressSection = (
+          <section className={`${card} mb-4 ${!loading && byDateDesc.length === 0 ? "hidden" : ""}`}>
+            <div className="mb-2 flex items-center justify-between">
+              <h2 className="text-sm font-medium text-neutral-400">Progress</h2>
+              {chartReady && (
+                <div className="flex overflow-hidden rounded-md border border-neutral-700 text-xs">
+                  {(["seconds", "bpm"] as const).map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => setMetric(m)}
+                      className={`px-3 py-1 ${metric === m ? "bg-neutral-200 text-neutral-950" : "text-neutral-400"}`}
+                    >
+                      {m === "seconds" ? "Time" : "BPM"}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            {loading ? (
+              <p className="py-8 text-center text-sm text-neutral-500">Loading…</p>
+            ) : !chartReady ? (
+              <div>
+                <div className="flex gap-1.5">
+                  {last7.map((d) => (
+                    <div key={d.iso} className="flex-1 text-center">
+                      <div
+                        className={`h-8 rounded ${
+                          d.done ? "bg-amber-500/80" : "bg-neutral-800"
+                        } ${d.iso === today ? "ring-1 ring-neutral-600" : ""}`}
+                      />
+                      <div className="mt-1 text-[10px] text-neutral-600">{d.label}</div>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-2 text-xs text-neutral-600">
+                  {streak > 1 ? `${streak}-day streak · ` : ""}charts unlock after 5 practiced days ({dates.length}/5)
+                </p>
+              </div>
+            ) : (
+              <>
+                <Chart series={displaySeries} fmtY={metric === "seconds" ? fmtDur : (y) => String(Math.round(y))} />
+                {/* Legend doubles as a filter: tap an entry to isolate it.
+                    Variant series get their own entries so the solid (↓ down)
+                    vs dashed (↑ up) styling is explained where it's seen. */}
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+                  {series.map((s) => {
+                    const dim = focusEx && focusEx !== s.name;
+                    return (
+                      <button
+                        key={s.name}
+                        onClick={() => setFocusEx(focusEx === s.name ? null : s.name)}
+                        className={`flex items-center gap-1.5 text-xs ${dim ? "text-neutral-600" : "text-neutral-400"}`}
+                      >
+                        {!s.dash ? (
+                          <span className="h-2 w-4 rounded-sm" style={{ background: dim ? s.color + "40" : s.color }} />
+                        ) : (
+                          <span
+                            className="w-4 border-t-2 border-dashed"
+                            style={{ borderColor: dim ? s.color + "40" : s.color }}
+                          />
+                        )}
+                        {s.name}
+                      </button>
+                    );
+                  })}
+                </div>
+                {/* Daily heatmap: practiced days at a glance. */}
+                <div className="mt-4 overflow-x-auto">
+                  <div className="inline-block min-w-full">
+                    {/* Month labels sit over the first column of each month. */}
+                    <div className="mb-1 ml-[19px] flex text-[9px] leading-none text-neutral-600">
+                      {heatWeeks.map((week, i) => {
+                        const month = week[0].iso.slice(5, 7);
+                        const newMonth = i > 0 && heatWeeks[i - 1][0].iso.slice(5, 7) !== month;
+                        return (
+                          <span key={i} className="w-[13px] shrink-0 overflow-visible whitespace-nowrap">
+                            {(i === 0 || newMonth) &&
+                              new Date(week[0].iso + "T00:00:00").toLocaleDateString(undefined, { month: "short" })}
+                          </span>
+                        );
+                      })}
+                    </div>
+                    <div className="flex gap-[3px]">
+                      <div className="flex w-4 shrink-0 flex-col gap-[3px] text-[9px] leading-none text-neutral-600">
+                        {["", "M", "", "W", "", "F", ""].map((l, i) => (
+                          <span key={i} className="flex h-2.5 items-center">
+                            {l}
+                          </span>
+                        ))}
+                      </div>
+                      {heatWeeks.map((week, i) => (
+                        <div key={i} className="flex flex-col gap-[3px]">
+                          {week.map((d) => (
+                            <span
+                              key={d.iso}
+                              title={`${fmtDateShort(d.iso)}${d.secs > 0 ? ` · ${fmtDur(d.secs)}` : ""}`}
+                              className="h-2.5 w-2.5 rounded-[2px]"
+                              style={{
+                                background: d.future
+                                  ? "transparent"
+                                  : d.secs === 0
+                                    ? "#26262666"
+                                    : `rgba(245,158,11,${0.25 + 0.75 * Math.min(1, d.secs / heatMax)})`,
+                              }}
+                            />
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-1.5 flex items-center justify-end gap-[3px] text-[9px] text-neutral-600">
+                      less
+                      {["#26262666", "rgba(245,158,11,0.4)", "rgba(245,158,11,0.7)", "rgba(245,158,11,1)"].map((c) => (
+                        <span key={c} className="h-2.5 w-2.5 rounded-[2px]" style={{ background: c }} />
+                      ))}
+                      more
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+            {/* Lifetime totals, relocated from the page footer so the bottom
+                of the page stays calm. */}
+            {!loading && totalSecs > 0 && (
+              <p className="mt-3 border-t border-neutral-800/60 pt-2 text-[10px] leading-relaxed text-neutral-600">
+                this week <span className="tabular-nums">{fmtDur(weekSecs)}</span> · all-time{" "}
+                <span className="tabular-nums">{fmtDur(totalSecs)}</span> · days practiced {daysPracticed} · best
+                streak {bestStreak} · avg <span className="tabular-nums">{fmtDur(totalSecs / daysPracticed)}</span>/day
+              </p>
+            )}
+          </section>
+  );
+
+  // Log card: collapsed receipt of every session, with edit/delete.
+  const logSection = (
+          <section className={`${card} mb-4`}>
+            <div className="mb-2 flex items-center justify-between">
+              <h2 className="text-sm font-medium text-neutral-400">Log</h2>
+              <div className="flex gap-3">
+                {byDateDesc.length > 0 && (
+                  <button className="text-xs text-neutral-500 underline hover:text-neutral-300" onClick={exportCsv}>
+                    export csv
+                  </button>
+                )}
+                <button
+                  className="text-xs text-neutral-400 underline"
+                  onClick={() =>
+                    requireUnlock() &&
+                    setForm({ exercise_id: selectedEx ?? "", date: todayISO(), bpm: "", dur: "", note: "" })
+                  }
+                >
+                  + add entry
+                </button>
+              </div>
+            </div>
+            {!loading && byDateDesc.length === 0 && (
+              <p className="text-sm text-neutral-600">Nothing logged yet.</p>
+            )}
+            {/* Collapsed by default: a couple of entries fading out under an
+                expand arrow — the log is a receipt, not the main event. */}
+            <div
+              ref={logRef}
+              className="relative overflow-hidden transition-[max-height] duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
+              style={{
+                maxHeight:
+                  byDateDesc.length > 3
+                    ? logOpen
+                      ? logRef.current?.scrollHeight // real height, so the mask lerps instead of snapping
+                      : 176
+                    : undefined,
+              }}
+            >
+            {dates.map((date) => {
+              const daySessions = byDateDesc.filter((s) => s.date === date);
+              const daySecs = daySessions.reduce((t, s) => t + (s.seconds ?? 0), 0);
+              return (
+                <div key={date} className="mb-3">
+                  {/* The year is noise for recent entries; the day's total
+                      lives up here so it reads without adding rows. */}
+                  <h3 className="mb-1 flex items-baseline justify-between text-xs font-semibold text-neutral-500">
+                    <span>
+                      {new Date(date + "T00:00:00").toLocaleDateString(undefined, {
+                        weekday: "short",
+                        month: "short",
+                        day: "numeric",
+                        ...(date.slice(0, 4) !== today.slice(0, 4) ? { year: "numeric" as const } : {}),
+                      })}
+                    </span>
+                    {daySecs > 0 && <span className="font-normal tabular-nums">{fmtDur(daySecs)}</span>}
+                  </h3>
+                  {daySessions.map((s) => (
+                    <div key={s.id} className="group border-b border-neutral-800/60 py-1.5 text-sm">
+                      <div className="flex items-baseline gap-2">
+                        <span
+                          className="h-2 w-2 shrink-0 self-center rounded-full"
+                          style={{ background: colorOf(s.exercise_id) }}
+                        />
+                        <span className="min-w-0 flex-1 truncate">
+                          {/* One exercise total? The dot suffices — repeating
+                              the name every row says nothing. */}
+                          {manyEx && (exById.get(s.exercise_id)?.name ?? "?")}
+                          {s.variant && (
+                            <span className={`text-xs text-neutral-500 ${manyEx ? "ml-1" : ""}`}>
+                              {s.variant === "up" ? "↑ up" : "↓ down"}
+                            </span>
+                          )}
+                        </span>
+                        {pbIds.has(s.id) && (
+                          <span className="text-xs text-amber-400" title="personal best at the time">
+                            ✦ PB
+                          </span>
+                        )}
+                        <span className="tabular-nums text-neutral-400">{s.bpm != null ? `${s.bpm} bpm` : ""}</span>
+                        <span className="w-14 text-right tabular-nums">
+                          {s.seconds != null ? fmtDur(s.seconds) : ""}
+                        </span>
+                        {/* Faint but always visible — fully hidden controls
+                            made mistakes look undeletable on desktop. */}
+                        {unlocked && (
+                          <span className="flex gap-1.5 text-xs transition-opacity [@media(hover:hover)]:opacity-40 [@media(hover:hover)]:group-hover:opacity-100">
+                            <button
+                              className="text-neutral-500 hover:text-neutral-200"
+                              onClick={() =>
+                                setForm({
+                                  id: s.id,
+                                  exercise_id: s.exercise_id,
+                                  date: s.date,
+                                  bpm: s.bpm != null ? String(s.bpm) : "",
+                                  dur: s.seconds != null ? fmtSecs(s.seconds) : "",
+                                  note: s.note ?? "",
+                                  variant: s.variant ?? "",
+                                })
+                              }
+                            >
+                              edit
+                            </button>
+                            <button
+                              className="text-neutral-500 hover:text-red-400"
+                              onClick={() => deleteSession(s.id)}
+                            >
+                              ×
+                            </button>
+                          </span>
+                        )}
+                      </div>
+                      {/* Notes are the part written by a human — full line,
+                          readable color, never truncated. */}
+                      {s.note && <p className="pl-4 text-xs text-neutral-300">{s.note}</p>}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+            {byDateDesc.length > 3 && (
+              <div
+                className={`pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-neutral-900 to-transparent transition-opacity duration-500 ${logOpen ? "opacity-0" : "opacity-100"}`}
+              />
+            )}
+            </div>
+            {byDateDesc.length > 3 && (
+              <button
+                className="-mx-4 -mb-4 w-[calc(100%+2rem)] py-2 text-center text-xs text-neutral-500 hover:text-neutral-300"
+                onClick={() => setLogOpen((o) => !o)}
+              >
+                {logOpen ? "▴ collapse" : "▾ show all"}
+              </button>
+            )}
+          </section>
+  );
+
+  const mobileBar = (
+    <>
+      {/* Sticky Start bar: on a phone the primary control stays under the
+          thumb no matter how far the page has scrolled. */}
+      {armed && (
+        <div className="fixed inset-x-0 bottom-0 z-20 flex items-center gap-2 border-t border-neutral-800 bg-neutral-950/95 px-4 py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] backdrop-blur lg:hidden">
+          {heroTools.check_off ? (
+            <button
+              className={
+                armedToday
+                  ? "flex-1 rounded-md border border-amber-500/50 py-3 text-sm font-semibold text-amber-400"
+                  : "flex-1 rounded-md bg-amber-500 py-3 text-sm font-semibold text-neutral-950"
+              }
+              onClick={checkOff}
+            >
+              {armedToday ? "✓ done today — again?" : "Did it ✓"}
+            </button>
+          ) : (
+          sessionBtn("flex-1 py-3")
+          )}
+          {!heroTools.check_off && swElapsed > 0 && !swRunning && (
+            <>
+              <button
+                className="rounded-md bg-amber-500 px-4 py-3 text-sm font-semibold text-neutral-950 hover:bg-amber-400"
+                onClick={swLog}
+              >
+                Log it
+              </button>
+              <button className={btn} onClick={swReset}>
+                Reset
+              </button>
+            </>
+          )}
+        </div>
+      )}
+    </>
+  );
+
+  const pageFooter = (
+    <>
+      {/* Just the two numbers that matter today; lifetime totals live in Progress. */}
+      {!loading && (
+        <footer className="mt-8 text-center text-[10px] leading-relaxed text-neutral-600">
+          {totalSecs > 0 && (
+            <div>
+              {streak > 1 && <span className="text-amber-400/80">streak {streak}</span>}
+              {streak > 1 && todayTotal > 0 && " · "}
+              {todayTotal > 0 && (
+                <>
+                  today <span className="tabular-nums">{Math.max(1, Math.round(todayTotal / 60))}m</span>
+                </>
+              )}
+            </div>
+          )}
+          <div className="mt-1 text-neutral-700">
+            suggestions →{" "}
+            <a className="hover:text-neutral-400" href="mailto:benjamincrystal8@gmail.com">
+              benjamincrystal8@gmail.com
+            </a>
+          </div>
+        </footer>
+      )}
+    </>
+  );
+
+  const overlays = (
+    <>
+      {/* First-visit walkthrough: three spotlights, or tap through the real
+          controls — either advances it. */}
+      {/* Step 0 of the walkthrough: the pitch, before any spotlights. Blocks
+          the page (unlike the dim-only marks) so it reads as a front door. */}
+      {coach === -1 && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-950/85 p-4">
+          <div className="w-full max-w-sm rounded-xl border border-neutral-700 bg-neutral-900 p-5 text-sm text-neutral-200 shadow-2xl">
+            <h2 className="text-lg font-semibold">Welcome</h2>
+            <p className="mt-2 text-neutral-300">
+              The idea: about five short exercises a day, so you never have to decide what to practice. Arm one, hit
+              Start, and it&apos;s logged in one tap.
+            </p>
+            <p className="mt-2 text-neutral-400">
+              Tools show up only when an exercise needs them, with references along the way. The{" "}
+              <a className="text-neutral-200 underline decoration-neutral-600 hover:decoration-neutral-300" href="/practice/tree">
+                syllabus
+              </a>{" "}
+              has the whole path.
+            </p>
+            <p className="mt-2 text-xs text-neutral-500">
+              It&apos;s early days — all suggestions welcome:{" "}
+              <a className="underline decoration-neutral-700 hover:text-neutral-300" href="mailto:benjamincrystal8@gmail.com">
+                benjamincrystal8@gmail.com
+              </a>
+            </p>
+            <div className="mt-4 flex items-center justify-between">
+              <button className="text-xs text-neutral-500 hover:text-neutral-300" onClick={endCoach}>
+                skip
+              </button>
+              <button
+                className="rounded-md bg-neutral-100 px-3 py-1.5 text-xs font-semibold text-neutral-950 hover:bg-white"
+                onClick={() => setCoach(0)}
+              >
+                show me around
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {coach !== null && coach >= 0 && (
+        <CoachMark
+          target={coach === 0 ? coachListRef : coachStartRef}
+          text={
+            [
+              "Tap an exercise to arm it — the page rebuilds around what you're practicing.",
+              "Start session runs the metronome and timer together.",
+              "When you stop, Log it saves your tempo and time. That's the whole loop.",
+            ][coach]
+          }
+          step={coach}
+          total={3}
+          nextLabel={coach === 2 ? "got it" : "next"}
+          onNext={() => {
+            if (coach === 2) return endCoach();
+            if (coach === 0 && !armed && active[0]) {
+              // "next" without tapping = arm the first one for them, which
+              // also brings the (mobile-hidden) hero into view for step 2.
+              armExercise(active[0], aggByDate(sessions ?? [], active[0].id));
+            } else {
+              setCoach(coach + 1);
+            }
+          }}
+          onSkip={endCoach}
+        />
+      )}
+
+      {/* Undo toast for one-tap logging (amber celebration on a personal best) */}
+      {justLogged && (
+        <div
+          className={`fixed left-1/2 z-30 flex -translate-x-1/2 items-center gap-3 whitespace-nowrap rounded-full px-4 py-2 text-sm shadow-lg ${armed ? "bottom-20 lg:bottom-4" : "bottom-4"} ${
+            justLogged.pb ? "bg-amber-400 text-neutral-950" : "bg-neutral-800"
+          }`}
+        >
+          <span>
+            {justLogged.pb ? "✦ New best! " : "Logged "}
+            {exById.get(justLogged.session.exercise_id)?.name}
+            {justLogged.session.variant && ` ${justLogged.session.variant === "up" ? "↑" : "↓"}`}
+            {justLogged.session.bpm != null && ` · ${justLogged.session.bpm} bpm`}
+            {/* Check-off logs have no duration — "Logged <name>" says it all. */}
+            {justLogged.session.seconds != null && justLogged.session.seconds > 0 && ` · ${fmtDur(justLogged.session.seconds)}`}
+          </span>
+          <button
+            className={`font-semibold ${justLogged.pb ? "text-neutral-950 underline" : "text-amber-400"}`}
+            onClick={undoLog}
+          >
+            Undo
+          </button>
+        </div>
+      )}
+
+      {/* Desktop hover preview: large in-page peek, click-through (pointer-events-none) */}
+      {hoverRef && !lightbox && (
+        <div className="pointer-events-none fixed inset-0 z-40 hidden items-center justify-center bg-black/70 p-8 lg:flex">
+          {isPdf(hoverRef) ? (
+            <iframe
+              src={hoverRef}
+              title="reference preview"
+              className="h-full w-full max-w-4xl rounded border border-neutral-700 bg-neutral-900"
+            />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={hoverRef} className="max-h-full max-w-full rounded shadow-2xl" alt="reference preview" />
+          )}
+        </div>
+      )}
+
+      {/* Fullscreen image reference viewer */}
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-40 flex items-center justify-center bg-black/90 p-4"
+          onClick={() => setLightbox(null)}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={lightbox} className="max-h-full max-w-full rounded" alt="reference" />
+        </div>
+      )}
+
+      {/* Hidden picker for reference uploads (triggered from Manage exercises) */}
+      <input
+        ref={fileInput}
+        type="file"
+        accept="image/*,application/pdf"
+        className="hidden"
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f) void uploadRef(f);
+          e.target.value = "";
+        }}
+      />
+    </>
+  );
+
+  // ---------- redesigned layout ----------
+
+  // Done = logged today. A just-logged row keeps its slot while it collapses
+  // (sinkingId), then reappears in the done group below — the auto-sink.
+  const isDoneRow = (id: string) => loggedTodayIds.has(id) && id !== sinkingId;
+  const orderedRows = [...active.filter((e) => !isDoneRow(e.id)), ...active.filter((e) => isDoneRow(e.id))];
+
+  function sinkRow(id: string) {
+    setSinkingId(id);
+    setTimeout(() => {
+      setSinkingId((cur) => (cur === id ? null : cur));
+      setSelectedEx((cur) => (cur === id ? null : cur));
+    }, 420);
+  }
+
+  // Log/check the armed exercise, silence the click, run the sink animation.
+  function completeRow(kind: "log" | "check") {
+    const id = selectedEx;
+    if (!id || !requireUnlock()) return;
+    if (kind === "check") void checkOff();
+    else {
+      void swLog(); // handles a still-running timer itself
+      if (getMetro().running) toggleMetronome();
+    }
+    sinkRow(id);
+  }
+
+  // Tier-1 controls — the things you touch. The timer and progress stay
+  // ambient below; these get top billing (bpm, key, drone, click).
+  const controlsRow = (t: { metronome: boolean; random_key: boolean }) => (
+    <>
+      <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2">
+        {t.metronome && (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => nudgeBpm(-2)}
+              className="grid h-8 w-8 place-items-center rounded-md bg-neutral-800 text-sm text-neutral-300 hover:bg-neutral-700"
+              aria-label="slower"
+            >
+              −
+            </button>
+            <button onClick={() => setTempoOpen((o) => !o)} className="text-center" title="bpm ruler & tap tempo" aria-expanded={tempoOpen}>
+              <span className="font-mono text-xl tabular-nums">{bpm}</span>
+              <span className="block text-[9px] uppercase tracking-widest text-neutral-600">bpm {tempoOpen ? "▾" : "▸"}</span>
+            </button>
+            <button
+              onClick={() => nudgeBpm(+2)}
+              className="grid h-8 w-8 place-items-center rounded-md bg-neutral-800 text-sm text-neutral-300 hover:bg-neutral-700"
+              aria-label="faster"
+            >
+              +
+            </button>
+            <button
+              onClick={toggleMetronome}
+              aria-pressed={running}
+              title="run the click by itself"
+              className={`ml-1 text-center ${running ? "text-amber-400" : "text-neutral-500 hover:text-neutral-300"}`}
+            >
+              <span className="text-xl leading-none">◆</span>
+              <span className="block text-[9px] uppercase tracking-widest text-neutral-600">click</span>
+            </button>
+          </div>
+        )}
+        {t.random_key && (
+          <button onClick={advanceNote} className="text-center" title="press N or tap for a new key" aria-label="random key">
+            <span className="font-mono text-xl text-neutral-200">
+              {noteCur ? (
+                <NoteMorph
+                  cur={noteCur.label}
+                  next={noteSync > 0 ? noteNext?.label ?? null : null}
+                  morphMs={noteMorph}
+                  curClass="inline-block"
+                  nextClass="ml-1 inline-block align-middle text-xs font-normal text-neutral-500"
+                />
+              ) : (
+                "♪?"
+              )}
+            </span>
+            <span className="block text-[9px] uppercase tracking-widest text-neutral-600">
+              key{noteSync > 0 ? ` · every ${noteSync}` : ""}
+            </span>
+          </button>
+        )}
+        <button
+          onClick={() => setDroneOn((v) => !v)}
+          aria-pressed={droneOn}
+          title="sustain a drone of the current key (works without the metronome)"
+          className={`text-center ${droneOn ? "text-amber-400" : "text-neutral-500 hover:text-neutral-300"}`}
+        >
+          <span className="text-xl leading-none">∿</span>
+          <span className="block text-[9px] uppercase tracking-widest text-neutral-600">drone</span>
+        </button>
+        {droneOn && (
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={Math.round(droneVol * 100)}
+            onChange={(e) => setDroneVol(Number(e.target.value) / 100)}
+            className="w-14 accent-amber-500"
+            aria-label="drone volume"
+          />
+        )}
+      </div>
+      {t.metronome && (
+        <Reveal open={tempoOpen}>
+          <div className="mt-3">
+            <BpmRuler value={bpm} onChange={setBpm} />
+            <div className="mt-2 flex gap-2">
+              <button className={btn} onClick={tapTempo}>
+                Tap
+              </button>
+              <button className={btn} onClick={() => nudgeBpm(-5)}>
+                −5
+              </button>
+              <button className={btn} onClick={() => nudgeBpm(+5)}>
+                +5
+              </button>
+            </div>
+          </div>
+        </Reveal>
+      )}
+    </>
+  );
+
+  // "advanced ▾": count-in, trainer, sound, meter — settings, not controls.
+  const advancedRow = (t: { metronome: boolean; random_key: boolean }) => (
+    <Reveal open={extrasOpen}>
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-neutral-400">
+        {t.metronome && (
+          <>
+            <label className="flex items-center gap-1.5">
+              meter
+              <select
+                value={beatsPerBar}
+                onChange={(e) => setBeatsPerBar(Number(e.target.value))}
+                className={input}
+                aria-label="beats per bar"
+              >
+                {[2, 3, 4, 5, 6, 7].map((n) => (
+                  <option key={n} value={n}>
+                    {n}/4
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="flex items-center gap-1.5">
+              sound
+              <select value={sound} onChange={(e) => setSound(e.target.value as ClickSound)} className={input}>
+                <option value="beep">beep</option>
+                <option value="wood">wood</option>
+                <option value="tick">tick</option>
+              </select>
+            </label>
+            <label className="flex items-center gap-1.5">
+              vol
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={Math.round(volume * 100)}
+                onChange={(e) => setVolume(Number(e.target.value) / 100)}
+                className="w-16 accent-neutral-400"
+                aria-label="click volume"
+              />
+            </label>
+            <label className="flex items-center gap-1.5">
+              <input type="checkbox" className="accent-amber-500" checked={countIn} onChange={(e) => setCountIn(e.target.checked)} />
+              count-in
+            </label>
+            <label className="flex items-center gap-1.5">
+              <input type="checkbox" className="accent-amber-500" checked={trainer} onChange={(e) => setTrainer(e.target.checked)} />
+              trainer
+            </label>
+            {trainer && (
+              <span className="flex items-center gap-1.5">
+                +
+                <select value={trainerAdd} onChange={(e) => setTrainerAdd(Number(e.target.value))} className={input} aria-label="trainer bpm increment">
+                  {[1, 2, 5].map((n) => (
+                    <option key={n} value={n}>
+                      {n}
+                    </option>
+                  ))}
+                </select>
+                every
+                <select value={trainerBars} onChange={(e) => setTrainerBars(Number(e.target.value))} className={input} aria-label="trainer bar interval">
+                  {[2, 4, 8, 16].map((n) => (
+                    <option key={n} value={n}>
+                      {n}
+                    </option>
+                  ))}
+                </select>
+                bars
+              </span>
+            )}
+          </>
+        )}
+        {t.random_key && (
+          <label className="flex items-center gap-1.5">
+            key every
+            <select value={noteSync} onChange={(e) => setNoteSync(Number(e.target.value))} className={input} aria-label="auto key change interval">
+              <option value={0}>off</option>
+              {[1, 2, 4, 8, 16, 32].map((n) => (
+                <option key={n} value={n}>
+                  {n} beat{n > 1 ? "s" : ""}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+      </div>
+    </Reveal>
+  );
+
+  if (!classic)
+    return (
+      <main className="mx-auto min-h-screen max-w-xl bg-neutral-950 px-5 pb-24 text-neutral-100">
+        {/* While the timer runs the header steps back — it just runs. */}
+        <header
+          className={`flex items-baseline justify-between pb-2 pt-6 transition-opacity duration-500 ${
+            swRunning ? "opacity-25" : ""
+          }`}
+        >
+          <h1 className="text-sm font-medium tracking-wide text-neutral-300">practice</h1>
+          <nav className="flex items-center gap-4 text-xs text-neutral-500">
+            <a href="/practice/tree" className="hover:text-neutral-200">
+              syllabus
+            </a>
+            <button
+              onClick={() => setHistOpen((o) => !o)}
+              aria-expanded={histOpen}
+              className={histOpen ? "text-neutral-200" : "hover:text-neutral-200"}
+            >
+              history
+            </button>
+            <button
+              onClick={() => setManageOpen((o) => !o)}
+              aria-expanded={manageOpen}
+              className={manageOpen ? "text-neutral-200" : "hover:text-neutral-200"}
+            >
+              edit
+            </button>
+            <button
+              title="How it works"
+              onClick={() => setHintOpen((o) => !o)}
+              className="rounded-full border border-neutral-700 px-1.5 text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
+            >
+              ?
+            </button>
+            {unlocked ? (
+              <button className="hover:text-neutral-200" onClick={signOut}>
+                log out
+              </button>
+            ) : (
+              <button className="text-neutral-300 hover:text-white" onClick={() => setUnlockOpen(true)}>
+                log in
+              </button>
+            )}
+          </nav>
+        </header>
+
+        {/* Queue dots + the two numbers that matter today. */}
+        {active.length > 0 && (
+          <div className="flex items-center justify-between gap-3 pb-4 pt-1">
+            <div className="flex flex-wrap items-center gap-1.5">
+              {orderedRows.map((e) => (
+                <button
+                  key={e.id}
+                  onClick={() => (selectedEx === e.id ? setSelectedEx(null) : armExercise(e, aggByDate(sessions ?? [], e.id)))}
+                  aria-label={e.name}
+                  title={e.name}
+                  className={`h-1.5 rounded-full transition-all ${
+                    e.id === selectedEx ? "w-6 bg-neutral-100" : loggedTodayIds.has(e.id) ? "w-1.5 bg-amber-500" : "w-1.5 bg-neutral-700"
+                  }`}
+                />
+              ))}
+            </div>
+            <p className="shrink-0 text-xs text-neutral-500">
+              {todayTotal > 0 && <span className="tabular-nums">{Math.max(1, Math.round(todayTotal / 60))} min</span>}
+              {todayTotal > 0 && streak > 1 && " · "}
+              {streak > 1 && <span className="text-amber-500">{streak}-day streak</span>}
+            </p>
+          </div>
+        )}
+
+        {banners}
+
+        {/* Instrument filter chips — only once at least one exercise is tagged. */}
+        {instruments.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 pb-2 text-xs">
+            {["all", ...instruments].map((tag) => (
+              <button
+                key={tag}
+                onClick={() => setInstFilter(tag)}
+                aria-pressed={(instApplied ? instFilter : "all") === tag}
+                className={`rounded-full border px-2.5 py-0.5 ${
+                  (instApplied ? instFilter : "all") === tag
+                    ? "border-amber-500/60 text-amber-400"
+                    : "border-neutral-800 text-neutral-500 hover:border-neutral-600"
+                }`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* The checklist IS the page: rows expand in place into the session
+            card; everything the exercise needs lives inside it. */}
+        <section ref={coachListRef}>
+          <ul className="divide-y divide-neutral-900">
+            {orderedRows.map((ex) => {
+              const isOpen = selectedEx === ex.id;
+              const done = loggedTodayIds.has(ex.id);
+              const sinking = sinkingId === ex.id;
+              const t = toolsOf(ex);
+              const aggs = isOpen ? armedAggs : aggByDate(sessions ?? [], ex.id);
+              const todayAgg = aggs[0]?.date === today ? aggs[0] : null;
+              const lastAgg = todayAgg ? aggs[1] : aggs[0];
+              const lastBpm = aggs.find((a) => a.bpm > 0)?.bpm ?? null;
+              const detOpen = detailsOpen ?? aggs.length < 3;
+              return (
+                <li
+                  key={ex.id}
+                  className={`overflow-hidden transition-all duration-300 ${
+                    sinking ? "max-h-0 opacity-0" : "max-h-[80rem] opacity-100"
+                  }`}
+                >
+                  <button
+                    className="flex w-full items-center gap-3 py-3 text-left"
+                    onClick={() => (isOpen ? setSelectedEx(null) : armExercise(ex, aggs))}
+                    aria-expanded={isOpen}
+                  >
+                    <span
+                      className={`grid h-5 w-5 shrink-0 place-items-center rounded-full border text-[11px] ${
+                        done
+                          ? "border-amber-500 bg-amber-500 text-neutral-950"
+                          : isOpen
+                            ? "border-amber-500 text-amber-500"
+                            : "border-neutral-700 text-transparent"
+                      }`}
+                    >
+                      ✓
+                    </span>
+                    <span className={`min-w-0 flex-1 truncate text-sm ${done && !isOpen ? "text-neutral-600" : ""}`}>
+                      {ex.name}
+                    </span>
+                    <span className="shrink-0 text-xs text-neutral-600">
+                      {done ? (todayAgg ? fmtAgg(todayAgg) : "✓") : ex.instrument ?? ""}
+                    </span>
+                  </button>
+
+                  {isOpen && (
+                    <div className="mb-4 rounded-xl border border-neutral-800 bg-neutral-900 p-4">
+                      {ex.track_variants && (
+                        <div className="mb-3 flex gap-1.5 text-xs">
+                          {(["down", "up"] as const).map((v) => (
+                            <button
+                              key={v}
+                              onClick={() => selectVariant(v)}
+                              aria-pressed={variant === v}
+                              className={`rounded-md border px-2.5 py-1 ${
+                                variant === v
+                                  ? "border-amber-500/60 text-amber-400"
+                                  : "border-neutral-700 text-neutral-500 hover:border-neutral-500"
+                              }`}
+                            >
+                              {v === "down" ? "↓ down" : "↑ up"}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
+                      {t.check_off ? (
+                        <>
+                          <button
+                            onClick={() => completeRow("check")}
+                            className="w-full rounded-lg border border-amber-500/60 py-3 text-sm font-semibold text-amber-400 hover:bg-amber-500/10"
+                          >
+                            {done ? "✓ done today — again?" : "Did it ✓"}
+                          </button>
+                          {ex.description && (
+                            <div className="mt-3">
+                              <DescriptionBody text={ex.description} />
+                            </div>
+                          )}
+                          {ex.ref_url && (
+                            <button
+                              className="mt-2 text-xs text-neutral-400 underline hover:text-neutral-200"
+                              onClick={() => openRef(ex.ref_url!)}
+                            >
+                              open reference ↗
+                            </button>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          {/* What you touch: Start/Log first, then the sound tools. */}
+                          <div ref={coachStartRef} className="flex gap-2">
+                            <button
+                              onClick={startSession}
+                              className={`flex-1 rounded-lg py-2.5 text-sm font-semibold ${
+                                swRunning || countingIn
+                                  ? "bg-amber-500 text-neutral-950 hover:bg-amber-400"
+                                  : "bg-neutral-100 text-neutral-950 hover:bg-white"
+                              }`}
+                            >
+                              {countingIn ? "…" : swRunning ? "Stop" : swElapsed > 0 ? "Resume" : "Start"}
+                            </button>
+                            {swElapsed > 0 && !swRunning && (
+                              <button
+                                onClick={swReset}
+                                className="rounded-lg bg-neutral-800 px-3 text-xs text-neutral-400 hover:bg-neutral-700"
+                              >
+                                Reset
+                              </button>
+                            )}
+                            <button
+                              onClick={() => completeRow("log")}
+                              disabled={swElapsed === 0 && !swRunning}
+                              className="rounded-lg bg-neutral-800 px-5 text-sm text-neutral-300 hover:bg-neutral-700 disabled:opacity-40"
+                            >
+                              Log
+                            </button>
+                          </div>
+
+                          {/* One-shot nudge after arming: dial sits on last time's bpm. */}
+                          {!bpmPromptSeen && !todayAgg && lastAgg && lastAgg.bpm > 0 && t.metronome && !swRunning && swElapsed === 0 && (
+                            <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs text-neutral-500">
+                              last time {lastAgg.bpm} bpm —
+                              {[0, 2, 5].map((d) => (
+                                <button
+                                  key={d}
+                                  onClick={() => {
+                                    setBpm(clampBpm(lastAgg.bpm + d));
+                                    setBpmPromptSeen(true);
+                                  }}
+                                  className="rounded-full border border-neutral-700 px-2.5 py-0.5 text-neutral-300 hover:border-neutral-500"
+                                >
+                                  {d === 0 ? "same" : `+${d}`}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+
+                          {controlsRow(t)}
+
+                          {/* Ambient status: the timer runs back here, it
+                              doesn't stare at you. */}
+                          <div className="mt-4 border-t border-neutral-800 pt-3">
+                            <div className="flex items-center justify-between text-[11px] text-neutral-500">
+                              <span className="flex items-center gap-1.5 font-mono tabular-nums">
+                                {swRunning && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500" />}
+                                {swRunning || swElapsed > 0
+                                  ? fmtSecs(swElapsed / 1000)
+                                  : selTodaySecs > 0
+                                    ? `today ${fmtDur(selTodaySecs)}`
+                                    : lastAgg
+                                      ? `last ${fmtAgg(lastAgg)}`
+                                      : "no sessions yet"}
+                              </span>
+                              {ex.target_bpm && lastBpm && (
+                                <span>
+                                  {lastBpm} → {ex.target_bpm} bpm
+                                </span>
+                              )}
+                            </div>
+                            {ex.target_bpm && lastBpm && (
+                              <div className="mt-1.5 h-0.5 overflow-hidden rounded bg-neutral-800">
+                                <div
+                                  className="h-full bg-amber-500/50"
+                                  style={{ width: `${Math.min(100, (lastBpm / ex.target_bpm) * 100)}%` }}
+                                />
+                              </div>
+                            )}
+                            <p className="mt-2 text-[11px] text-neutral-600">
+                              {todayAgg && (
+                                <>
+                                  today {fmtAgg(todayAgg)}
+                                  {" · "}
+                                </>
+                              )}
+                              <button
+                                onClick={() => setExtrasOpen((o) => !o)}
+                                aria-expanded={extrasOpen}
+                                className="hover:text-neutral-400"
+                              >
+                                advanced {extrasOpen ? "▾" : "▸"}
+                              </button>
+                              {" · "}
+                              <button
+                                onClick={() => setDetailsOpen(!detOpen)}
+                                aria-expanded={detOpen}
+                                className="hover:text-neutral-400"
+                              >
+                                details {detOpen ? "▾" : "▸"}
+                              </button>
+                            </p>
+                            {advancedRow(t)}
+                            <Reveal open={detOpen}>
+                              <div className="mt-3 space-y-2">
+                                {ex.description && <DescriptionBody text={ex.description} />}
+                                {ex.ref_url &&
+                                  (ytId(ex.ref_url) ? (
+                                    <div className="aspect-video overflow-hidden rounded-lg border border-neutral-800">
+                                      <iframe
+                                        className="h-full w-full"
+                                        src={`https://www.youtube-nocookie.com/embed/${ytId(ex.ref_url)}`}
+                                        title="reference video"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                      />
+                                    </div>
+                                  ) : (
+                                    <button
+                                      className="text-xs text-neutral-400 underline hover:text-neutral-200"
+                                      onClick={() => openRef(ex.ref_url!)}
+                                    >
+                                      open reference ↗
+                                    </button>
+                                  ))}
+                                {aggs.length > 0 && (
+                                  <div className="text-[11px] text-neutral-500">
+                                    {aggs.slice(0, 5).map((a) => (
+                                      <p key={a.date} className="flex justify-between">
+                                        <span>{fmtDateShort(a.date)}</span>
+                                        <span className="tabular-nums">{fmtAgg(a)}</span>
+                                      </p>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </Reveal>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+
+        {/* Empty space: the syllabus's opening moves, one per branch. */}
+        {!loading && noExercises && (
+          <div className={`${card} text-sm`}>
+            <p className="text-neutral-300">Fresh start — pick a first exercise:</p>
+            {starters === null ? (
+              <p className="mt-2 text-xs text-neutral-600">loading suggestions…</p>
+            ) : starters.length === 0 ? (
+              <p className="mt-2 text-xs text-neutral-600">Open “edit” above to add your first exercise.</p>
+            ) : (
+              <div className="mt-2.5 flex flex-col gap-1.5">
+                {starters.map((n) => (
+                  <button
+                    key={n.id}
+                    disabled={(!unlocked && !fresh) || starterBusy !== null}
+                    onClick={() => void startStarter(n.id)}
+                    className="rounded-md border border-neutral-700 bg-neutral-800/40 px-3 py-2 text-left hover:border-neutral-500 hover:bg-neutral-800 disabled:opacity-50"
+                  >
+                    <span className="font-medium">{starterBusy === n.id ? "adding…" : n.name}</span>
+                    <span className="ml-1.5 text-xs text-neutral-500">{STARTER_BRANCHES[n.branch] ?? n.branch}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+            <div className="mt-2.5 flex items-center gap-2">
+              <a
+                className="rounded-md border border-neutral-700 px-2.5 py-1 text-xs text-neutral-300 hover:border-neutral-500"
+                href="/practice/tree"
+              >
+                🌳 or browse the full syllabus
+              </a>
+              {!unlocked && !fresh && <span className="text-xs text-neutral-600">log in above to add exercises</span>}
+            </div>
+          </div>
+        )}
+
+        {!noExercises && !loading && (
+          <button
+            className="w-full pt-3 text-center text-xs text-neutral-700 hover:text-neutral-400"
+            onClick={() => requireUnlock() && setManageOpen(true)}
+          >
+            + add exercise
+          </button>
+        )}
+
+        {manageOpen && <div className="mt-4">{managePanel}</div>}
+
+        {/* Freeform practice + the quiet tools: nothing armed, just sound. */}
+        <div className="pt-5">
+          <button
+            onClick={() => setFreeformOpen((o) => !o)}
+            aria-expanded={freeformOpen}
+            className="text-xs text-neutral-600 hover:text-neutral-300"
+          >
+            ♪ freeform · tools {freeformOpen ? "▾" : "▸"}
+          </button>
+          <Reveal open={freeformOpen}>
+            <div className="mt-2 rounded-xl border border-neutral-800 bg-neutral-900 p-4">
+              {!armed && (
+                <div className="flex gap-2">
+                  <button
+                    onClick={startSession}
+                    className={`flex-1 rounded-lg py-2.5 text-sm font-semibold ${
+                      swRunning || countingIn
+                        ? "bg-amber-500 text-neutral-950 hover:bg-amber-400"
+                        : "bg-neutral-100 text-neutral-950 hover:bg-white"
+                    }`}
+                  >
+                    {countingIn ? "…" : swRunning ? "Stop" : swElapsed > 0 ? "Resume" : "Start"}
+                  </button>
+                  {swElapsed > 0 && !swRunning && (
+                    <button onClick={swReset} className="rounded-lg bg-neutral-800 px-3 text-xs text-neutral-400 hover:bg-neutral-700">
+                      Reset
+                    </button>
+                  )}
+                </div>
+              )}
+              {controlsRow({ metronome: true, random_key: seasoned })}
+              {advancedRow({ metronome: true, random_key: seasoned })}
+              {!armed && (swRunning || swElapsed > 0) && (
+                <p className="mt-3 flex items-center gap-1.5 font-mono text-[11px] tabular-nums text-neutral-500">
+                  {swRunning && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500" />}
+                  {fmtSecs(swElapsed / 1000)}
+                  <span className="font-sans text-neutral-700"> — tap an exercise above to log it</span>
+                </p>
+              )}
+              <div className="mt-4 border-t border-neutral-800 pt-3">
+                <Tuner />
+                <div className="mt-2 flex flex-wrap gap-1.5 border-t border-neutral-800 pt-2 text-xs">
+                  <a
+                    className="rounded-md border border-neutral-700 bg-neutral-800/60 px-2 py-1 text-neutral-300 hover:border-neutral-400 hover:bg-neutral-700"
+                    href="https://www.oolimo.com/en/guitar-chords/analyze"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    chord analyzer ↗
+                  </a>
+                  <a
+                    className="rounded-md border border-neutral-700 bg-neutral-800/60 px-2 py-1 text-neutral-300 hover:border-neutral-400 hover:bg-neutral-700"
+                    href="https://www.all-guitar-chords.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    chords &amp; scales ↗
+                  </a>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+
+        {form && <div className="mt-6">{entryForm}</div>}
+
+        {/* "history": charts, heatmap and the full log, folded below the list. */}
+        <div className="mt-6">
+          <Reveal open={histOpen}>
+            <div>
+              {progressSection}
+              {logSection}
+            </div>
+          </Reveal>
+        </div>
+
+        {mobileBar}
+        {pageFooter}
+        {overlays}
+      </main>
+    );
+
   return (
     <main className="mx-auto min-h-screen max-w-2xl bg-neutral-950 px-4 pb-24 text-neutral-100 lg:max-w-7xl lg:px-8">
       {/* Mobile: sticky control strip — bpm (tap to expand), nudge, start, note. */}
@@ -1814,118 +3331,7 @@ export default function PracticeView() {
         </Reveal>
       </div>
 
-      {unlockOpen && !unlocked && (
-        <div className={`${card} mb-4`}>
-          <p className="mb-2 text-sm text-neutral-400">
-            Log in with your password — it opens your own practice log and stays saved on this device.
-          </p>
-          <div className="flex gap-2">
-            <input
-              type="password"
-              autoFocus
-              value={pwInput}
-              onChange={(e) => setPwInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && submitPassword()}
-              placeholder="Password"
-              className={`${input} flex-1`}
-            />
-            <button className={btn} onClick={submitPassword}>
-              Log in
-            </button>
-            <button className={btn} onClick={() => setUnlockOpen(false)}>
-              Cancel
-            </button>
-          </div>
-          {pwError && <p className="mt-2 text-sm text-red-400">Wrong password</p>}
-        </div>
-      )}
-
-      {error && (
-        <div className="mb-4 rounded-md border border-red-900 bg-red-950 px-3 py-2 text-sm text-red-300">
-          {error}
-          <button className="ml-3 underline" onClick={() => setError(null)}>
-            dismiss
-          </button>
-        </div>
-      )}
-
-      {offline && (
-        <div role="status" className="mb-4 rounded-md border border-amber-900 bg-amber-950/40 px-3 py-2 text-sm text-amber-300">
-          Offline — edits are saved on this device and sync when you're back.
-        </div>
-      )}
-
-      {fresh && (
-        <div role="status" className="mb-4 rounded-md border border-amber-900 bg-amber-950/40 px-3 py-2 text-xs text-amber-300">
-          Fresh preview — simulated first visit, nothing is saved.{" "}
-          <a className="underline" href="/practice">
-            back to your data
-          </a>
-        </div>
-      )}
-
-      {hintOpen && (
-        <div className={`${card} mb-4 text-sm text-neutral-300`}>
-          <p>
-            <span className="font-medium">How it works:</span> tap an exercise to arm it →{" "}
-            <span className="font-medium">Start session</span> runs the metronome and timer together →{" "}
-            <span className="font-medium">Log it</span> saves your tempo and time.
-          </p>
-          <p className="mt-1.5 text-xs text-neutral-500">
-            More, when you want it: the &quot;advanced&quot; line under Start (bpm · meter · sound) opens count-in, tempo trainer and more · ↓↑ in
-            manage tracks down/up-stroke starts separately · “goal” draws a target line on the chart ·{" "}
-            <span className="text-neutral-400">Log in</span> with your password to edit your own log.
-          </p>
-          <div className="mt-2 flex gap-2">
-            <button
-              className="rounded-md bg-neutral-800 px-3 py-1 text-xs hover:bg-neutral-700"
-              onClick={() => {
-                if (!fresh) localStorage.setItem(HINT_KEY, "1");
-                setHintOpen(false);
-              }}
-            >
-              got it
-            </button>
-            {active.length > 0 && (
-              <button
-                className="rounded-md border border-neutral-700 px-3 py-1 text-xs text-neutral-300 hover:border-neutral-500"
-                onClick={() => {
-                  setHintOpen(false);
-                  setCoach(selectedEx ? 1 : 0);
-                }}
-              >
-                show me ▸
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Day-done: tapping "done ✓" on the last queued exercise lands here. */}
-      {dayDone && !armed && (
-        <div className={`${card} mb-4 flex items-center justify-between gap-3 border-amber-500/40`}>
-          <p className="text-sm">
-            {/* The victory lap has to be earned — under 5 minutes it's just a log note. */}
-            <span className="font-medium text-amber-400">
-              {todayTotal >= 300 ? "Done for today ✓" : "Session logged ✓"}
-            </span>{" "}
-            {todayTotal > 0 && (
-              <span className="text-neutral-400">
-                <span className="tabular-nums text-neutral-200">{fmtDur(todayTotal)}</span> across{" "}
-                {todayExCount} exercise{todayExCount === 1 ? "" : "s"}
-                {streak > 1 && <> · {streak}-day streak</>}
-              </span>
-            )}
-          </p>
-          <button
-            className="rounded px-1.5 text-lg leading-none text-neutral-500 hover:text-neutral-200"
-            onClick={() => setDayDone(false)}
-            aria-label="dismiss day summary"
-          >
-            ×
-          </button>
-        </div>
-      )}
+      {banners}
 
       {/* Armed = single centered column, hero above everything; browse = the
           familiar two-column desktop layout. */}
@@ -2793,252 +4199,7 @@ export default function PracticeView() {
           </section>
 
           {/* Manage panel: opened from the small link by the Exercises header. */}
-          {manageOpen && (
-          <section className={card}>
-            <button
-              className="flex w-full items-center justify-between text-sm font-medium text-neutral-400"
-              onClick={() => setManageOpen(false)}
-            >
-              Manage exercises
-              <span className="text-xs">▾</span>
-            </button>
-              <div className="mt-3">
-                {(exercises ?? []).map((ex) => (
-                  <div key={ex.id} className="border-b border-neutral-800/60">
-                  <div className="flex items-center gap-2 py-1.5 text-sm">
-                    <span className="h-2 w-2 rounded-full" style={{ background: colorOf(ex.id) }} />
-                    <span className={`flex-1 ${ex.archived ? "text-neutral-600 line-through" : ""}`}>{ex.name}</span>
-                    {unlocked && (
-                      <>
-                        <button
-                          className="px-0.5 text-xs text-neutral-500 hover:text-neutral-200"
-                          onClick={() => moveBy(ex, -1)}
-                          title="Move up"
-                        >
-                          ↑
-                        </button>
-                        <button
-                          className="px-0.5 text-xs text-neutral-500 hover:text-neutral-200"
-                          onClick={() => moveBy(ex, 1)}
-                          title="Move down"
-                        >
-                          ↓
-                        </button>
-                        {uploading === ex.id ? (
-                          <span className="text-xs text-neutral-500">uploading…</span>
-                        ) : ex.ref_url ? (
-                          <>
-                            <button
-                              className="text-xs text-neutral-500 hover:text-neutral-200"
-                              onClick={() => openRef(ex.ref_url!)}
-                            >
-                              ref
-                            </button>
-                            <button
-                              className="text-xs text-neutral-500 hover:text-red-400"
-                              title="Remove reference"
-                              onClick={() =>
-                                confirm(`Remove the reference from “${ex.name}”? This can't be undone.`) &&
-                                patchExercise(ex.id, { ref_url: null })
-                              }
-                            >
-                              ×ref
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <button
-                              className="text-xs text-neutral-500 hover:text-neutral-200"
-                              onClick={() => pickFile(ex.id)}
-                            >
-                              attach
-                            </button>
-                            <button
-                              className="text-xs text-neutral-500 hover:text-neutral-200"
-                              onClick={() => linkRef(ex)}
-                            >
-                              link
-                            </button>
-                          </>
-                        )}
-                        <button
-                          className={`text-xs ${
-                            ex.track_variants ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
-                          }`}
-                          title="Track down/up-stroke starts separately"
-                          onClick={() => patchExercise(ex.id, { track_variants: !ex.track_variants })}
-                        >
-                          ↓↑
-                        </button>
-                        {/* Which tools this exercise puts in the session hero. */}
-                        <button
-                          className={`text-xs ${
-                            toolsOf(ex).metronome ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
-                          }`}
-                          title="Metronome in the session card"
-                          aria-pressed={toolsOf(ex).metronome}
-                          onClick={() => patchExercise(ex.id, { tools: { ...toolsOf(ex), metronome: !toolsOf(ex).metronome } })}
-                        >
-                          met
-                        </button>
-                        <button
-                          className={`text-xs ${
-                            toolsOf(ex).random_key ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
-                          }`}
-                          title="Random key generator in the session card"
-                          aria-pressed={toolsOf(ex).random_key}
-                          onClick={() => patchExercise(ex.id, { tools: { ...toolsOf(ex), random_key: !toolsOf(ex).random_key } })}
-                        >
-                          key
-                        </button>
-                        <button
-                          className={`text-xs ${
-                            toolsOf(ex).check_off ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
-                          }`}
-                          title="Check-off exercise — one tap logs it done, no bpm or timer"
-                          aria-pressed={toolsOf(ex).check_off}
-                          onClick={() =>
-                            patchExercise(ex.id, { tools: { ...(ex.tools ?? {}), check_off: !toolsOf(ex).check_off } })
-                          }
-                        >
-                          ✓off
-                        </button>
-                        <button
-                          className={`text-xs ${
-                            ex.instrument ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
-                          }`}
-                          title="Instrument tag — groups exercises into filter chips"
-                          onClick={() => {
-                            const t = prompt("Instrument (e.g. guitar, vocals — empty clears)", ex.instrument ?? "");
-                            if (t === null) return;
-                            void patchExercise(ex.id, {
-                              instrument: t.trim() ? t.trim().toLowerCase() : null,
-                            } as Partial<Exercise>);
-                          }}
-                        >
-                          inst
-                        </button>
-                        <button
-                          className={`text-xs ${
-                            ex.target_bpm ? "text-amber-400" : "text-neutral-500 hover:text-neutral-200"
-                          }`}
-                          title="Target BPM — draws a goal line on the chart"
-                          onClick={() => {
-                            const t = prompt("Target BPM (empty clears)", ex.target_bpm ? String(ex.target_bpm) : "");
-                            if (t === null) return;
-                            void patchExercise(ex.id, { target_bpm: t.trim() ? Number(t) : null } as Partial<Exercise>);
-                          }}
-                        >
-                          goal
-                        </button>
-                        <button
-                          className="text-xs text-neutral-500 hover:text-neutral-200"
-                          onClick={() => {
-                            const name = prompt("Rename exercise", ex.name);
-                            if (name?.trim()) void patchExercise(ex.id, { name: name.trim() });
-                          }}
-                        >
-                          rename
-                        </button>
-                        <button
-                          className={`text-xs ${
-                            descEdit?.id === ex.id ? "text-neutral-200" : "text-neutral-500 hover:text-neutral-200"
-                          }`}
-                          onClick={() =>
-                            setDescEdit(descEdit?.id === ex.id ? null : { id: ex.id, text: ex.description ?? "" })
-                          }
-                        >
-                          desc
-                        </button>
-                        <button
-                          className="text-xs text-neutral-500 hover:text-neutral-200"
-                          onClick={() =>
-                            (ex.archived || confirm(`Archive “${ex.name}”? Its history stays and it can be restored here.`)) &&
-                            patchExercise(ex.id, { archived: !ex.archived })
-                          }
-                        >
-                          {ex.archived ? "restore" : "archive"}
-                        </button>
-                      </>
-                    )}
-                  </div>
-                  {descEdit?.id === ex.id && (
-                    <div className="mb-2 pl-4">
-                      <textarea
-                        autoFocus
-                        rows={3}
-                        value={descEdit.text}
-                        onChange={(e) => setDescEdit({ id: ex.id, text: e.target.value })}
-                        placeholder="Description — what to focus on, steps, etc. (empty clears)"
-                        className={`${input} w-full resize-y`}
-                      />
-                      <div className="mt-1 flex gap-2">
-                        <button
-                          className="rounded-md bg-neutral-100 px-3 py-1 text-xs font-semibold text-neutral-950 hover:bg-white"
-                          onClick={() => {
-                            void patchExercise(ex.id, { description: descEdit.text });
-                            setDescEdit(null);
-                          }}
-                        >
-                          Save
-                        </button>
-                        <button
-                          className="rounded-md bg-neutral-800 px-3 py-1 text-xs hover:bg-neutral-700"
-                          onClick={() => setDescEdit(null)}
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                  </div>
-                ))}
-                <div className="mt-2 flex gap-2">
-                  <input
-                    value={newExName}
-                    onChange={(e) => setNewExName(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && addExercise()}
-                    placeholder="New exercise"
-                    className={`${input} flex-1`}
-                  />
-                  <button className={btn} onClick={addExercise}>
-                    Add
-                  </button>
-                </div>
-                {/* Which tools the new exercise shows in the session hero. */}
-                <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-neutral-500">
-                  with:
-                  <label className="flex items-center gap-1.5">
-                    <input
-                      type="checkbox"
-                      className="accent-amber-500"
-                      checked={newExTools.metronome}
-                      onChange={(e) => setNewExTools((t) => ({ ...t, metronome: e.target.checked }))}
-                    />
-                    metronome
-                  </label>
-                  <label className="flex items-center gap-1.5">
-                    <input
-                      type="checkbox"
-                      className="accent-amber-500"
-                      checked={newExTools.random_key}
-                      onChange={(e) => setNewExTools((t) => ({ ...t, random_key: e.target.checked }))}
-                    />
-                    random key
-                  </label>
-                  <label className="flex items-center gap-1.5">
-                    <input
-                      type="checkbox"
-                      className="accent-amber-500"
-                      checked={newExTools.check_off}
-                      onChange={(e) => setNewExTools((t) => ({ ...t, check_off: e.target.checked }))}
-                    />
-                    check-off only
-                  </label>
-                </div>
-              </div>
-          </section>
-          )}
+          {managePanel}
           </>
           )}
 
@@ -3056,135 +4217,7 @@ export default function PracticeView() {
             </button>
           )}
           <Reveal open={!armed || openPanels.progress}>
-          <section className={`${card} mb-4 ${!loading && byDateDesc.length === 0 ? "hidden" : ""}`}>
-            <div className="mb-2 flex items-center justify-between">
-              <h2 className="text-sm font-medium text-neutral-400">Progress</h2>
-              {chartReady && (
-                <div className="flex overflow-hidden rounded-md border border-neutral-700 text-xs">
-                  {(["seconds", "bpm"] as const).map((m) => (
-                    <button
-                      key={m}
-                      onClick={() => setMetric(m)}
-                      className={`px-3 py-1 ${metric === m ? "bg-neutral-200 text-neutral-950" : "text-neutral-400"}`}
-                    >
-                      {m === "seconds" ? "Time" : "BPM"}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-            {loading ? (
-              <p className="py-8 text-center text-sm text-neutral-500">Loading…</p>
-            ) : !chartReady ? (
-              <div>
-                <div className="flex gap-1.5">
-                  {last7.map((d) => (
-                    <div key={d.iso} className="flex-1 text-center">
-                      <div
-                        className={`h-8 rounded ${
-                          d.done ? "bg-amber-500/80" : "bg-neutral-800"
-                        } ${d.iso === today ? "ring-1 ring-neutral-600" : ""}`}
-                      />
-                      <div className="mt-1 text-[10px] text-neutral-600">{d.label}</div>
-                    </div>
-                  ))}
-                </div>
-                <p className="mt-2 text-xs text-neutral-600">
-                  {streak > 1 ? `${streak}-day streak · ` : ""}charts unlock after 5 practiced days ({dates.length}/5)
-                </p>
-              </div>
-            ) : (
-              <>
-                <Chart series={displaySeries} fmtY={metric === "seconds" ? fmtDur : (y) => String(Math.round(y))} />
-                {/* Legend doubles as a filter: tap an entry to isolate it.
-                    Variant series get their own entries so the solid (↓ down)
-                    vs dashed (↑ up) styling is explained where it's seen. */}
-                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
-                  {series.map((s) => {
-                    const dim = focusEx && focusEx !== s.name;
-                    return (
-                      <button
-                        key={s.name}
-                        onClick={() => setFocusEx(focusEx === s.name ? null : s.name)}
-                        className={`flex items-center gap-1.5 text-xs ${dim ? "text-neutral-600" : "text-neutral-400"}`}
-                      >
-                        {!s.dash ? (
-                          <span className="h-2 w-4 rounded-sm" style={{ background: dim ? s.color + "40" : s.color }} />
-                        ) : (
-                          <span
-                            className="w-4 border-t-2 border-dashed"
-                            style={{ borderColor: dim ? s.color + "40" : s.color }}
-                          />
-                        )}
-                        {s.name}
-                      </button>
-                    );
-                  })}
-                </div>
-                {/* Daily heatmap: practiced days at a glance. */}
-                <div className="mt-4 overflow-x-auto">
-                  <div className="inline-block min-w-full">
-                    {/* Month labels sit over the first column of each month. */}
-                    <div className="mb-1 ml-[19px] flex text-[9px] leading-none text-neutral-600">
-                      {heatWeeks.map((week, i) => {
-                        const month = week[0].iso.slice(5, 7);
-                        const newMonth = i > 0 && heatWeeks[i - 1][0].iso.slice(5, 7) !== month;
-                        return (
-                          <span key={i} className="w-[13px] shrink-0 overflow-visible whitespace-nowrap">
-                            {(i === 0 || newMonth) &&
-                              new Date(week[0].iso + "T00:00:00").toLocaleDateString(undefined, { month: "short" })}
-                          </span>
-                        );
-                      })}
-                    </div>
-                    <div className="flex gap-[3px]">
-                      <div className="flex w-4 shrink-0 flex-col gap-[3px] text-[9px] leading-none text-neutral-600">
-                        {["", "M", "", "W", "", "F", ""].map((l, i) => (
-                          <span key={i} className="flex h-2.5 items-center">
-                            {l}
-                          </span>
-                        ))}
-                      </div>
-                      {heatWeeks.map((week, i) => (
-                        <div key={i} className="flex flex-col gap-[3px]">
-                          {week.map((d) => (
-                            <span
-                              key={d.iso}
-                              title={`${fmtDateShort(d.iso)}${d.secs > 0 ? ` · ${fmtDur(d.secs)}` : ""}`}
-                              className="h-2.5 w-2.5 rounded-[2px]"
-                              style={{
-                                background: d.future
-                                  ? "transparent"
-                                  : d.secs === 0
-                                    ? "#26262666"
-                                    : `rgba(245,158,11,${0.25 + 0.75 * Math.min(1, d.secs / heatMax)})`,
-                              }}
-                            />
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                    <div className="mt-1.5 flex items-center justify-end gap-[3px] text-[9px] text-neutral-600">
-                      less
-                      {["#26262666", "rgba(245,158,11,0.4)", "rgba(245,158,11,0.7)", "rgba(245,158,11,1)"].map((c) => (
-                        <span key={c} className="h-2.5 w-2.5 rounded-[2px]" style={{ background: c }} />
-                      ))}
-                      more
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-            {/* Lifetime totals, relocated from the page footer so the bottom
-                of the page stays calm. */}
-            {!loading && totalSecs > 0 && (
-              <p className="mt-3 border-t border-neutral-800/60 pt-2 text-[10px] leading-relaxed text-neutral-600">
-                this week <span className="tabular-nums">{fmtDur(weekSecs)}</span> · all-time{" "}
-                <span className="tabular-nums">{fmtDur(totalSecs)}</span> · days practiced {daysPracticed} · best
-                streak {bestStreak} · avg <span className="tabular-nums">{fmtDur(totalSecs / daysPracticed)}</span>/day
-              </p>
-            )}
-          </section>
+          {progressSection}
           </Reveal>
 
           {/* Log */}
@@ -3198,139 +4231,7 @@ export default function PracticeView() {
             </button>
           )}
           <Reveal open={!armed || openPanels.log}>
-          <section className={`${card} mb-4`}>
-            <div className="mb-2 flex items-center justify-between">
-              <h2 className="text-sm font-medium text-neutral-400">Log</h2>
-              <div className="flex gap-3">
-                {byDateDesc.length > 0 && (
-                  <button className="text-xs text-neutral-500 underline hover:text-neutral-300" onClick={exportCsv}>
-                    export csv
-                  </button>
-                )}
-                <button
-                  className="text-xs text-neutral-400 underline"
-                  onClick={() =>
-                    requireUnlock() &&
-                    setForm({ exercise_id: selectedEx ?? "", date: todayISO(), bpm: "", dur: "", note: "" })
-                  }
-                >
-                  + add entry
-                </button>
-              </div>
-            </div>
-            {!loading && byDateDesc.length === 0 && (
-              <p className="text-sm text-neutral-600">Nothing logged yet.</p>
-            )}
-            {/* Collapsed by default: a couple of entries fading out under an
-                expand arrow — the log is a receipt, not the main event. */}
-            <div
-              ref={logRef}
-              className="relative overflow-hidden transition-[max-height] duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
-              style={{
-                maxHeight:
-                  byDateDesc.length > 3
-                    ? logOpen
-                      ? logRef.current?.scrollHeight // real height, so the mask lerps instead of snapping
-                      : 176
-                    : undefined,
-              }}
-            >
-            {dates.map((date) => {
-              const daySessions = byDateDesc.filter((s) => s.date === date);
-              const daySecs = daySessions.reduce((t, s) => t + (s.seconds ?? 0), 0);
-              return (
-                <div key={date} className="mb-3">
-                  {/* The year is noise for recent entries; the day's total
-                      lives up here so it reads without adding rows. */}
-                  <h3 className="mb-1 flex items-baseline justify-between text-xs font-semibold text-neutral-500">
-                    <span>
-                      {new Date(date + "T00:00:00").toLocaleDateString(undefined, {
-                        weekday: "short",
-                        month: "short",
-                        day: "numeric",
-                        ...(date.slice(0, 4) !== today.slice(0, 4) ? { year: "numeric" as const } : {}),
-                      })}
-                    </span>
-                    {daySecs > 0 && <span className="font-normal tabular-nums">{fmtDur(daySecs)}</span>}
-                  </h3>
-                  {daySessions.map((s) => (
-                    <div key={s.id} className="group border-b border-neutral-800/60 py-1.5 text-sm">
-                      <div className="flex items-baseline gap-2">
-                        <span
-                          className="h-2 w-2 shrink-0 self-center rounded-full"
-                          style={{ background: colorOf(s.exercise_id) }}
-                        />
-                        <span className="min-w-0 flex-1 truncate">
-                          {/* One exercise total? The dot suffices — repeating
-                              the name every row says nothing. */}
-                          {manyEx && (exById.get(s.exercise_id)?.name ?? "?")}
-                          {s.variant && (
-                            <span className={`text-xs text-neutral-500 ${manyEx ? "ml-1" : ""}`}>
-                              {s.variant === "up" ? "↑ up" : "↓ down"}
-                            </span>
-                          )}
-                        </span>
-                        {pbIds.has(s.id) && (
-                          <span className="text-xs text-amber-400" title="personal best at the time">
-                            ✦ PB
-                          </span>
-                        )}
-                        <span className="tabular-nums text-neutral-400">{s.bpm != null ? `${s.bpm} bpm` : ""}</span>
-                        <span className="w-14 text-right tabular-nums">
-                          {s.seconds != null ? fmtDur(s.seconds) : ""}
-                        </span>
-                        {/* Faint but always visible — fully hidden controls
-                            made mistakes look undeletable on desktop. */}
-                        {unlocked && (
-                          <span className="flex gap-1.5 text-xs transition-opacity [@media(hover:hover)]:opacity-40 [@media(hover:hover)]:group-hover:opacity-100">
-                            <button
-                              className="text-neutral-500 hover:text-neutral-200"
-                              onClick={() =>
-                                setForm({
-                                  id: s.id,
-                                  exercise_id: s.exercise_id,
-                                  date: s.date,
-                                  bpm: s.bpm != null ? String(s.bpm) : "",
-                                  dur: s.seconds != null ? fmtSecs(s.seconds) : "",
-                                  note: s.note ?? "",
-                                  variant: s.variant ?? "",
-                                })
-                              }
-                            >
-                              edit
-                            </button>
-                            <button
-                              className="text-neutral-500 hover:text-red-400"
-                              onClick={() => deleteSession(s.id)}
-                            >
-                              ×
-                            </button>
-                          </span>
-                        )}
-                      </div>
-                      {/* Notes are the part written by a human — full line,
-                          readable color, never truncated. */}
-                      {s.note && <p className="pl-4 text-xs text-neutral-300">{s.note}</p>}
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
-            {byDateDesc.length > 3 && (
-              <div
-                className={`pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-neutral-900 to-transparent transition-opacity duration-500 ${logOpen ? "opacity-0" : "opacity-100"}`}
-              />
-            )}
-            </div>
-            {byDateDesc.length > 3 && (
-              <button
-                className="-mx-4 -mb-4 w-[calc(100%+2rem)] py-2 text-center text-xs text-neutral-500 hover:text-neutral-300"
-                onClick={() => setLogOpen((o) => !o)}
-              >
-                {logOpen ? "▴ collapse" : "▾ show all"}
-              </button>
-            )}
-          </section>
+          {logSection}
           </Reveal>
 
           {/* Tools retract behind a header while armed — mobile only; the
@@ -3351,192 +4252,11 @@ export default function PracticeView() {
         </div>
       </div>
 
-      {/* Sticky Start bar: on a phone the primary control stays under the
-          thumb no matter how far the page has scrolled. */}
-      {armed && (
-        <div className="fixed inset-x-0 bottom-0 z-20 flex items-center gap-2 border-t border-neutral-800 bg-neutral-950/95 px-4 py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] backdrop-blur lg:hidden">
-          {heroTools.check_off ? (
-            <button
-              className={
-                armedToday
-                  ? "flex-1 rounded-md border border-amber-500/50 py-3 text-sm font-semibold text-amber-400"
-                  : "flex-1 rounded-md bg-amber-500 py-3 text-sm font-semibold text-neutral-950"
-              }
-              onClick={checkOff}
-            >
-              {armedToday ? "✓ done today — again?" : "Did it ✓"}
-            </button>
-          ) : (
-          sessionBtn("flex-1 py-3")
-          )}
-          {!heroTools.check_off && swElapsed > 0 && !swRunning && (
-            <>
-              <button
-                className="rounded-md bg-amber-500 px-4 py-3 text-sm font-semibold text-neutral-950 hover:bg-amber-400"
-                onClick={swLog}
-              >
-                Log it
-              </button>
-              <button className={btn} onClick={swReset}>
-                Reset
-              </button>
-            </>
-          )}
-        </div>
-      )}
+      {mobileBar}
 
-      {/* Just the two numbers that matter today; lifetime totals live in Progress. */}
-      {!loading && (
-        <footer className="mt-8 text-center text-[10px] leading-relaxed text-neutral-600">
-          {totalSecs > 0 && (
-            <div>
-              {streak > 1 && <span className="text-amber-400/80">streak {streak}</span>}
-              {streak > 1 && todayTotal > 0 && " · "}
-              {todayTotal > 0 && (
-                <>
-                  today <span className="tabular-nums">{Math.max(1, Math.round(todayTotal / 60))}m</span>
-                </>
-              )}
-            </div>
-          )}
-          <div className="mt-1 text-neutral-700">
-            suggestions →{" "}
-            <a className="hover:text-neutral-400" href="mailto:benjamincrystal8@gmail.com">
-              benjamincrystal8@gmail.com
-            </a>
-          </div>
-        </footer>
-      )}
+      {pageFooter}
 
-      {/* First-visit walkthrough: three spotlights, or tap through the real
-          controls — either advances it. */}
-      {/* Step 0 of the walkthrough: the pitch, before any spotlights. Blocks
-          the page (unlike the dim-only marks) so it reads as a front door. */}
-      {coach === -1 && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-950/85 p-4">
-          <div className="w-full max-w-sm rounded-xl border border-neutral-700 bg-neutral-900 p-5 text-sm text-neutral-200 shadow-2xl">
-            <h2 className="text-lg font-semibold">Welcome</h2>
-            <p className="mt-2 text-neutral-300">
-              The idea: about five short exercises a day, so you never have to decide what to practice. Arm one, hit
-              Start, and it&apos;s logged in one tap.
-            </p>
-            <p className="mt-2 text-neutral-400">
-              Tools show up only when an exercise needs them, with references along the way. The{" "}
-              <a className="text-neutral-200 underline decoration-neutral-600 hover:decoration-neutral-300" href="/practice/tree">
-                syllabus
-              </a>{" "}
-              has the whole path.
-            </p>
-            <p className="mt-2 text-xs text-neutral-500">
-              It&apos;s early days — all suggestions welcome:{" "}
-              <a className="underline decoration-neutral-700 hover:text-neutral-300" href="mailto:benjamincrystal8@gmail.com">
-                benjamincrystal8@gmail.com
-              </a>
-            </p>
-            <div className="mt-4 flex items-center justify-between">
-              <button className="text-xs text-neutral-500 hover:text-neutral-300" onClick={endCoach}>
-                skip
-              </button>
-              <button
-                className="rounded-md bg-neutral-100 px-3 py-1.5 text-xs font-semibold text-neutral-950 hover:bg-white"
-                onClick={() => setCoach(0)}
-              >
-                show me around
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {coach !== null && coach >= 0 && (
-        <CoachMark
-          target={coach === 0 ? coachListRef : coachStartRef}
-          text={
-            [
-              "Tap an exercise to arm it — the page rebuilds around what you're practicing.",
-              "Start session runs the metronome and timer together.",
-              "When you stop, Log it saves your tempo and time. That's the whole loop.",
-            ][coach]
-          }
-          step={coach}
-          total={3}
-          nextLabel={coach === 2 ? "got it" : "next"}
-          onNext={() => {
-            if (coach === 2) return endCoach();
-            if (coach === 0 && !armed && active[0]) {
-              // "next" without tapping = arm the first one for them, which
-              // also brings the (mobile-hidden) hero into view for step 2.
-              armExercise(active[0], aggByDate(sessions ?? [], active[0].id));
-            } else {
-              setCoach(coach + 1);
-            }
-          }}
-          onSkip={endCoach}
-        />
-      )}
-
-      {/* Undo toast for one-tap logging (amber celebration on a personal best) */}
-      {justLogged && (
-        <div
-          className={`fixed left-1/2 z-30 flex -translate-x-1/2 items-center gap-3 whitespace-nowrap rounded-full px-4 py-2 text-sm shadow-lg ${armed ? "bottom-20 lg:bottom-4" : "bottom-4"} ${
-            justLogged.pb ? "bg-amber-400 text-neutral-950" : "bg-neutral-800"
-          }`}
-        >
-          <span>
-            {justLogged.pb ? "✦ New best! " : "Logged "}
-            {exById.get(justLogged.session.exercise_id)?.name}
-            {justLogged.session.variant && ` ${justLogged.session.variant === "up" ? "↑" : "↓"}`}
-            {justLogged.session.bpm != null && ` · ${justLogged.session.bpm} bpm`}
-            {/* Check-off logs have no duration — "Logged <name>" says it all. */}
-            {justLogged.session.seconds != null && justLogged.session.seconds > 0 && ` · ${fmtDur(justLogged.session.seconds)}`}
-          </span>
-          <button
-            className={`font-semibold ${justLogged.pb ? "text-neutral-950 underline" : "text-amber-400"}`}
-            onClick={undoLog}
-          >
-            Undo
-          </button>
-        </div>
-      )}
-
-      {/* Desktop hover preview: large in-page peek, click-through (pointer-events-none) */}
-      {hoverRef && !lightbox && (
-        <div className="pointer-events-none fixed inset-0 z-40 hidden items-center justify-center bg-black/70 p-8 lg:flex">
-          {isPdf(hoverRef) ? (
-            <iframe
-              src={hoverRef}
-              title="reference preview"
-              className="h-full w-full max-w-4xl rounded border border-neutral-700 bg-neutral-900"
-            />
-          ) : (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={hoverRef} className="max-h-full max-w-full rounded shadow-2xl" alt="reference preview" />
-          )}
-        </div>
-      )}
-
-      {/* Fullscreen image reference viewer */}
-      {lightbox && (
-        <div
-          className="fixed inset-0 z-40 flex items-center justify-center bg-black/90 p-4"
-          onClick={() => setLightbox(null)}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={lightbox} className="max-h-full max-w-full rounded" alt="reference" />
-        </div>
-      )}
-
-      {/* Hidden picker for reference uploads (triggered from Manage exercises) */}
-      <input
-        ref={fileInput}
-        type="file"
-        accept="image/*,application/pdf"
-        className="hidden"
-        onChange={(e) => {
-          const f = e.target.files?.[0];
-          if (f) void uploadRef(f);
-          e.target.value = "";
-        }}
-      />
+      {overlays}
     </main>
   );
 }
