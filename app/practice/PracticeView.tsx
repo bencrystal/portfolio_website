@@ -2680,7 +2680,6 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                 : "border-neutral-700 text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
             }`}
           >
-            {running && <span className="absolute right-1 top-1 h-1 w-1 rounded-full bg-amber-400" />}
             <span className="text-xl leading-none sm:text-2xl">◆</span>
             <span className="block text-[9px] uppercase tracking-widest text-neutral-500 sm:text-[10px]">click</span>
           </button>
@@ -2706,41 +2705,50 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                 "♪?"
               )}
             </span>
+            {/* The big note makes "key" self-evident; the label just says the
+                rotation ("8 beats") to save the truncating "key · every 8". */}
             <span className="block truncate text-[9px] uppercase tracking-widest text-neutral-600 sm:text-[10px]">
-              key{noteSync > 0 ? ` · every ${noteSync}` : ""}
+              {noteSync > 0 ? `${noteSync} beats` : "key"}
             </span>
           </button>
         )}
         {showDrone && (
-          <button
-            onClick={() => setDroneOn((v) => !v)}
-            aria-pressed={droneOn}
-            title="sustain a drone of the current key (works without the metronome)"
-            className={`relative rounded-md border px-2 py-1 text-center ${
+          /* While sounding, the tile's label slot becomes the volume slider —
+             the control hangs off the thing it controls and the row never
+             changes height. */
+          <div
+            className={`relative flex flex-col justify-center rounded-md border px-2 py-1 text-center ${
               droneOn
                 ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
                 : "border-neutral-700 text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
             }`}
           >
             {droneOn && <span className="absolute right-1 top-1 h-1 w-1 rounded-full bg-amber-400" />}
-            {/* ∿ is an operator glyph and renders a size smaller than ◆, so it
-                gets one text step up to match. */}
-            <span className="text-2xl leading-none sm:text-3xl">∿</span>
-            <span className="block text-[9px] uppercase tracking-widest text-neutral-500 sm:text-[10px]">drone</span>
-          </button>
+            <button
+              onClick={() => setDroneOn((v) => !v)}
+              aria-pressed={droneOn}
+              title="sustain a drone of the current key (works without the metronome)"
+              className="block w-full"
+            >
+              {/* ∿ is an operator glyph and renders a size smaller than ◆, so it
+                  gets one text step up to match. */}
+              <span className="text-2xl leading-none sm:text-3xl">∿</span>
+              {!droneOn && <span className="block text-[9px] uppercase tracking-widest text-neutral-500 sm:text-[10px]">drone</span>}
+            </button>
+            {droneOn && (
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={Math.round(droneVol * 100)}
+                onChange={(e) => setDroneVol(Number(e.target.value) / 100)}
+                className="mx-auto block h-3 w-[85%] accent-amber-500/70"
+                aria-label="drone volume"
+              />
+            )}
+          </div>
         )}
       </div>
-      {droneOn && (
-        <input
-          type="range"
-          min={0}
-          max={100}
-          value={Math.round(droneVol * 100)}
-          onChange={(e) => setDroneVol(Number(e.target.value) / 100)}
-          className="mt-2 block w-full max-w-[10rem] accent-amber-500"
-          aria-label="drone volume"
-        />
-      )}
       {t.metronome && (
         <Reveal open={tempoOpen}>
           <div className="mt-3">
@@ -2768,9 +2776,11 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
   // for every knob, no "advanced" toggle to find first.
   const advancedRow = (t: { metronome: boolean; random_key: boolean }, open: boolean = extrasOpen) => (
     <Reveal open={open}>
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-neutral-400 sm:text-sm">
+      {/* An inset block, so the open state reads as one grouped panel:
+          click settings on the first row, rhythm gadgets on the second. */}
+      <div className="mt-3 space-y-2.5 rounded-lg bg-neutral-950/50 p-3 text-xs text-neutral-400 sm:text-sm">
         {t.metronome && (
-          <>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             <label className="flex items-center gap-1.5">
               meter
               <select
@@ -2806,12 +2816,25 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                 aria-label="click volume"
               />
             </label>
+          </div>
+        )}
+        {(t.metronome || t.random_key) && (
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             {/* The whole trainer phrase stays on one line: "trainer +1 every 2 bars". */}
+            {t.metronome && (
             <span className="flex items-center gap-1.5 whitespace-nowrap">
-              <label className="flex items-center gap-1.5">
-                <input type="checkbox" className="accent-amber-500" checked={trainer} onChange={(e) => setTrainer(e.target.checked)} />
+              <button
+                onClick={() => setTrainer(!trainer)}
+                aria-pressed={trainer}
+                className={`relative rounded-md border px-2.5 py-1 ${
+                  trainer
+                    ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
+                    : "border-neutral-700 text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
+                }`}
+              >
+                {trainer && <span className="absolute right-1 top-1 h-1 w-1 rounded-full bg-amber-400" />}
                 tempo trainer
-              </label>
+              </button>
               {trainer && (
                 <>
                   +
@@ -2834,20 +2857,21 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                 </>
               )}
             </span>
-          </>
-        )}
-        {t.random_key && (
-          <label className="flex items-center gap-1.5 whitespace-nowrap">
-            new key every
-            <select value={noteSync} onChange={(e) => setNoteSync(Number(e.target.value))} className={input} aria-label="auto key change interval">
-              <option value={0}>off</option>
-              {[1, 2, 4, 8, 16, 32].map((n) => (
-                <option key={n} value={n}>
-                  {n} beat{n > 1 ? "s" : ""}
-                </option>
-              ))}
-            </select>
-          </label>
+            )}
+            {t.random_key && (
+              <label className="flex items-center gap-1.5 whitespace-nowrap">
+                new key every
+                <select value={noteSync} onChange={(e) => setNoteSync(Number(e.target.value))} className={input} aria-label="auto key change interval">
+                  <option value={0}>off</option>
+                  {[1, 2, 4, 8, 16, 32].map((n) => (
+                    <option key={n} value={n}>
+                      {n} beat{n > 1 ? "s" : ""}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+          </div>
         )}
       </div>
     </Reveal>
@@ -3228,7 +3252,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                               />
                             )}
                             <Reveal open={detOpen}>
-                              <div className="mt-3 space-y-2">
+                              <div className="mt-3 space-y-2 rounded-lg bg-neutral-950/50 p-3">
                                 {ex.description && <DescriptionBody text={ex.description} />}
                                 {ex.ref_url && ytId(ex.ref_url) && (
                                   <div className="aspect-video overflow-hidden rounded-lg border border-neutral-800">
