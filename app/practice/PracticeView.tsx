@@ -309,6 +309,9 @@ function DescriptionBody({ text }: { text: string }) {
   );
 }
 
+// How long the undo toast lingers; the perimeter ring drains over the same span.
+const TOAST_MS = 8000;
+
 // One spotlight of the coach tour: dims everything except the target element
 // (giant box-shadow trick) and floats a small card beside it. The overlay is
 // pointer-transparent so tapping the highlighted control itself advances the
@@ -982,7 +985,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
   function announceLog(session: Session, prevBest: number) {
     setJustLogged({ session, pb: session.bpm != null && prevBest > 0 && session.bpm > prevBest });
     if (toastTimer.current) clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setJustLogged(null), 6000);
+    toastTimer.current = setTimeout(() => setJustLogged(null), TOAST_MS);
   }
 
   // Top BPM so far; per-variant when v is given so up-stroke bests count too.
@@ -2430,13 +2433,31 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
         />
       )}
 
-      {/* Undo toast for one-tap logging (amber celebration on a personal best) */}
+      {/* Undo toast for one-tap logging (amber celebration on a personal best).
+          A ring drains around the pill's perimeter to show how long Undo lasts;
+          keyed by session id so a fresh log restarts the countdown. */}
       {justLogged && (
         <div
+          key={justLogged.session.id}
           className={`fixed left-1/2 z-30 flex -translate-x-1/2 items-center gap-3 whitespace-nowrap rounded-full px-4 py-2 text-sm shadow-lg ${armed ? "bottom-20 lg:bottom-4" : "bottom-4"} ${
             justLogged.pb ? "bg-amber-400 text-neutral-950" : "bg-neutral-800"
           }`}
         >
+          <style>{`@keyframes practice-toast-drain { to { stroke-dashoffset: 100; } }`}</style>
+          <svg className="pointer-events-none absolute inset-0 h-full w-full overflow-visible" aria-hidden>
+            <rect
+              x="0"
+              y="0"
+              width="100%"
+              height="100%"
+              rx="18"
+              fill="none"
+              strokeWidth="2"
+              pathLength={100}
+              className={justLogged.pb ? "stroke-neutral-950/50" : "stroke-amber-400/80"}
+              style={{ strokeDasharray: 100, strokeDashoffset: 0, animation: `practice-toast-drain ${TOAST_MS}ms linear forwards` }}
+            />
+          </svg>
           <span>
             {justLogged.pb ? "✦ New best! " : "Logged "}
             {exById.get(justLogged.session.exercise_id)?.name}
