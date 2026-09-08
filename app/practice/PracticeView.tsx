@@ -2624,63 +2624,72 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
 
   // Tier-1 controls — the things you touch. The timer and progress stay
   // ambient below; these get top billing (bpm, key, drone, click).
-  const controlsRow = (t: { metronome: boolean; random_key: boolean }, lastBpm?: number | null) => (
+  // Everything sits on one 5-column grid of equal-height tiles in a fixed
+  // slot order (bpm → click → key → drone); tools an exercise lacks give
+  // their columns to the bpm tile, so nothing ever changes position.
+  const controlsRow = (t: { metronome: boolean; random_key: boolean }, lastBpm?: number | null) => {
+    const showKey = t.random_key;
+    // The drone follows the random key, so it only appears alongside it —
+    // unless it's already sounding, which must stay reachable to stop.
+    const showDrone = t.random_key || droneOn;
+    const smallTiles = (t.metronome ? 1 : 0) + (showKey ? 1 : 0) + (showDrone ? 1 : 0);
+    const bpmSpan = Math.max(2, 5 - smallTiles);
+    const span = (n: number) => ({ gridColumn: `span ${n} / span ${n}` });
+    return (
     <>
-      <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2">
+      <div className="mt-3 grid grid-cols-5 items-stretch gap-2">
         {t.metronome && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-stretch overflow-hidden rounded-md border border-neutral-700" style={span(bpmSpan)}>
             <button
               onClick={() => nudgeBpm(-2)}
-              className="grid h-8 w-8 place-items-center rounded-md bg-neutral-800 text-sm text-neutral-300 hover:bg-neutral-700 sm:h-9 sm:w-9 sm:text-base"
+              className="w-9 shrink-0 text-sm text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200 sm:text-base"
               aria-label="slower"
             >
               −
             </button>
             <button
               onClick={() => setTempoOpen((o) => !o)}
-              className={`rounded-md border px-2.5 py-1 text-center ${
-                tempoOpen ? "border-neutral-500" : "border-neutral-700 hover:border-neutral-500"
-              }`}
+              className={`min-w-0 flex-1 py-1 text-center ${tempoOpen ? "bg-neutral-800/60" : "hover:bg-neutral-800/40"}`}
               title="bpm ruler & tap tempo"
               aria-expanded={tempoOpen}
             >
               <span className="font-mono text-xl tabular-nums sm:text-2xl">{bpm}</span>
-              <span className="block text-[9px] uppercase tracking-widest text-neutral-500 sm:text-[10px]">bpm {tempoOpen ? "▾" : "▸"}</span>
+              <span className="block truncate text-[9px] uppercase tracking-widest text-neutral-500 sm:text-[10px]">
+                bpm {tempoOpen ? "▾" : "▸"}
+                {/* Where you left off, right beside where you are. */}
+                {lastBpm != null && lastBpm !== bpm ? ` · last ${lastBpm}` : ""}
+              </span>
             </button>
             <button
               onClick={() => nudgeBpm(+2)}
-              className="grid h-8 w-8 place-items-center rounded-md bg-neutral-800 text-sm text-neutral-300 hover:bg-neutral-700 sm:h-9 sm:w-9 sm:text-base"
+              className="w-9 shrink-0 text-sm text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200 sm:text-base"
               aria-label="faster"
             >
               +
             </button>
-            {/* Where you left off, right beside where you are. */}
-            {lastBpm != null && lastBpm !== bpm && (
-              <span className="text-center" title="last session's bpm">
-                <span className="font-mono text-sm text-neutral-500 sm:text-base">{lastBpm}</span>
-                <span className="block text-[9px] uppercase tracking-widest text-neutral-600 sm:text-[10px]">last</span>
-              </span>
-            )}
-            <button
-              onClick={toggleMetronome}
-              aria-pressed={running}
-              title="run the click by itself"
-              className={`relative ml-1 rounded-md border px-2.5 py-1 text-center ${
-                running
-                  ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
-                  : "border-neutral-700 text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
-              }`}
-            >
-              {running && <span className="absolute right-1 top-1 h-1 w-1 rounded-full bg-amber-400" />}
-              <span className="text-xl leading-none sm:text-2xl">◆</span>
-              <span className="block text-[9px] uppercase tracking-widest text-neutral-500 sm:text-[10px]">click</span>
-            </button>
           </div>
         )}
-        {t.random_key && (
+        {t.metronome && (
+          <button
+            onClick={toggleMetronome}
+            aria-pressed={running}
+            title="run the click by itself"
+            className={`relative rounded-md border px-2 py-1 text-center ${
+              running
+                ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
+                : "border-neutral-700 text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
+            }`}
+          >
+            {running && <span className="absolute right-1 top-1 h-1 w-1 rounded-full bg-amber-400" />}
+            <span className="text-xl leading-none sm:text-2xl">◆</span>
+            <span className="block text-[9px] uppercase tracking-widest text-neutral-500 sm:text-[10px]">click</span>
+          </button>
+        )}
+        {showKey && (
           <button
             onClick={advanceNote}
-            className="rounded-md border border-neutral-700 px-2.5 py-1 text-center hover:border-neutral-500"
+            className="rounded-md border border-neutral-700 px-2 py-1 text-center hover:border-neutral-500"
+            style={!t.metronome ? span(showDrone ? 4 : 5) : undefined}
             title="press N or tap for a new key"
             aria-label="random key"
           >
@@ -2697,45 +2706,41 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                 "♪?"
               )}
             </span>
-            <span className="block text-[9px] uppercase tracking-widest text-neutral-600 sm:text-[10px]">
+            <span className="block truncate text-[9px] uppercase tracking-widest text-neutral-600 sm:text-[10px]">
               key{noteSync > 0 ? ` · every ${noteSync}` : ""}
             </span>
           </button>
         )}
-        {/* The drone follows the random key, so it only appears alongside it —
-            unless it's already sounding, which must stay reachable to stop. */}
-        {(t.random_key || droneOn) && (
-          <>
-            <button
-              onClick={() => setDroneOn((v) => !v)}
-              aria-pressed={droneOn}
-              title="sustain a drone of the current key (works without the metronome)"
-              className={`relative rounded-md border px-2.5 py-1 text-center ${
-                droneOn
-                  ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
-                  : "border-neutral-700 text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
-              }`}
-            >
-              {droneOn && <span className="absolute right-1 top-1 h-1 w-1 rounded-full bg-amber-400" />}
-              {/* ∿ is an operator glyph and renders a size smaller than ◆, so it
-                  gets one text step up to match. */}
-              <span className="text-2xl leading-none sm:text-3xl">∿</span>
-              <span className="block text-[9px] uppercase tracking-widest text-neutral-500 sm:text-[10px]">drone</span>
-            </button>
-            {droneOn && (
-              <input
-                type="range"
-                min={0}
-                max={100}
-                value={Math.round(droneVol * 100)}
-                onChange={(e) => setDroneVol(Number(e.target.value) / 100)}
-                className="w-14 accent-amber-500"
-                aria-label="drone volume"
-              />
-            )}
-          </>
+        {showDrone && (
+          <button
+            onClick={() => setDroneOn((v) => !v)}
+            aria-pressed={droneOn}
+            title="sustain a drone of the current key (works without the metronome)"
+            className={`relative rounded-md border px-2 py-1 text-center ${
+              droneOn
+                ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
+                : "border-neutral-700 text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
+            }`}
+          >
+            {droneOn && <span className="absolute right-1 top-1 h-1 w-1 rounded-full bg-amber-400" />}
+            {/* ∿ is an operator glyph and renders a size smaller than ◆, so it
+                gets one text step up to match. */}
+            <span className="text-2xl leading-none sm:text-3xl">∿</span>
+            <span className="block text-[9px] uppercase tracking-widest text-neutral-500 sm:text-[10px]">drone</span>
+          </button>
         )}
       </div>
+      {droneOn && (
+        <input
+          type="range"
+          min={0}
+          max={100}
+          value={Math.round(droneVol * 100)}
+          onChange={(e) => setDroneVol(Number(e.target.value) / 100)}
+          className="mt-2 block w-full max-w-[10rem] accent-amber-500"
+          aria-label="drone volume"
+        />
+      )}
       {t.metronome && (
         <Reveal open={tempoOpen}>
           <div className="mt-3">
@@ -2755,7 +2760,8 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
         </Reveal>
       )}
     </>
-  );
+    );
+  };
 
   // "advanced ▾": count-in, trainer, sound, meter — settings, not controls.
   // `open` override: the tools panel shows these permanently — it's the hub
@@ -3131,11 +3137,15 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                         </>
                       ) : (
                         <>
-                          {/* What you touch: Start/Log first, then the sound tools. */}
-                          <div ref={coachStartRef} className="flex gap-2">
+                          {/* What you touch: Start/Log first, then the sound
+                              tools — all on the same 5-column grid so the
+                              rows share edges. */}
+                          <div ref={coachStartRef} className="grid grid-cols-5 gap-2">
                             <button
                               onClick={startSession}
-                              className={`flex-1 rounded-lg py-2.5 text-sm font-semibold sm:text-base ${
+                              className={`${
+                                swElapsed > 0 && !swRunning ? "col-span-3" : "col-span-4"
+                              } rounded-lg py-2.5 text-sm font-semibold sm:text-base ${
                                 swRunning || countingIn
                                   ? "bg-amber-500 text-neutral-950 hover:bg-amber-400"
                                   : "bg-neutral-100 text-neutral-950 hover:bg-white"
@@ -3146,7 +3156,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                             {swElapsed > 0 && !swRunning && (
                               <button
                                 onClick={swReset}
-                                className="rounded-lg bg-neutral-800 px-3 text-xs text-neutral-400 hover:bg-neutral-700"
+                                className="rounded-lg bg-neutral-800 text-xs text-neutral-400 hover:bg-neutral-700"
                               >
                                 Reset
                               </button>
@@ -3154,7 +3164,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                             <button
                               onClick={() => completeRow("log")}
                               disabled={swElapsed === 0 && !swRunning}
-                              className="rounded-lg bg-neutral-800 px-5 text-sm text-neutral-300 hover:bg-neutral-700 disabled:opacity-40 sm:text-base"
+                              className="rounded-lg bg-neutral-800 text-sm text-neutral-300 hover:bg-neutral-700 disabled:opacity-40 sm:text-base"
                             >
                               Log
                             </button>
@@ -3252,9 +3262,11 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                                   ? fmtSecs(swElapsed / 1000)
                                   : selTodaySecs > 0
                                     ? `today ${fmtDur(selTodaySecs)}`
-                                    : lastAgg
-                                      ? `last: ${fmtDateShort(lastAgg.date)} · ${fmtAgg(lastAgg)}`
-                                      : "no sessions yet"}
+                                    : detOpen
+                                      ? "" // details already lists the recent sessions
+                                      : lastAgg
+                                        ? `last: ${fmtDateShort(lastAgg.date)} · ${fmtAgg(lastAgg)}`
+                                        : "no sessions yet"}
                               </span>
                               {ex.target_bpm && lastBpm && (
                                 <span>
