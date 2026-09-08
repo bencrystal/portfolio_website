@@ -643,7 +643,7 @@ export default function ListView({ token }: { token: string }) {
           setDragOverRow(null);
         }}
         className={`group relative flex items-center gap-3 border-b border-neutral-800 py-3 transition-colors duration-1000 ${
-          copyBuf ? "pr-24" : "pr-16"
+          copyBuf ? "pr-32" : "pr-20"
         }`}
       // Fresh captures glow briefly; in All, rows carry a whisper of their
       // bucket's color under everything else.
@@ -692,15 +692,19 @@ export default function ListView({ token }: { token: string }) {
           {todo.text}
         </span>
       )}
+      {/* On desktop the tag and date sit in fixed right-aligned columns so
+          they line up down the list; on the phone they stay compact. */}
       {view === ALL && todo.bucket_id && bucketName(todo.bucket_id) && (
-        <span
-          className="shrink-0 rounded px-1.5 py-0.5 text-xs"
-          style={{ color: colorOf(todo.bucket_id), backgroundColor: `${colorOf(todo.bucket_id)}33` }}
-        >
-          {bucketName(todo.bucket_id)}
+        <span className="flex shrink-0 justify-end sm:w-28">
+          <span
+            className="max-w-full truncate rounded px-1.5 py-0.5 text-xs"
+            style={{ color: colorOf(todo.bucket_id), backgroundColor: `${colorOf(todo.bucket_id)}33` }}
+          >
+            {bucketName(todo.bucket_id)}
+          </span>
         </span>
       )}
-      <span className="text-xs text-neutral-600">{fmtDate(todo.created_at)}</span>
+      <span className="shrink-0 text-xs text-neutral-600 sm:w-14 sm:text-right">{fmtDate(todo.created_at)}</span>
       {/* Bordered pills, vertically centered on the row (top-anchoring
           looked offset on tasks that wrap to multiple lines). Padded well
           past the glyphs so they are easy to hit on the phone. */}
