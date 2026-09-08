@@ -657,10 +657,12 @@ export default function ListView({ token }: { token: string }) {
             : undefined
       }
     >
-      {/* touch-none stops iOS from scrolling instead of dragging; the
-          padding widens the touch target beyond the two glyphs. */}
+      {/* touch-none stops iOS from scrolling instead of dragging. The
+          hitbox is much wider than the two glyphs (about a timestamp's
+          worth) and stretches the full row height on wrapped tasks, but
+          stops short of the checkbox so taps there stay taps. */}
       <span
-        className="-my-3 -ml-2 cursor-grab touch-none select-none py-3 pl-2 pr-1 text-neutral-700"
+        className="-my-3 -ml-3 -mr-3 flex cursor-grab touch-none select-none items-center self-stretch py-3 pl-3 pr-4 text-neutral-700"
         title="Drag to reorder or onto a bucket"
         onPointerDown={(e) => touchDragStart(e, todo)}
         onPointerMove={touchDragMove}
