@@ -24,6 +24,13 @@ const nextConfig = {
     // pdfjs-dist's ESM build breaks under webpack bundling; load it via Node.
     serverComponentsExternalPackages: ['pdf-parse', 'pdfjs-dist'],
   },
+  // /scribe is an alias for the todo list.
+  redirects: async () => {
+    return [
+      { source: '/scribe', destination: '/list', permanent: false },
+      { source: '/scribe/:token', destination: '/list/:token', permanent: false },
+    ]
+  },
   // Add cache control
   headers: async () => {
     return [

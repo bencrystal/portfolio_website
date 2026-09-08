@@ -116,7 +116,10 @@ export default function ListView({ token }: { token: string }) {
         rowRefs.current.delete(id);
         return;
       }
-      tops.set(id, el.getBoundingClientRect().top);
+      // Document-relative, not viewport-relative: scrolling between
+      // renders must not look like every row moved (it made the whole
+      // list lurch vertically on the next interaction).
+      tops.set(id, el.getBoundingClientRect().top + window.scrollY);
     });
     tops.forEach((top, id) => {
       const prev = prevTops.current.get(id);
