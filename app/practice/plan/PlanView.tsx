@@ -17,7 +17,10 @@ type Tools = { metronome?: boolean; random_key?: boolean; check_off?: boolean };
 // exercise's ref_url (so the card embeds the video at that moment); all of
 // them are appended to the description and shown as chips on this page.
 type Ref = { label: string; url: string };
-type Spawn = { name: string; desc: string; tools: Tools; target?: number; refs: Ref[] };
+// Tab images cropped from Larsen's PDF (public/plan/); hover-previewed on
+// this page and linked from spawned descriptions.
+type Tab = { label: string; src: string };
+type Spawn = { name: string; desc: string; tools: Tools; target?: number; refs: Ref[]; tabs?: Tab[] };
 
 // Chapter timestamps from the two videos' own descriptions.
 const LARSEN = "https://youtu.be/EMQydbilqmo"; // Everything You Need To Learn For Jazz Guitar (In Order)
@@ -30,6 +33,7 @@ const PDF: Ref = {
   label: "Larsen tabs",
   url: "https://mcusercontent.com/29585eaee49c1a06333528599/files/90a9c408-7fe0-6ba1-7847-4e0361d119e6/Everything_You_Need_To_Learn_For_Jazz_Guitar_In_Order_.pdf",
 };
+const ex = (n: number): Tab => ({ label: `Ex ${n}`, src: `/plan/larsen-ex${n}.png` });
 
 const CHECKS: { text: string; why: string }[] = [
   {
@@ -157,6 +161,7 @@ const LEVELS: Level[] = [
         tools: { metronome: true },
         target: 100,
         refs: [larsen("1:38", 98), PDF],
+        tabs: [ex(3)],
       },
       {
         name: "L2 · Diatonic thirds",
@@ -164,6 +169,7 @@ const LEVELS: Level[] = [
         tools: { metronome: true },
         target: 100,
         refs: [larsen("1:38", 98), PDF],
+        tabs: [ex(4)],
       },
       {
         name: "L2 · Diatonic triads",
@@ -171,6 +177,7 @@ const LEVELS: Level[] = [
         tools: { metronome: true },
         target: 100,
         refs: [larsen("1:38", 98), PDF],
+        tabs: [ex(5)],
       },
       {
         name: "L2 · Diatonic 7th arpeggios",
@@ -178,12 +185,14 @@ const LEVELS: Level[] = [
         tools: { metronome: true },
         target: 100,
         refs: [larsen("1:38", 98), PDF],
+        tabs: [ex(6)],
       },
       {
         name: "L2 · Arpeggiate a tune",
         desc: "Leave exercise-land: take a tune and arpeggiate each chord as it goes past, over and over. Start writing your own licks from these — several arpeggios work over the same chord, which is where the options come from.\n\nGate: arpeggiate a full chorus of a standard in time without stopping.",
         tools: { metronome: true },
         refs: [larsen("1:38", 98), PDF],
+        tabs: [ex(7), ex(8)],
       },
     ],
   },
@@ -211,12 +220,14 @@ const LEVELS: Level[] = [
         desc: "Root on 6: root, then the 7th and 3rd above it on the middle strings. All four qualities — maj7, m7, dom7, m7b5. Fingerpicked, not strummed.",
         tools: { metronome: true },
         refs: [larsen("3:56", 236), PDF],
+        tabs: [ex(11)],
       },
       {
         name: "L3 · Root on 5",
         desc: "Root on 5: root, then the 3rd and 7th. Chord tones always on the middle string set, root always below. All four qualities — maj7, m7, dom7, m7b5. Fingerpicked, not strummed.",
         tools: { metronome: true },
         refs: [larsen("3:56", 236), PDF],
+        tabs: [ex(10)],
       },
       {
         name: "L3 · Diatonic set, both root strings",
@@ -225,6 +236,7 @@ const LEVELS: Level[] = [
         // the key generator call them.
         tools: { metronome: true, random_key: true },
         refs: [larsen("3:56", 236), PDF],
+        tabs: [ex(10), ex(11)],
       },
       {
         name: "L3 · Blue Monk at one volume",
@@ -266,6 +278,7 @@ const LEVELS: Level[] = [
         desc: "Satin Doll: in C but full of other ii–Vs — the ii–V in D is the C one moved up two frets; Am7–D7 sits on the 6th-string set; Abm7–Db7 is that shape a half step down, resolving to Cmaj7 root on 5. Group chords that live together — that's what makes a tune memorable rather than memorised. Metronome on 2 and 4, record every pass.\n\nGate: a full chorus without a chart, everything close on the neck, harmony going somewhere.",
         tools: { metronome: true },
         refs: [larsen("6:07", 367), PDF],
+        tabs: [ex(13)],
       },
     ],
   },
@@ -499,9 +512,13 @@ export default function PlanView() {
           // already cued to the right moment.
           description:
             s.desc +
-            (s.refs.length
-              ? "\n\n" + s.refs.map((r) => `${r.url.endsWith(".pdf") ? "▤" : "▶"} ${r.label} — ${r.url}`).join("\n")
-              : ""),
+            (() => {
+              const lines = [
+                ...s.refs.map((r) => `${r.url.endsWith(".pdf") ? "▤" : "▶"} ${r.label} — ${r.url}`),
+                ...(s.tabs ?? []).map((t) => `▦ ${t.label} tab — ${window.location.origin}${t.src}`),
+              ];
+              return lines.length ? "\n\n" + lines.join("\n") : "";
+            })(),
           tools: s.tools,
           instrument: "guitar",
           ...(s.refs[0] ? { ref_url: s.refs[0].url } : {}),
@@ -537,6 +554,34 @@ export default function PlanView() {
     );
   }
 
+  // Tab excerpt chip: hover (or focus) floats the notation image above the
+  // chip; click still opens the full-size PNG for touch devices.
+  function TabChips({ tabs }: { tabs?: Tab[] }) {
+    if (!tabs?.length) return null;
+    return (
+      <>
+        {tabs.map((t) => (
+          <span key={t.src} className="group relative">
+            <a
+              href={t.src}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-md border border-neutral-800 px-2.5 py-1 text-xs text-neutral-500 hover:border-neutral-600 hover:text-neutral-300"
+            >
+              ▦ {t.label}
+            </a>
+            <img
+              src={t.src}
+              alt={`${t.label} tab`}
+              loading="lazy"
+              className="pointer-events-none invisible absolute bottom-full left-1/2 z-30 mb-2 w-[28rem] max-w-[85vw] -translate-x-1/2 rounded-md border border-neutral-700 bg-white p-1 shadow-xl group-focus-within:visible group-hover:visible"
+            />
+          </span>
+        ))}
+      </>
+    );
+  }
+
   // label: shown on the button when a level breaks into several separate
   // exercises, so each row says what it adds.
   function SpawnButton({ s, label }: { s: Spawn; label?: string }) {
@@ -555,6 +600,7 @@ export default function PlanView() {
           {done ? `✓ ${label ?? "in your list"}` : busy === s.name ? "adding…" : `+ ${label ?? "add to practice"}`}
         </button>
         <RefChips refs={s.refs} />
+        <TabChips tabs={s.tabs} />
       </div>
     );
   }
