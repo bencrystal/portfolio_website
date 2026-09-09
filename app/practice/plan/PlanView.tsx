@@ -91,7 +91,7 @@ const L0: Level = {
     name: "L0 · Amp & guitar setup (no-reverb rule)",
     desc: "Amp volume low but real; bass 0, treble up. Reverb OFF. Guitar volume at 8, never 10. Setup: pickup height, string height, fresh strings. No foot tapping. Practise unplugged with the same picking you'd use amplified.\n\nGate: a single note sustains and sounds musical with nothing helping it.",
     tools: { check_off: true },
-    refs: [fujita("9:40", 580), fujita("12:00", 720)],
+    refs: [fujita("8:32", 512), fujita("10:23", 623), fujita("28:38", 1718)],
   },
 };
 
@@ -114,7 +114,7 @@ const LEVELS: Level[] = [
       name: "L1 · Major scale, one string, one finger",
       desc: "One string, one finger, no looking — up and down, then a second key. Learn it by intervals, not shape: say or sing the degree as you play it. Then in position, only enough to play melodies with. 60 bpm, click on downbeats only, 2 keys, 10 min/day.\n\nGate: you can find any degree of the scale by ear before your hand arrives there.",
       tools: { metronome: true },
-      refs: [larsen("0:33", 33), fujita("2:10", 130)],
+      refs: [larsen("0:33", 33), fujita("1:21", 81)],
     },
   },
   {
@@ -207,7 +207,7 @@ const LEVELS: Level[] = [
       name: "L5 · Listen for the line's direction",
       desc: "Listen to solos for where the line lands when the chord changes. Read written jazz lines for flow (Joe Pass, Guitar Style etudes). Record your own blues chorus and name the bar where your line stops going anywhere. Learn phrases from records, not tab — exactly as heard, in more than one position.\n\nGate: you can point at a bar in someone's solo and say what it was aiming at.",
       tools: { check_off: true },
-      refs: [larsen("8:36", 516)],
+      refs: [larsen("8:36", 516), fujita("33:30", 2010)],
     },
   },
   {
@@ -287,7 +287,7 @@ const RAILS: { title: string; intro: string; bullets: string[]; spawn: Spawn }[]
       name: "Rail · Picking, muting, dynamics",
       desc: "Chromatic scale very slow, strict alternate picking (kill random down-down-up). Duets exactly as written. Left-hand muting with fingers 2-3-4 so the first finger mutes. Reverb test: pick softly enough it barely triggers, then loud enough to trigger it with only two or three notes.",
       tools: { metronome: true },
-      refs: [fujita("48:10", 2890)],
+      refs: [fujita("48:10", 2890), fujita("52:32", 3152)],
     },
   },
 ];
@@ -534,7 +534,7 @@ export default function PlanView() {
           you don&apos;t know it. The first &ldquo;no&rdquo; is where you start.
         </p>
         <div className="mt-2 flex flex-wrap gap-1.5">
-          <RefChips refs={[fujita("2:10", 130), fujita("5:05", 305)]} />
+          <RefChips refs={[fujita("1:21", 81), fujita("3:05", 185)]} />
         </div>
         <ol className="mt-4 space-y-3">
           {CHECKS.map((c, i) => (
