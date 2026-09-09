@@ -202,7 +202,9 @@ const LEVELS: Level[] = [
     spawns: [{
       name: "L3 · Root–7–3 voicings",
       desc: "Root on 6 and root on 5 shapes for maj7, m7, dom7, m7b5 — chord tones on the middle string set, root below. Play the whole diatonic set of a key both ways. Fingerpicked, not strummed; match volume between single notes and chords (Blue Monk is the vehicle). 3 keys.\n\nGate: any seventh chord, either root string, no hesitation, no looking down, at single-note volume.",
-      tools: { metronome: true },
+      // random_key: the gate is "any chord, any key, no hesitation" — let the
+      // key generator call them.
+      tools: { metronome: true, random_key: true },
       refs: [larsen("3:56", 236), fujita("14:12", 852), PDF],
     }],
   },
@@ -290,7 +292,8 @@ const LEVELS: Level[] = [
     spawns: [{
       name: "L7 · Chromatic approaches & enclosures",
       desc: "Run the arpeggios you own in different ways. Chromatic passing notes, enclosures from both sides, trills. Triads first: approach a triad tone from a half step below, then above, then resolve in. Transcribe Jim Hall / Pat Martino. One-chord vamps in an awkward key (F, not E) with a deliberately small vocabulary.\n\nGate: you leave the harmony and come back on purpose, and it sounds intended.",
-      tools: { metronome: true },
+      // random_key picks the awkward vamp key so you can't drift to E.
+      tools: { metronome: true, random_key: true },
       refs: [larsen("11:59", 719), fujita("31:00", 1860), PDF],
     }],
   },
@@ -310,7 +313,8 @@ const RAILS: { title: string; intro: string; bullets: string[]; spawn: Spawn }[]
     spawn: {
       name: "Rail · Rhythm (one item a day)",
       desc: "Rotate: metronome on downbeats → on 2 and 4 → no click, recorded (compare start vs end tempo — know where you drift). Tap accents and move. Bassline while singing a different melody. Listen to records for the bass and hi-hat, not the soloist.",
-      tools: { metronome: true },
+      // check_off: it's one rotating item a day — tick it, don't chase bpm.
+      tools: { metronome: true, check_off: true },
       refs: [fujita("23:00", 1380), fujita("25:50", 1550), fujita("27:30", 1650)],
     },
   },
@@ -327,7 +331,7 @@ const RAILS: { title: string; intro: string; bullets: string[]; spawn: Spawn }[]
     spawn: {
       name: "Rail · Picking, muting, dynamics",
       desc: "Chromatic scale very slow, strict alternate picking (kill random down-down-up). Duets exactly as written. Left-hand muting with fingers 2-3-4 so the first finger mutes. Reverb test: pick softly enough it barely triggers, then loud enough to trigger it with only two or three notes.",
-      tools: { metronome: true },
+      tools: { metronome: true, check_off: true },
       refs: [fujita("48:10", 2890), fujita("52:32", 3152)],
     },
   },
