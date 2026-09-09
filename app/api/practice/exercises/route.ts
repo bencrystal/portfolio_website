@@ -42,12 +42,20 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const space = await spaceForToken(req.nextUrl.searchParams.get("token"));
   if (!space) return unauthorized();
-  const { name, tools } = await req.json();
+  const { name, tools, description, instrument, target_bpm } = await req.json();
   if (!name?.trim()) return NextResponse.json({ error: "missing name" }, { status: 400 });
   const cleaned = cleanTools(tools);
   const { data, error } = await scribeDb
     .from("practice_exercises")
-    .insert({ name: name.trim(), position: Date.now() / 1000, space_id: space, ...(cleaned ? { tools: cleaned } : {}) })
+    .insert({
+      name: name.trim(),
+      position: Date.now() / 1000,
+      space_id: space,
+      ...(cleaned ? { tools: cleaned } : {}),
+      ...(typeof description === "string" && description.trim() ? { description: description.trim() } : {}),
+      ...(typeof instrument === "string" && instrument.trim() ? { instrument: instrument.trim().toLowerCase() } : {}),
+      ...(typeof target_bpm === "number" && target_bpm > 0 ? { target_bpm: Math.round(target_bpm) } : {}),
+    })
     .select()
     .single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

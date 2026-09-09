@@ -2533,7 +2533,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
             </p>
             <p className="mt-2 text-neutral-400">
               Tools show up only when an exercise needs them, with references along the way. The{" "}
-              <a className="text-neutral-200 underline decoration-neutral-600 hover:decoration-neutral-300" href="/practice/tree">
+              <a className="text-neutral-200 underline decoration-neutral-600 hover:decoration-neutral-300" href="/practice/plan">
                 syllabus
               </a>{" "}
               has the whole path.
@@ -3023,7 +3023,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
           <h1 className="text-sm font-medium tracking-wide text-neutral-300">practice</h1>
           {/* Everything up here is a chip so it reads as clickable. */}
           <nav className="flex flex-wrap items-center justify-end gap-1.5 text-xs text-neutral-400">
-            <a href="/practice/tree" className={`${navChip} border-neutral-800 hover:border-neutral-600 hover:text-neutral-200`}>
+            <a href="/practice/plan" className={`${navChip} border-neutral-800 hover:border-neutral-600 hover:text-neutral-200`}>
               syllabus
             </a>
             <button
@@ -3486,9 +3486,9 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
             <div className="mt-2.5 flex items-center gap-2">
               <a
                 className="rounded-md border border-neutral-700 px-2.5 py-1 text-xs text-neutral-300 hover:border-neutral-500"
-                href="/practice/tree"
+                href="/practice/plan"
               >
-                🌳 or browse the full syllabus
+                ♪ or browse the full syllabus
               </a>
               {!unlocked && !fresh && <span className="text-xs text-neutral-600">log in above to add exercises</span>}
             </div>
