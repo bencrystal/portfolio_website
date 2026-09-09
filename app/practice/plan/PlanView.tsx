@@ -122,10 +122,16 @@ const LEVELS: Level[] = [
     gate: "You can find any degree of the scale by ear before your hand arrives there.",
     spawns: [
       {
-        name: "L1 · Major scale, one string, one finger",
-        desc: "One string, one finger, no looking — up and down, then a second key. Learn it by intervals, not shape: say or sing the degree as you play it. Then in position, only enough to play melodies with. 60 bpm, click on downbeats only, 2 keys, 10 min/day.\n\nGate: you can find any degree of the scale by ear before your hand arrives there.",
+        name: "L1 · Scale on one string",
+        desc: "One string, one finger, no looking — up and down, then a second key. Learn it by intervals, not shape: say or sing the degree as you play it. 60 bpm, click on downbeats only, 2 keys.",
         tools: { metronome: true },
         refs: [larsen("0:33", 33), fujita("1:21", 81), PDF],
+      },
+      {
+        name: "L1 · Scale in position",
+        desc: "The same scale in position — only enough to play melodies with, not to cover the neck. Keep saying or singing the degrees. Leave time to actually play; scales are not the practice session.\n\nGate: you can find any degree of the scale by ear before your hand arrives there.",
+        tools: { metronome: true },
+        refs: [larsen("0:33", 33), PDF],
       },
     ],
   },
@@ -199,14 +205,34 @@ const LEVELS: Level[] = [
     },
     specs: ["fingerpicked, not strummed", "match volume single-note ↔ chord", "3 keys"],
     gate: "Any seventh chord, either root string, no hesitation, no looking down — and the chords sit at the same volume as your single notes.",
-    spawns: [{
-      name: "L3 · Root–7–3 voicings",
-      desc: "Root on 6 and root on 5 shapes for maj7, m7, dom7, m7b5 — chord tones on the middle string set, root below. Play the whole diatonic set of a key both ways. Fingerpicked, not strummed; match volume between single notes and chords (Blue Monk is the vehicle). 3 keys.\n\nGate: any seventh chord, either root string, no hesitation, no looking down, at single-note volume.",
-      // random_key: the gate is "any chord, any key, no hesitation" — let the
-      // key generator call them.
-      tools: { metronome: true, random_key: true },
-      refs: [larsen("3:56", 236), fujita("14:12", 852), PDF],
-    }],
+    spawns: [
+      {
+        name: "L3 · Root on 6",
+        desc: "Root on 6: root, then the 7th and 3rd above it on the middle strings. All four qualities — maj7, m7, dom7, m7b5. Fingerpicked, not strummed.",
+        tools: { metronome: true },
+        refs: [larsen("3:56", 236), PDF],
+      },
+      {
+        name: "L3 · Root on 5",
+        desc: "Root on 5: root, then the 3rd and 7th. Chord tones always on the middle string set, root always below. All four qualities — maj7, m7, dom7, m7b5. Fingerpicked, not strummed.",
+        tools: { metronome: true },
+        refs: [larsen("3:56", 236), PDF],
+      },
+      {
+        name: "L3 · Diatonic set, both root strings",
+        desc: "Play the whole diatonic set of a key with root on 5, then again with root on 6. 3 keys.\n\nGate: any seventh chord, either root string, no hesitation, no looking down.",
+        // random_key: the gate is "any chord, any key, no hesitation" — let
+        // the key generator call them.
+        tools: { metronome: true, random_key: true },
+        refs: [larsen("3:56", 236), PDF],
+      },
+      {
+        name: "L3 · Blue Monk at one volume",
+        desc: "Fujita's vehicle for the same material: melody twice at 60 bpm with the exact fingering, then fingerpicked root-7-3 underneath. The real lesson is dynamics — chords played softer so they sit at the same volume as your single notes.",
+        tools: { metronome: true },
+        refs: [fujita("14:12", 852)],
+      },
+    ],
   },
   {
     num: "04",
@@ -222,12 +248,26 @@ const LEVELS: Level[] = [
     ],
     specs: ["3 tunes", "metronome on 2 and 4", "record every pass"],
     gate: "A full chorus without a chart, everything staying close on the neck, and the harmony sounds like it's going somewhere.",
-    spawns: [{
-      name: "L4 · Comp a standard with root–7–3",
-      desc: "ii–V–I in C from Dm7, root on 5 then root on 6. Then Satin Doll: find every ii–V as a nearby shape, group chords that live together. 3 tunes, metronome on 2 and 4, record every pass.\n\nGate: a full chorus without a chart, everything close on the neck, harmony going somewhere.",
-      tools: { metronome: true },
-      refs: [larsen("6:07", 367), PDF],
-    }],
+    spawns: [
+      {
+        name: "L4 · ii–V–I in C, root on 5",
+        desc: "ii–V–I in C from Dm7 with root on 5 — G7 is right next to it, Cmaj7 right after. Metronome on 2 and 4, record every pass.",
+        tools: { metronome: true },
+        refs: [larsen("6:07", 367), PDF],
+      },
+      {
+        name: "L4 · ii–V–I in C, root on 6",
+        desc: "The same ii–V–I starting from Dm7 with root on 6. Metronome on 2 and 4, record every pass.",
+        tools: { metronome: true },
+        refs: [larsen("6:07", 367), PDF],
+      },
+      {
+        name: "L4 · Satin Doll",
+        desc: "Satin Doll: in C but full of other ii–Vs — the ii–V in D is the C one moved up two frets; Am7–D7 sits on the 6th-string set; Abm7–Db7 is that shape a half step down, resolving to Cmaj7 root on 5. Group chords that live together — that's what makes a tune memorable rather than memorised. Metronome on 2 and 4, record every pass.\n\nGate: a full chorus without a chart, everything close on the neck, harmony going somewhere.",
+        tools: { metronome: true },
+        refs: [larsen("6:07", 367), PDF],
+      },
+    ],
   },
   {
     num: "05",
@@ -289,13 +329,39 @@ const LEVELS: Level[] = [
     ],
     specs: [],
     gate: "You leave the harmony and come back on purpose, and it sounds intended rather than rescued.",
-    spawns: [{
-      name: "L7 · Chromatic approaches & enclosures",
-      desc: "Run the arpeggios you own in different ways. Chromatic passing notes, enclosures from both sides, trills. Triads first: approach a triad tone from a half step below, then above, then resolve in. Transcribe Jim Hall / Pat Martino. One-chord vamps in an awkward key (F, not E) with a deliberately small vocabulary.\n\nGate: you leave the harmony and come back on purpose, and it sounds intended.",
-      // random_key picks the awkward vamp key so you can't drift to E.
-      tools: { metronome: true, random_key: true },
-      refs: [larsen("11:59", 719), fujita("31:00", 1860), PDF],
-    }],
+    spawns: [
+      {
+        name: "L7 · Arpeggio variations",
+        desc: "Different ways of running the arpeggios you already own — direction changes, groupings, sequences.",
+        tools: { metronome: true },
+        refs: [larsen("11:59", 719), PDF],
+      },
+      {
+        name: "L7 · Enclosures & passing notes",
+        desc: "Chromatic passing notes; enclosures that surround the target from both sides; trills. Only on top of chord tones you can already hit.",
+        tools: { metronome: true },
+        refs: [larsen("11:59", 719), PDF],
+      },
+      {
+        name: "L7 · Triad half-step approaches",
+        desc: "Fujita's route outside: play everything with triads first, then approach a triad tone from a half step below, then from above, then resolve in. Chromatic approach is unteachable without chord tones.",
+        tools: { metronome: true },
+        refs: [fujita("31:00", 1860)],
+      },
+      {
+        name: "L7 · Transcribe the outside",
+        desc: "Transcribe someone who does it — Jim Hall, Pat Martino. Scofield's outside playing came out of transcribing Jim Hall and the blues players, not from shifting pentatonics by half steps. Learn it exactly as heard; writing it down is optional.",
+        tools: { check_off: true },
+        refs: [fujita("33:30", 2010)],
+      },
+      {
+        name: "L7 · One-chord vamps",
+        desc: "One-chord vamps with a deliberately small vocabulary. Pick an awkward key (F rather than E) so you can't fall into familiar shapes.\n\nGate: you leave the harmony and come back on purpose, and it sounds intended.",
+        // random_key picks the awkward vamp key so you can't drift to E.
+        tools: { metronome: true, random_key: true },
+        refs: [fujita("38:42", 2322)],
+      },
+    ],
   },
 ];
 
