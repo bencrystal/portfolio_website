@@ -322,18 +322,35 @@ function NoteMorph({
 // look like ASCII tab (3+ dashes) get a monospace block with horizontal
 // scroll — reflowing tab in a proportional font destroys its alignment.
 const TAB_LINE = /-{3,}/;
+// A description line ending in an image URL (e.g. "▦ Ex 4 tab — https://…/larsen-ex4.png",
+// as written by the plan page's spawn) becomes an embedded thumbnail; tap opens full size.
+const IMG_LINE = /^[▦\s]*(.*?)\s*—\s*(https?:\/\/\S+\.(?:png|jpe?g|webp|gif))\s*$/i;
 function DescriptionBody({ text }: { text: string }) {
-  const blocks: { mono: boolean; lines: string[] }[] = [];
+  const blocks: ({ mono: boolean; lines: string[] } | { img: true; label: string; url: string })[] = [];
   for (const line of text.split("\n")) {
+    const m = line.match(IMG_LINE);
+    if (m) {
+      blocks.push({ img: true, label: m[1] || "image", url: m[2] });
+      continue;
+    }
     const mono = TAB_LINE.test(line);
     const last = blocks[blocks.length - 1];
-    if (last && last.mono === mono) last.lines.push(line);
+    if (last && "mono" in last && last.mono === mono) last.lines.push(line);
     else blocks.push({ mono, lines: [line] });
   }
   return (
     <div className="space-y-1.5">
       {blocks.map((b, i) =>
-        b.mono ? (
+        "img" in b ? (
+          <a key={i} href={b.url} target="_blank" rel="noreferrer" title={b.label} className="block w-fit">
+            <img
+              src={b.url}
+              alt={b.label}
+              loading="lazy"
+              className="max-h-36 w-auto rounded-md border border-neutral-800 bg-white p-1"
+            />
+          </a>
+        ) : b.mono ? (
           <pre
             key={i}
             className="overflow-x-auto whitespace-pre rounded bg-neutral-950 p-2 font-mono text-[11px] leading-4 text-neutral-300"
