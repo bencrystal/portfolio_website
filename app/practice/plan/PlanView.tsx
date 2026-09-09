@@ -180,6 +180,12 @@ const LEVELS: Level[] = [
         tabs: [ex(5)],
       },
       {
+        name: "L2 · Triads all over the neck",
+        desc: "Fujita's bench check #2 as a standing drill: any major triad, all three inversions, on every string set, all over the neck — each grip inside 2.5 seconds (if it takes longer, you don't know it yet). Random key calls the triad; find it without hunting.",
+        tools: { metronome: true, random_key: true },
+        refs: [fujita("1:21", 81)],
+      },
+      {
         name: "L2 · Diatonic 7th arpeggios",
         desc: "Pass 4 of 4: full diatonic 7th arpeggios, one octave from every degree. 60→100 bpm, 1 octave only, C then F.",
         tools: { metronome: true },

@@ -2991,7 +2991,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                 new key every
                 <select value={noteSync} onChange={(e) => setNoteSync(Number(e.target.value))} className={input} aria-label="auto key change interval">
                   <option value={0}>off</option>
-                  {[1, 2, 4, 8, 16, 32].map((n) => (
+                  {[1, 2, 3, 4, 6, 8, 12, 16, 32].map((n) => (
                     <option key={n} value={n}>
                       {n} beat{n > 1 ? "s" : ""}
                     </option>
@@ -3643,7 +3643,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
               aria-label="auto key change interval"
             >
               <option value={0}>off</option>
-              {[1, 2, 4, 8, 16, 32].map((n) => (
+              {[1, 2, 3, 4, 6, 8, 12, 16, 32].map((n) => (
                 <option key={n} value={n}>
                   {n} beat{n > 1 ? "s" : ""}
                 </option>
@@ -3988,7 +3988,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                   aria-label="auto key change interval"
                 >
                   <option value={0}>off</option>
-                  {[1, 2, 4, 8, 16, 32].map((n) => (
+                  {[1, 2, 3, 4, 6, 8, 12, 16, 32].map((n) => (
                     <option key={n} value={n}>
                       {n} beat{n > 1 ? "s" : ""}
                     </option>
