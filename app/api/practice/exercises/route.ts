@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const space = await spaceForToken(req.nextUrl.searchParams.get("token"));
   if (!space) return unauthorized();
-  const { name, tools, description, instrument, target_bpm } = await req.json();
+  const { name, tools, description, instrument, target_bpm, ref_url } = await req.json();
   if (!name?.trim()) return NextResponse.json({ error: "missing name" }, { status: 400 });
   const cleaned = cleanTools(tools);
   const { data, error } = await scribeDb
@@ -55,6 +55,7 @@ export async function POST(req: NextRequest) {
       ...(typeof description === "string" && description.trim() ? { description: description.trim() } : {}),
       ...(typeof instrument === "string" && instrument.trim() ? { instrument: instrument.trim().toLowerCase() } : {}),
       ...(typeof target_bpm === "number" && target_bpm > 0 ? { target_bpm: Math.round(target_bpm) } : {}),
+      ...(typeof ref_url === "string" && /^https?:\/\//.test(ref_url.trim()) ? { ref_url: ref_url.trim() } : {}),
     })
     .select()
     .single();

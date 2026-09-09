@@ -13,7 +13,17 @@ const TOKEN_KEY = "practice_token";
 const BENCH_KEY = "practice_plan_bench_v1";
 
 type Tools = { metronome?: boolean; random_key?: boolean; check_off?: boolean };
-type Spawn = { name: string; desc: string; tools: Tools; target?: number };
+// refs: timestamped video moments. The first one becomes the spawned
+// exercise's ref_url (so the card embeds the video at that moment); all of
+// them are appended to the description and shown as chips on this page.
+type Ref = { label: string; url: string };
+type Spawn = { name: string; desc: string; tools: Tools; target?: number; refs: Ref[] };
+
+// Chapter timestamps from the two videos' own descriptions.
+const LARSEN = "https://youtu.be/EMQydbilqmo"; // Everything You Need To Learn For Jazz Guitar (In Order)
+const FUJITA = "https://youtu.be/32ZbUVzeLG0"; // The Guitar Lesson Tomo Fujita Gives Every Student
+const larsen = (mmss: string, t: number): Ref => ({ label: `Larsen ${mmss}`, url: `${LARSEN}?t=${t}` });
+const fujita = (mmss: string, t: number): Ref => ({ label: `Fujita ${mmss}`, url: `${FUJITA}?t=${t}` });
 
 const CHECKS: { text: string; why: string }[] = [
   {
@@ -81,6 +91,7 @@ const L0: Level = {
     name: "L0 · Amp & guitar setup (no-reverb rule)",
     desc: "Amp volume low but real; bass 0, treble up. Reverb OFF. Guitar volume at 8, never 10. Setup: pickup height, string height, fresh strings. No foot tapping. Practise unplugged with the same picking you'd use amplified.\n\nGate: a single note sustains and sounds musical with nothing helping it.",
     tools: { check_off: true },
+    refs: [fujita("9:40", 580), fujita("12:00", 720)],
   },
 };
 
@@ -103,6 +114,7 @@ const LEVELS: Level[] = [
       name: "L1 · Major scale, one string, one finger",
       desc: "One string, one finger, no looking — up and down, then a second key. Learn it by intervals, not shape: say or sing the degree as you play it. Then in position, only enough to play melodies with. 60 bpm, click on downbeats only, 2 keys, 10 min/day.\n\nGate: you can find any degree of the scale by ear before your hand arrives there.",
       tools: { metronome: true },
+      refs: [larsen("0:33", 33), fujita("2:10", 130)],
     },
   },
   {
@@ -125,6 +137,7 @@ const LEVELS: Level[] = [
       desc: "Four passes: the scale → diatonic thirds → diatonic triads (all three inversions, across string sets, inside 2.5s each) → full diatonic 7th arpeggios, one octave from every degree. Then arpeggiate a tune's chords as they go past. 60→100 bpm, 1 octave only, C then F, 15 min/day.\n\nGate: arpeggiate a full chorus of a standard in time without stopping.",
       tools: { metronome: true },
       target: 100,
+      refs: [larsen("1:38", 98)],
     },
   },
   {
@@ -149,6 +162,7 @@ const LEVELS: Level[] = [
       name: "L3 · Root–7–3 voicings",
       desc: "Root on 6 and root on 5 shapes for maj7, m7, dom7, m7b5 — chord tones on the middle string set, root below. Play the whole diatonic set of a key both ways. Fingerpicked, not strummed; match volume between single notes and chords (Blue Monk is the vehicle). 3 keys.\n\nGate: any seventh chord, either root string, no hesitation, no looking down, at single-note volume.",
       tools: { metronome: true },
+      refs: [larsen("3:56", 236), fujita("14:12", 852)],
     },
   },
   {
@@ -169,6 +183,7 @@ const LEVELS: Level[] = [
       name: "L4 · Comp a standard with root–7–3",
       desc: "ii–V–I in C from Dm7, root on 5 then root on 6. Then Satin Doll: find every ii–V as a nearby shape, group chords that live together. 3 tunes, metronome on 2 and 4, record every pass.\n\nGate: a full chorus without a chart, everything close on the neck, harmony going somewhere.",
       tools: { metronome: true },
+      refs: [larsen("6:07", 367)],
     },
   },
   {
@@ -192,6 +207,7 @@ const LEVELS: Level[] = [
       name: "L5 · Listen for the line's direction",
       desc: "Listen to solos for where the line lands when the chord changes. Read written jazz lines for flow (Joe Pass, Guitar Style etudes). Record your own blues chorus and name the bar where your line stops going anywhere. Learn phrases from records, not tab — exactly as heard, in more than one position.\n\nGate: you can point at a bar in someone's solo and say what it was aiming at.",
       tools: { check_off: true },
+      refs: [larsen("8:36", 516)],
     },
   },
   {
@@ -212,6 +228,7 @@ const LEVELS: Level[] = [
       name: "L6 · Target notes on F blues",
       desc: "F7 and Bb7 arpeggios, nothing else. The target is the 3rd of the next chord (D for Bb7): build lines from F7 chord tones that resolve onto it, landing on the downbeat where Bb7 arrives. Many ways with only four chord tones per chord before adding anything. No backing track.\n\nGate: played unaccompanied, someone else can hear the chord change happen.",
       tools: { metronome: true },
+      refs: [larsen("10:35", 635)],
     },
   },
   {
@@ -233,6 +250,7 @@ const LEVELS: Level[] = [
       name: "L7 · Chromatic approaches & enclosures",
       desc: "Run the arpeggios you own in different ways. Chromatic passing notes, enclosures from both sides, trills. Triads first: approach a triad tone from a half step below, then above, then resolve in. Transcribe Jim Hall / Pat Martino. One-chord vamps in an awkward key (F, not E) with a deliberately small vocabulary.\n\nGate: you leave the harmony and come back on purpose, and it sounds intended.",
       tools: { metronome: true },
+      refs: [larsen("11:59", 719), fujita("31:00", 1860)],
     },
   },
 ];
@@ -252,6 +270,7 @@ const RAILS: { title: string; intro: string; bullets: string[]; spawn: Spawn }[]
       name: "Rail · Rhythm (one item a day)",
       desc: "Rotate: metronome on downbeats → on 2 and 4 → no click, recorded (compare start vs end tempo — know where you drift). Tap accents and move. Bassline while singing a different melody. Listen to records for the bass and hi-hat, not the soloist.",
       tools: { metronome: true },
+      refs: [fujita("23:00", 1380), fujita("25:50", 1550), fujita("27:30", 1650)],
     },
   },
   {
@@ -268,6 +287,7 @@ const RAILS: { title: string; intro: string; bullets: string[]; spawn: Spawn }[]
       name: "Rail · Picking, muting, dynamics",
       desc: "Chromatic scale very slow, strict alternate picking (kill random down-down-up). Duets exactly as written. Left-hand muting with fingers 2-3-4 so the first finger mutes. Reverb test: pick softly enough it barely triggers, then loud enough to trigger it with only two or three notes.",
       tools: { metronome: true },
+      refs: [fujita("48:10", 2890)],
     },
   },
 ];
@@ -363,9 +383,14 @@ export default function PlanView() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: s.name,
+          // Timestamped video moments ride along in the description; the
+          // first one is also the ref_url, so the card embeds the video
+          // already cued to the right moment.
+          description:
+            s.desc + (s.refs.length ? "\n\n" + s.refs.map((r) => `▶ ${r.label} — ${r.url}`).join("\n") : ""),
           tools: s.tools,
-          description: s.desc,
           instrument: "guitar",
+          ...(s.refs[0] ? { ref_url: s.refs[0].url } : {}),
           ...(s.target ? { target_bpm: s.target } : {}),
         }),
       });
@@ -379,20 +404,42 @@ export default function PlanView() {
     }
   }
 
+  // The moment in the source video where this exact thing is discussed.
+  function RefChips({ refs }: { refs: Ref[] }) {
+    return (
+      <>
+        {refs.map((r) => (
+          <a
+            key={r.url}
+            href={r.url}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-md border border-neutral-800 px-2.5 py-1 text-xs text-neutral-500 hover:border-neutral-600 hover:text-neutral-300"
+          >
+            ▶ {r.label}
+          </a>
+        ))}
+      </>
+    );
+  }
+
   function SpawnButton({ s }: { s: Spawn }) {
     const done = added.has(s.name);
     return (
-      <button
-        onClick={() => !done && spawn(s)}
-        disabled={done || busy === s.name}
-        className={`mt-3 rounded-md border px-2.5 py-1 text-xs ${
-          done
-            ? "cursor-default border-amber-500/40 bg-amber-500/10 text-amber-400"
-            : "border-neutral-700 text-neutral-300 hover:border-neutral-500"
-        }`}
-      >
-        {done ? "✓ in your list" : busy === s.name ? "adding…" : "+ add to practice"}
-      </button>
+      <div className="mt-3 flex flex-wrap items-center gap-1.5">
+        <button
+          onClick={() => !done && spawn(s)}
+          disabled={done || busy === s.name}
+          className={`rounded-md border px-2.5 py-1 text-xs ${
+            done
+              ? "cursor-default border-amber-500/40 bg-amber-500/10 text-amber-400"
+              : "border-neutral-700 text-neutral-300 hover:border-neutral-500"
+          }`}
+        >
+          {done ? "✓ in your list" : busy === s.name ? "adding…" : "+ add to practice"}
+        </button>
+        <RefChips refs={s.refs} />
+      </div>
     );
   }
 
@@ -486,6 +533,9 @@ export default function PlanView() {
           the shape. Fujita&apos;s own threshold: if it takes more than about two and a half seconds to produce,
           you don&apos;t know it. The first &ldquo;no&rdquo; is where you start.
         </p>
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          <RefChips refs={[fujita("2:10", 130), fujita("5:05", 305)]} />
+        </div>
         <ol className="mt-4 space-y-3">
           {CHECKS.map((c, i) => (
             <li key={i} className="rounded-xl border border-neutral-800 bg-neutral-900 p-4">

@@ -185,6 +185,13 @@ function ytId(url: string): string | null {
   return m ? m[1] : null;
 }
 
+// A ?t=1m38s / &t=98s timestamp on the link starts the embed at that moment.
+function ytStart(url: string): number {
+  const m = url.match(/[?&]t=(?:(\d+)h)?(?:(\d+)m)?(\d+)s?(?:&|$)/);
+  if (!m) return 0;
+  return Number(m[1] ?? 0) * 3600 + Number(m[2] ?? 0) * 60 + Number(m[3]);
+}
+
 type FormState = {
   id?: string; // present when editing an existing entry
   exercise_id: string;
@@ -3395,7 +3402,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                                   <div className="aspect-video overflow-hidden rounded-lg border border-neutral-800">
                                     <iframe
                                       className="h-full w-full"
-                                      src={`https://www.youtube-nocookie.com/embed/${ytId(ex.ref_url)}`}
+                                      src={`https://www.youtube-nocookie.com/embed/${ytId(ex.ref_url)}${ytStart(ex.ref_url) ? `?start=${ytStart(ex.ref_url)}` : ""}`}
                                       title="reference video"
                                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                       allowFullScreen
@@ -4187,7 +4194,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                       <div className={`overflow-hidden rounded-md ${armed.description ? "mt-2" : ""}`}>
                         <iframe
                           className="aspect-video w-full"
-                          src={`https://www.youtube-nocookie.com/embed/${ytId(armed.ref_url)}`}
+                          src={`https://www.youtube-nocookie.com/embed/${ytId(armed.ref_url)}${ytStart(armed.ref_url) ? `?start=${ytStart(armed.ref_url)}` : ""}`}
                           title="reference video"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                           allowFullScreen
