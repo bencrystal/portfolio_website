@@ -74,6 +74,15 @@ function randNote(excludeIdx: number | null): Note {
   return { idx: idx!, label: pair.length === 2 && Math.random() < 0.5 ? pair[1] : pair[0] };
 }
 
+// Say a note name out loud ("F sharp") — eyes-free key changes.
+function speakNote(label: string) {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel(); // never queue up behind a slow voice
+  const u = new SpeechSynthesisUtterance(label.replace("#", " sharp").replace("b", " flat"));
+  u.rate = 1.1;
+  window.speechSynthesis.speak(u);
+}
+
 const PREFS_KEY = "practice_prefs";
 // First visit shows a short how-it-works card; dismissing it is remembered
 // and the header's "?" brings it back.
@@ -460,6 +469,14 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
   const [droneOn, setDroneOn] = useState(false);
   const droneRef = useRef(false);
   const [droneVol, setDroneVol] = useState(0.5);
+  // Check mode: the drone stays silent through each key cycle and only sounds
+  // on the last beat before the swap — find the note yourself, then hear the
+  // answer (e.g. locating the same note on every string).
+  const [droneLast, setDroneLast] = useState(false);
+  const droneLastRef = useRef(false);
+  // Announce each new key out loud on its downbeat.
+  const [speakKeys, setSpeakKeys] = useState(false);
+  const speakRef = useRef(false);
 
   // --- stopwatch ---
   const [selectedEx, setSelectedEx] = useState<string | null>(null);
@@ -616,6 +633,8 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
       if ([2, 4, 8, 16].includes(p.trainerBars)) setTrainerBars(p.trainerBars);
       if (typeof p.extrasOpen === "boolean") setExtrasOpen(p.extrasOpen);
       if (typeof p.instFilter === "string") setInstFilter(p.instFilter);
+      if (typeof p.droneLast === "boolean") setDroneLast(p.droneLast);
+      if (typeof p.speakKeys === "boolean") setSpeakKeys(p.speakKeys);
     } catch {
       // Corrupt prefs — defaults are fine.
     }
@@ -691,9 +710,9 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
     if (new URLSearchParams(location.search).has("fresh")) return;
     localStorage.setItem(
       PREFS_KEY,
-      JSON.stringify({ bpm, beatsPerBar, sound, volume, droneVol, noteSync, countIn, trainer, trainerAdd, trainerBars, extrasOpen, instFilter })
+      JSON.stringify({ bpm, beatsPerBar, sound, volume, droneVol, noteSync, countIn, trainer, trainerAdd, trainerBars, extrasOpen, instFilter, droneLast, speakKeys })
     );
-  }, [bpm, beatsPerBar, sound, volume, droneVol, noteSync, countIn, trainer, trainerAdd, trainerBars, extrasOpen, instFilter]);
+  }, [bpm, beatsPerBar, sound, volume, droneVol, noteSync, countIn, trainer, trainerAdd, trainerBars, extrasOpen, instFilter, droneLast, speakKeys]);
 
   useEffect(() => {
     trainerRef.current = { on: trainer, add: trainerAdd, bars: trainerBars };
@@ -853,7 +872,9 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
     setNoteMorph(null);
     // The drone must always sound the note on screen, so every change —
     // auto-sync mid-bar or a manual tap — retriggers it at the new pitch.
-    if (droneRef.current) getMetro().playDrone(droneHz(cur.idx));
+    // Except in check mode, where the beat handler owns when it sounds.
+    if (droneRef.current && !droneLastRef.current) getMetro().playDrone(droneHz(cur.idx));
+    if (speakRef.current) speakNote(cur.label);
   }, []);
 
   const toggleMetronome = useCallback(() => {
@@ -885,6 +906,13 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
         // Up to 4 beats before the swap, start easing the upcoming note in.
         const lead = Math.min(4, every);
         if ((beatIndex + lead) % every === 0) setNoteMorph((lead * 60000) / m.bpm);
+        // Check mode: silent through the cycle, then the drone sounds the
+        // answer on the last beat and cuts at the swap.
+        if (droneRef.current && droneLastRef.current) {
+          if (beatIndex % every === 0) m.stopDrone();
+          if ((beatIndex + 1) % every === 0 && noteRef.current.cur)
+            m.playDrone(droneHz(noteRef.current.cur.idx));
+        }
       }
     };
     if (m.running) {
@@ -895,6 +923,10 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
       // Killing the clicks mid-count-in cancels the pending timer start.
       countInPending.current = false;
       setCountingIn(false);
+      // No beat clock means no "last beat" — check mode falls back to the
+      // sustained drone so the on-toggle never sits silent.
+      if (droneRef.current && droneLastRef.current && noteRef.current.cur)
+        m.playDrone(droneHz(noteRef.current.cur.idx));
     } else {
       m.bpm = bpm;
       m.beatsPerBar = beatsPerBar;
@@ -922,11 +954,24 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
   useEffect(() => {
     droneRef.current = droneOn;
     if (!droneOn) metro.current?.stopDrone();
-    // Turning it on sounds the current key immediately, metronome or not;
-    // with no key picked yet, generate one so the toggle always makes sound.
-    else if (noteRef.current.cur) getMetro().playDrone(droneHz(noteRef.current.cur.idx));
-    else advanceNote();
+    // Turning it on sounds the current key immediately, metronome or not —
+    // unless check mode + a running clock will reveal it on the last beat.
+    else if (noteRef.current.cur) {
+      if (!(droneLastRef.current && getMetro().running)) getMetro().playDrone(droneHz(noteRef.current.cur.idx));
+    } else advanceNote();
   }, [droneOn, advanceNote]);
+  useEffect(() => {
+    droneLastRef.current = droneLast;
+    // Flipping into check mode mid-drone silences it until the next check
+    // beat; flipping back out resumes the sustained tone.
+    if (droneRef.current && metro.current) {
+      if (droneLast && metro.current.running) metro.current.stopDrone();
+      else if (!droneLast && noteRef.current.cur) metro.current.playDrone(droneHz(noteRef.current.cur.idx));
+    }
+  }, [droneLast]);
+  useEffect(() => {
+    speakRef.current = speakKeys;
+  }, [speakKeys]);
   useEffect(() => {
     getMetro().setDroneVolume(droneVol);
   }, [droneVol]);
@@ -2929,6 +2974,36 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
                   ))}
                 </select>
               </label>
+            )}
+            {t.random_key && (
+              <button
+                onClick={() => setDroneLast(!droneLast)}
+                aria-pressed={droneLast}
+                title="drone stays silent until the cycle's last beat — find the note, then hear the answer"
+                className={`relative whitespace-nowrap rounded-md border px-2.5 py-1 ${
+                  droneLast
+                    ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
+                    : "border-neutral-700 text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
+                }`}
+              >
+                {droneLast && <span className="absolute right-1 top-1 h-1 w-1 rounded-full bg-amber-400" />}
+                drone: last beat
+              </button>
+            )}
+            {t.random_key && (
+              <button
+                onClick={() => setSpeakKeys(!speakKeys)}
+                aria-pressed={speakKeys}
+                title="say each new key out loud on its downbeat"
+                className={`relative whitespace-nowrap rounded-md border px-2.5 py-1 ${
+                  speakKeys
+                    ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
+                    : "border-neutral-700 text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
+                }`}
+              >
+                {speakKeys && <span className="absolute right-1 top-1 h-1 w-1 rounded-full bg-amber-400" />}
+                speak keys
+              </button>
             )}
           </div>
         )}
