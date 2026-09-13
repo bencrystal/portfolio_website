@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
       .order("position", { ascending: false }),
     scribeDb
       .from("buckets")
-      .select("id, name, position, hidden, quiet, color")
+      .select("id, name, position, hidden, quiet, color, aliases")
       .order("position", { ascending: true }),
   ]);
   if (todosRes.error) return NextResponse.json({ error: todosRes.error.message }, { status: 500 });
