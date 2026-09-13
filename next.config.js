@@ -30,6 +30,8 @@ const nextConfig = {
       '/api/inkdrop': [
         './node_modules/@napi-rs/canvas/**/*',
         './node_modules/@napi-rs/canvas-linux-x64-gnu/**/*',
+        // pdfjs loads its worker via dynamic import; tracing misses it too.
+        './node_modules/pdfjs-dist/legacy/build/**/*',
       ],
     },
   },
