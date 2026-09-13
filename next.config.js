@@ -22,7 +22,16 @@ const nextConfig = {
   experimental: {
     esmExternals: 'loose',
     // pdfjs-dist's ESM build breaks under webpack bundling; load it via Node.
-    serverComponentsExternalPackages: ['pdf-parse', 'pdfjs-dist'],
+    serverComponentsExternalPackages: ['pdf-parse', 'pdfjs-dist', '@napi-rs/canvas'],
+    // pdfjs polyfills DOMMatrix from @napi-rs/canvas via a dynamic require
+    // that Vercel's file tracing misses, so the native binary never ships and
+    // prod PDF conversion dies with "DOMMatrix is not defined". Force it in.
+    outputFileTracingIncludes: {
+      '/api/inkdrop': [
+        './node_modules/@napi-rs/canvas/**/*',
+        './node_modules/@napi-rs/canvas-linux-x64-gnu/**/*',
+      ],
+    },
   },
   // /scribe is an alias for the todo list.
   redirects: async () => {
