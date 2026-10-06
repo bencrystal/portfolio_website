@@ -1,7 +1,7 @@
 {
   "name": "Guitar Practice",
   "short_name": "Practice",
-  "start_url": "/practice",
+  "start_url": "/practice/log",
   "scope": "/practice",
   "display": "standalone",
   "background_color": "#0a0a0a",

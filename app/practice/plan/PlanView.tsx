@@ -664,7 +664,7 @@ export default function PlanView() {
       <header className="flex items-baseline justify-between pb-4 pt-6">
         <h1 className="text-sm font-medium tracking-wide text-neutral-300">practice plan · guitar</h1>
         <nav className="flex items-center gap-1.5 text-xs text-neutral-400">
-          <a href="/practice" className="rounded-full border border-neutral-800 px-2.5 py-1 hover:border-neutral-600 hover:text-neutral-200">
+          <a href="/practice/log" className="rounded-full border border-neutral-800 px-2.5 py-1 hover:border-neutral-600 hover:text-neutral-200">
             ← practice
           </a>
           <a href="/practice/tree" className="rounded-full border border-neutral-800 px-2.5 py-1 hover:border-neutral-600 hover:text-neutral-200">
@@ -691,7 +691,7 @@ export default function PlanView() {
           {!unlocked && (
             <>
               {" "}
-              <a className="underline" href="/practice">
+              <a className="underline" href="/practice/log">
                 go log in →
               </a>
             </>

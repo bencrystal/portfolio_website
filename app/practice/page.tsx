@@ -1,13 +1,7 @@
-import PracticeView from "./PracticeView";
-import DevPanel from "./redesign/DevPanel";
+import ToolsView from "./ToolsView";
 
-// ?redesign (optionally =a|b|c|d) swaps in the mockup attempts + dev switcher;
-// ?classic keeps the pre-redesign layout reachable until sign-off.
-export default function PracticePage({
-  searchParams,
-}: {
-  searchParams: { redesign?: string; classic?: string };
-}) {
-  if (searchParams.redesign !== undefined) return <DevPanel initial={searchParams.redesign} />;
-  return <PracticeView classic={searchParams.classic !== undefined} />;
+// /practice is the tools-only landing (metronome, key, tuner, backing tracks);
+// the full log with exercises/sessions moved to /practice/log.
+export default function PracticePage() {
+  return <ToolsView />;
 }

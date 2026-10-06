@@ -42,7 +42,7 @@ export default function DevPanel({ initial }: { initial?: string }) {
           ))}
         </div>
         <p className="mt-1.5 px-1 text-[10px] leading-snug text-neutral-600">{note}</p>
-        <a href="/practice" className="mt-1.5 block px-1 text-[10px] text-neutral-500 hover:text-neutral-300">
+        <a href="/practice/log" className="mt-1.5 block px-1 text-[10px] text-neutral-500 hover:text-neutral-300">
           ← real page
         </a>
       </div>

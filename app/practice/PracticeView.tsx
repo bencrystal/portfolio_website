@@ -1836,7 +1836,7 @@ export default function PracticeView({ classic = false }: { classic?: boolean })
       {fresh && (
         <div role="status" className="mb-4 rounded-md border border-amber-900 bg-amber-950/40 px-3 py-2 text-xs text-amber-300">
           Fresh preview — simulated first visit, nothing is saved.{" "}
-          <a className="underline" href="/practice">
+          <a className="underline" href="/practice/log">
             back to your data
           </a>
         </div>
