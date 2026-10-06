@@ -27,13 +27,24 @@ type Bucket = {
   aliases?: string | null;
 };
 
+// One row per git repo from the Mac scanner: a short "where you left off"
+// recap that renders as a collapsible card at the top of its bucket.
+type RepoNote = {
+  repo: string;
+  bucket_id: string | null;
+  summary: string | null;
+  last_commit: string | null;
+  dirty: string | null;
+  updated_at: string;
+};
+
 const ALL = "all";
 const UNSORTED = "unsorted";
 
 // Mutations that fail because the network is down get queued here and
 // replayed in order once the connection returns.
 const QUEUE_KEY = "scribe-offline-queue";
-type QueuedCall = { path: "todos" | "buckets"; method: string; body?: unknown; query?: string };
+type QueuedCall = { path: "todos" | "buckets" | "repos"; method: string; body?: unknown; query?: string };
 
 function readQueue(): QueuedCall[] {
   try {
@@ -65,6 +76,9 @@ function bucketColor(id: string) {
 export default function ListView({ token }: { token: string }) {
   const [todos, setTodos] = useState<Todo[] | null>(null);
   const [buckets, setBuckets] = useState<Bucket[]>([]);
+  // Repo recaps; cards start collapsed, this tracks which are expanded.
+  const [repos, setRepos] = useState<RepoNote[]>([]);
+  const [repoOpen, setRepoOpen] = useState<Set<string>>(new Set());
   const [view, setView] = useState<string>(ALL); // ALL, UNSORTED, or bucket id
   const [newText, setNewText] = useState("");
   const [search, setSearch] = useState("");
@@ -156,7 +170,7 @@ export default function ListView({ token }: { token: string }) {
   const flushing = useRef(false);
 
   const call = useCallback(
-    async (path: "todos" | "buckets", method: string, body?: unknown, query = ""): Promise<Response> => {
+    async (path: "todos" | "buckets" | "repos", method: string, body?: unknown, query = ""): Promise<Response> => {
       try {
         const res = await fetch(`/api/scribe/${path}?token=${encodeURIComponent(token)}${query}`, {
           method,
@@ -233,6 +247,13 @@ export default function ListView({ token }: { token: string }) {
         }
       }
       knownIds.current = ids;
+    }
+    // Repo recaps piggyback on the same refresh tick; a failure here
+    // never blocks the todo list.
+    const rres = await call("repos", "GET");
+    if (rres.ok) {
+      const rdata = await rres.json();
+      setRepos(rdata.repos ?? []);
     }
   }, [call]);
 
@@ -599,6 +620,31 @@ export default function ListView({ token }: { token: string }) {
   const wordClaims = new Map<string, number>();
   buckets.forEach((b) => wordsOf(b).forEach((w) => wordClaims.set(w, (wordClaims.get(w) ?? 0) + 1)));
 
+  // ---- repo recaps ----
+
+  function toggleRepo(name: string) {
+    setRepoOpen((s) => {
+      const next = new Set(s);
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
+      return next;
+    });
+  }
+
+  // Assign (or unassign) a repo to a bucket; the server remembers, so the
+  // scanner never asks again.
+  async function assignRepo(repo: string, bucket_id: string | null) {
+    setRepos((rs) => rs.map((r) => (r.repo === repo ? { ...r, bucket_id } : r)));
+    await call("repos", "PATCH", { repo, bucket_id });
+  }
+
+  // Drop a recap entirely (archived or irrelevant repo). It reappears as
+  // unassigned if the scanner sees new activity there.
+  async function dismissRepo(repo: string) {
+    setRepos((rs) => rs.filter((r) => r.repo !== repo));
+    await call("repos", "DELETE", { repo });
+  }
+
   if (error) return <main className="p-10 text-neutral-200">{error}</main>;
   if (!todos) return <main className="p-10 text-neutral-200">Loading...</main>;
 
@@ -796,6 +842,38 @@ export default function ListView({ token }: { token: string }) {
       </div>
     </div>
   );
+
+  // Collapsed: one line (repo name, dirty count, freshness). Expanded:
+  // the Haiku bullets and last commit subject.
+  const repoCard = (r: RepoNote) => {
+    const open = repoOpen.has(r.repo);
+    const c = r.bucket_id ? colorOf(r.bucket_id) : "#737373";
+    return (
+      <div
+        key={r.repo}
+        className="mb-1.5 rounded-md border border-neutral-800 bg-neutral-900/60 px-3 py-1.5 text-sm"
+        style={{ borderLeft: `3px solid ${c}` }}
+      >
+        <button onClick={() => toggleRepo(r.repo)} className="flex w-full items-center gap-2 text-left">
+          <span className="inline-block w-3 text-neutral-500">{open ? "\u25be" : "\u25b8"}</span>
+          <span className="truncate font-medium text-neutral-300">{r.repo}</span>
+          {r.dirty && <span className="shrink-0 rounded bg-amber-950/60 px-1.5 py-0.5 text-[11px] text-amber-500">{r.dirty}</span>}
+          <span className="ml-auto shrink-0 text-xs text-neutral-600">{fmtDate(r.updated_at)}</span>
+        </button>
+        {open && (
+          <div className="mt-1 space-y-1 pl-5 text-xs text-neutral-400">
+            {r.summary &&
+              r.summary.split("\n").filter(Boolean).map((line, i) => <p key={i}>{line}</p>)}
+            {r.last_commit && <p className="text-neutral-600">Last commit: {r.last_commit}</p>}
+            {!r.summary && !r.last_commit && <p className="text-neutral-600">No details yet.</p>}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const bucketRepos = view !== ALL && view !== UNSORTED ? repos.filter((r) => r.bucket_id === view) : [];
+  const unassignedRepos = repos.filter((r) => r.bucket_id === null);
 
   return (
     <main className="mx-auto min-h-screen max-w-3xl bg-neutral-950 px-5 py-6 text-neutral-100">
@@ -1080,6 +1158,49 @@ export default function ListView({ token }: { token: string }) {
             placeholder="Search"
             className="mb-4 w-full rounded-md border border-neutral-800 bg-neutral-900 px-3 py-1.5 text-sm outline-none transition-colors duration-150 placeholder:text-neutral-600 focus:border-neutral-500"
           />
+
+          {/* Where you left off: recaps for repos filed into this bucket. */}
+          {bucketRepos.length > 0 && <div className="mb-3">{bucketRepos.map(repoCard)}</div>}
+
+          {/* New repos the scanner could not confidently match wait here
+              for a one-time bucket assignment. */}
+          {view === ALL && unassignedRepos.length > 0 && (
+            <div className="mb-3">
+              {unassignedRepos.map((r) => (
+                <div
+                  key={r.repo}
+                  className="mb-1.5 flex items-center gap-2 rounded-md border border-dashed border-neutral-700 px-3 py-1.5 text-sm"
+                >
+                  <span className="truncate text-neutral-300">{r.repo}</span>
+                  {r.dirty && <span className="shrink-0 text-[11px] text-amber-600">{r.dirty}</span>}
+                  <select
+                    defaultValue=""
+                    onChange={(e) => e.target.value && assignRepo(r.repo, e.target.value)}
+                    className="ml-auto shrink-0 rounded border border-neutral-700 bg-neutral-900 px-1.5 py-0.5 text-xs text-neutral-400"
+                    title="File this repo's recaps into a bucket"
+                  >
+                    <option value="" disabled>
+                      Pick bucket
+                    </option>
+                    {buckets
+                      .filter((b) => !b.hidden)
+                      .map((b) => (
+                        <option key={b.id} value={b.id}>
+                          {b.name}
+                        </option>
+                      ))}
+                  </select>
+                  <button
+                    onClick={() => dismissRepo(r.repo)}
+                    className="shrink-0 px-1 text-xs text-neutral-600 hover:text-neutral-400"
+                    title="Hide this repo (comes back if it changes again)"
+                  >
+                    x
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
 
           {active.length === 0 && done.length === 0 && (
             <p className="text-neutral-500">
