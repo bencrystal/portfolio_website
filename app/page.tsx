@@ -27,12 +27,11 @@ const buildCategories = (): ProjectCategory[] => {
 }
 
 const FOCUS_AREAS = [
-  'XR / VR / AR',
+  'AR / VR',
   'Music tech',
   'Realtime graphics',
   'Audio DSP',
   'Creative coding',
-  'Immersive design',
 ]
 
 export default function Page() {
