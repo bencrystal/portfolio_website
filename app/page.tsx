@@ -120,7 +120,7 @@ export default function Page() {
 
         {/* Focus areas */}
         <div className="border-y border-white/10 py-4">
-          <p className="max-w-7xl mx-auto px-6 text-xs font-bold uppercase tracking-[0.3em] text-white/40 flex flex-wrap gap-x-6 gap-y-2">
+          <p className="max-w-7xl mx-auto px-6 text-xs font-bold uppercase tracking-[0.3em] text-white/40 flex flex-wrap gap-x-6 gap-y-2 md:justify-between">
             {FOCUS_AREAS.map((item) => (
               <span key={item}>{item}</span>
             ))}
