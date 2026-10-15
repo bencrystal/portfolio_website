@@ -26,7 +26,7 @@ const buildCategories = (): ProjectCategory[] => {
   ].filter((c) => c.projects.length > 0)
 }
 
-const MARQUEE_ITEMS = [
+const FOCUS_AREAS = [
   'XR / VR / AR',
   'Music tech',
   'Realtime graphics',
@@ -118,19 +118,13 @@ export default function Page() {
           </div>
         </section>
 
-        {/* Marquee strip */}
-        <div
-          className="border-y border-white/20 py-3 overflow-hidden whitespace-nowrap"
-          style={{ backgroundColor: ACCENT }}
-        >
-          <div className="marquee-track inline-flex text-black font-black uppercase tracking-tighter text-xl gap-10 px-6">
-            {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
-              <span key={i} className="inline-flex items-center gap-10">
-                {item}
-                <span aria-hidden>●</span>
-              </span>
+        {/* Focus areas */}
+        <div className="border-y border-white/10 py-4">
+          <p className="max-w-7xl mx-auto px-6 text-xs font-bold uppercase tracking-[0.3em] text-white/40 flex flex-wrap gap-x-6 gap-y-2">
+            {FOCUS_AREAS.map((item) => (
+              <span key={item}>{item}</span>
             ))}
-          </div>
+          </p>
         </div>
 
         <HeroAbout show={showAbout} sectionRef={aboutRef} />

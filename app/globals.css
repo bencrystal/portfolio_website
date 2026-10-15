@@ -89,17 +89,6 @@
   transform: translateY(-3px);
 }
 
-/* Marquee strip on landing — horizontal scroll */
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-
-.marquee-track {
-  animation: marquee 40s linear infinite;
-  will-change: transform;
-}
-
 /* Mezcal hero atmosphere: a faint agave rosette rotates slowly behind the
    headline, while a warm candlelight glow breathes. Both motions are paused
    for users who prefer reduced motion. */
