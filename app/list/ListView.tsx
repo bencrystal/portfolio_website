@@ -11,6 +11,9 @@ type Todo = {
   position: number;
   all_position: number;
   deleted_at?: string | null;
+  // Link to the Google Calendar event created for a calendar-bucket
+  // capture; set server-side at capture time, never edited after.
+  event_url?: string | null;
 };
 type Bucket = {
   id: string;
@@ -795,6 +798,18 @@ export default function ListView({ token }: { token: string }) {
         >
           {todo.text}
         </span>
+      )}
+      {todo.event_url && (
+        <a
+          href={todo.event_url}
+          target="_blank"
+          rel="noreferrer"
+          className="shrink-0 text-sm leading-none text-neutral-500 hover:text-neutral-200"
+          title="Open in Google Calendar"
+          aria-label="Open in Google Calendar"
+        >
+          &#128197;
+        </a>
       )}
       {/* On desktop the tag and date sit in fixed right-aligned columns so
           they line up down the list; on the phone they stay compact. */}

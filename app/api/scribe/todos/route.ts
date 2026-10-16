@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { scribeDb, validListToken } from "@/lib/scribe-db";
 import { routeCapture } from "@/lib/scribe-routing";
+import { maybeCreateCalendarEvent } from "@/lib/scribe-calendar";
 
 function unauthorized() {
   return NextResponse.json({ error: "unauthorized" }, { status: 401 });
@@ -26,7 +27,7 @@ export async function GET(req: NextRequest) {
   if (req.nextUrl.searchParams.get("deleted") === "1") {
     const { data, error } = await scribeDb
       .from("todos")
-      .select("id, created_at, text, done, bucket_id, position, deleted_at")
+      .select("id, created_at, text, done, bucket_id, event_url, position, deleted_at")
       .not("deleted_at", "is", null)
       .order("deleted_at", { ascending: false });
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -36,7 +37,7 @@ export async function GET(req: NextRequest) {
   const [todosRes, bucketsRes] = await Promise.all([
     scribeDb
       .from("todos")
-      .select("id, created_at, text, done, bucket_id, position, all_position")
+      .select("id, created_at, text, done, bucket_id, event_url, position, all_position")
       .is("deleted_at", null)
       .order("position", { ascending: false }),
     scribeDb
@@ -57,13 +58,16 @@ export async function POST(req: NextRequest) {
   // adds made from inside a bucket keep their explicit bucket.
   let finalText = text.trim();
   let finalBucket: string | null = bucket_id ?? null;
+  const { data: routable } = await scribeDb.from("buckets").select("id, name, aliases");
   if (!finalBucket) {
-    const { data: routable } = await scribeDb.from("buckets").select("id, name, aliases");
     ({ text: finalText, bucketId: finalBucket } = routeCapture(finalText, routable ?? []));
   }
+  // Anything landing in the calendar bucket (routed or added there
+  // directly) also becomes a Google Calendar event the todo links to.
+  const eventUrl = await maybeCreateCalendarEvent(finalText, finalBucket, routable ?? []);
   const { data, error } = await scribeDb
     .from("todos")
-    .insert({ text: finalText, bucket_id: finalBucket, position: nowPosition(), all_position: nowPosition() })
+    .insert({ text: finalText, bucket_id: finalBucket, event_url: eventUrl, position: nowPosition(), all_position: nowPosition() })
     .select()
     .single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { scribeDb } from "@/lib/scribe-db";
 import { routeCapture } from "@/lib/scribe-routing";
+import { maybeCreateCalendarEvent } from "@/lib/scribe-calendar";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -56,6 +57,10 @@ export async function POST(req: NextRequest) {
   const { data: routable } = await scribeDb.from("buckets").select("id, name, aliases");
   const routed = routeCapture(transcript, routable ?? []);
 
+  // Calendar bucket: quickAdd parses the text's natural-language date and
+  // the todo keeps a link to the created event.
+  const eventUrl = await maybeCreateCalendarEvent(routed.text, routed.bucketId, routable ?? []);
+
   // One todo per capture for v1. Later: LLM pass to split multi-item captures.
   const { data: todo, error: todoErr } = await scribeDb
     .from("todos")
@@ -63,6 +68,7 @@ export async function POST(req: NextRequest) {
       text: routed.text,
       bucket_id: routed.bucketId,
       capture_id: capture.id,
+      event_url: eventUrl,
       position: Date.now() / 1000,
       all_position: Date.now() / 1000,
     })
