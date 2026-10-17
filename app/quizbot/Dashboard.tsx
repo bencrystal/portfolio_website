@@ -37,7 +37,7 @@ export default function Dashboard() {
   const [sort, setSort] = useState<'published' | 'views' | 'avp'>('published')
 
   useEffect(() => {
-    fetch('/quizbot/data.json', { cache: 'no-store' })
+    fetch('/api/quizbot', { cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`${r.status}`))))
       .then(setData)
       .catch((e) => setErr(String(e)))

@@ -7,8 +7,8 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 }
 
-// /quizbot (also /audioquiz and /playitbyear via redirects). Read-only analytics; the data file is
-// committed nightly by the quizbot repo's analytics workflow to public/quizbot/data.json.
+// /quizbot (also /audioquiz and /playitbyear via redirects). Read-only analytics. Data comes from
+// /api/quizbot, which proxies the JSON the quizbot pipeline pushes nightly to this repo's `quizbot-data` branch.
 export default function QuizbotPage() {
   return <Dashboard />
 }
