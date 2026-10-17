@@ -31,6 +31,7 @@ const GROUPS: IndexGroup[] = [
       { href: '/practice/plan', label: '/practice/plan', note: 'Curated practice plan (Larsen / Fujita ladder)' },
       { href: '/practice/tree', label: '/practice/tree', note: 'Old skill tree (demoted, kept reachable)' },
       { href: '/define', label: '/define', note: 'Merriam-Webster + Urban Dictionary side by side' },
+      { href: '/quizbot', label: '/quizbot', note: 'Play It By Ear channel dashboard (aliases: /audioquiz, /playitbyear)' },
     ],
   },
   {
