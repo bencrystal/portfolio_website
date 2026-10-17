@@ -15,6 +15,64 @@ import crypto from "crypto";
 
 type NamedBucket = { id: string; name: string };
 
+const WEEKDAYS = [
+  "sunday",
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+];
+const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+// quickAdd resolves a bare weekday against the current calendar week, so
+// "monday at 3pm" captured on a Friday lands on the Monday four days ago.
+// Rewrite every weekday mention (with or without a "this"/"next"/"on"
+// qualifier) to its next upcoming date so the event always goes forward.
+// Today's weekday counts as upcoming, so "friday" said on a Friday is today.
+export function pinWeekdaysToUpcoming(text: string, now = new Date()): string {
+  const tz = process.env.GCAL_TIMEZONE ?? "America/New_York";
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en-US", {
+      timeZone: tz,
+      weekday: "long",
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+    })
+      .formatToParts(now)
+      .map((p) => [p.type, p.value]),
+  );
+  const todayIdx = WEEKDAYS.indexOf(parts.weekday.toLowerCase());
+  // A pure calendar date in the user's timezone; UTC math from here on is
+  // safe because no hours are involved.
+  const today = Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day));
+
+  return text.replace(
+    /\b(?:(?:this|next)\s+)?(sunday|monday|tuesday|wednesday|thursday|friday|saturday)\b/gi,
+    (_, day: string) => {
+      const offset = (WEEKDAYS.indexOf(day.toLowerCase()) - todayIdx + 7) % 7;
+      const target = new Date(today + offset * 86_400_000);
+      const name = day[0].toUpperCase() + day.slice(1).toLowerCase();
+      return `${name} ${MONTHS[target.getUTCMonth()]} ${target.getUTCDate()} ${target.getUTCFullYear()}`;
+    },
+  );
+}
+
 export function calendarBucketId(buckets: NamedBucket[]): string | null {
   const wanted = (process.env.GCAL_BUCKET_NAME ?? "calendar").trim().toLowerCase();
   return buckets.find((b) => b.name.trim().toLowerCase() === wanted)?.id ?? null;
@@ -80,9 +138,10 @@ export async function maybeCreateCalendarEvent(
   }
   try {
     const token = await accessToken();
+    const pinned = pinWeekdaysToUpcoming(text);
     const url =
       `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}` +
-      `/events/quickAdd?text=${encodeURIComponent(text)}`;
+      `/events/quickAdd?text=${encodeURIComponent(pinned)}`;
     const res = await fetch(url, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
