@@ -40,6 +40,9 @@ const nextConfig = {
     return [
       { source: '/scribe', destination: '/list', permanent: false },
       { source: '/scribe/:token', destination: '/list/:token', permanent: false },
+      // /quizbot is the audio-quiz channel dashboard; these are its aliases.
+      { source: '/audioquiz', destination: '/quizbot', permanent: false },
+      { source: '/playitbyear', destination: '/quizbot', permanent: false },
     ]
   },
   // Add cache control
