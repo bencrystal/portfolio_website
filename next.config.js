@@ -45,6 +45,11 @@ const nextConfig = {
       { source: '/playitbyear', destination: '/quizbot', permanent: false },
     ]
   },
+  // /index can't be an app route (collides with Next's internal name for /),
+  // so the personal page index lives at /pages and /index aliases it.
+  rewrites: async () => {
+    return [{ source: '/index', destination: '/pages' }]
+  },
   // Add cache control
   headers: async () => {
     return [
