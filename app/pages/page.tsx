@@ -47,6 +47,7 @@ const GROUPS: IndexGroup[] = [
       { href: '/flowbot/privacy', label: '/flowbot/privacy', note: 'FlowBot App Store privacy policy' },
       { href: '/livemic/privacy', label: '/livemic/privacy', note: 'Live Mic privacy policy' },
       { href: '/livemic/support', label: '/livemic/support', note: 'Live Mic support page' },
+      { href: '/quizbot/privacy', label: '/quizbot/privacy', note: 'Quizbot privacy policy (Meta / TikTok developer apps)' },
     ],
   },
   {
