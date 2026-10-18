@@ -1,5 +1,5 @@
 {
-"generated": "2026-10-17T20:40:04+00:00",
+"generated": "2026-10-18T00:19:32+00:00",
 "channel": {
 "title": "Play It By Ear",
 "subscribers": 0,
@@ -28,13 +28,14 @@
 "theme": "Fire-type Pokémon",
 "duration": 45,
 "privacy": "public",
-"views": 208,
-"likes": 0,
+"views": 571,
+"likes": 9,
 "comments": 0,
 "avd": null,
 "avp": null,
 "minutes": null,
-"subs": null
+"subs": null,
+"tags": []
 },
 {
 "id": "wXa2NV6MdzE",
@@ -46,13 +47,14 @@
 "theme": "Ghost-type Pokémon",
 "duration": 47,
 "privacy": "public",
-"views": 47,
+"views": 66,
 "likes": 0,
 "comments": 2,
 "avd": null,
 "avp": null,
 "minutes": null,
-"subs": null
+"subs": null,
+"tags": []
 },
 {
 "id": "iWS5NY0oggY",
@@ -70,11 +72,89 @@
 "avd": null,
 "avp": null,
 "minutes": null,
-"subs": null
+"subs": null,
+"tags": []
 }
 ],
 "ledger": {
 "episodes": [],
 "used": {}
+},
+"comments": [],
+"experiments": {
+"config": {
+"min_n": 4,
+"max_n": 8,
+"min_lead": 0.1,
+"experiments": [
+{
+"id": "open",
+"question": "Cold open (sound first) or announce the question first?",
+"variants": {
+"cold": {
+"shorts_cold_open": "true"
+},
+"announce": {
+"shorts_cold_open": "false"
+}
+}
+},
+{
+"id": "title",
+"question": "Question title or challenge title?",
+"variants": {
+"question": {
+"title_style": "question"
+},
+"challenge": {
+"title_style": "challenge"
+}
+}
+},
+{
+"id": "think",
+"question": "2.5 s or 2.0 s of thinking time per stage?",
+"variants": {
+"s25": {
+"stage_seconds": 2.5
+},
+"s20": {
+"stage_seconds": 2.0
+}
+}
+},
+{
+"id": "hints",
+"question": "Two hints or just the Pokédex/field-guide hint?",
+"variants": {
+"two": {
+"short_hints": 2
+},
+"one": {
+"short_hints": 1
+}
+}
+}
+]
+},
+"state": {
+"decided": {},
+"active": "open",
+"log": [],
+"results": {
+"open": {
+"cold": {
+"n": 0,
+"avp": null,
+"views": null
+},
+"announce": {
+"n": 0,
+"avp": null,
+"views": null
+}
+}
+}
+}
 }
 }
