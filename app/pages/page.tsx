@@ -74,16 +74,16 @@ const ACCENT = '#57f1ff'
 function EntryRow({ entry }: { entry: IndexEntry }) {
   const inner = (
     <>
-      <span className="font-mono text-sm text-white group-hover:text-[#57f1ff] transition-colors">
+      <span className="font-mono text-base sm:text-lg font-semibold text-white group-hover:text-[#57f1ff] transition-colors">
         {entry.label}
       </span>
       {entry.note && (
-        <span className="text-sm leading-snug text-neutral-500">{entry.note}</span>
+        <span className="text-sm sm:text-base leading-relaxed text-neutral-300">{entry.note}</span>
       )}
     </>
   )
   const className =
-    'group flex flex-col gap-0.5 px-5 py-3 border-b border-white/5 last:border-b-0 hover:bg-white/[0.04] transition-colors'
+    'group flex flex-col gap-1 px-6 py-4 border-b border-white/10 last:border-b-0 hover:bg-white/[0.06] transition-colors'
 
   return entry.external ? (
     <a href={entry.href} className={className}>
@@ -98,13 +98,13 @@ function EntryRow({ entry }: { entry: IndexEntry }) {
 
 function GroupCard({ group }: { group: IndexGroup }) {
   return (
-    <section className="flex flex-col border border-white/15 bg-white/[0.02]">
-      <div className="flex items-baseline justify-between border-b border-white/15 px-5 py-4">
-        <h2 className="text-sm font-black uppercase tracking-[0.25em] text-white">
+    <section className="flex flex-col border border-white/20 bg-neutral-950 shadow-[0_0_0_1px_rgba(0,0,0,0.6)]">
+      <div className="flex items-baseline justify-between border-b border-white/20 bg-neutral-900 px-6 py-4">
+        <h2 className="text-base sm:text-lg font-black uppercase tracking-[0.2em] text-white">
           {group.title}
           <span style={{ color: ACCENT }}>.</span>
         </h2>
-        <span className="text-xs uppercase tracking-[0.3em] text-white/40">
+        <span className="text-sm font-bold tabular-nums text-white/60">
           {String(group.entries.length).padStart(2, '0')}
         </span>
       </div>
@@ -122,14 +122,14 @@ export default function AllPagesPage() {
     <main className="min-h-screen min-h-dvh bg-black relative">
       <Background />
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-16">
-        <p className="text-xs font-bold uppercase tracking-[0.3em] text-white/50">
+        <p className="text-sm font-bold uppercase tracking-[0.3em] text-white/70">
           bencrystal.me
         </p>
         <h1 className="mt-3 text-5xl sm:text-7xl font-black tracking-tighter uppercase text-white">
           All Pages
           <span style={{ color: ACCENT }}>.</span>
         </h1>
-        <p className="mt-4 max-w-xl text-sm text-neutral-500">
+        <p className="mt-4 max-w-xl text-base text-neutral-300">
           Every unlinked page on the site, in one place. Not indexed by search engines.
         </p>
 
@@ -139,8 +139,8 @@ export default function AllPagesPage() {
           ))}
         </div>
 
-        <p className="mt-12 text-xs uppercase tracking-[0.3em] text-neutral-600">
-          <Link href="/" className="hover:text-neutral-400 transition-colors">
+        <p className="mt-12 text-sm uppercase tracking-[0.3em] text-neutral-400">
+          <Link href="/" className="hover:text-white transition-colors">
             ← back home
           </Link>
         </p>
