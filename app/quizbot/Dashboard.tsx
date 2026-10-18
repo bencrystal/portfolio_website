@@ -11,17 +11,24 @@ type Video = {
 }
 type Day = { day: string; views: number; estimatedMinutesWatched: number; subscribersGained: number; subscribersLost: number }
 type Episode = { slug: string; pack: string; title: string; theme: string; status: string; youtube_id: string | null; created_at: number }
+type Comment = { video: string; title: string; author: string; text: string; likes: number; at: string }
+type ExpVariantRow = { n: number; avp: number | null; views: number | null }
+type Experiments = {
+  config: { min_n: number; max_n: number; min_lead: number; experiments: { id: string; question: string; variants: Record<string, Record<string, unknown>> }[] }
+  state: { decided: Record<string, string>; active: string | null; results?: Record<string, Record<string, ExpVariantRow>>; log: { when: string; experiment: string; winner: string; reason: string }[] }
+}
 type Data = {
   generated: string
   channel: { title: string; subscribers: number; views: number; videos: number; daily: Day[] }
   packs: Record<string, { display_name: string; noun: string }>
   videos: Video[]
   ledger: { episodes: Episode[]; used: Record<string, Record<string, number>> }
+  comments?: Comment[]
+  experiments?: Experiments
 }
 
 // Categorical palette (dark-surface steps; identity is also carried by labels, never color alone).
 const PACK_COLORS: Record<string, string> = { pokemon: '#3987e5', birds: '#199e70', games: '#d95926', music: '#c98500' }
-const VARIANT_COLORS: Record<string, string> = { coldopen: '#9085e9', announce: '#d55181' }
 const INK = '#f0efec', INK2 = '#c3c2b7', INK3 = '#8a897f', GRID = '#2a2a2e'
 
 const fmtInt = (n: number) => n.toLocaleString('en-US')
@@ -49,11 +56,6 @@ export default function Dashboard() {
   if (!data) return <Shell><p className="text-sm" style={{ color: INK2 }}>Loading…</p></Shell>
 
   const packs = Object.keys(data.packs)
-  const shorts = data.videos.filter((v) => v.format === 'short' && v.privacy === 'public')
-  const ab = (['coldopen', 'announce'] as const).map((variant) => {
-    const vs = shorts.filter((v) => v.variant === variant)
-    return { variant, n: vs.length, views: mean(vs.map((v) => v.views)), avp: mean(vs.map((v) => v.avp)), avd: mean(vs.map((v) => v.avd)) }
-  })
   const stuck = data.ledger.episodes.filter((e) => e.status === 'rendered')
   const failed = data.ledger.episodes.filter((e) => e.status === 'failed')
   const sorted = [...videos].sort((a, b) => sort === 'views' ? b.views - a.views : sort === 'avp' ? (b.avp ?? -1) - (a.avp ?? -1) : b.published.localeCompare(a.published))
@@ -112,13 +114,57 @@ export default function Dashboard() {
         </table>
       </Card>
 
-      {/* ---- A/B ------------------------------------------------------------------------ */}
-      <Card title="Shorts opening: cold open vs. announce" sub="Cold open = the sound plays before any talking. Alternates automatically; judge once each side has ~10 videos.">
-        <div className="grid md:grid-cols-3 gap-6">
-          <ABBars title="Views per video" rows={ab.map((r) => ({ ...r, value: r.views }))} format={(v) => fmtInt(Math.round(v))} />
-          <ABBars title="Avg % viewed" rows={ab.map((r) => ({ ...r, value: r.avp }))} format={(v) => `${Math.round(v)}%`} max={100} />
-          <ABBars title="Avg view time" rows={ab.map((r) => ({ ...r, value: r.avd }))} format={fmtSecs} />
-        </div>
+      {/* ---- experiments ------------------------------------------------------------------ */}
+      <Card title="Shorts experiments" sub={`One at a time; variants alternate per Short. Judged on average % viewed at ≥${data.experiments?.config.min_n ?? 4} per side (needs a ≥${Math.round((data.experiments?.config.min_lead ?? 0.1) * 100)}% lead, else runs to ${data.experiments?.config.max_n ?? 8}). Winners become the baseline.`}>
+        {data.experiments ? (
+          <div className="grid md:grid-cols-2 gap-6">
+            {data.experiments.config.experiments.map((ex) => {
+              const decided = data.experiments!.state.decided[ex.id]
+              const active = !decided && data.experiments!.config.experiments.find((e) => !data.experiments!.state.decided[e.id])?.id === ex.id
+              const rows = data.experiments!.state.results?.[ex.id] ?? {}
+              const status = decided ? `decided: ${decided}` : active ? 'running' : 'queued'
+              return (
+                <div key={ex.id} className="rounded-md border p-4" style={{ borderColor: GRID, opacity: decided || active ? 1 : 0.6 }}>
+                  <div className="flex justify-between items-baseline mb-1">
+                    <p className="font-medium" style={{ color: INK }}>{ex.question}</p>
+                    <span className="text-xs ml-3 whitespace-nowrap" style={{ color: decided ? '#199e70' : active ? '#c98500' : INK3 }}>{status}</span>
+                  </div>
+                  <table className="w-full text-xs mt-2">
+                    <thead><tr style={{ color: INK3 }} className="text-left"><th className="font-medium">Variant</th><th className="font-medium text-right">n</th><th className="font-medium text-right">% viewed</th><th className="font-medium text-right">Views / video</th></tr></thead>
+                    <tbody>
+                      {Object.keys(ex.variants).map((name, i) => {
+                        const r = rows[name]
+                        return (
+                          <tr key={name} className="border-t" style={{ borderColor: GRID, color: INK }}>
+                            <td className="py-1"><Swatch color={i === 0 ? '#9085e9' : '#d55181'} />{name}{decided === name ? ' ✓' : ''}</td>
+                            <td className="text-right">{r?.n ?? 0}</td>
+                            <td className="text-right">{r?.avp != null ? `${Math.round(r.avp)}%` : '—'}</td>
+                            <td className="text-right">{r?.views != null ? fmtInt(Math.round(r.views)) : '—'}</td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                  {decided && <p className="text-xs mt-2" style={{ color: INK3 }}>{data.experiments!.state.log.find((l) => l.experiment === ex.id)?.reason}</p>}
+                </div>
+              )
+            })}
+          </div>
+        ) : <p className="text-sm" style={{ color: INK2 }}>No experiment data in this export yet.</p>}
+      </Card>
+
+      {/* ---- comments --------------------------------------------------------------------- */}
+      <Card title="Recent comments" sub="Top comments on the newest videos — the qualitative side of the numbers">
+        {data.comments?.length ? (
+          <ul className="space-y-3 text-sm">
+            {data.comments.slice(0, 30).map((c, i) => (
+              <li key={i} className="border-t pt-3" style={{ borderColor: GRID }}>
+                <p style={{ color: INK }}>{c.text}</p>
+                <p className="text-xs mt-1" style={{ color: INK3 }}>{c.author} · {c.likes} likes · <a href={`https://youtu.be/${c.video}`} target="_blank" rel="noopener noreferrer" className="hover:underline">{c.title}</a> · {ago(c.at)}</p>
+              </li>
+            ))}
+          </ul>
+        ) : <p className="text-sm" style={{ color: INK2 }}>No comments yet.</p>}
       </Card>
 
       {/* ---- videos ---------------------------------------------------------------------- */}
@@ -216,26 +262,6 @@ function Seg({ value, onChange, options }: { value: string; onChange: (v: string
       {options.map(([v, label]) => (
         <button key={v} onClick={() => onChange(v)} className="px-2.5 py-1"
           style={{ background: v === value ? '#2a2a2e' : 'transparent', color: v === value ? INK : INK2 }}>{label}</button>
-      ))}
-    </div>
-  )
-}
-
-function ABBars({ title, rows, format, max }: { title: string; rows: { variant: string; n: number; value: number | null }[]; format: (v: number) => string; max?: number }) {
-  const top = max ?? Math.max(1, ...rows.map((r) => r.value ?? 0))
-  return (
-    <div>
-      <p className="text-xs mb-2" style={{ color: INK3 }}>{title}</p>
-      {rows.map((r) => (
-        <div key={r.variant} className="mb-2">
-          <div className="flex justify-between text-xs mb-1" style={{ color: INK2 }}>
-            <span><Swatch color={VARIANT_COLORS[r.variant]} />{r.variant === 'coldopen' ? 'Cold open' : 'Announce first'} <span style={{ color: INK3 }}>(n={r.n})</span></span>
-            <span style={{ color: INK }}>{r.value == null ? '—' : format(r.value)}</span>
-          </div>
-          <div className="h-2 rounded-sm" style={{ background: GRID }}>
-            <div className="h-2 rounded-sm" style={{ width: `${Math.min(100, (100 * (r.value ?? 0)) / top)}%`, background: VARIANT_COLORS[r.variant] }} />
-          </div>
-        </div>
       ))}
     </div>
   )
