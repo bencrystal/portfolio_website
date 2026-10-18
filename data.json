@@ -1,8 +1,8 @@
 {
-"generated": "2026-10-18T00:19:32+00:00",
+"generated": "2026-10-18T11:39:15+00:00",
 "channel": {
 "title": "Play It By Ear",
-"subscribers": 0,
+"subscribers": 1,
 "views": 0,
 "videos": 2,
 "daily": []
@@ -28,14 +28,16 @@
 "theme": "Fire-type Pokémon",
 "duration": 45,
 "privacy": "public",
-"views": 571,
+"views": 664,
 "likes": 9,
 "comments": 0,
 "avd": null,
 "avp": null,
 "minutes": null,
 "subs": null,
-"tags": []
+"tags": [
+"exp:open=announce"
+]
 },
 {
 "id": "wXa2NV6MdzE",
@@ -47,14 +49,16 @@
 "theme": "Ghost-type Pokémon",
 "duration": 47,
 "privacy": "public",
-"views": 66,
-"likes": 0,
+"views": 143,
+"likes": 4,
 "comments": 2,
 "avd": null,
 "avp": null,
 "minutes": null,
 "subs": null,
-"tags": []
+"tags": [
+"exp:open=cold"
+]
 },
 {
 "id": "iWS5NY0oggY",
@@ -80,7 +84,17 @@
 "episodes": [],
 "used": {}
 },
-"comments": [],
+"platforms": {},
+"comments": [
+{
+"video": "wXa2NV6MdzE",
+"title": "Can you name this Pokémon from its sound? (Ghost-type Pokémon) #shorts",
+"author": "@ultimateredhoodCTakeover69",
+"text": "I wanna say Lugia but it could be anything😭😭😭",
+"likes": 1,
+"at": "2026-10-17T17:51:38Z"
+}
+],
 "experiments": {
 "config": {
 "min_n": 4,
@@ -132,6 +146,30 @@
 },
 "one": {
 "short_hints": 1
+}
+}
+},
+{
+"id": "pace",
+"question": "Brisk or quick delivery?",
+"variants": {
+"brisk": {
+"tts_pace": "brisk"
+},
+"quick": {
+"tts_pace": "quick"
+}
+}
+},
+{
+"id": "energy",
+"question": "Host energy or full showman?",
+"variants": {
+"host": {
+"tts_energy": "host"
+},
+"showman": {
+"tts_energy": "showman"
 }
 }
 }
