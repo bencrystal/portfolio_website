@@ -83,7 +83,7 @@ function EntryRow({ entry }: { entry: IndexEntry }) {
     </>
   )
   const className =
-    'group flex flex-col gap-1 px-6 py-4 border-b border-white/10 last:border-b-0 hover:bg-white/[0.06] transition-colors'
+    'group flex flex-col gap-1 rounded-lg px-4 py-3 hover:bg-neutral-800 transition-colors'
 
   return entry.external ? (
     <a href={entry.href} className={className}>
@@ -98,8 +98,8 @@ function EntryRow({ entry }: { entry: IndexEntry }) {
 
 function GroupCard({ group }: { group: IndexGroup }) {
   return (
-    <section className="flex flex-col border border-white/20 bg-neutral-950 shadow-[0_0_0_1px_rgba(0,0,0,0.6)]">
-      <div className="flex items-baseline justify-between border-b border-white/20 bg-neutral-900 px-6 py-4">
+    <section className="flex flex-col overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900 shadow-2xl">
+      <div className="flex items-baseline justify-between border-b border-neutral-800 bg-neutral-950/50 px-5 py-4">
         <h2 className="text-base sm:text-lg font-black uppercase tracking-[0.2em] text-white">
           {group.title}
           <span style={{ color: ACCENT }}>.</span>
@@ -108,7 +108,7 @@ function GroupCard({ group }: { group: IndexGroup }) {
           {String(group.entries.length).padStart(2, '0')}
         </span>
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-1 p-2">
         {group.entries.map((entry) => (
           <EntryRow key={entry.href} entry={entry} />
         ))}
