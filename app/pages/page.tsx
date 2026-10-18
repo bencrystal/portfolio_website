@@ -68,6 +68,8 @@ const GROUPS: IndexGroup[] = [
   },
 ]
 
+const ACCENT = '#57f1ff'
+
 function EntryRow({ entry }: { entry: IndexEntry }) {
   const inner = (
     <>
@@ -75,12 +77,12 @@ function EntryRow({ entry }: { entry: IndexEntry }) {
         {entry.label}
       </span>
       {entry.note && (
-        <span className="text-sm text-neutral-500">{entry.note}</span>
+        <span className="text-sm leading-snug text-neutral-500">{entry.note}</span>
       )}
     </>
   )
   const className =
-    'group flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-4 py-2.5 border-b border-white/5'
+    'group flex flex-col gap-0.5 px-5 py-3 border-b border-white/5 last:border-b-0 hover:bg-white/[0.04] transition-colors'
 
   return entry.external ? (
     <a href={entry.href} className={className}>
@@ -93,31 +95,50 @@ function EntryRow({ entry }: { entry: IndexEntry }) {
   )
 }
 
+function GroupCard({ group }: { group: IndexGroup }) {
+  return (
+    <section className="flex flex-col border border-white/15 bg-white/[0.02]">
+      <div className="flex items-baseline justify-between border-b border-white/15 px-5 py-4">
+        <h2 className="text-sm font-black uppercase tracking-[0.25em] text-white">
+          {group.title}
+          <span style={{ color: ACCENT }}>.</span>
+        </h2>
+        <span className="text-xs uppercase tracking-[0.3em] text-white/40">
+          {String(group.entries.length).padStart(2, '0')}
+        </span>
+      </div>
+      <div className="flex flex-col">
+        {group.entries.map((entry) => (
+          <EntryRow key={entry.href} entry={entry} />
+        ))}
+      </div>
+    </section>
+  )
+}
+
 export default function AllPagesPage() {
   return (
     <main className="min-h-screen min-h-dvh bg-black relative">
       <Background />
-      <div className="relative z-10 mx-auto max-w-2xl px-6 py-16">
-        <p className="text-sm uppercase tracking-widest text-neutral-500">bencrystal.me</p>
-        <h1 className="mt-1 text-3xl font-semibold text-white">All Pages</h1>
-        <p className="mt-2 text-sm text-neutral-500">
+      <div className="relative z-10 mx-auto max-w-7xl px-6 py-16">
+        <p className="text-xs font-bold uppercase tracking-[0.3em] text-white/50">
+          bencrystal.me
+        </p>
+        <h1 className="mt-3 text-5xl sm:text-7xl font-black tracking-tighter uppercase text-white">
+          All Pages
+          <span style={{ color: ACCENT }}>.</span>
+        </h1>
+        <p className="mt-4 max-w-xl text-sm text-neutral-500">
           Every unlinked page on the site, in one place. Not indexed by search engines.
         </p>
 
-        {GROUPS.map((group) => (
-          <section key={group.title} className="mt-10">
-            <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-white/40">
-              {group.title}
-            </h2>
-            <div className="mt-3">
-              {group.entries.map((entry) => (
-                <EntryRow key={entry.href} entry={entry} />
-              ))}
-            </div>
-          </section>
-        ))}
+        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 items-start">
+          {GROUPS.map((group) => (
+            <GroupCard key={group.title} group={group} />
+          ))}
+        </div>
 
-        <p className="mt-12 text-xs text-neutral-600">
+        <p className="mt-12 text-xs uppercase tracking-[0.3em] text-neutral-600">
           <Link href="/" className="hover:text-neutral-400 transition-colors">
             ← back home
           </Link>
