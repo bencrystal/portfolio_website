@@ -1,10 +1,10 @@
 {
-"generated": "2026-10-18T11:39:15+00:00",
+"generated": "2026-10-19T01:00:28+00:00",
 "channel": {
 "title": "Play It By Ear",
 "subscribers": 1,
 "views": 0,
-"videos": 2,
+"videos": 10,
 "daily": []
 },
 "packs": {
@@ -19,6 +19,258 @@
 },
 "videos": [
 {
+"id": "9phOPeAubPY",
+"title": "Can you name this bird from its sound? (Shorebirds and Waders) #shorts",
+"published": "2026-10-19T00:50:56Z",
+"pack": "birds",
+"format": "short",
+"variant": "announce",
+"theme": "Shorebirds and Waders",
+"duration": 54,
+"privacy": "public",
+"views": 0,
+"likes": 0,
+"comments": 0,
+"avd": null,
+"avp": null,
+"minutes": null,
+"subs": null,
+"tags": [
+"exp:open=announce",
+"exp:voice=liam"
+],
+"platforms": {
+"instagram": {
+"id": "18111308774175627",
+"views": 0,
+"reach": 0,
+"likes": 0,
+"comments": 0,
+"shares": 0,
+"saved": 0,
+"total_interactions": 0,
+"ig_reels_avg_watch_time": 0
+},
+"facebook": {
+"id": "1647828296834165",
+"error": "(#100) The value must be a valid insights metric"
+}
+}
+},
+{
+"id": "6QHrxgEh6yY",
+"title": "Can you name this bird from its sound? (Birds of Prey) #shorts",
+"published": "2026-10-18T22:00:27Z",
+"pack": "birds",
+"format": "short",
+"variant": "coldopen",
+"theme": "Birds of Prey",
+"duration": 62,
+"privacy": "public",
+"views": 0,
+"likes": 0,
+"comments": 0,
+"avd": null,
+"avp": null,
+"minutes": null,
+"subs": null,
+"tags": [
+"exp:open=cold"
+],
+"platforms": {
+"instagram": {
+"id": "17882560875535067",
+"views": 2,
+"reach": 2,
+"likes": 0,
+"comments": 0,
+"shares": 0,
+"saved": 0,
+"total_interactions": 0,
+"ig_reels_avg_watch_time": 61001
+},
+"facebook": {
+"id": "1973873826866280",
+"error": "(#100) The value must be a valid insights metric"
+}
+}
+},
+{
+"id": "e5FLCeOWJpg",
+"title": "Can you name this bird from its sound? (Owls) #shorts",
+"published": "2026-10-18T21:20:07Z",
+"pack": "birds",
+"format": "short",
+"variant": "announce",
+"theme": "Owls",
+"duration": 68,
+"privacy": "public",
+"views": 1,
+"likes": 0,
+"comments": 0,
+"avd": null,
+"avp": null,
+"minutes": null,
+"subs": null,
+"tags": [
+"exp:open=announce"
+],
+"platforms": {
+"instagram": {
+"id": "18199761544391189",
+"views": 7,
+"reach": 7,
+"likes": 0,
+"comments": 1,
+"shares": 0,
+"saved": 0,
+"total_interactions": 1,
+"ig_reels_avg_watch_time": 10177
+},
+"facebook": {
+"id": "28654488260888945",
+"error": "(#100) The value must be a valid insights metric"
+}
+}
+},
+{
+"id": "sFxAvxeJVSU",
+"title": "Can you name this Pokémon from its sound? (Generation 2) #shorts",
+"published": "2026-10-18T20:50:17Z",
+"pack": "pokemon",
+"format": "short",
+"variant": "coldopen",
+"theme": "Generation 2",
+"duration": 47,
+"privacy": "public",
+"views": 1,
+"likes": 0,
+"comments": 0,
+"avd": null,
+"avp": null,
+"minutes": null,
+"subs": null,
+"tags": [
+"exp:open=cold"
+],
+"platforms": {
+"instagram": {
+"id": "18073625753759975",
+"views": 138,
+"reach": 126,
+"likes": 3,
+"comments": 1,
+"shares": 0,
+"saved": 0,
+"total_interactions": 4,
+"ig_reels_avg_watch_time": 11669
+},
+"facebook": {
+"id": "1465002775725417",
+"error": "(#100) The value must be a valid insights metric"
+}
+}
+},
+{
+"id": "JocEaJEchmY",
+"title": "Can you name this bird from its sound? (Backyard Birds) #shorts",
+"published": "2026-10-18T20:45:30Z",
+"pack": "birds",
+"format": "short",
+"variant": "announce",
+"theme": "Backyard Birds",
+"duration": 67,
+"privacy": "public",
+"views": 56,
+"likes": 1,
+"comments": 0,
+"avd": null,
+"avp": null,
+"minutes": null,
+"subs": null,
+"tags": [
+"exp:open=announce"
+],
+"platforms": {
+"instagram": {
+"id": "18114440330026784",
+"views": 15,
+"reach": 15,
+"likes": 0,
+"comments": 0,
+"shares": 0,
+"saved": 0,
+"total_interactions": 0,
+"ig_reels_avg_watch_time": 23313
+},
+"facebook": {
+"id": "1090098340302484",
+"error": "(#100) The value must be a valid insights metric"
+}
+}
+},
+{
+"id": "BjIjjIWsQBY",
+"title": "Can you name this Pokémon from its sound? (Ghost-type Pokémon) #shorts",
+"published": "2026-10-18T17:57:54Z",
+"pack": "pokemon",
+"format": "short",
+"variant": "coldopen",
+"theme": "Ghost-type Pokémon",
+"duration": 45,
+"privacy": "public",
+"views": 396,
+"likes": 10,
+"comments": 4,
+"avd": null,
+"avp": null,
+"minutes": null,
+"subs": null,
+"tags": [
+"exp:open=cold"
+]
+},
+{
+"id": "XTUfPW6alTk",
+"title": "Guess That Pokémon: Generation 1 (10 Rounds)",
+"published": "2026-10-18T16:15:34Z",
+"pack": "pokemon",
+"format": "long",
+"variant": null,
+"theme": "Generation 1",
+"duration": 426,
+"privacy": "public",
+"views": 6,
+"likes": 1,
+"comments": 0,
+"avd": null,
+"avp": null,
+"minutes": null,
+"subs": null,
+"tags": []
+},
+{
+"id": "dkH2GpZ46NE",
+"title": "Can you name this bird from its sound? (Crows and Jays) #shorts",
+"published": "2026-10-18T14:15:19Z",
+"pack": "birds",
+"format": "short",
+"variant": "announce",
+"theme": "Crows and Jays",
+"duration": 61,
+"privacy": "public",
+"views": 18,
+"likes": 0,
+"comments": 0,
+"avd": null,
+"avp": null,
+"minutes": null,
+"subs": null,
+"tags": [
+"exp:open=announce"
+]
+},
+{
 "id": "e_ANv_5cq08",
 "title": "Can you name this Pokémon from its sound? (Fire-type Pokémon) #shorts",
 "published": "2026-10-17T18:04:11Z",
@@ -28,8 +280,8 @@
 "theme": "Fire-type Pokémon",
 "duration": 45,
 "privacy": "public",
-"views": 664,
-"likes": 9,
+"views": 696,
+"likes": 11,
 "comments": 0,
 "avd": null,
 "avp": null,
@@ -49,8 +301,8 @@
 "theme": "Ghost-type Pokémon",
 "duration": 47,
 "privacy": "public",
-"views": 143,
-"likes": 4,
+"views": 197,
+"likes": 7,
 "comments": 2,
 "avd": null,
 "avp": null,
@@ -81,11 +333,252 @@
 }
 ],
 "ledger": {
-"episodes": [],
-"used": {}
+"episodes": [
+{
+"slug": "birds-short-shorebirds-and-waders-2026-10-18-american-woodcock-ann",
+"pack": "birds",
+"title": "Can you name this bird from its sound? (Shorebirds and Waders) #shorts",
+"theme": "Shorebirds and Waders",
+"status": "uploaded",
+"youtube_id": "9phOPeAubPY",
+"created_at": 1792370950.5974708
 },
-"platforms": {},
+{
+"slug": "birds-short-birds-of-prey-2026-10-18-red-tailed-hawk-cold",
+"pack": "birds",
+"title": "Can you name this bird from its sound? (Birds of Prey) #shorts",
+"theme": "Birds of Prey",
+"status": "uploaded",
+"youtube_id": "6QHrxgEh6yY",
+"created_at": 1792360727.5387588
+},
+{
+"slug": "birds-short-owls-2026-10-18-barred-owl-ann",
+"pack": "birds",
+"title": "Can you name this bird from its sound? (Owls) #shorts",
+"theme": "Owls",
+"status": "uploaded",
+"youtube_id": "e5FLCeOWJpg",
+"created_at": 1792358289.0721164
+},
+{
+"slug": "pokemon-short-generation-2-2026-10-18-typhlosion-cold",
+"pack": "pokemon",
+"title": "Can you name this Pokémon from its sound? (Generation 2) #shorts",
+"theme": "Generation 2",
+"status": "uploaded",
+"youtube_id": "sFxAvxeJVSU",
+"created_at": 1792356552.1389697
+},
+{
+"slug": "birds-short-backyard-birds-2026-10-18-dark-eyed-junco-ann",
+"pack": "birds",
+"title": "Can you name this bird from its sound? (Backyard Birds) #shorts",
+"theme": "Backyard Birds",
+"status": "uploaded",
+"youtube_id": "JocEaJEchmY",
+"created_at": 1792356232.2355616
+},
+{
+"slug": "pokemon-short-ghost-type-pok-mon-2026-10-18-drifloon-cold",
+"pack": "pokemon",
+"title": "Can you name this Pokémon from its sound? (Ghost-type Pokémon) #shorts",
+"theme": "Ghost-type Pokémon",
+"status": "uploaded",
+"youtube_id": "BjIjjIWsQBY",
+"created_at": 1792346186.5564897
+},
+{
+"slug": "pokemon-long-generation-1-2026-10-18",
+"pack": "pokemon",
+"title": "Guess That Pokémon: Generation 1 (10 Rounds)",
+"theme": "Generation 1",
+"status": "uploaded",
+"youtube_id": "XTUfPW6alTk",
+"created_at": 1792339480.7046201
+},
+{
+"slug": "birds-short-crows-and-jays-2026-10-18-steller-s-jay-ann",
+"pack": "birds",
+"title": "Can you name this bird from its sound? (Crows and Jays) #shorts",
+"theme": "Crows and Jays",
+"status": "uploaded",
+"youtube_id": "dkH2GpZ46NE",
+"created_at": 1792332817.9859996
+},
+{
+"slug": "pokemon-short-water-type-pok-mon-2026-10-17-feebas-cold",
+"pack": "pokemon",
+"title": "Can you name this Pokémon from its sound? (Water-type Pokémon) #shorts",
+"theme": "Water-type Pokémon",
+"status": "rendered",
+"youtube_id": null,
+"created_at": 1792284128.2095475
+}
+],
+"used": {
+"birds": {
+"short": 5
+},
+"pokemon": {
+"short": 3
+}
+}
+},
+"platforms": {
+"birds-short-backyard-birds-2026-10-18-dark-eyed-junco-ann": {
+"instagram": {
+"id": "18114440330026784",
+"views": 15,
+"reach": 15,
+"likes": 0,
+"comments": 0,
+"shares": 0,
+"saved": 0,
+"total_interactions": 0,
+"ig_reels_avg_watch_time": 23313
+},
+"facebook": {
+"id": "1090098340302484",
+"error": "(#100) The value must be a valid insights metric"
+}
+},
+"pokemon-short-generation-2-2026-10-18-typhlosion-cold": {
+"instagram": {
+"id": "18073625753759975",
+"views": 138,
+"reach": 126,
+"likes": 3,
+"comments": 1,
+"shares": 0,
+"saved": 0,
+"total_interactions": 4,
+"ig_reels_avg_watch_time": 11669
+},
+"facebook": {
+"id": "1465002775725417",
+"error": "(#100) The value must be a valid insights metric"
+}
+},
+"birds-short-owls-2026-10-18-barred-owl-ann": {
+"instagram": {
+"id": "18199761544391189",
+"views": 7,
+"reach": 7,
+"likes": 0,
+"comments": 1,
+"shares": 0,
+"saved": 0,
+"total_interactions": 1,
+"ig_reels_avg_watch_time": 10177
+},
+"facebook": {
+"id": "28654488260888945",
+"error": "(#100) The value must be a valid insights metric"
+}
+},
+"birds-short-birds-of-prey-2026-10-18-red-tailed-hawk-cold": {
+"instagram": {
+"id": "17882560875535067",
+"views": 2,
+"reach": 2,
+"likes": 0,
+"comments": 0,
+"shares": 0,
+"saved": 0,
+"total_interactions": 0,
+"ig_reels_avg_watch_time": 61001
+},
+"facebook": {
+"id": "1973873826866280",
+"error": "(#100) The value must be a valid insights metric"
+}
+},
+"birds-short-shorebirds-and-waders-2026-10-18-american-woodcock-ann": {
+"instagram": {
+"id": "18111308774175627",
+"views": 0,
+"reach": 0,
+"likes": 0,
+"comments": 0,
+"shares": 0,
+"saved": 0,
+"total_interactions": 0,
+"ig_reels_avg_watch_time": 0
+},
+"facebook": {
+"id": "1647828296834165",
+"error": "(#100) The value must be a valid insights metric"
+}
+}
+},
+"platform_summary": {
+"instagram": {
+"handle": "playitbyear.quiz",
+"followers": 1,
+"posts": 5,
+"views": 162,
+"reach": 150,
+"likes": 3,
+"comments": 2,
+"shares": 0,
+"saves": 0
+},
+"facebook": {
+"handle": "Play It By Ear",
+"followers": 0,
+"posts": 5,
+"views": 0,
+"reach": 0
+},
+"youtube": {
+"handle": "Play It By Ear",
+"followers": 1,
+"posts": 11,
+"views": 0,
+"likes": 30,
+"comments": 6
+}
+},
+"audience": {
+"countries": [],
+"ages": [],
+"traffic": [],
+"devices": []
+},
+"ypp": {
+"subscribers": 1,
+"subscribers_needed": 1000,
+"watch_hours_365d": 0.0,
+"watch_hours_needed": 4000,
+"shorts_views_90d": 0,
+"shorts_views_needed": 10000000
+},
+"budget": {
+"elevenlabs": {
+"tier": null,
+"used": null,
+"limit": null,
+"resets": null
+}
+},
 "comments": [
+{
+"video": "BjIjjIWsQBY",
+"title": "Can you name this Pokémon from its sound? (Ghost-type Pokémon) #shorts",
+"author": "@Spike_byteGD",
+"text": "I really thought it was spiritomb but I have no clue about regions",
+"likes": 1,
+"at": "2026-10-18T21:28:52Z"
+},
+{
+"video": "BjIjjIWsQBY",
+"title": "Can you name this Pokémon from its sound? (Ghost-type Pokémon) #shorts",
+"author": "@Jelk_does_silly_acts",
+"text": "WTH??? DRIFLOON KIDNAPS KIDS AND KILLS THEM????? IDK ANYTHING ABOUT POKEMON BUT THIS IS NOT COOL DRIFLOON",
+"likes": 1,
+"at": "2026-10-18T21:04:08Z"
+},
 {
 "video": "wXa2NV6MdzE",
 "title": "Can you name this Pokémon from its sound? (Ghost-type Pokémon) #shorts",
@@ -172,6 +665,32 @@
 "tts_energy": "showman"
 }
 }
+},
+{
+"id": "voice",
+"parallel": true,
+"question": "Which voice holds viewers: OpenAI coral / ash / sage, or ElevenLabs Liam?",
+"min_n": 6,
+"max_n": 12,
+"min_lead": 0.15,
+"variants": {
+"coral": {
+"tts_provider": "openai",
+"tts_voice": "coral"
+},
+"ash": {
+"tts_provider": "openai",
+"tts_voice": "ash"
+},
+"sage": {
+"tts_provider": "openai",
+"tts_voice": "sage"
+},
+"liam": {
+"tts_provider": "elevenlabs",
+"tts_voice": "name:Liam"
+}
+}
 }
 ]
 },
@@ -187,6 +706,28 @@
 "views": null
 },
 "announce": {
+"n": 0,
+"avp": null,
+"views": null
+}
+},
+"voice": {
+"coral": {
+"n": 0,
+"avp": null,
+"views": null
+},
+"ash": {
+"n": 0,
+"avp": null,
+"views": null
+},
+"sage": {
+"n": 0,
+"avp": null,
+"views": null
+},
+"liam": {
 "n": 0,
 "avp": null,
 "views": null
