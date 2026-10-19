@@ -95,7 +95,7 @@ export default function Dashboard() {
       </header>
 
       <nav className="sticky top-0 z-10 -mx-6 px-6 py-2 mb-8 flex gap-4 text-xs overflow-x-auto" style={{ background: 'rgba(26,26,25,0.92)', backdropFilter: 'blur(6px)', borderBottom: `1px solid ${GRID}` }}>
-        {[['overview', 'Overview'], ['growth', 'Growth'], ['content', 'Content'], ['experiments', 'Experiments'], ['viewers', 'Viewers'], ['operations', 'Operations']].map(([id, label]) => (
+        {[['overview', 'Overview'], ['growth', 'Growth'], ['content', 'Content'], ['experiments', 'Experiments'], ['decisions', 'Decisions'], ['viewers', 'Viewers'], ['operations', 'Operations']].map(([id, label]) => (
           <a key={id} href={`#${id}`} className="whitespace-nowrap hover:underline" style={{ color: INK2 }}>{label}</a>
         ))}
       </nav>
@@ -302,6 +302,9 @@ export default function Dashboard() {
         </>) : <p className="text-sm" style={{ color: INK2 }}>No experiment data in this export yet.</p>}
       </Card>
 
+      <SectionHead id="decisions" title="Decisions" sub="Format changes the supervisor proposes as pull requests; only Ben approves them" />
+      <Decisions />
+
       <SectionHead id="viewers" title="Viewers" sub="What people say in the comments" />
       {/* ---- comments --------------------------------------------------------------------- */}
       <Card title="Recent comments" sub="Top comments on the newest videos — the qualitative side of the numbers">
@@ -338,6 +341,107 @@ export default function Dashboard() {
         </div>
       </Card>
     </Shell>
+  )
+}
+
+// ---- decisions (password-gated; see app/api/quizbot/decisions/route.ts) --------------------------
+type Decision = { number: number; title: string; url: string; created: string; state: 'open' | 'closed'; merged: boolean; ref: string | null; body: string; images: string[] }
+
+function Decisions() {
+  const KEY = 'quizbot-admin'
+  const [pw, setPw] = useState<string>('')
+  const [input, setInput] = useState('')
+  const [items, setItems] = useState<Decision[] | null>(null)
+  const [err, setErr] = useState<string | null>(null)
+  const [busy, setBusy] = useState<number | null>(null)
+  const [imgs, setImgs] = useState<Record<string, string>>({})
+
+  const call = async (body: Record<string, unknown>) => {
+    const r = await fetch('/api/quizbot/decisions', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ password: pw || input, ...body }) })
+    const j = await r.json().catch(() => ({}))
+    if (!r.ok) throw new Error(j.error ?? `${r.status}`)
+    return j
+  }
+  const load = async (candidate: string) => {
+    setErr(null)
+    try {
+      const r = await fetch('/api/quizbot/decisions', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ password: candidate, action: 'list' }) })
+      const j = await r.json().catch(() => ({}))
+      if (!r.ok) throw new Error(j.error ?? `${r.status}`)
+      setPw(candidate); setItems(j.items)
+      try { localStorage.setItem(KEY, candidate) } catch {}
+    } catch (e) { setErr(String((e as Error).message)); setItems(null) }
+  }
+  useEffect(() => {
+    let saved = ''
+    try { saved = localStorage.getItem(KEY) ?? '' } catch {}
+    if (saved) load(saved)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  useEffect(() => {
+    if (!items) return
+    items.filter((d) => d.state === 'open').forEach((d) => d.images.forEach(async (path) => {
+      const k = `${d.ref}:${path}`
+      if (imgs[k] || !d.ref) return
+      try { const j = await call({ action: 'image', path, ref: d.ref }); setImgs((m) => ({ ...m, [k]: j.dataUrl })) } catch {}
+    }))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items])
+  const decide = async (d: Decision, action: 'merge' | 'close') => {
+    const note = window.prompt(action === 'merge' ? 'Approve — any note for the log? (optional)' : 'Decline — why? (goes on the PR so the supervisor learns)') ?? ''
+    if (action === 'close' && !note) return
+    setBusy(d.number)
+    try { await call({ action, number: d.number, note }); await load(pw) } catch (e) { setErr(String((e as Error).message)) }
+    setBusy(null)
+  }
+
+  if (!pw || !items) return (
+    <Card title="Locked" sub="Metrics above are open; approving or declining proposals needs the admin password.">
+      <form className="flex gap-2 items-center" onSubmit={(e) => { e.preventDefault(); load(input) }}>
+        <input type="password" value={input} onChange={(e) => setInput(e.target.value)} placeholder="admin password" className="rounded border bg-transparent px-2 py-1 text-sm" style={{ borderColor: GRID, color: INK }} />
+        <button type="submit" className="rounded border px-3 py-1 text-sm" style={{ borderColor: GRID, color: INK }}>Unlock</button>
+        {err && <span className="text-xs" style={{ color: '#e5484d' }}>{err}</span>}
+      </form>
+    </Card>
+  )
+  const open = items.filter((d) => d.state === 'open'), done = items.filter((d) => d.state !== 'open')
+  return (
+    <Card title={`Pending: ${open.length}`} sub="Each proposal is a pull request on the private repo with before/after frames. Approve merges it (the change ships with the next render); Decline closes it with your reason." right={<button className="text-xs hover:underline" style={{ color: INK3 }} onClick={() => { setPw(''); setItems(null); try { localStorage.removeItem(KEY) } catch {} }}>lock</button>}>
+      {err && <p className="text-xs mb-3" style={{ color: '#e5484d' }}>{err}</p>}
+      {open.length ? open.map((d) => (
+        <div key={d.number} className="rounded-md border p-4 mb-4" style={{ borderColor: GRID }}>
+          <div className="flex flex-wrap justify-between items-baseline gap-2">
+            <p className="font-medium" style={{ color: INK }}>{d.title} <a href={d.url} target="_blank" rel="noopener noreferrer" className="text-xs ml-2 hover:underline" style={{ color: INK3 }}>#{d.number} · {ago(d.created)}</a></p>
+            <div className="flex gap-2">
+              <button disabled={busy === d.number} onClick={() => decide(d, 'merge')} className="rounded px-3 py-1 text-sm" style={{ background: '#199e70', color: '#0b0b0c' }}>Approve</button>
+              <button disabled={busy === d.number} onClick={() => decide(d, 'close')} className="rounded border px-3 py-1 text-sm" style={{ borderColor: GRID, color: INK }}>Decline</button>
+            </div>
+          </div>
+          <pre className="whitespace-pre-wrap text-sm mt-2 font-sans" style={{ color: INK2 }}>{d.body.slice(0, 1500)}</pre>
+          {d.images.length > 0 && (
+            <div className="grid md:grid-cols-2 gap-3 mt-3">
+              {d.images.map((path) => (
+                <figure key={path}>
+                  <figcaption className="text-xs mb-1" style={{ color: INK3 }}>{path.split('/').pop()?.replace('.png', '')}</figcaption>
+                  {imgs[`${d.ref}:${path}`]
+                    // eslint-disable-next-line @next/next/no-img-element
+                    ? <img src={imgs[`${d.ref}:${path}`]} alt={path} className="w-full rounded border" style={{ borderColor: GRID }} />
+                    : <p className="text-xs" style={{ color: INK3 }}>loading frames…</p>}
+                </figure>
+              ))}
+            </div>
+          )}
+        </div>
+      )) : <p className="text-sm mb-4" style={{ color: INK2 }}>Nothing waiting on you.</p>}
+      {done.length > 0 && (
+        <div>
+          <p className="text-xs mb-1" style={{ color: INK3 }}>Recently decided</p>
+          <ul className="text-sm space-y-1">
+            {done.map((d) => <li key={d.number} style={{ color: INK2 }}><span style={{ color: d.merged ? '#199e70' : INK3 }}>{d.merged ? 'approved' : 'declined'}</span> · <a href={d.url} target="_blank" rel="noopener noreferrer" className="hover:underline">{d.title}</a> · {ago(d.created)}</li>)}
+          </ul>
+        </div>
+      )}
+    </Card>
   )
 }
 
