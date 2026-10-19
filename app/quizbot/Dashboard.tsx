@@ -7,16 +7,22 @@ type Video = {
   id: string; title: string; published: string; pack: string; format: 'short' | 'long'
   variant: 'coldopen' | 'announce' | null; theme: string; duration: number; privacy: string
   views: number; likes: number; comments: number; avd: number | null; avp: number | null
-  minutes: number | null; subs: number | null
+  minutes: number | null; subs: number | null; tags?: string[]
+  platforms?: Record<string, Record<string, number | string | undefined>>
 }
+type PlatformSummary = { handle?: string | null; followers?: number | null; posts?: number; views?: number; reach?: number; likes?: number; comments?: number; shares?: number; saves?: number }
+type Audience = { countries?: Record<string, number | string>[]; ages?: Record<string, number | string>[]; traffic?: Record<string, number | string>[]; devices?: Record<string, number | string>[] }
+type Ypp = { subscribers: number; subscribers_needed: number; watch_hours_365d: number; watch_hours_needed: number; shorts_views_90d: number; shorts_views_needed: number }
+type Budget = { elevenlabs?: { tier?: string; used?: number; limit?: number; resets?: string | null; error?: string } }
 type Day = { day: string; views: number; estimatedMinutesWatched: number; subscribersGained: number; subscribersLost: number }
 type Episode = { slug: string; pack: string; title: string; theme: string; status: string; youtube_id: string | null; created_at: number }
 type Comment = { video: string; title: string; author: string; text: string; likes: number; at: string }
 type ExpVariantRow = { n: number; avp: number | null; views: number | null }
 type Experiments = {
-  config: { min_n: number; max_n: number; min_lead: number; experiments: { id: string; question: string; variants: Record<string, Record<string, unknown>> }[] }
+  config: { min_n: number; max_n: number; min_lead: number; experiments: { id: string; question: string; parallel?: boolean; min_n?: number; max_n?: number; min_lead?: number; variants: Record<string, Record<string, unknown>> }[] }
   state: { decided: Record<string, string>; active: string | null; results?: Record<string, Record<string, ExpVariantRow>>; log: { when: string; experiment: string; winner: string; reason: string }[] }
 }
+const VARIANT_COLORS = ['#9085e9', '#d55181', '#199e70', '#c98500', '#3987e5', '#d95926']
 type Data = {
   generated: string
   channel: { title: string; subscribers: number; views: number; videos: number; daily: Day[] }
@@ -25,6 +31,10 @@ type Data = {
   ledger: { episodes: Episode[]; used: Record<string, Record<string, number>> }
   comments?: Comment[]
   experiments?: Experiments
+  platform_summary?: Record<string, PlatformSummary>
+  audience?: Audience
+  ypp?: Ypp
+  budget?: Budget
 }
 
 // Categorical palette (dark-surface steps; identity is also carried by labels, never color alone).
@@ -76,10 +86,66 @@ export default function Dashboard() {
         <Stat label="Views, last 7 days" value={fmtInt(data.channel.daily.slice(-7).reduce((a, d) => a + d.views, 0))} />
       </section>
 
+      {/* ---- monetisation progress -------------------------------------------------------- */}
+      {data.ypp && (
+        <Card title="Road to monetisation" sub="YouTube Partner Program: 1,000 subscribers plus either 4,000 long-form watch hours (365 d) or 10M Shorts views (90 d). Shorts watch time does not count toward the hours.">
+          <div className="grid md:grid-cols-3 gap-6 text-sm">
+            <Bar label="Subscribers" value={data.ypp.subscribers} target={data.ypp.subscribers_needed} />
+            <Bar label="Long-form watch hours, 365 d" value={data.ypp.watch_hours_365d} target={data.ypp.watch_hours_needed} />
+            <Bar label="Shorts views, 90 d" value={data.ypp.shorts_views_90d} target={data.ypp.shorts_views_needed} />
+          </div>
+        </Card>
+      )}
+
+      {/* ---- platforms --------------------------------------------------------------------- */}
+      <Card title="Platforms" sub="The same Shorts, cross-posted. YouTube is the source; Instagram and Facebook figures come from the Meta Graph API per post. TikTok joins when its posting API is approved.">
+        {data.platform_summary ? (
+          <table className="w-full text-sm">
+            <thead>
+              <tr style={{ color: INK3 }} className="text-left">
+                <th className="py-2 font-medium">Platform</th><th className="font-medium">Account</th>
+                <th className="font-medium text-right">Followers</th><th className="font-medium text-right">Posts</th>
+                <th className="font-medium text-right">Views</th><th className="font-medium text-right">Views / post</th>
+                <th className="font-medium text-right">Reach</th><th className="font-medium text-right">Likes</th><th className="font-medium text-right">Comments</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(['youtube', 'instagram', 'facebook', 'tiktok'] as const).map((p) => {
+                const s = data.platform_summary![p]
+                return (
+                  <tr key={p} className="border-t" style={{ borderColor: GRID, color: s ? INK : INK3 }}>
+                    <td className="py-2 capitalize">{p}</td>
+                    <td style={{ color: INK2 }}>{s?.handle ?? (p === 'tiktok' ? 'not connected yet' : '—')}</td>
+                    <td className="text-right">{s?.followers != null ? fmtInt(s.followers) : '—'}</td>
+                    <td className="text-right">{s?.posts != null ? fmtInt(s.posts) : '—'}</td>
+                    <td className="text-right">{s?.views != null ? fmtInt(s.views) : '—'}</td>
+                    <td className="text-right">{s?.views != null && s.posts ? fmtInt(Math.round(s.views / s.posts)) : '—'}</td>
+                    <td className="text-right">{s?.reach != null ? fmtInt(s.reach) : '—'}</td>
+                    <td className="text-right">{s?.likes != null ? fmtInt(s.likes) : '—'}</td>
+                    <td className="text-right">{s?.comments != null ? fmtInt(s.comments) : '—'}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        ) : <p className="text-sm" style={{ color: INK2 }}>No platform data in this export yet.</p>}
+      </Card>
+
       {/* ---- daily views ----------------------------------------------------------------- */}
       <Card title="Daily views" sub="Channel-wide, all formats">
         <DailyChart days={data.channel.daily.slice(-42)} />
       </Card>
+
+      {/* ---- audience ---------------------------------------------------------------------- */}
+      {data.audience && (
+        <Card title="Audience" sub="Where views come from (YouTube Analytics, since launch). Traffic source tells whether the Shorts feed is picking videos up.">
+          <div className="grid md:grid-cols-3 gap-6 text-sm">
+            <Ranked title="Traffic sources" rows={(data.audience.traffic ?? []).map((r) => [String(r.insightTrafficSourceType).toLowerCase().replace(/_/g, ' '), Number(r.views)])} />
+            <Ranked title="Countries" rows={(data.audience.countries ?? []).map((r) => [String(r.country), Number(r.views)])} />
+            <Ranked title="Age × gender (% of viewers)" rows={(data.audience.ages ?? []).map((r) => [`${String(r.ageGroup).replace('age', '')} ${String(r.gender).toLowerCase()}`, Number(r.viewerPercentage)])} pct />
+          </div>
+        </Card>
+      )}
 
       {/* ---- packs --------------------------------------------------------------------- */}
       <Card title="Packs × formats" sub="Views per video and retention, so series can be compared on equal footing">
@@ -115,20 +181,32 @@ export default function Dashboard() {
       </Card>
 
       {/* ---- experiments ------------------------------------------------------------------ */}
-      <Card title="Shorts experiments" sub={`One at a time; variants alternate per Short. Judged on average % viewed at ≥${data.experiments?.config.min_n ?? 4} per side (needs a ≥${Math.round((data.experiments?.config.min_lead ?? 0.1) * 100)}% lead, else runs to ${data.experiments?.config.max_n ?? 8}). Winners become the baseline.`}>
-        {data.experiments ? (
+      <Card title="Shorts experiments" sub={`Sequential tests run one at a time, variants alternating per Short; a parallel test (voice) runs alongside, balanced against it. Judged nightly on average % viewed: at ≥${data.experiments?.config.min_n ?? 4} per side a ≥${Math.round((data.experiments?.config.min_lead ?? 0.1) * 100)}% lead decides it, else it runs to ${data.experiments?.config.max_n ?? 8} per side and the leader wins. Winners become the baseline for everything after.`}>
+        {data.experiments ? (<>
+          {data.budget?.elevenlabs && (
+            <p className="text-xs mb-4" style={{ color: INK3 }}>
+              ElevenLabs credits ({data.budget.elevenlabs.tier ?? '?'} tier): {data.budget.elevenlabs.error ? data.budget.elevenlabs.error
+                : `${fmtInt(data.budget.elevenlabs.used ?? 0)} / ${fmtInt(data.budget.elevenlabs.limit ?? 0)} used${data.budget.elevenlabs.resets ? `, resets ${data.budget.elevenlabs.resets}` : ''}`}
+              {' '}— when they run out the Short finishes on OpenAI and is tagged <code>fallback</code>, so it never pollutes the test.
+            </p>
+          )}
           <div className="grid md:grid-cols-2 gap-6">
             {data.experiments.config.experiments.map((ex) => {
-              const decided = data.experiments!.state.decided[ex.id]
-              const active = !decided && data.experiments!.config.experiments.find((e) => !data.experiments!.state.decided[e.id])?.id === ex.id
-              const rows = data.experiments!.state.results?.[ex.id] ?? {}
-              const status = decided ? `decided: ${decided}` : active ? 'running' : 'queued'
+              const st = data.experiments!.state
+              const cfg = data.experiments!.config
+              const decided = st.decided[ex.id]
+              const firstSequential = cfg.experiments.find((e) => !e.parallel && !st.decided[e.id])?.id
+              const active = !decided && (ex.parallel || ex.id === firstSequential)
+              const rows = st.results?.[ex.id] ?? {}
+              const status = decided ? `decided: ${decided}` : active ? (ex.parallel ? 'running (parallel)' : 'running') : 'queued'
+              const minN = ex.min_n ?? cfg.min_n, maxN = ex.max_n ?? cfg.max_n, lead = ex.min_lead ?? cfg.min_lead
               return (
                 <div key={ex.id} className="rounded-md border p-4" style={{ borderColor: GRID, opacity: decided || active ? 1 : 0.6 }}>
                   <div className="flex justify-between items-baseline mb-1">
                     <p className="font-medium" style={{ color: INK }}>{ex.question}</p>
                     <span className="text-xs ml-3 whitespace-nowrap" style={{ color: decided ? '#199e70' : active ? '#c98500' : INK3 }}>{status}</span>
                   </div>
+                  <p className="text-xs" style={{ color: INK3 }}>decides at ≥{minN} per side with a ≥{Math.round(lead * 100)}% lead, or at {maxN} per side</p>
                   <table className="w-full text-xs mt-2">
                     <thead><tr style={{ color: INK3 }} className="text-left"><th className="font-medium">Variant</th><th className="font-medium text-right">n</th><th className="font-medium text-right">% viewed</th><th className="font-medium text-right">Views / video</th></tr></thead>
                     <tbody>
@@ -136,7 +214,7 @@ export default function Dashboard() {
                         const r = rows[name]
                         return (
                           <tr key={name} className="border-t" style={{ borderColor: GRID, color: INK }}>
-                            <td className="py-1"><Swatch color={i === 0 ? '#9085e9' : '#d55181'} />{name}{decided === name ? ' ✓' : ''}</td>
+                            <td className="py-1"><Swatch color={VARIANT_COLORS[i % VARIANT_COLORS.length]} />{name}{decided === name ? ' ✓' : ''}</td>
                             <td className="text-right">{r?.n ?? 0}</td>
                             <td className="text-right">{r?.avp != null ? `${Math.round(r.avp)}%` : '—'}</td>
                             <td className="text-right">{r?.views != null ? fmtInt(Math.round(r.views)) : '—'}</td>
@@ -145,12 +223,22 @@ export default function Dashboard() {
                       })}
                     </tbody>
                   </table>
-                  {decided && <p className="text-xs mt-2" style={{ color: INK3 }}>{data.experiments!.state.log.find((l) => l.experiment === ex.id)?.reason}</p>}
+                  {decided && <p className="text-xs mt-2" style={{ color: INK3 }}>{st.log.find((l) => l.experiment === ex.id)?.reason}</p>}
                 </div>
               )
             })}
           </div>
-        ) : <p className="text-sm" style={{ color: INK2 }}>No experiment data in this export yet.</p>}
+          <div className="mt-6">
+            <p className="text-xs mb-2" style={{ color: INK3 }}>Decision log</p>
+            {data.experiments.state.log.length ? (
+              <ul className="text-sm space-y-1">
+                {[...data.experiments.state.log].reverse().map((l, i) => (
+                  <li key={i} style={{ color: INK }}><span style={{ color: INK3 }}>{l.when}</span> · {l.experiment} → <strong>{l.winner}</strong> <span style={{ color: INK2 }}>({l.reason})</span></li>
+                ))}
+              </ul>
+            ) : <p className="text-sm" style={{ color: INK2 }}>Nothing decided yet.</p>}
+          </div>
+        </>) : <p className="text-sm" style={{ color: INK2 }}>No experiment data in this export yet.</p>}
       </Card>
 
       {/* ---- comments --------------------------------------------------------------------- */}
@@ -176,9 +264,10 @@ export default function Dashboard() {
         <table className="w-full text-sm">
           <thead>
             <tr style={{ color: INK3 }} className="text-left">
-              <th className="py-2 font-medium">Title</th><th className="font-medium">Pack</th><th className="font-medium">Open</th>
+              <th className="py-2 font-medium">Title</th><th className="font-medium">Pack</th><th className="font-medium">Test arms</th>
               <th className="font-medium text-right">Views</th><th className="font-medium text-right">% viewed</th>
-              <th className="font-medium text-right">View time</th><th className="font-medium text-right">Likes</th><th className="font-medium text-right">Age</th>
+              <th className="font-medium text-right">View time</th><th className="font-medium text-right">Likes</th>
+              <th className="font-medium text-right">IG</th><th className="font-medium text-right">FB</th><th className="font-medium text-right">Age</th>
             </tr>
           </thead>
           <tbody>
@@ -188,11 +277,13 @@ export default function Dashboard() {
                   <a href={`https://youtu.be/${v.id}`} target="_blank" rel="noopener noreferrer" className="hover:underline">{v.title}</a>
                 </td>
                 <td><Swatch color={PACK_COLORS[v.pack] ?? INK3} /><span style={{ color: INK2 }}>{data.packs[v.pack]?.display_name ?? v.pack}</span></td>
-                <td style={{ color: INK2 }}>{v.format === 'long' ? 'long' : v.variant === 'coldopen' ? 'cold' : v.variant === 'announce' ? 'announce' : '—'}</td>
+                <td className="text-xs" style={{ color: INK2 }}>{v.format === 'long' ? 'long' : (v.tags?.length ? v.tags.map((t) => t.replace('exp:', '')).join(' · ') : v.variant === 'coldopen' ? 'open=cold' : v.variant === 'announce' ? 'open=announce' : '—')}</td>
                 <td className="text-right">{fmtInt(v.views)}</td>
                 <td className="text-right">{fmtPct(v.avp)}</td>
                 <td className="text-right">{fmtSecs(v.avd)}</td>
                 <td className="text-right">{fmtInt(v.likes)}</td>
+                <td className="text-right" style={{ color: INK2 }}>{num(v.platforms?.instagram?.views)}</td>
+                <td className="text-right" style={{ color: INK2 }}>{num(v.platforms?.facebook?.blue_reels_play_count ?? v.platforms?.facebook?.total_video_views)}</td>
                 <td className="text-right" style={{ color: INK3 }}>{ago(v.published)}</td>
               </tr>
             ))}
@@ -249,6 +340,37 @@ function Card({ title, sub, right, children }: { title: string; sub?: string; ri
       </div>
       {children}
     </section>
+  )
+}
+
+const num = (x: unknown) => (typeof x === 'number' ? fmtInt(x) : '—')
+
+function Bar({ label, value, target }: { label: string; value: number; target: number }) {
+  const pct = Math.min(100, (100 * value) / target)
+  return (
+    <div>
+      <div className="flex justify-between mb-1"><span style={{ color: INK2 }}>{label}</span><span style={{ color: INK }}>{fmtInt(Math.round(value))} / {fmtInt(target)}</span></div>
+      <div className="h-2 rounded" style={{ background: GRID }} role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100}>
+        <div className="h-2 rounded" style={{ width: `${Math.max(pct, value > 0 ? 1 : 0)}%`, background: pct >= 100 ? '#199e70' : '#3987e5' }} />
+      </div>
+      <p className="text-xs mt-1" style={{ color: INK3 }}>{pct >= 100 ? 'reached' : `${pct < 1 ? pct.toFixed(2) : Math.round(pct)}%`}</p>
+    </div>
+  )
+}
+
+function Ranked({ title, rows, pct }: { title: string; rows: [string, number][]; pct?: boolean }) {
+  const top = rows.filter(([, v]) => v > 0).slice(0, 8)
+  const max = Math.max(1, ...top.map(([, v]) => v))
+  return (
+    <div>
+      <p style={{ color: INK3 }} className="mb-2">{title}</p>
+      {top.length ? top.map(([k, v]) => (
+        <div key={k} className="mb-1.5">
+          <div className="flex justify-between text-xs"><span style={{ color: INK }}>{k}</span><span style={{ color: INK2 }}>{pct ? `${v.toFixed(1)}%` : fmtInt(v)}</span></div>
+          <div className="h-1 rounded mt-0.5" style={{ background: GRID }}><div className="h-1 rounded" style={{ width: `${(100 * v) / max}%`, background: '#3987e5' }} /></div>
+        </div>
+      )) : <p className="text-xs" style={{ color: INK2 }}>no data yet</p>}
+    </div>
   )
 }
 
