@@ -68,6 +68,21 @@ export default function Dashboard() {
   const packs = Object.keys(data.packs)
   const stuck = data.ledger.episodes.filter((e) => e.status === 'rendered')
   const failed = data.ledger.episodes.filter((e) => e.status === 'failed')
+  const kpi = (() => {
+    const d = data.channel.daily, last = d.slice(-7), prior = d.slice(-14, -7)
+    const sum = (xs: Day[], k: keyof Day) => xs.reduce((a, x) => a + Number(x[k]), 0)
+    const views7 = sum(last, 'views'), viewsPrior = sum(prior, 'views')
+    const cut = (days: number) => new Date(Date.now() - days * 864e5).toISOString()
+    const shorts = data.videos.filter((v) => v.format === 'short' && v.privacy === 'public')
+    const avp7 = mean(shorts.filter((v) => v.published >= cut(7)).map((v) => v.avp))
+    const avpPrior = mean(shorts.filter((v) => v.published < cut(7) && v.published >= cut(14)).map((v) => v.avp))
+    return {
+      views7, viewsDelta: prior.length && viewsPrior ? (100 * (views7 - viewsPrior)) / viewsPrior : null,
+      subsDelta: last.length ? sum(last, 'subscribersGained') - sum(last, 'subscribersLost') : null,
+      avp7, avpDelta: avp7 != null && avpPrior != null ? avp7 - avpPrior : null,
+      videos7: data.videos.filter((v) => v.privacy === 'public' && v.published >= cut(7)).length,
+    }
+  })()
   const sorted = [...videos].sort((a, b) => sort === 'views' ? b.views - a.views : sort === 'avp' ? (b.avp ?? -1) - (a.avp ?? -1) : b.published.localeCompare(a.published))
 
   return (
@@ -79,12 +94,24 @@ export default function Dashboard() {
         <p className="text-sm mt-1" style={{ color: INK3 }}>Updated {ago(data.generated)} · YouTube Analytics + pipeline ledger · read-only</p>
       </header>
 
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
-        <Stat label="Subscribers" value={fmtInt(data.channel.subscribers)} />
-        <Stat label="Total views" value={fmtInt(data.channel.views)} />
-        <Stat label="Public videos" value={fmtInt(data.videos.filter((v) => v.privacy === 'public').length)} />
-        <Stat label="Views, last 7 days" value={fmtInt(data.channel.daily.slice(-7).reduce((a, d) => a + d.views, 0))} />
+      <nav className="sticky top-0 z-10 -mx-6 px-6 py-2 mb-8 flex gap-4 text-xs overflow-x-auto" style={{ background: 'rgba(26,26,25,0.92)', backdropFilter: 'blur(6px)', borderBottom: `1px solid ${GRID}` }}>
+        {[['overview', 'Overview'], ['growth', 'Growth'], ['content', 'Content'], ['experiments', 'Experiments'], ['viewers', 'Viewers'], ['operations', 'Operations']].map(([id, label]) => (
+          <a key={id} href={`#${id}`} className="whitespace-nowrap hover:underline" style={{ color: INK2 }}>{label}</a>
+        ))}
+      </nav>
+
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <Stat label="Subscribers" value={fmtInt(data.channel.subscribers)} delta={kpi.subsDelta} deltaLabel="last 7 d" />
+        <Stat label="Views, last 7 days" value={fmtInt(kpi.views7)} delta={kpi.viewsDelta} deltaLabel="vs prior 7 d" pct />
+        <Stat label="Shorts % viewed, last 7 d" value={kpi.avp7 == null ? '—' : `${Math.round(kpi.avp7)}%`} delta={kpi.avpDelta} deltaLabel="vs prior 7 d" pts />
+        <Stat label="Public videos" value={fmtInt(data.videos.filter((v) => v.privacy === 'public').length)} delta={kpi.videos7} deltaLabel="last 7 d" />
       </section>
+
+      <SectionHead id="overview" title="Overview" sub="How the channel is doing this week" />
+      {/* ---- daily views ----------------------------------------------------------------- */}
+      <Card title="Daily views" sub="Channel-wide, all formats">
+        <DailyChart days={data.channel.daily.slice(-42)} />
+      </Card>
 
       {/* ---- monetisation progress -------------------------------------------------------- */}
       {data.ypp && (
@@ -97,6 +124,7 @@ export default function Dashboard() {
         </Card>
       )}
 
+      <SectionHead id="growth" title="Growth" sub="Where viewers come from, on every platform" />
       {/* ---- platforms --------------------------------------------------------------------- */}
       <Card title="Platforms" sub="The same Shorts, cross-posted. YouTube is the source; Instagram and Facebook figures come from the Meta Graph API per post. TikTok joins when its posting API is approved.">
         {data.platform_summary ? (
@@ -131,11 +159,6 @@ export default function Dashboard() {
         ) : <p className="text-sm" style={{ color: INK2 }}>No platform data in this export yet.</p>}
       </Card>
 
-      {/* ---- daily views ----------------------------------------------------------------- */}
-      <Card title="Daily views" sub="Channel-wide, all formats">
-        <DailyChart days={data.channel.daily.slice(-42)} />
-      </Card>
-
       {/* ---- audience ---------------------------------------------------------------------- */}
       {data.audience && (
         <Card title="Audience" sub="Where views come from (YouTube Analytics, since launch). Traffic source tells whether the Shorts feed is picking videos up.">
@@ -147,6 +170,7 @@ export default function Dashboard() {
         </Card>
       )}
 
+      <SectionHead id="content" title="Content" sub="Which series and videos hold attention" />
       {/* ---- packs --------------------------------------------------------------------- */}
       <Card title="Packs × formats" sub="Views per video and retention, so series can be compared on equal footing">
         <table className="w-full text-sm">
@@ -180,6 +204,43 @@ export default function Dashboard() {
         </table>
       </Card>
 
+      {/* ---- videos ---------------------------------------------------------------------- */}
+      <Card title="Videos" sub="Public videos; click a title to open it" right={
+        <div className="flex gap-2 text-xs">
+          <Seg value={fmt} onChange={(v) => setFmt(v as typeof fmt)} options={[['all', 'All'], ['short', 'Shorts'], ['long', 'Long']]} />
+          <Seg value={sort} onChange={(v) => setSort(v as typeof sort)} options={[['published', 'Newest'], ['views', 'Views'], ['avp', '% viewed']]} />
+        </div>}>
+        <table className="w-full text-sm">
+          <thead>
+            <tr style={{ color: INK3 }} className="text-left">
+              <th className="py-2 font-medium">Title</th><th className="font-medium">Pack</th><th className="font-medium">Test arms</th>
+              <th className="font-medium text-right">Views</th><th className="font-medium text-right">% viewed</th>
+              <th className="font-medium text-right">View time</th><th className="font-medium text-right">Likes</th>
+              <th className="font-medium text-right">IG</th><th className="font-medium text-right">FB</th><th className="font-medium text-right">Age</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sorted.slice(0, 60).map((v) => (
+              <tr key={v.id} className="border-t" style={{ borderColor: GRID, color: INK }}>
+                <td className="py-2 pr-3 max-w-[28rem] truncate">
+                  <a href={`https://youtu.be/${v.id}`} target="_blank" rel="noopener noreferrer" className="hover:underline">{v.title}</a>
+                </td>
+                <td><Swatch color={PACK_COLORS[v.pack] ?? INK3} /><span style={{ color: INK2 }}>{data.packs[v.pack]?.display_name ?? v.pack}</span></td>
+                <td className="text-xs" style={{ color: INK2 }}>{v.format === 'long' ? 'long' : (v.tags?.length ? v.tags.map((t) => t.replace('exp:', '')).join(' · ') : v.variant === 'coldopen' ? 'open=cold' : v.variant === 'announce' ? 'open=announce' : '—')}</td>
+                <td className="text-right">{fmtInt(v.views)}</td>
+                <td className="text-right">{fmtPct(v.avp)}</td>
+                <td className="text-right">{fmtSecs(v.avd)}</td>
+                <td className="text-right">{fmtInt(v.likes)}</td>
+                <td className="text-right" style={{ color: INK2 }}>{num(v.platforms?.instagram?.views)}</td>
+                <td className="text-right" style={{ color: INK2 }}>{num(v.platforms?.facebook?.blue_reels_play_count ?? v.platforms?.facebook?.total_video_views)}</td>
+                <td className="text-right" style={{ color: INK3 }}>{ago(v.published)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Card>
+
+      <SectionHead id="experiments" title="Experiments" sub="Automated A/B tests on Shorts, judged nightly" />
       {/* ---- experiments ------------------------------------------------------------------ */}
       <Card title="Shorts experiments" sub={`Sequential tests run one at a time, variants alternating per Short; a parallel test (voice) runs alongside, balanced against it. Judged nightly on average % viewed: at ≥${data.experiments?.config.min_n ?? 4} per side a ≥${Math.round((data.experiments?.config.min_lead ?? 0.1) * 100)}% lead decides it, else it runs to ${data.experiments?.config.max_n ?? 8} per side and the leader wins. Winners become the baseline for everything after.`}>
         {data.experiments ? (<>
@@ -241,6 +302,7 @@ export default function Dashboard() {
         </>) : <p className="text-sm" style={{ color: INK2 }}>No experiment data in this export yet.</p>}
       </Card>
 
+      <SectionHead id="viewers" title="Viewers" sub="What people say in the comments" />
       {/* ---- comments --------------------------------------------------------------------- */}
       <Card title="Recent comments" sub="Top comments on the newest videos — the qualitative side of the numbers">
         {data.comments?.length ? (
@@ -255,42 +317,7 @@ export default function Dashboard() {
         ) : <p className="text-sm" style={{ color: INK2 }}>No comments yet.</p>}
       </Card>
 
-      {/* ---- videos ---------------------------------------------------------------------- */}
-      <Card title="Videos" sub="Public videos; click a title to open it" right={
-        <div className="flex gap-2 text-xs">
-          <Seg value={fmt} onChange={(v) => setFmt(v as typeof fmt)} options={[['all', 'All'], ['short', 'Shorts'], ['long', 'Long']]} />
-          <Seg value={sort} onChange={(v) => setSort(v as typeof sort)} options={[['published', 'Newest'], ['views', 'Views'], ['avp', '% viewed']]} />
-        </div>}>
-        <table className="w-full text-sm">
-          <thead>
-            <tr style={{ color: INK3 }} className="text-left">
-              <th className="py-2 font-medium">Title</th><th className="font-medium">Pack</th><th className="font-medium">Test arms</th>
-              <th className="font-medium text-right">Views</th><th className="font-medium text-right">% viewed</th>
-              <th className="font-medium text-right">View time</th><th className="font-medium text-right">Likes</th>
-              <th className="font-medium text-right">IG</th><th className="font-medium text-right">FB</th><th className="font-medium text-right">Age</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sorted.slice(0, 60).map((v) => (
-              <tr key={v.id} className="border-t" style={{ borderColor: GRID, color: INK }}>
-                <td className="py-2 pr-3 max-w-[28rem] truncate">
-                  <a href={`https://youtu.be/${v.id}`} target="_blank" rel="noopener noreferrer" className="hover:underline">{v.title}</a>
-                </td>
-                <td><Swatch color={PACK_COLORS[v.pack] ?? INK3} /><span style={{ color: INK2 }}>{data.packs[v.pack]?.display_name ?? v.pack}</span></td>
-                <td className="text-xs" style={{ color: INK2 }}>{v.format === 'long' ? 'long' : (v.tags?.length ? v.tags.map((t) => t.replace('exp:', '')).join(' · ') : v.variant === 'coldopen' ? 'open=cold' : v.variant === 'announce' ? 'open=announce' : '—')}</td>
-                <td className="text-right">{fmtInt(v.views)}</td>
-                <td className="text-right">{fmtPct(v.avp)}</td>
-                <td className="text-right">{fmtSecs(v.avd)}</td>
-                <td className="text-right">{fmtInt(v.likes)}</td>
-                <td className="text-right" style={{ color: INK2 }}>{num(v.platforms?.instagram?.views)}</td>
-                <td className="text-right" style={{ color: INK2 }}>{num(v.platforms?.facebook?.blue_reels_play_count ?? v.platforms?.facebook?.total_video_views)}</td>
-                <td className="text-right" style={{ color: INK3 }}>{ago(v.published)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </Card>
-
+      <SectionHead id="operations" title="Operations" sub="Pipeline health from the render ledger" />
       {/* ---- pipeline -------------------------------------------------------------------- */}
       <Card title="Pipeline" sub="From the render ledger. 'Stuck' = rendered but not uploaded (retried on the next run).">
         <div className="grid md:grid-cols-3 gap-6 text-sm">
@@ -316,24 +343,36 @@ export default function Dashboard() {
 
 // ---- pieces ------------------------------------------------------------------------------------
 function Shell({ children }: { children: React.ReactNode }) {
-  return <main className="min-h-screen text-white"><div className="max-w-6xl mx-auto px-6 py-12">{children}</div></main>
+  return <main className="min-h-screen text-white tabular-nums"><div className="max-w-6xl mx-auto px-6 py-12">{children}</div></main>
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value, delta, deltaLabel, pct, pts }: { label: string; value: string; delta?: number | null; deltaLabel?: string; pct?: boolean; pts?: boolean }) {
+  const up = delta != null && delta > 0, down = delta != null && delta < 0
+  const text = delta == null ? null : `${up ? '+' : ''}${pct ? `${Math.round(delta)}%` : pts ? `${delta.toFixed(1)} pts` : fmtInt(Math.round(delta))}`
   return (
     <div className="rounded-lg border p-4" style={{ borderColor: GRID }}>
       <p className="text-xs uppercase tracking-wider" style={{ color: INK3 }}>{label}</p>
       <p className="text-2xl font-semibold mt-1" style={{ color: INK }}>{value}</p>
+      <p className="text-xs mt-1" style={{ color: up ? '#4cc38a' : down ? '#e5484d' : INK3 }}>{text ?? '—'}{deltaLabel && text ? ` ${deltaLabel}` : ''}</p>
+    </div>
+  )
+}
+
+function SectionHead({ id, title, sub }: { id: string; title: string; sub: string }) {
+  return (
+    <div id={id} className="mt-12 mb-4 scroll-mt-14">
+      <h2 className="text-lg font-semibold" style={{ color: INK }}>{title}</h2>
+      <p className="text-xs" style={{ color: INK3 }}>{sub}</p>
     </div>
   )
 }
 
 function Card({ title, sub, right, children }: { title: string; sub?: string; right?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <section className="rounded-lg border p-5 mb-6 overflow-x-auto" style={{ borderColor: GRID }}>
+    <section className="rounded-lg border p-5 mb-6 overflow-x-auto [&_tbody_tr:nth-child(even)]:bg-white/[0.025] [&_th]:whitespace-nowrap" style={{ borderColor: GRID }}>
       <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
         <div>
-          <h2 className="text-base font-semibold" style={{ color: INK }}>{title}</h2>
+          <h3 className="text-base font-semibold" style={{ color: INK }}>{title}</h3>
           {sub && <p className="text-xs mt-0.5" style={{ color: INK3 }}>{sub}</p>}
         </div>
         {right}
