@@ -1,9 +1,9 @@
 {
-"generated": "2026-10-19T01:00:28+00:00",
+"generated": "2026-10-19T13:53:12+00:00",
 "channel": {
 "title": "Play It By Ear",
-"subscribers": 1,
-"views": 0,
+"subscribers": 3,
+"views": 858,
 "videos": 10,
 "daily": []
 },
@@ -28,8 +28,8 @@
 "theme": "Shorebirds and Waders",
 "duration": 54,
 "privacy": "public",
-"views": 0,
-"likes": 0,
+"views": 21,
+"likes": 1,
 "comments": 0,
 "avd": null,
 "avp": null,
@@ -39,17 +39,18 @@
 "exp:open=announce",
 "exp:voice=liam"
 ],
+"views7d": null,
 "platforms": {
 "instagram": {
 "id": "18111308774175627",
-"views": 0,
-"reach": 0,
-"likes": 0,
+"views": 120,
+"reach": 107,
+"likes": 2,
 "comments": 0,
 "shares": 0,
 "saved": 0,
-"total_interactions": 0,
-"ig_reels_avg_watch_time": 0
+"total_interactions": 2,
+"ig_reels_avg_watch_time": 5848
 },
 "facebook": {
 "id": "1647828296834165",
@@ -67,7 +68,7 @@
 "theme": "Birds of Prey",
 "duration": 62,
 "privacy": "public",
-"views": 0,
+"views": 4,
 "likes": 0,
 "comments": 0,
 "avd": null,
@@ -77,17 +78,18 @@
 "tags": [
 "exp:open=cold"
 ],
+"views7d": null,
 "platforms": {
 "instagram": {
 "id": "17882560875535067",
-"views": 2,
-"reach": 2,
+"views": 19,
+"reach": 19,
 "likes": 0,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 0,
-"ig_reels_avg_watch_time": 61001
+"ig_reels_avg_watch_time": 13362
 },
 "facebook": {
 "id": "1973873826866280",
@@ -105,7 +107,7 @@
 "theme": "Owls",
 "duration": 68,
 "privacy": "public",
-"views": 1,
+"views": 3,
 "likes": 0,
 "comments": 0,
 "avd": null,
@@ -115,17 +117,18 @@
 "tags": [
 "exp:open=announce"
 ],
+"views7d": null,
 "platforms": {
 "instagram": {
 "id": "18199761544391189",
-"views": 7,
-"reach": 7,
-"likes": 0,
+"views": 29,
+"reach": 27,
+"likes": 1,
 "comments": 1,
 "shares": 0,
 "saved": 0,
-"total_interactions": 1,
-"ig_reels_avg_watch_time": 10177
+"total_interactions": 2,
+"ig_reels_avg_watch_time": 13104
 },
 "facebook": {
 "id": "28654488260888945",
@@ -143,8 +146,8 @@
 "theme": "Generation 2",
 "duration": 47,
 "privacy": "public",
-"views": 1,
-"likes": 0,
+"views": 4,
+"likes": 1,
 "comments": 0,
 "avd": null,
 "avp": null,
@@ -153,17 +156,18 @@
 "tags": [
 "exp:open=cold"
 ],
+"views7d": null,
 "platforms": {
 "instagram": {
 "id": "18073625753759975",
-"views": 138,
-"reach": 126,
-"likes": 3,
-"comments": 1,
+"views": 185,
+"reach": 164,
+"likes": 4,
+"comments": 2,
 "shares": 0,
 "saved": 0,
-"total_interactions": 4,
-"ig_reels_avg_watch_time": 11669
+"total_interactions": 6,
+"ig_reels_avg_watch_time": 12424
 },
 "facebook": {
 "id": "1465002775725417",
@@ -181,8 +185,8 @@
 "theme": "Backyard Birds",
 "duration": 67,
 "privacy": "public",
-"views": 56,
-"likes": 1,
+"views": 484,
+"likes": 5,
 "comments": 0,
 "avd": null,
 "avp": null,
@@ -191,17 +195,18 @@
 "tags": [
 "exp:open=announce"
 ],
+"views7d": null,
 "platforms": {
 "instagram": {
 "id": "18114440330026784",
-"views": 15,
-"reach": 15,
-"likes": 0,
+"views": 115,
+"reach": 107,
+"likes": 1,
 "comments": 0,
-"shares": 0,
+"shares": 1,
 "saved": 0,
-"total_interactions": 0,
-"ig_reels_avg_watch_time": 23313
+"total_interactions": 2,
+"ig_reels_avg_watch_time": 10301
 },
 "facebook": {
 "id": "1090098340302484",
@@ -219,8 +224,8 @@
 "theme": "Ghost-type Pokémon",
 "duration": 45,
 "privacy": "public",
-"views": 396,
-"likes": 10,
+"views": 436,
+"likes": 13,
 "comments": 4,
 "avd": null,
 "avp": null,
@@ -228,7 +233,8 @@
 "subs": null,
 "tags": [
 "exp:open=cold"
-]
+],
+"views7d": null
 },
 {
 "id": "XTUfPW6alTk",
@@ -240,14 +246,15 @@
 "theme": "Generation 1",
 "duration": 426,
 "privacy": "public",
-"views": 6,
+"views": 20,
 "likes": 1,
 "comments": 0,
 "avd": null,
 "avp": null,
 "minutes": null,
 "subs": null,
-"tags": []
+"tags": [],
+"views7d": null
 },
 {
 "id": "dkH2GpZ46NE",
@@ -259,7 +266,7 @@
 "theme": "Crows and Jays",
 "duration": 61,
 "privacy": "public",
-"views": 18,
+"views": 45,
 "likes": 0,
 "comments": 0,
 "avd": null,
@@ -268,7 +275,8 @@
 "subs": null,
 "tags": [
 "exp:open=announce"
-]
+],
+"views7d": null
 },
 {
 "id": "e_ANv_5cq08",
@@ -280,16 +288,17 @@
 "theme": "Fire-type Pokémon",
 "duration": 45,
 "privacy": "public",
-"views": 696,
-"likes": 11,
-"comments": 0,
+"views": 760,
+"likes": 12,
+"comments": 1,
 "avd": null,
 "avp": null,
 "minutes": null,
 "subs": null,
 "tags": [
 "exp:open=announce"
-]
+],
+"views7d": null
 },
 {
 "id": "wXa2NV6MdzE",
@@ -301,8 +310,8 @@
 "theme": "Ghost-type Pokémon",
 "duration": 47,
 "privacy": "public",
-"views": 197,
-"likes": 7,
+"views": 239,
+"likes": 9,
 "comments": 2,
 "avd": null,
 "avp": null,
@@ -310,7 +319,8 @@
 "subs": null,
 "tags": [
 "exp:open=cold"
-]
+],
+"views7d": null
 },
 {
 "id": "iWS5NY0oggY",
@@ -329,7 +339,8 @@
 "avp": null,
 "minutes": null,
 "subs": null,
-"tags": []
+"tags": [],
+"views7d": null
 }
 ],
 "ledger": {
@@ -429,14 +440,14 @@
 "birds-short-backyard-birds-2026-10-18-dark-eyed-junco-ann": {
 "instagram": {
 "id": "18114440330026784",
-"views": 15,
-"reach": 15,
-"likes": 0,
+"views": 115,
+"reach": 107,
+"likes": 1,
 "comments": 0,
-"shares": 0,
+"shares": 1,
 "saved": 0,
-"total_interactions": 0,
-"ig_reels_avg_watch_time": 23313
+"total_interactions": 2,
+"ig_reels_avg_watch_time": 10301
 },
 "facebook": {
 "id": "1090098340302484",
@@ -446,14 +457,14 @@
 "pokemon-short-generation-2-2026-10-18-typhlosion-cold": {
 "instagram": {
 "id": "18073625753759975",
-"views": 138,
-"reach": 126,
-"likes": 3,
-"comments": 1,
+"views": 185,
+"reach": 164,
+"likes": 4,
+"comments": 2,
 "shares": 0,
 "saved": 0,
-"total_interactions": 4,
-"ig_reels_avg_watch_time": 11669
+"total_interactions": 6,
+"ig_reels_avg_watch_time": 12424
 },
 "facebook": {
 "id": "1465002775725417",
@@ -463,14 +474,14 @@
 "birds-short-owls-2026-10-18-barred-owl-ann": {
 "instagram": {
 "id": "18199761544391189",
-"views": 7,
-"reach": 7,
-"likes": 0,
+"views": 29,
+"reach": 27,
+"likes": 1,
 "comments": 1,
 "shares": 0,
 "saved": 0,
-"total_interactions": 1,
-"ig_reels_avg_watch_time": 10177
+"total_interactions": 2,
+"ig_reels_avg_watch_time": 13104
 },
 "facebook": {
 "id": "28654488260888945",
@@ -480,14 +491,14 @@
 "birds-short-birds-of-prey-2026-10-18-red-tailed-hawk-cold": {
 "instagram": {
 "id": "17882560875535067",
-"views": 2,
-"reach": 2,
+"views": 19,
+"reach": 19,
 "likes": 0,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 0,
-"ig_reels_avg_watch_time": 61001
+"ig_reels_avg_watch_time": 13362
 },
 "facebook": {
 "id": "1973873826866280",
@@ -497,14 +508,14 @@
 "birds-short-shorebirds-and-waders-2026-10-18-american-woodcock-ann": {
 "instagram": {
 "id": "18111308774175627",
-"views": 0,
-"reach": 0,
-"likes": 0,
+"views": 120,
+"reach": 107,
+"likes": 2,
 "comments": 0,
 "shares": 0,
 "saved": 0,
-"total_interactions": 0,
-"ig_reels_avg_watch_time": 0
+"total_interactions": 2,
+"ig_reels_avg_watch_time": 5848
 },
 "facebook": {
 "id": "1647828296834165",
@@ -517,11 +528,11 @@
 "handle": "playitbyear.quiz",
 "followers": 1,
 "posts": 5,
-"views": 162,
-"reach": 150,
-"likes": 3,
-"comments": 2,
-"shares": 0,
+"views": 468,
+"reach": 424,
+"likes": 8,
+"comments": 3,
+"shares": 1,
 "saves": 0
 },
 "facebook": {
@@ -533,11 +544,11 @@
 },
 "youtube": {
 "handle": "Play It By Ear",
-"followers": 1,
+"followers": 3,
 "posts": 11,
-"views": 0,
-"likes": 30,
-"comments": 6
+"views": 2018,
+"likes": 42,
+"comments": 7
 }
 },
 "audience": {
@@ -547,7 +558,7 @@
 "devices": []
 },
 "ypp": {
-"subscribers": 1,
+"subscribers": 3,
 "subscribers_needed": 1000,
 "watch_hours_365d": 0.0,
 "watch_hours_needed": 4000,
@@ -556,13 +567,21 @@
 },
 "budget": {
 "elevenlabs": {
-"tier": null,
-"used": null,
-"limit": null,
-"resets": null
+"tier": "free",
+"used": 4860,
+"limit": 10000,
+"resets": "2026-11-18"
 }
 },
 "comments": [
+{
+"video": "e_ANv_5cq08",
+"title": "Can you name this Pokémon from its sound? (Fire-type Pokémon) #shorts",
+"author": "@c_weir753",
+"text": "No one got this and anyone claiming they did is lying",
+"likes": 0,
+"at": "2026-10-19T07:46:17Z"
+},
 {
 "video": "BjIjjIWsQBY",
 "title": "Can you name this Pokémon from its sound? (Ghost-type Pokémon) #shorts",
@@ -691,6 +710,23 @@
 "tts_voice": "name:Liam"
 }
 }
+},
+{
+"id": "thumb",
+"format": "long",
+"metric": "views7d",
+"question": "Long-form thumbnail: silhouettes with a ? or full-colour art?",
+"min_n": 5,
+"max_n": 10,
+"min_lead": 0.2,
+"variants": {
+"sil": {
+"thumb_style": "sil"
+},
+"art": {
+"thumb_style": "art"
+}
+}
 }
 ]
 },
@@ -703,34 +739,62 @@
 "cold": {
 "n": 0,
 "avp": null,
-"views": null
+"views": null,
+"metric": "avp",
+"score": null
 },
 "announce": {
 "n": 0,
 "avp": null,
-"views": null
+"views": null,
+"metric": "avp",
+"score": null
 }
 },
 "voice": {
 "coral": {
 "n": 0,
 "avp": null,
-"views": null
+"views": null,
+"metric": "avp",
+"score": null
 },
 "ash": {
 "n": 0,
 "avp": null,
-"views": null
+"views": null,
+"metric": "avp",
+"score": null
 },
 "sage": {
 "n": 0,
 "avp": null,
-"views": null
+"views": null,
+"metric": "avp",
+"score": null
 },
 "liam": {
 "n": 0,
 "avp": null,
-"views": null
+"views": null,
+"metric": "avp",
+"score": null
+}
+},
+"thumb": {
+"sil": {
+"n": 0,
+"avp": null,
+"views": null,
+"metric": "views7d",
+"score": null
+},
+"art": {
+"n": 0,
+"avp": null,
+"views": null,
+"metric": "views7d",
+"score": null
 }
 }
 }
