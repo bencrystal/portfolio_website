@@ -12,7 +12,7 @@ type Video = {
 }
 type PlatformSummary = { handle?: string | null; followers?: number | null; posts?: number; views?: number; reach?: number; likes?: number; comments?: number; shares?: number; saves?: number }
 type Audience = { countries?: Record<string, number | string>[]; ages?: Record<string, number | string>[]; traffic?: Record<string, number | string>[]; devices?: Record<string, number | string>[] }
-type Ypp = { subscribers: number; subscribers_needed: number; watch_hours_365d: number; watch_hours_needed: number; shorts_views_90d: number; shorts_views_needed: number; analytics_live?: boolean }
+type Ypp = { subscribers: number; subscribers_needed: number; watch_hours_365d: number; watch_hours_needed: number; shorts_views_90d: number; shorts_views_needed: number; analytics_live?: boolean; analytics_through?: string | null }
 type Budget = { elevenlabs?: { tier?: string; used?: number; limit?: number; resets?: string | null; error?: string } }
 type Day = { day: string; views: number; estimatedMinutesWatched: number; subscribersGained: number; subscribersLost: number }
 type Episode = { slug: string; pack: string; title: string; theme: string; status: string; youtube_id: string | null; created_at: number }
@@ -96,6 +96,11 @@ export default function Dashboard() {
         <p className="text-xs font-bold uppercase tracking-[0.3em] mb-2" style={{ color: '#57f1ff' }}>Play It By Ear</p>
         <h1 className="text-3xl font-semibold" style={{ color: INK }}>{data.channel.title} — dashboard</h1>
         <p className="text-sm mt-1" style={{ color: INK3 }}>Updated {ago(data.generated)} · YouTube Analytics + pipeline ledger · read-only</p>
+        {data.channel.daily.length > 0 && data.ypp?.analytics_through && (
+          <p className="text-xs mt-2" style={{ color: INK3 }}>
+            Two sources: view counts come from the public pages (live); % viewed, daily views, audience and experiments come from YouTube Analytics, processed through <strong style={{ color: INK2 }}>{data.ypp.analytics_through}</strong> — it runs 2–3 days behind, so those figures cover fewer days than the counts.
+          </p>
+        )}
         {!data.channel.daily.length && (
           <p className="text-xs mt-2 rounded border px-3 py-2 inline-block" style={{ borderColor: '#c98500', color: '#c98500' }}>
             YouTube Analytics has not released retention or daily data for this channel yet (it lags the public counters by days). View counts here come from the public pages; % viewed, experiments and audience fill in once Analytics catches up.
