@@ -1,11 +1,19 @@
 {
-"generated": "2026-10-19T13:53:12+00:00",
+"generated": "2026-10-20T03:45:16+00:00",
 "channel": {
 "title": "Play It By Ear",
-"subscribers": 3,
-"views": 858,
-"videos": 10,
-"daily": []
+"subscribers": 4,
+"views": 1331,
+"videos": 15,
+"daily": [
+{
+"day": "2026-10-17",
+"views": 790,
+"estimatedMinutesWatched": 144,
+"subscribersGained": 2,
+"subscribersLost": 1
+}
+]
 },
 "packs": {
 "pokemon": {
@@ -19,6 +27,191 @@
 },
 "videos": [
 {
+"id": "gUR-MtwrVMY",
+"title": "Can you name this bird from its sound? (Birds of the Plains) #shorts",
+"published": "2026-10-20T02:30:13Z",
+"pack": "birds",
+"format": "short",
+"variant": "announce",
+"theme": "Birds of the Plains",
+"duration": 54,
+"privacy": "public",
+"views": 8,
+"likes": 0,
+"comments": 0,
+"avd": null,
+"avp": null,
+"minutes": null,
+"subs": null,
+"tags": [
+"exp:open=announce",
+"exp:voice=ash"
+],
+"views7d": null,
+"platforms": {
+"instagram": {
+"id": "18413903185085039",
+"views": 8,
+"reach": 4,
+"likes": 0,
+"comments": 0,
+"shares": 0,
+"saved": 0,
+"total_interactions": 0,
+"ig_reels_avg_watch_time": 5936
+},
+"facebook": {
+"id": "1653252063132144",
+"error": "(#100) The value must be a valid insights metric"
+}
+}
+},
+{
+"id": "USpPAS01TeA",
+"title": "Can you name this Pokémon from its sound? (Fire-type Pokémon) #shorts",
+"published": "2026-10-20T00:37:41Z",
+"pack": "pokemon",
+"format": "short",
+"variant": "coldopen",
+"theme": "Fire-type Pokémon",
+"duration": 41,
+"privacy": "public",
+"views": 424,
+"likes": 19,
+"comments": 1,
+"avd": null,
+"avp": null,
+"minutes": null,
+"subs": null,
+"tags": [
+"exp:open=cold",
+"exp:voice=ash"
+],
+"views7d": null,
+"platforms": {
+"instagram": {
+"id": "18129670582693957",
+"views": 38,
+"reach": 32,
+"likes": 0,
+"comments": 0,
+"shares": 0,
+"saved": 0,
+"total_interactions": 0,
+"ig_reels_avg_watch_time": 6417
+},
+"facebook": {
+"id": "1114817904334629",
+"error": "(#100) The value must be a valid insights metric"
+}
+}
+},
+{
+"id": "6sqEnVj56iM",
+"title": "Can you name this bird from its sound? (Ducks, Geese and Swans) #shorts",
+"published": "2026-10-19T21:02:11Z",
+"pack": "birds",
+"format": "short",
+"variant": null,
+"theme": "Geese and Swans announce exp:open=announce exp:voice=coral thumb:sil",
+"duration": 56,
+"privacy": "public",
+"views": 64,
+"likes": 1,
+"comments": 1,
+"avd": null,
+"avp": null,
+"minutes": null,
+"subs": null,
+"tags": [],
+"views7d": null,
+"platforms": {
+"instagram": {
+"id": "18167161894479761",
+"views": 48,
+"reach": 41,
+"likes": 1,
+"comments": 0,
+"shares": 0,
+"saved": 0,
+"total_interactions": 1,
+"ig_reels_avg_watch_time": 51232
+},
+"facebook": {
+"id": "1993447095398572",
+"error": "(#100) The value must be a valid insights metric"
+}
+}
+},
+{
+"id": "fGM1XjMLUgw",
+"title": "Can you name this Pokémon from its sound? (Generation 4) #shorts",
+"published": "2026-10-19T16:49:00Z",
+"pack": "pokemon",
+"format": "short",
+"variant": "coldopen",
+"theme": "Generation 4",
+"duration": 39,
+"privacy": "public",
+"views": 132,
+"likes": 6,
+"comments": 4,
+"avd": null,
+"avp": null,
+"minutes": null,
+"subs": null,
+"tags": [
+"exp:open=cold",
+"exp:voice=coral"
+],
+"views7d": null,
+"platforms": {
+"instagram": {
+"id": "18435613318195517",
+"views": 151,
+"reach": 126,
+"likes": 6,
+"comments": 0,
+"shares": 0,
+"saved": 0,
+"total_interactions": 6,
+"ig_reels_avg_watch_time": 11302
+},
+"facebook": {
+"id": "2217599722439069",
+"error": "(#100) The value must be a valid insights metric"
+}
+}
+},
+{
+"id": "lWJr6jPFwuA",
+"title": "Guess That Bird: Sparrows and Finches (6 Rounds)",
+"published": "2026-10-19T16:42:42Z",
+"pack": "birds",
+"format": "long",
+"variant": null,
+"theme": "Sparrows and Finches",
+"duration": 358,
+"privacy": "public",
+"views": 0,
+"likes": 0,
+"comments": 0,
+"avd": null,
+"avp": null,
+"minutes": null,
+"subs": null,
+"tags": [
+"exp:thumb=art"
+],
+"views7d": null,
+"platforms": {
+"facebook": {
+"id": "1710602980734239",
+"error": "(#100) The value must be a valid insights metric"
+}
+}
+},
+{
 "id": "9phOPeAubPY",
 "title": "Can you name this bird from its sound? (Shorebirds and Waders) #shorts",
 "published": "2026-10-19T00:50:56Z",
@@ -28,7 +221,7 @@
 "theme": "Shorebirds and Waders",
 "duration": 54,
 "privacy": "public",
-"views": 21,
+"views": 28,
 "likes": 1,
 "comments": 0,
 "avd": null,
@@ -43,14 +236,14 @@
 "platforms": {
 "instagram": {
 "id": "18111308774175627",
-"views": 120,
-"reach": 107,
+"views": 124,
+"reach": 111,
 "likes": 2,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 2,
-"ig_reels_avg_watch_time": 5848
+"ig_reels_avg_watch_time": 5657
 },
 "facebook": {
 "id": "1647828296834165",
@@ -82,14 +275,14 @@
 "platforms": {
 "instagram": {
 "id": "17882560875535067",
-"views": 19,
-"reach": 19,
+"views": 29,
+"reach": 29,
 "likes": 0,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 0,
-"ig_reels_avg_watch_time": 13362
+"ig_reels_avg_watch_time": 9346
 },
 "facebook": {
 "id": "1973873826866280",
@@ -107,7 +300,7 @@
 "theme": "Owls",
 "duration": 68,
 "privacy": "public",
-"views": 3,
+"views": 4,
 "likes": 0,
 "comments": 0,
 "avd": null,
@@ -121,14 +314,14 @@
 "platforms": {
 "instagram": {
 "id": "18199761544391189",
-"views": 29,
-"reach": 27,
+"views": 40,
+"reach": 40,
 "likes": 1,
 "comments": 1,
 "shares": 0,
 "saved": 0,
 "total_interactions": 2,
-"ig_reels_avg_watch_time": 13104
+"ig_reels_avg_watch_time": 9880
 },
 "facebook": {
 "id": "28654488260888945",
@@ -146,7 +339,7 @@
 "theme": "Generation 2",
 "duration": 47,
 "privacy": "public",
-"views": 4,
+"views": 6,
 "likes": 1,
 "comments": 0,
 "avd": null,
@@ -160,14 +353,14 @@
 "platforms": {
 "instagram": {
 "id": "18073625753759975",
-"views": 185,
-"reach": 164,
-"likes": 4,
+"views": 221,
+"reach": 195,
+"likes": 6,
 "comments": 2,
 "shares": 0,
 "saved": 0,
-"total_interactions": 6,
-"ig_reels_avg_watch_time": 12424
+"total_interactions": 8,
+"ig_reels_avg_watch_time": 13165
 },
 "facebook": {
 "id": "1465002775725417",
@@ -185,7 +378,7 @@
 "theme": "Backyard Birds",
 "duration": 67,
 "privacy": "public",
-"views": 484,
+"views": 495,
 "likes": 5,
 "comments": 0,
 "avd": null,
@@ -199,14 +392,14 @@
 "platforms": {
 "instagram": {
 "id": "18114440330026784",
-"views": 115,
-"reach": 107,
+"views": 118,
+"reach": 111,
 "likes": 1,
 "comments": 0,
 "shares": 1,
 "saved": 0,
 "total_interactions": 2,
-"ig_reels_avg_watch_time": 10301
+"ig_reels_avg_watch_time": 9996
 },
 "facebook": {
 "id": "1090098340302484",
@@ -224,7 +417,7 @@
 "theme": "Ghost-type Pokémon",
 "duration": 45,
 "privacy": "public",
-"views": 436,
+"views": 476,
 "likes": 13,
 "comments": 4,
 "avd": null,
@@ -246,14 +439,16 @@
 "theme": "Generation 1",
 "duration": 426,
 "privacy": "public",
-"views": 20,
+"views": 36,
 "likes": 1,
 "comments": 0,
 "avd": null,
 "avp": null,
 "minutes": null,
 "subs": null,
-"tags": [],
+"tags": [
+"exp:thumb=sil"
+],
 "views7d": null
 },
 {
@@ -266,7 +461,7 @@
 "theme": "Crows and Jays",
 "duration": 61,
 "privacy": "public",
-"views": 45,
+"views": 54,
 "likes": 0,
 "comments": 0,
 "avd": null,
@@ -288,13 +483,13 @@
 "theme": "Fire-type Pokémon",
 "duration": 45,
 "privacy": "public",
-"views": 760,
-"likes": 12,
-"comments": 1,
-"avd": null,
-"avp": null,
-"minutes": null,
-"subs": null,
+"views": 652,
+"likes": 9,
+"comments": 0,
+"avd": 20,
+"avp": 44.5,
+"minutes": 108,
+"subs": 1,
 "tags": [
 "exp:open=announce"
 ],
@@ -310,13 +505,13 @@
 "theme": "Ghost-type Pokémon",
 "duration": 47,
 "privacy": "public",
-"views": 239,
-"likes": 9,
-"comments": 2,
-"avd": null,
-"avp": null,
-"minutes": null,
-"subs": null,
+"views": 133,
+"likes": 4,
+"comments": 1,
+"avd": 20,
+"avp": 44.3,
+"minutes": 23,
+"subs": 1,
 "tags": [
 "exp:open=cold"
 ],
@@ -335,16 +530,70 @@
 "views": 2,
 "likes": 0,
 "comments": 0,
-"avd": null,
-"avp": null,
-"minutes": null,
-"subs": null,
+"avd": 65,
+"avp": 15.4,
+"minutes": 2,
+"subs": 0,
 "tags": [],
 "views7d": null
 }
 ],
 "ledger": {
 "episodes": [
+{
+"slug": "birds-short-birds-of-the-plains-2026-10-19-osprey-ann",
+"pack": "birds",
+"title": "Can you name this bird from its sound? (Birds of the Plains) #shorts",
+"theme": "Birds of the Plains",
+"status": "uploaded",
+"youtube_id": "gUR-MtwrVMY",
+"created_at": 1792463328.4866898
+},
+{
+"slug": "pokemon-short-fire-type-pok-mon-2026-10-19-charmander-cold",
+"pack": "pokemon",
+"title": "Can you name this Pokémon from its sound? (Fire-type Pokémon) #shorts",
+"theme": "Fire-type Pokémon",
+"status": "uploaded",
+"youtube_id": "USpPAS01TeA",
+"created_at": 1792456513.2601871
+},
+{
+"slug": "birds-short-ducks-geese-and-swans-2026-10-19-mallard-ann",
+"pack": "birds",
+"title": "Can you name this bird from its sound? (Ducks, Geese and Swans) #shorts",
+"theme": "Ducks, Geese and Swans",
+"status": "uploaded",
+"youtube_id": "6sqEnVj56iM",
+"created_at": 1792443670.4954765
+},
+{
+"slug": "birds-short-game-birds-2026-10-19-wild-turkey-ann",
+"pack": "birds",
+"title": "Can you name this bird from its sound? (Game Birds) #shorts",
+"theme": "Game Birds",
+"status": "failed",
+"youtube_id": null,
+"created_at": 1792438341.1437266
+},
+{
+"slug": "pokemon-short-generation-4-2026-10-19-chatot-cold",
+"pack": "pokemon",
+"title": "Can you name this Pokémon from its sound? (Generation 4) #shorts",
+"theme": "Generation 4",
+"status": "uploaded",
+"youtube_id": "fGM1XjMLUgw",
+"created_at": 1792428453.8230247
+},
+{
+"slug": "birds-long-sparrows-and-finches-2026-10-19",
+"pack": "birds",
+"title": "Guess That Bird: Sparrows and Finches (6 Rounds)",
+"theme": "Sparrows and Finches",
+"status": "uploaded",
+"youtube_id": "lWJr6jPFwuA",
+"created_at": 1792426882.264057
+},
 {
 "slug": "birds-short-shorebirds-and-waders-2026-10-18-american-woodcock-ann",
 "pack": "birds",
@@ -429,10 +678,10 @@
 ],
 "used": {
 "birds": {
-"short": 5
+"short": 7
 },
 "pokemon": {
-"short": 3
+"short": 5
 }
 }
 },
@@ -440,14 +689,14 @@
 "birds-short-backyard-birds-2026-10-18-dark-eyed-junco-ann": {
 "instagram": {
 "id": "18114440330026784",
-"views": 115,
-"reach": 107,
+"views": 118,
+"reach": 111,
 "likes": 1,
 "comments": 0,
 "shares": 1,
 "saved": 0,
 "total_interactions": 2,
-"ig_reels_avg_watch_time": 10301
+"ig_reels_avg_watch_time": 9996
 },
 "facebook": {
 "id": "1090098340302484",
@@ -457,14 +706,14 @@
 "pokemon-short-generation-2-2026-10-18-typhlosion-cold": {
 "instagram": {
 "id": "18073625753759975",
-"views": 185,
-"reach": 164,
-"likes": 4,
+"views": 221,
+"reach": 195,
+"likes": 6,
 "comments": 2,
 "shares": 0,
 "saved": 0,
-"total_interactions": 6,
-"ig_reels_avg_watch_time": 12424
+"total_interactions": 8,
+"ig_reels_avg_watch_time": 13165
 },
 "facebook": {
 "id": "1465002775725417",
@@ -474,14 +723,14 @@
 "birds-short-owls-2026-10-18-barred-owl-ann": {
 "instagram": {
 "id": "18199761544391189",
-"views": 29,
-"reach": 27,
+"views": 40,
+"reach": 40,
 "likes": 1,
 "comments": 1,
 "shares": 0,
 "saved": 0,
 "total_interactions": 2,
-"ig_reels_avg_watch_time": 13104
+"ig_reels_avg_watch_time": 9880
 },
 "facebook": {
 "id": "28654488260888945",
@@ -491,14 +740,14 @@
 "birds-short-birds-of-prey-2026-10-18-red-tailed-hawk-cold": {
 "instagram": {
 "id": "17882560875535067",
-"views": 19,
-"reach": 19,
+"views": 29,
+"reach": 29,
 "likes": 0,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 0,
-"ig_reels_avg_watch_time": 13362
+"ig_reels_avg_watch_time": 9346
 },
 "facebook": {
 "id": "1973873826866280",
@@ -508,17 +757,91 @@
 "birds-short-shorebirds-and-waders-2026-10-18-american-woodcock-ann": {
 "instagram": {
 "id": "18111308774175627",
-"views": 120,
-"reach": 107,
+"views": 124,
+"reach": 111,
 "likes": 2,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 2,
-"ig_reels_avg_watch_time": 5848
+"ig_reels_avg_watch_time": 5657
 },
 "facebook": {
 "id": "1647828296834165",
+"error": "(#100) The value must be a valid insights metric"
+}
+},
+"birds-long-sparrows-and-finches-2026-10-19": {
+"facebook": {
+"id": "1710602980734239",
+"error": "(#100) The value must be a valid insights metric"
+}
+},
+"pokemon-short-generation-4-2026-10-19-chatot-cold": {
+"instagram": {
+"id": "18435613318195517",
+"views": 151,
+"reach": 126,
+"likes": 6,
+"comments": 0,
+"shares": 0,
+"saved": 0,
+"total_interactions": 6,
+"ig_reels_avg_watch_time": 11302
+},
+"facebook": {
+"id": "2217599722439069",
+"error": "(#100) The value must be a valid insights metric"
+}
+},
+"birds-short-ducks-geese-and-swans-2026-10-19-mallard-ann": {
+"instagram": {
+"id": "18167161894479761",
+"views": 48,
+"reach": 41,
+"likes": 1,
+"comments": 0,
+"shares": 0,
+"saved": 0,
+"total_interactions": 1,
+"ig_reels_avg_watch_time": 51232
+},
+"facebook": {
+"id": "1993447095398572",
+"error": "(#100) The value must be a valid insights metric"
+}
+},
+"pokemon-short-fire-type-pok-mon-2026-10-19-charmander-cold": {
+"instagram": {
+"id": "18129670582693957",
+"views": 38,
+"reach": 32,
+"likes": 0,
+"comments": 0,
+"shares": 0,
+"saved": 0,
+"total_interactions": 0,
+"ig_reels_avg_watch_time": 6417
+},
+"facebook": {
+"id": "1114817904334629",
+"error": "(#100) The value must be a valid insights metric"
+}
+},
+"birds-short-birds-of-the-plains-2026-10-19-osprey-ann": {
+"instagram": {
+"id": "18413903185085039",
+"views": 8,
+"reach": 4,
+"likes": 0,
+"comments": 0,
+"shares": 0,
+"saved": 0,
+"total_interactions": 0,
+"ig_reels_avg_watch_time": 5936
+},
+"facebook": {
+"id": "1653252063132144",
 "error": "(#100) The value must be a valid insights metric"
 }
 }
@@ -527,10 +850,10 @@
 "instagram": {
 "handle": "playitbyear.quiz",
 "followers": 1,
-"posts": 5,
-"views": 468,
-"reach": 424,
-"likes": 8,
+"posts": 9,
+"views": 777,
+"reach": 689,
+"likes": 17,
 "comments": 3,
 "shares": 1,
 "saves": 0
@@ -538,32 +861,138 @@
 "facebook": {
 "handle": "Play It By Ear",
 "followers": 0,
-"posts": 5,
+"posts": 10,
 "views": 0,
 "reach": 0
 },
 "youtube": {
 "handle": "Play It By Ear",
-"followers": 3,
-"posts": 11,
-"views": 2018,
-"likes": 42,
-"comments": 7
+"followers": 4,
+"posts": 16,
+"views": 2518,
+"likes": 60,
+"comments": 11
 }
 },
 "audience": {
-"countries": [],
-"ages": [],
-"traffic": [],
-"devices": []
+"countries": [
+{
+"country": "US",
+"views": 299,
+"estimatedMinutesWatched": 65
+},
+{
+"country": "BR",
+"views": 119,
+"estimatedMinutesWatched": 13
+},
+{
+"country": "AR",
+"views": 32,
+"estimatedMinutesWatched": 4
+},
+{
+"country": "GB",
+"views": 31,
+"estimatedMinutesWatched": 5
+},
+{
+"country": "PE",
+"views": 20,
+"estimatedMinutesWatched": 1
+},
+{
+"country": "DE",
+"views": 18,
+"estimatedMinutesWatched": 2
+}
+],
+"ages": [
+{
+"ageGroup": "age13-17",
+"gender": "male",
+"viewerPercentage": 30.9
+},
+{
+"ageGroup": "age25-34",
+"gender": "male",
+"viewerPercentage": 30.2
+},
+{
+"ageGroup": "age35-44",
+"gender": "male",
+"viewerPercentage": 18.1
+},
+{
+"ageGroup": "age18-24",
+"gender": "male",
+"viewerPercentage": 10.8
+},
+{
+"ageGroup": "age35-44",
+"gender": "female",
+"viewerPercentage": 10.1
+}
+],
+"traffic": [
+{
+"insightTrafficSourceType": "SHORTS",
+"views": 739,
+"estimatedMinutesWatched": 119
+},
+{
+"insightTrafficSourceType": "YT_CHANNEL",
+"views": 16,
+"estimatedMinutesWatched": 5
+},
+{
+"insightTrafficSourceType": "YT_OTHER_PAGE",
+"views": 12,
+"estimatedMinutesWatched": 2
+},
+{
+"insightTrafficSourceType": "YT_SEARCH",
+"views": 11,
+"estimatedMinutesWatched": 1
+},
+{
+"insightTrafficSourceType": "NO_LINK_OTHER",
+"views": 10,
+"estimatedMinutesWatched": 15
+},
+{
+"insightTrafficSourceType": "SUBSCRIBER",
+"views": 2,
+"estimatedMinutesWatched": 0
+}
+],
+"devices": [
+{
+"deviceType": "MOBILE",
+"views": 633
+},
+{
+"deviceType": "TABLET",
+"views": 78
+},
+{
+"deviceType": "DESKTOP",
+"views": 52
+},
+{
+"deviceType": "TV",
+"views": 26
+}
+]
 },
 "ypp": {
-"subscribers": 3,
+"subscribers": 4,
 "subscribers_needed": 1000,
 "watch_hours_365d": 0.0,
 "watch_hours_needed": 4000,
-"shorts_views_90d": 0,
-"shorts_views_needed": 10000000
+"shorts_views_90d": 785,
+"shorts_views_needed": 10000000,
+"analytics_live": true
 },
 "budget": {
 "elevenlabs": {
@@ -574,6 +1003,38 @@
 }
 },
 "comments": [
+{
+"video": "fGM1XjMLUgw",
+"title": "Can you name this Pokémon from its sound? (Generation 4) #shorts",
+"author": "@SmillingTern1089",
+"text": "Got it instinctively bc of PLA we play sound on 🔊",
+"likes": 1,
+"at": "2026-10-20T03:07:24Z"
+},
+{
+"video": "USpPAS01TeA",
+"title": "Can you name this Pokémon from its sound? (Fire-type Pokémon) #shorts",
+"author": "@StylishB3ast",
+"text": "I knew just from the cry",
+"likes": 0,
+"at": "2026-10-20T02:46:26Z"
+},
+{
+"video": "fGM1XjMLUgw",
+"title": "Can you name this Pokémon from its sound? (Generation 4) #shorts",
+"author": "@nateliemfriends",
+"text": "I already got it just from the sound",
+"likes": 2,
+"at": "2026-10-20T00:49:55Z"
+},
+{
+"video": "6sqEnVj56iM",
+"title": "Can you name this bird from its sound? (Ducks, Geese and Swans) #shorts",
+"author": "@tatterbug08",
+"text": "Mallard, before it could even really start. I thought I heard an American crow in the back though.",
+"likes": 1,
+"at": "2026-10-20T00:33:54Z"
+},
 {
 "video": "e_ANv_5cq08",
 "title": "Can you name this Pokémon from its sound? (Fire-type Pokémon) #shorts",
@@ -686,6 +1147,20 @@
 }
 },
 {
+"id": "tempo",
+"question": "Current tempo (+5 %, long read-outs +8 %) or a touch faster (+10 % / +14 %)?",
+"variants": {
+"t105": {
+"tts_speed": 1.05,
+"tts_speed_long": 1.08
+},
+"t110": {
+"tts_speed": 1.1,
+"tts_speed_long": 1.14
+}
+}
+},
+{
 "id": "voice",
 "parallel": true,
 "question": "Which voice holds viewers: OpenAI coral / ash / sage, or ElevenLabs Liam?",
@@ -737,18 +1212,18 @@
 "results": {
 "open": {
 "cold": {
-"n": 0,
-"avp": null,
-"views": null,
+"n": 1,
+"avp": 44.3,
+"views": 133.0,
 "metric": "avp",
-"score": null
+"score": 44.3
 },
 "announce": {
-"n": 0,
-"avp": null,
-"views": null,
+"n": 1,
+"avp": 44.5,
+"views": 652.0,
 "metric": "avp",
-"score": null
+"score": 44.5
 }
 },
 "voice": {
