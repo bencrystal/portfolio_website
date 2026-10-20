@@ -12,7 +12,7 @@ type Video = {
 }
 type PlatformSummary = { handle?: string | null; followers?: number | null; posts?: number; views?: number; reach?: number; likes?: number; comments?: number; shares?: number; saves?: number }
 type Audience = { countries?: Record<string, number | string>[]; ages?: Record<string, number | string>[]; traffic?: Record<string, number | string>[]; devices?: Record<string, number | string>[] }
-type Ypp = { subscribers: number; subscribers_needed: number; watch_hours_365d: number; watch_hours_needed: number; shorts_views_90d: number; shorts_views_needed: number }
+type Ypp = { subscribers: number; subscribers_needed: number; watch_hours_365d: number; watch_hours_needed: number; shorts_views_90d: number; shorts_views_needed: number; analytics_live?: boolean }
 type Budget = { elevenlabs?: { tier?: string; used?: number; limit?: number; resets?: string | null; error?: string } }
 type Day = { day: string; views: number; estimatedMinutesWatched: number; subscribersGained: number; subscribersLost: number }
 type Episode = { slug: string; pack: string; title: string; theme: string; status: string; youtube_id: string | null; created_at: number }
@@ -70,14 +70,18 @@ export default function Dashboard() {
   const failed = data.ledger.episodes.filter((e) => e.status === 'failed')
   const kpi = (() => {
     const d = data.channel.daily, last = d.slice(-7), prior = d.slice(-14, -7)
-    const sum = (xs: Day[], k: keyof Day) => xs.reduce((a, x) => a + Number(x[k]), 0)
-    const views7 = sum(last, 'views'), viewsPrior = sum(prior, 'views')
     const cut = (days: number) => new Date(Date.now() - days * 864e5).toISOString()
+    const sum = (xs: Day[], k: keyof Day) => xs.reduce((a, x) => a + Number(x[k]), 0)
+    // YouTube Analytics lags the public counters by days; until it has daily rows, count lifetime views of
+    // videos published in the window (what the public pages show), and say so on the tile
+    const live = d.length > 0
+    const views7 = live ? sum(last, 'views') : data.videos.filter((v) => v.privacy === 'public' && v.published >= cut(7)).reduce((a, v) => a + v.views, 0)
+    const viewsPrior = sum(prior, 'views')
     const shorts = data.videos.filter((v) => v.format === 'short' && v.privacy === 'public')
     const avp7 = mean(shorts.filter((v) => v.published >= cut(7)).map((v) => v.avp))
     const avpPrior = mean(shorts.filter((v) => v.published < cut(7) && v.published >= cut(14)).map((v) => v.avp))
     return {
-      views7, viewsDelta: prior.length && viewsPrior ? (100 * (views7 - viewsPrior)) / viewsPrior : null,
+      live, views7, viewsDelta: live && prior.length && viewsPrior ? (100 * (views7 - viewsPrior)) / viewsPrior : null,
       subsDelta: last.length ? sum(last, 'subscribersGained') - sum(last, 'subscribersLost') : null,
       avp7, avpDelta: avp7 != null && avpPrior != null ? avp7 - avpPrior : null,
       videos7: data.videos.filter((v) => v.privacy === 'public' && v.published >= cut(7)).length,
@@ -92,6 +96,11 @@ export default function Dashboard() {
         <p className="text-xs font-bold uppercase tracking-[0.3em] mb-2" style={{ color: '#57f1ff' }}>Play It By Ear</p>
         <h1 className="text-3xl font-semibold" style={{ color: INK }}>{data.channel.title} — dashboard</h1>
         <p className="text-sm mt-1" style={{ color: INK3 }}>Updated {ago(data.generated)} · YouTube Analytics + pipeline ledger · read-only</p>
+        {!data.channel.daily.length && (
+          <p className="text-xs mt-2 rounded border px-3 py-2 inline-block" style={{ borderColor: '#c98500', color: '#c98500' }}>
+            YouTube Analytics has not released retention or daily data for this channel yet (it lags the public counters by days). View counts here come from the public pages; % viewed, experiments and audience fill in once Analytics catches up.
+          </p>
+        )}
       </header>
 
       <nav className="sticky top-0 z-10 -mx-6 px-6 py-2 mb-8 flex gap-4 text-xs overflow-x-auto" style={{ background: 'rgba(26,26,25,0.92)', backdropFilter: 'blur(6px)', borderBottom: `1px solid ${GRID}` }}>
@@ -102,7 +111,7 @@ export default function Dashboard() {
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Stat label="Subscribers" value={fmtInt(data.channel.subscribers)} delta={kpi.subsDelta} deltaLabel="last 7 d" />
-        <Stat label="Views, last 7 days" value={fmtInt(kpi.views7)} delta={kpi.viewsDelta} deltaLabel="vs prior 7 d" pct />
+        <Stat label={kpi.live ? 'Views, last 7 days' : 'Views, videos from last 7 d'} value={fmtInt(kpi.views7)} delta={kpi.viewsDelta} deltaLabel="vs prior 7 d" pct />
         <Stat label="Shorts % viewed, last 7 d" value={kpi.avp7 == null ? '—' : `${Math.round(kpi.avp7)}%`} delta={kpi.avpDelta} deltaLabel="vs prior 7 d" pts />
         <Stat label="Public videos" value={fmtInt(data.videos.filter((v) => v.privacy === 'public').length)} delta={kpi.videos7} deltaLabel="last 7 d" />
       </section>
