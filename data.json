@@ -1,9 +1,9 @@
 {
-"generated": "2026-10-20T12:03:57+00:00",
+"generated": "2026-10-21T12:18:47+00:00",
 "channel": {
 "title": "Play It By Ear",
-"subscribers": 4,
-"views": 2094,
+"subscribers": 5,
+"views": 2440,
 "videos": 16,
 "daily": [
 {
@@ -12,6 +12,13 @@
 "estimatedMinutesWatched": 144,
 "subscribersGained": 2,
 "subscribersLost": 1
+},
+{
+"day": "2026-10-18",
+"views": 1106,
+"estimatedMinutesWatched": 229,
+"subscribersGained": 1,
+"subscribersLost": 0
 }
 ]
 },
@@ -36,9 +43,9 @@
 "theme": "Eastern US Birds",
 "duration": 53,
 "privacy": "public",
-"views": 14,
+"views": 107,
 "likes": 0,
-"comments": 0,
+"comments": 5,
 "avd": null,
 "avp": null,
 "minutes": null,
@@ -51,14 +58,14 @@
 "platforms": {
 "instagram": {
 "id": "17945259936360456",
-"views": 0,
-"reach": 0,
-"likes": 0,
+"views": 108,
+"reach": 95,
+"likes": 1,
 "comments": 0,
 "shares": 0,
 "saved": 0,
-"total_interactions": 0,
-"ig_reels_avg_watch_time": 0
+"total_interactions": 1,
+"ig_reels_avg_watch_time": 2982
 },
 "facebook": {
 "id": "1635415034926881",
@@ -76,7 +83,7 @@
 "theme": "Birds of the Plains",
 "duration": 54,
 "privacy": "public",
-"views": 29,
+"views": 47,
 "likes": 0,
 "comments": 0,
 "avd": null,
@@ -91,14 +98,14 @@
 "platforms": {
 "instagram": {
 "id": "18413903185085039",
-"views": 115,
-"reach": 105,
+"views": 116,
+"reach": 106,
 "likes": 1,
 "comments": 1,
 "shares": 0,
 "saved": 0,
 "total_interactions": 2,
-"ig_reels_avg_watch_time": 10421
+"ig_reels_avg_watch_time": 10317
 },
 "facebook": {
 "id": "1653252063132144",
@@ -116,8 +123,8 @@
 "theme": "Fire-type Pokémon",
 "duration": 41,
 "privacy": "public",
-"views": 924,
-"likes": 20,
+"views": 1029,
+"likes": 24,
 "comments": 1,
 "avd": null,
 "avp": null,
@@ -131,14 +138,14 @@
 "platforms": {
 "instagram": {
 "id": "18129670582693957",
-"views": 158,
-"reach": 137,
+"views": 191,
+"reach": 165,
 "likes": 2,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 2,
-"ig_reels_avg_watch_time": 10741
+"ig_reels_avg_watch_time": 10044
 },
 "facebook": {
 "id": "1114817904334629",
@@ -156,7 +163,7 @@
 "theme": "Geese and Swans announce exp:open=announce exp:voice=coral thumb:sil",
 "duration": 56,
 "privacy": "public",
-"views": 114,
+"views": 144,
 "likes": 2,
 "comments": 2,
 "avd": null,
@@ -175,7 +182,7 @@
 "shares": 0,
 "saved": 0,
 "total_interactions": 3,
-"ig_reels_avg_watch_time": 22237
+"ig_reels_avg_watch_time": 22095
 },
 "facebook": {
 "id": "1993447095398572",
@@ -193,9 +200,9 @@
 "theme": "Generation 4",
 "duration": 39,
 "privacy": "public",
-"views": 262,
-"likes": 12,
-"comments": 4,
+"views": 611,
+"likes": 18,
+"comments": 5,
 "avd": null,
 "avp": null,
 "minutes": null,
@@ -208,14 +215,14 @@
 "platforms": {
 "instagram": {
 "id": "18435613318195517",
-"views": 175,
-"reach": 146,
-"likes": 6,
+"views": 212,
+"reach": 177,
+"likes": 8,
 "comments": 0,
 "shares": 0,
 "saved": 0,
-"total_interactions": 6,
-"ig_reels_avg_watch_time": 11590
+"total_interactions": 8,
+"ig_reels_avg_watch_time": 11555
 },
 "facebook": {
 "id": "2217599722439069",
@@ -233,7 +240,7 @@
 "theme": "Sparrows and Finches",
 "duration": 358,
 "privacy": "public",
-"views": 0,
+"views": 1,
 "likes": 0,
 "comments": 0,
 "avd": null,
@@ -261,13 +268,13 @@
 "theme": "Shorebirds and Waders",
 "duration": 54,
 "privacy": "public",
-"views": 37,
-"likes": 1,
+"views": 17,
+"likes": 0,
 "comments": 0,
-"avd": null,
-"avp": null,
-"minutes": null,
-"subs": null,
+"avd": 11,
+"avp": 21.6,
+"minutes": 1,
+"subs": 0,
 "tags": [
 "exp:open=announce",
 "exp:voice=liam"
@@ -276,14 +283,14 @@
 "platforms": {
 "instagram": {
 "id": "18111308774175627",
-"views": 126,
-"reach": 113,
+"views": 127,
+"reach": 114,
 "likes": 2,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 2,
-"ig_reels_avg_watch_time": 5580
+"ig_reels_avg_watch_time": 5544
 },
 "facebook": {
 "id": "1647828296834165",
@@ -301,13 +308,13 @@
 "theme": "Birds of Prey",
 "duration": 62,
 "privacy": "public",
-"views": 9,
+"views": 3,
 "likes": 0,
 "comments": 0,
-"avd": null,
-"avp": null,
-"minutes": null,
-"subs": null,
+"avd": 0,
+"avp": 0,
+"minutes": 0,
+"subs": 0,
 "tags": [
 "exp:open=cold"
 ],
@@ -315,14 +322,14 @@
 "platforms": {
 "instagram": {
 "id": "17882560875535067",
-"views": 31,
-"reach": 31,
+"views": 32,
+"reach": 32,
 "likes": 0,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 0,
-"ig_reels_avg_watch_time": 8925
+"ig_reels_avg_watch_time": 8711
 },
 "facebook": {
 "id": "1973873826866280",
@@ -340,13 +347,13 @@
 "theme": "Owls",
 "duration": 68,
 "privacy": "public",
-"views": 8,
+"views": 2,
 "likes": 0,
 "comments": 0,
-"avd": null,
-"avp": null,
-"minutes": null,
-"subs": null,
+"avd": 9,
+"avp": 14.1,
+"minutes": 0,
+"subs": 0,
 "tags": [
 "exp:open=announce"
 ],
@@ -354,14 +361,14 @@
 "platforms": {
 "instagram": {
 "id": "18199761544391189",
-"views": 42,
-"reach": 42,
+"views": 43,
+"reach": 43,
 "likes": 1,
 "comments": 1,
 "shares": 0,
 "saved": 0,
 "total_interactions": 2,
-"ig_reels_avg_watch_time": 9475
+"ig_reels_avg_watch_time": 9291
 },
 "facebook": {
 "id": "28654488260888945",
@@ -379,13 +386,13 @@
 "theme": "Generation 2",
 "duration": 47,
 "privacy": "public",
-"views": 14,
+"views": 4,
 "likes": 1,
 "comments": 0,
-"avd": null,
-"avp": null,
-"minutes": null,
-"subs": null,
+"avd": 42,
+"avp": 89.9,
+"minutes": 2,
+"subs": 0,
 "tags": [
 "exp:open=cold"
 ],
@@ -393,14 +400,14 @@
 "platforms": {
 "instagram": {
 "id": "18073625753759975",
-"views": 233,
-"reach": 207,
+"views": 234,
+"reach": 208,
 "likes": 6,
 "comments": 2,
 "shares": 0,
 "saved": 0,
 "total_interactions": 8,
-"ig_reels_avg_watch_time": 13391
+"ig_reels_avg_watch_time": 13331
 },
 "facebook": {
 "id": "1465002775725417",
@@ -418,13 +425,13 @@
 "theme": "Backyard Birds",
 "duration": 67,
 "privacy": "public",
-"views": 504,
-"likes": 5,
+"views": 437,
+"likes": 4,
 "comments": 0,
-"avd": null,
-"avp": null,
-"minutes": null,
-"subs": null,
+"avd": 18,
+"avp": 27.7,
+"minutes": 69,
+"subs": 1,
 "tags": [
 "exp:open=announce"
 ],
@@ -457,13 +464,13 @@
 "theme": "Ghost-type Pokémon",
 "duration": 45,
 "privacy": "public",
-"views": 510,
-"likes": 13,
-"comments": 4,
-"avd": null,
-"avp": null,
-"minutes": null,
-"subs": null,
+"views": 426,
+"likes": 11,
+"comments": 2,
+"avd": 23,
+"avp": 51.3,
+"minutes": 81,
+"subs": 0,
 "tags": [
 "exp:open=cold"
 ],
@@ -479,13 +486,13 @@
 "theme": "Generation 1",
 "duration": 426,
 "privacy": "public",
-"views": 50,
+"views": 16,
 "likes": 1,
 "comments": 0,
-"avd": null,
-"avp": null,
-"minutes": null,
-"subs": null,
+"avd": 110,
+"avp": 25.9,
+"minutes": 27,
+"subs": 0,
 "tags": [
 "exp:thumb=sil"
 ],
@@ -501,13 +508,13 @@
 "theme": "Crows and Jays",
 "duration": 61,
 "privacy": "public",
-"views": 57,
+"views": 44,
 "likes": 0,
-"comments": 0,
-"avd": null,
-"avp": null,
-"minutes": null,
-"subs": null,
+"comments": 1,
+"avd": 18,
+"avp": 30.3,
+"minutes": 8,
+"subs": 0,
 "tags": [
 "exp:open=announce"
 ],
@@ -523,12 +530,12 @@
 "theme": "Fire-type Pokémon",
 "duration": 45,
 "privacy": "public",
-"views": 652,
-"likes": 9,
+"views": 726,
+"likes": 11,
 "comments": 0,
 "avd": 20,
-"avp": 44.5,
-"minutes": 108,
+"avp": 46.4,
+"minutes": 128,
 "subs": 1,
 "tags": [
 "exp:open=announce"
@@ -545,12 +552,12 @@
 "theme": "Ghost-type Pokémon",
 "duration": 47,
 "privacy": "public",
-"views": 133,
-"likes": 4,
+"views": 216,
+"likes": 7,
 "comments": 1,
-"avd": 20,
-"avp": 44.3,
-"minutes": 23,
+"avd": 23,
+"avp": 50.7,
+"minutes": 41,
 "subs": 1,
 "tags": [
 "exp:open=cold"
@@ -755,14 +762,14 @@
 "pokemon-short-generation-2-2026-10-18-typhlosion-cold": {
 "instagram": {
 "id": "18073625753759975",
-"views": 233,
-"reach": 207,
+"views": 234,
+"reach": 208,
 "likes": 6,
 "comments": 2,
 "shares": 0,
 "saved": 0,
 "total_interactions": 8,
-"ig_reels_avg_watch_time": 13391
+"ig_reels_avg_watch_time": 13331
 },
 "facebook": {
 "id": "1465002775725417",
@@ -772,14 +779,14 @@
 "birds-short-owls-2026-10-18-barred-owl-ann": {
 "instagram": {
 "id": "18199761544391189",
-"views": 42,
-"reach": 42,
+"views": 43,
+"reach": 43,
 "likes": 1,
 "comments": 1,
 "shares": 0,
 "saved": 0,
 "total_interactions": 2,
-"ig_reels_avg_watch_time": 9475
+"ig_reels_avg_watch_time": 9291
 },
 "facebook": {
 "id": "28654488260888945",
@@ -789,14 +796,14 @@
 "birds-short-birds-of-prey-2026-10-18-red-tailed-hawk-cold": {
 "instagram": {
 "id": "17882560875535067",
-"views": 31,
-"reach": 31,
+"views": 32,
+"reach": 32,
 "likes": 0,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 0,
-"ig_reels_avg_watch_time": 8925
+"ig_reels_avg_watch_time": 8711
 },
 "facebook": {
 "id": "1973873826866280",
@@ -806,14 +813,14 @@
 "birds-short-shorebirds-and-waders-2026-10-18-american-woodcock-ann": {
 "instagram": {
 "id": "18111308774175627",
-"views": 126,
-"reach": 113,
+"views": 127,
+"reach": 114,
 "likes": 2,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 2,
-"ig_reels_avg_watch_time": 5580
+"ig_reels_avg_watch_time": 5544
 },
 "facebook": {
 "id": "1647828296834165",
@@ -829,14 +836,14 @@
 "pokemon-short-generation-4-2026-10-19-chatot-cold": {
 "instagram": {
 "id": "18435613318195517",
-"views": 175,
-"reach": 146,
-"likes": 6,
+"views": 212,
+"reach": 177,
+"likes": 8,
 "comments": 0,
 "shares": 0,
 "saved": 0,
-"total_interactions": 6,
-"ig_reels_avg_watch_time": 11590
+"total_interactions": 8,
+"ig_reels_avg_watch_time": 11555
 },
 "facebook": {
 "id": "2217599722439069",
@@ -853,7 +860,7 @@
 "shares": 0,
 "saved": 0,
 "total_interactions": 3,
-"ig_reels_avg_watch_time": 22237
+"ig_reels_avg_watch_time": 22095
 },
 "facebook": {
 "id": "1993447095398572",
@@ -863,14 +870,14 @@
 "pokemon-short-fire-type-pok-mon-2026-10-19-charmander-cold": {
 "instagram": {
 "id": "18129670582693957",
-"views": 158,
-"reach": 137,
+"views": 191,
+"reach": 165,
 "likes": 2,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 2,
-"ig_reels_avg_watch_time": 10741
+"ig_reels_avg_watch_time": 10044
 },
 "facebook": {
 "id": "1114817904334629",
@@ -880,14 +887,14 @@
 "birds-short-birds-of-the-plains-2026-10-19-osprey-ann": {
 "instagram": {
 "id": "18413903185085039",
-"views": 115,
-"reach": 105,
+"views": 116,
+"reach": 106,
 "likes": 1,
 "comments": 1,
 "shares": 0,
 "saved": 0,
 "total_interactions": 2,
-"ig_reels_avg_watch_time": 10421
+"ig_reels_avg_watch_time": 10317
 },
 "facebook": {
 "id": "1653252063132144",
@@ -897,14 +904,14 @@
 "birds-short-eastern-us-birds-2026-10-20-northern-flicker-ann": {
 "instagram": {
 "id": "17945259936360456",
-"views": 0,
-"reach": 0,
-"likes": 0,
+"views": 108,
+"reach": 95,
+"likes": 1,
 "comments": 0,
 "shares": 0,
 "saved": 0,
-"total_interactions": 0,
-"ig_reels_avg_watch_time": 0
+"total_interactions": 1,
+"ig_reels_avg_watch_time": 2982
 },
 "facebook": {
 "id": "1635415034926881",
@@ -917,9 +924,9 @@
 "handle": "playitbyear.quiz",
 "followers": 1,
 "posts": 10,
-"views": 1127,
-"reach": 1009,
-"likes": 22,
+"views": 1310,
+"reach": 1168,
+"likes": 25,
 "comments": 4,
 "shares": 1,
 "saves": 0
@@ -933,19 +940,24 @@
 },
 "youtube": {
 "handle": "Play It By Ear",
-"followers": 4,
+"followers": 5,
 "posts": 17,
-"views": 3319,
-"likes": 68,
-"comments": 12
+"views": 3832,
+"likes": 79,
+"comments": 17
 }
 },
 "audience": {
 "countries": [
 {
 "country": "US",
-"views": 299,
-"estimatedMinutesWatched": 65
+"views": 902,
+"estimatedMinutesWatched": 199
+},
+{
+"country": "PH",
+"views": 132,
+"estimatedMinutesWatched": 17
 },
 {
 "country": "BR",
@@ -953,14 +965,34 @@
 "estimatedMinutesWatched": 13
 },
 {
+"country": "GB",
+"views": 52,
+"estimatedMinutesWatched": 9
+},
+{
+"country": "ID",
+"views": 36,
+"estimatedMinutesWatched": 5
+},
+{
 "country": "AR",
 "views": 32,
 "estimatedMinutesWatched": 4
 },
 {
-"country": "GB",
+"country": "MY",
 "views": 31,
 "estimatedMinutesWatched": 5
+},
+{
+"country": "CA",
+"views": 24,
+"estimatedMinutesWatched": 3
+},
+{
+"country": "IN",
+"views": 21,
+"estimatedMinutesWatched": 2
 },
 {
 "country": "PE",
@@ -971,94 +1003,130 @@
 "country": "DE",
 "views": 18,
 "estimatedMinutesWatched": 2
+},
+{
+"country": "AU",
+"views": 12,
+"estimatedMinutesWatched": 3
 }
 ],
 "ages": [
 {
 "ageGroup": "age13-17",
 "gender": "male",
-"viewerPercentage": 30.9
+"viewerPercentage": 28.8
 },
 {
 "ageGroup": "age25-34",
 "gender": "male",
-"viewerPercentage": 30.2
+"viewerPercentage": 26.5
 },
 {
 "ageGroup": "age35-44",
 "gender": "male",
-"viewerPercentage": 18.1
-},
-{
-"ageGroup": "age18-24",
-"gender": "male",
-"viewerPercentage": 10.8
+"viewerPercentage": 17.9
 },
 {
 "ageGroup": "age35-44",
 "gender": "female",
-"viewerPercentage": 10.1
+"viewerPercentage": 8.5
+},
+{
+"ageGroup": "age65-",
+"gender": "male",
+"viewerPercentage": 5.8
+},
+{
+"ageGroup": "age18-24",
+"gender": "male",
+"viewerPercentage": 4.6
+},
+{
+"ageGroup": "age13-17",
+"gender": "female",
+"viewerPercentage": 3.3
+},
+{
+"ageGroup": "age25-34",
+"gender": "female",
+"viewerPercentage": 3.2
+},
+{
+"ageGroup": "age65-",
+"gender": "female",
+"viewerPercentage": 1.5
 }
 ],
 "traffic": [
 {
 "insightTrafficSourceType": "SHORTS",
-"views": 739,
-"estimatedMinutesWatched": 119
+"views": 1763,
+"estimatedMinutesWatched": 308
 },
 {
 "insightTrafficSourceType": "YT_CHANNEL",
-"views": 16,
-"estimatedMinutesWatched": 5
+"views": 41,
+"estimatedMinutesWatched": 11
 },
 {
 "insightTrafficSourceType": "YT_OTHER_PAGE",
-"views": 12,
-"estimatedMinutesWatched": 2
+"views": 31,
+"estimatedMinutesWatched": 4
 },
 {
 "insightTrafficSourceType": "YT_SEARCH",
-"views": 11,
-"estimatedMinutesWatched": 1
+"views": 30,
+"estimatedMinutesWatched": 3
+},
+{
+"insightTrafficSourceType": "RELATED_VIDEO",
+"views": 14,
+"estimatedMinutesWatched": 24
 },
 {
 "insightTrafficSourceType": "NO_LINK_OTHER",
-"views": 10,
+"views": 11,
 "estimatedMinutesWatched": 15
 },
 {
 "insightTrafficSourceType": "SUBSCRIBER",
-"views": 2,
+"views": 5,
+"estimatedMinutesWatched": 3
+},
+{
+"insightTrafficSourceType": "NOTIFICATION",
+"views": 1,
 "estimatedMinutesWatched": 0
 }
 ],
 "devices": [
 {
 "deviceType": "MOBILE",
-"views": 633
+"views": 1477
 },
 {
 "deviceType": "TABLET",
-"views": 78
+"views": 192
 },
 {
 "deviceType": "DESKTOP",
-"views": 52
+"views": 127
 },
 {
 "deviceType": "TV",
-"views": 26
+"views": 95
 }
 ]
 },
 "ypp": {
-"subscribers": 4,
+"subscribers": 5,
 "subscribers_needed": 1000,
-"watch_hours_365d": 0.0,
+"watch_hours_365d": 0.5,
 "watch_hours_needed": 4000,
-"shorts_views_90d": 785,
+"shorts_views_90d": 3813,
 "shorts_views_needed": 10000000,
-"analytics_live": true
+"analytics_live": true,
+"analytics_through": "2026-10-18"
 },
 "budget": {
 "elevenlabs": {
@@ -1069,6 +1137,22 @@
 }
 },
 "comments": [
+{
+"video": "fGM1XjMLUgw",
+"title": "Can you name this Pokémon from its sound? (Generation 4) #shorts",
+"author": "@honeybunz3568",
+"text": "Chatot",
+"likes": 0,
+"at": "2026-10-21T01:43:02Z"
+},
+{
+"video": "2GXWfxjxTFg",
+"title": "Can you name this bird from its sound? (Eastern US Birds) #shorts",
+"author": "@Captchacheck",
+"text": "Jeff",
+"likes": 1,
+"at": "2026-10-20T14:34:56Z"
+},
 {
 "video": "fGM1XjMLUgw",
 "title": "Can you name this Pokémon from its sound? (Generation 4) #shorts",
@@ -1090,7 +1174,7 @@
 "title": "Can you name this Pokémon from its sound? (Generation 4) #shorts",
 "author": "@nateliemfriends",
 "text": "I already got it just from the sound",
-"likes": 3,
+"likes": 6,
 "at": "2026-10-20T00:49:55Z"
 },
 {
@@ -1272,24 +1356,49 @@
 ]
 },
 "state": {
-"decided": {},
-"active": "open",
-"log": [],
+"decided": {
+"open": "cold"
+},
+"active": "title",
+"log": [
+{
+"when": "2026-10-21",
+"experiment": "open",
+"winner": "cold",
+"rows": {
+"cold": {
+"n": 4,
+"avp": 47.975,
+"views": 162.25,
+"metric": "avp",
+"score": 47.975
+},
+"announce": {
+"n": 5,
+"avp": 28.02,
+"views": 245.2,
+"metric": "avp",
+"score": 28.02
+}
+},
+"reason": "lead 71% on avp"
+}
+],
 "results": {
 "open": {
 "cold": {
-"n": 1,
-"avp": 44.3,
-"views": 133.0,
+"n": 4,
+"avp": 47.975,
+"views": 162.25,
 "metric": "avp",
-"score": 44.3
+"score": 47.975
 },
 "announce": {
-"n": 1,
-"avp": 44.5,
-"views": 652.0,
+"n": 5,
+"avp": 28.02,
+"views": 245.2,
 "metric": "avp",
-"score": 44.5
+"score": 28.02
 }
 },
 "voice": {
@@ -1315,11 +1424,11 @@
 "score": null
 },
 "liam": {
-"n": 0,
-"avp": null,
-"views": null,
+"n": 1,
+"avp": 21.6,
+"views": 17.0,
 "metric": "avp",
-"score": null
+"score": 21.6
 }
 },
 "thumb": {
