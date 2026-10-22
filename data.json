@@ -1,15 +1,15 @@
 {
-"generated": "2026-10-21T12:18:47+00:00",
+"generated": "2026-10-22T12:20:07+00:00",
 "channel": {
 "title": "Play It By Ear",
-"subscribers": 5,
-"views": 2440,
-"videos": 16,
+"subscribers": 6,
+"views": 4412,
+"videos": 17,
 "daily": [
 {
 "day": "2026-10-17",
-"views": 790,
-"estimatedMinutesWatched": 144,
+"views": 786,
+"estimatedMinutesWatched": 143,
 "subscribersGained": 2,
 "subscribersLost": 1
 },
@@ -18,6 +18,13 @@
 "views": 1106,
 "estimatedMinutesWatched": 229,
 "subscribersGained": 1,
+"subscribersLost": 0
+},
+{
+"day": "2026-10-19",
+"views": 1667,
+"estimatedMinutesWatched": 342,
+"subscribersGained": 2,
 "subscribersLost": 0
 }
 ]
@@ -34,6 +41,47 @@
 },
 "videos": [
 {
+"id": "nL7q9DQsUpk",
+"title": "Can you name this Pokémon from its sound? (Generation 3) #shorts",
+"published": "2026-10-21T12:29:01Z",
+"pack": "pokemon",
+"format": "short",
+"variant": "coldopen",
+"theme": "Generation 3",
+"duration": 39,
+"privacy": "public",
+"views": 43,
+"likes": 1,
+"comments": 0,
+"avd": null,
+"avp": null,
+"minutes": null,
+"subs": null,
+"tags": [
+"exp:open=cold*",
+"exp:title=question",
+"exp:voice=sage"
+],
+"views7d": null,
+"platforms": {
+"instagram": {
+"id": "18113865896595842",
+"views": 213,
+"reach": 188,
+"likes": 3,
+"comments": 0,
+"shares": 0,
+"saved": 0,
+"total_interactions": 3,
+"ig_reels_avg_watch_time": 19057
+},
+"facebook": {
+"id": "1142306995000299",
+"error": "(#100) The value must be a valid insights metric"
+}
+}
+},
+{
 "id": "2GXWfxjxTFg",
 "title": "Can you name this bird from its sound? (Eastern US Birds) #shorts",
 "published": "2026-10-20T11:28:44Z",
@@ -43,7 +91,7 @@
 "theme": "Eastern US Birds",
 "duration": 53,
 "privacy": "public",
-"views": 107,
+"views": 114,
 "likes": 0,
 "comments": 5,
 "avd": null,
@@ -83,13 +131,13 @@
 "theme": "Birds of the Plains",
 "duration": 54,
 "privacy": "public",
-"views": 47,
+"views": 27,
 "likes": 0,
 "comments": 0,
-"avd": null,
-"avp": null,
-"minutes": null,
-"subs": null,
+"avd": 10,
+"avp": 18.9,
+"minutes": 3,
+"subs": 0,
 "tags": [
 "exp:open=announce",
 "exp:voice=ash"
@@ -123,13 +171,13 @@
 "theme": "Fire-type Pokémon",
 "duration": 41,
 "privacy": "public",
-"views": 1029,
-"likes": 24,
+"views": 922,
+"likes": 20,
 "comments": 1,
-"avd": null,
-"avp": null,
-"minutes": null,
-"subs": null,
+"avd": 23,
+"avp": 56.4,
+"minutes": 172,
+"subs": 0,
 "tags": [
 "exp:open=cold",
 "exp:voice=ash"
@@ -138,14 +186,14 @@
 "platforms": {
 "instagram": {
 "id": "18129670582693957",
-"views": 191,
-"reach": 165,
+"views": 192,
+"reach": 166,
 "likes": 2,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 2,
-"ig_reels_avg_watch_time": 10044
+"ig_reels_avg_watch_time": 9994
 },
 "facebook": {
 "id": "1114817904334629",
@@ -163,13 +211,13 @@
 "theme": "Geese and Swans announce exp:open=announce exp:voice=coral thumb:sil",
 "duration": 56,
 "privacy": "public",
-"views": 144,
+"views": 111,
 "likes": 2,
-"comments": 2,
-"avd": null,
-"avp": null,
-"minutes": null,
-"subs": null,
+"comments": 1,
+"avd": 20,
+"avp": 37.5,
+"minutes": 23,
+"subs": 0,
 "tags": [],
 "views7d": null,
 "platforms": {
@@ -200,13 +248,13 @@
 "theme": "Generation 4",
 "duration": 39,
 "privacy": "public",
-"views": 611,
-"likes": 18,
-"comments": 5,
-"avd": null,
-"avp": null,
-"minutes": null,
-"subs": null,
+"views": 237,
+"likes": 8,
+"comments": 2,
+"avd": 23,
+"avp": 61.1,
+"minutes": 53,
+"subs": 0,
 "tags": [
 "exp:open=cold",
 "exp:voice=coral"
@@ -268,12 +316,12 @@
 "theme": "Shorebirds and Waders",
 "duration": 54,
 "privacy": "public",
-"views": 17,
-"likes": 0,
+"views": 37,
+"likes": 1,
 "comments": 0,
-"avd": 11,
-"avp": 21.6,
-"minutes": 1,
+"avd": 15,
+"avp": 27.8,
+"minutes": 4,
 "subs": 0,
 "tags": [
 "exp:open=announce",
@@ -308,7 +356,7 @@
 "theme": "Birds of Prey",
 "duration": 62,
 "privacy": "public",
-"views": 3,
+"views": 9,
 "likes": 0,
 "comments": 0,
 "avd": 0,
@@ -347,7 +395,7 @@
 "theme": "Owls",
 "duration": 68,
 "privacy": "public",
-"views": 2,
+"views": 8,
 "likes": 0,
 "comments": 0,
 "avd": 9,
@@ -386,12 +434,12 @@
 "theme": "Generation 2",
 "duration": 47,
 "privacy": "public",
-"views": 4,
+"views": 15,
 "likes": 1,
 "comments": 0,
-"avd": 42,
-"avp": 89.9,
-"minutes": 2,
+"avd": 33,
+"avp": 70.3,
+"minutes": 7,
 "subs": 0,
 "tags": [
 "exp:open=cold"
@@ -425,12 +473,12 @@
 "theme": "Backyard Birds",
 "duration": 67,
 "privacy": "public",
-"views": 437,
-"likes": 4,
+"views": 507,
+"likes": 5,
 "comments": 0,
 "avd": 18,
-"avp": 27.7,
-"minutes": 69,
+"avp": 27.4,
+"minutes": 80,
 "subs": 1,
 "tags": [
 "exp:open=announce"
@@ -464,12 +512,12 @@
 "theme": "Ghost-type Pokémon",
 "duration": 45,
 "privacy": "public",
-"views": 426,
-"likes": 11,
+"views": 503,
+"likes": 13,
 "comments": 2,
 "avd": 23,
-"avp": 51.3,
-"minutes": 81,
+"avp": 51.6,
+"minutes": 98,
 "subs": 0,
 "tags": [
 "exp:open=cold"
@@ -486,12 +534,12 @@
 "theme": "Generation 1",
 "duration": 426,
 "privacy": "public",
-"views": 16,
+"views": 50,
 "likes": 1,
 "comments": 0,
-"avd": 110,
-"avp": 25.9,
-"minutes": 27,
+"avd": 89,
+"avp": 21.1,
+"minutes": 52,
 "subs": 0,
 "tags": [
 "exp:thumb=sil"
@@ -508,12 +556,12 @@
 "theme": "Crows and Jays",
 "duration": 61,
 "privacy": "public",
-"views": 44,
+"views": 57,
 "likes": 0,
 "comments": 1,
-"avd": 18,
-"avp": 30.3,
-"minutes": 8,
+"avd": 17,
+"avp": 28.2,
+"minutes": 9,
 "subs": 0,
 "tags": [
 "exp:open=announce"
@@ -530,13 +578,13 @@
 "theme": "Fire-type Pokémon",
 "duration": 45,
 "privacy": "public",
-"views": 726,
-"likes": 11,
-"comments": 0,
-"avd": 20,
-"avp": 46.4,
-"minutes": 128,
-"subs": 1,
+"views": 814,
+"likes": 13,
+"comments": 1,
+"avd": 21,
+"avp": 47.3,
+"minutes": 149,
+"subs": 2,
 "tags": [
 "exp:open=announce"
 ],
@@ -552,12 +600,12 @@
 "theme": "Ghost-type Pokémon",
 "duration": 47,
 "privacy": "public",
-"views": 216,
-"likes": 7,
+"views": 261,
+"likes": 9,
 "comments": 1,
-"avd": 23,
-"avp": 50.7,
-"minutes": 41,
+"avd": 24,
+"avp": 51.5,
+"minutes": 48,
 "subs": 1,
 "tags": [
 "exp:open=cold"
@@ -587,6 +635,15 @@
 ],
 "ledger": {
 "episodes": [
+{
+"slug": "pokemon-short-generation-3-2026-10-21-beldum-cold",
+"pack": "pokemon",
+"title": "Can you name this Pokémon from its sound? (Generation 3) #shorts",
+"theme": "Generation 3",
+"status": "uploaded",
+"youtube_id": "nL7q9DQsUpk",
+"created_at": 1792585624.6728914
+},
 {
 "slug": "birds-short-eastern-us-birds-2026-10-20-northern-flicker-ann",
 "pack": "birds",
@@ -737,7 +794,7 @@
 "short": 8
 },
 "pokemon": {
-"short": 4
+"short": 5
 }
 }
 },
@@ -870,14 +927,14 @@
 "pokemon-short-fire-type-pok-mon-2026-10-19-charmander-cold": {
 "instagram": {
 "id": "18129670582693957",
-"views": 191,
-"reach": 165,
+"views": 192,
+"reach": 166,
 "likes": 2,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 2,
-"ig_reels_avg_watch_time": 10044
+"ig_reels_avg_watch_time": 9994
 },
 "facebook": {
 "id": "1114817904334629",
@@ -917,16 +974,33 @@
 "id": "1635415034926881",
 "error": "(#100) The value must be a valid insights metric"
 }
+},
+"pokemon-short-generation-3-2026-10-21-beldum-cold": {
+"instagram": {
+"id": "18113865896595842",
+"views": 213,
+"reach": 188,
+"likes": 3,
+"comments": 0,
+"shares": 0,
+"saved": 0,
+"total_interactions": 3,
+"ig_reels_avg_watch_time": 19057
+},
+"facebook": {
+"id": "1142306995000299",
+"error": "(#100) The value must be a valid insights metric"
+}
 }
 },
 "platform_summary": {
 "instagram": {
 "handle": "playitbyear.quiz",
 "followers": 1,
-"posts": 10,
-"views": 1310,
-"reach": 1168,
-"likes": 25,
+"posts": 11,
+"views": 1524,
+"reach": 1357,
+"likes": 28,
 "comments": 4,
 "shares": 1,
 "saves": 0
@@ -934,35 +1008,50 @@
 "facebook": {
 "handle": "Play It By Ear",
 "followers": 0,
-"posts": 11,
+"posts": 12,
 "views": 0,
 "reach": 0
 },
 "youtube": {
 "handle": "Play It By Ear",
-"followers": 5,
-"posts": 17,
-"views": 3832,
-"likes": 79,
-"comments": 17
+"followers": 6,
+"posts": 18,
+"views": 4412,
+"likes": 74,
+"comments": 14
 }
 },
 "audience": {
 "countries": [
 {
 "country": "US",
-"views": 902,
-"estimatedMinutesWatched": 199
+"views": 2098,
+"estimatedMinutesWatched": 434
 },
 {
 "country": "PH",
-"views": 132,
-"estimatedMinutesWatched": 17
+"views": 188,
+"estimatedMinutesWatched": 22
 },
 {
 "country": "BR",
-"views": 119,
+"views": 136,
+"estimatedMinutesWatched": 19
+},
+{
+"country": "IN",
+"views": 98,
+"estimatedMinutesWatched": 19
+},
+{
+"country": "ID",
+"views": 82,
 "estimatedMinutesWatched": 13
+},
+{
+"country": "MY",
+"views": 60,
+"estimatedMinutesWatched": 11
 },
 {
 "country": "GB",
@@ -970,29 +1059,14 @@
 "estimatedMinutesWatched": 9
 },
 {
-"country": "ID",
-"views": 36,
-"estimatedMinutesWatched": 5
-},
-{
 "country": "AR",
 "views": 32,
 "estimatedMinutesWatched": 4
 },
 {
-"country": "MY",
-"views": 31,
-"estimatedMinutesWatched": 5
-},
-{
 "country": "CA",
 "views": 24,
 "estimatedMinutesWatched": 3
-},
-{
-"country": "IN",
-"views": 21,
-"estimatedMinutesWatched": 2
 },
 {
 "country": "PE",
@@ -1014,119 +1088,129 @@
 {
 "ageGroup": "age13-17",
 "gender": "male",
-"viewerPercentage": 28.8
+"viewerPercentage": 29.8
 },
 {
 "ageGroup": "age25-34",
 "gender": "male",
-"viewerPercentage": 26.5
+"viewerPercentage": 26
 },
 {
 "ageGroup": "age35-44",
 "gender": "male",
-"viewerPercentage": 17.9
-},
-{
-"ageGroup": "age35-44",
-"gender": "female",
-"viewerPercentage": 8.5
-},
-{
-"ageGroup": "age65-",
-"gender": "male",
-"viewerPercentage": 5.8
+"viewerPercentage": 15.9
 },
 {
 "ageGroup": "age18-24",
 "gender": "male",
-"viewerPercentage": 4.6
+"viewerPercentage": 8.2
+},
+{
+"ageGroup": "age35-44",
+"gender": "female",
+"viewerPercentage": 7.3
 },
 {
 "ageGroup": "age13-17",
 "gender": "female",
-"viewerPercentage": 3.3
+"viewerPercentage": 2.9
+},
+{
+"ageGroup": "age65-",
+"gender": "male",
+"viewerPercentage": 2.8
+},
+{
+"ageGroup": "age45-54",
+"gender": "male",
+"viewerPercentage": 2.5
 },
 {
 "ageGroup": "age25-34",
 "gender": "female",
-"viewerPercentage": 3.2
+"viewerPercentage": 2.3
+},
+{
+"ageGroup": "age45-54",
+"gender": "female",
+"viewerPercentage": 1.6
 },
 {
 "ageGroup": "age65-",
 "gender": "female",
-"viewerPercentage": 1.5
+"viewerPercentage": 0.7
 }
 ],
 "traffic": [
 {
 "insightTrafficSourceType": "SHORTS",
-"views": 1763,
-"estimatedMinutesWatched": 308
+"views": 3252,
+"estimatedMinutesWatched": 595
 },
 {
 "insightTrafficSourceType": "YT_CHANNEL",
-"views": 41,
-"estimatedMinutesWatched": 11
-},
-{
-"insightTrafficSourceType": "YT_OTHER_PAGE",
-"views": 31,
-"estimatedMinutesWatched": 4
+"views": 133,
+"estimatedMinutesWatched": 31
 },
 {
 "insightTrafficSourceType": "YT_SEARCH",
-"views": 30,
-"estimatedMinutesWatched": 3
+"views": 53,
+"estimatedMinutesWatched": 7
+},
+{
+"insightTrafficSourceType": "YT_OTHER_PAGE",
+"views": 52,
+"estimatedMinutesWatched": 7
 },
 {
 "insightTrafficSourceType": "RELATED_VIDEO",
-"views": 14,
-"estimatedMinutesWatched": 24
-},
-{
-"insightTrafficSourceType": "NO_LINK_OTHER",
-"views": 11,
-"estimatedMinutesWatched": 15
+"views": 32,
+"estimatedMinutesWatched": 42
 },
 {
 "insightTrafficSourceType": "SUBSCRIBER",
-"views": 5,
-"estimatedMinutesWatched": 3
+"views": 20,
+"estimatedMinutesWatched": 4
+},
+{
+"insightTrafficSourceType": "NO_LINK_OTHER",
+"views": 13,
+"estimatedMinutesWatched": 22
 },
 {
 "insightTrafficSourceType": "NOTIFICATION",
-"views": 1,
-"estimatedMinutesWatched": 0
+"views": 4,
+"estimatedMinutesWatched": 2
 }
 ],
 "devices": [
 {
 "deviceType": "MOBILE",
-"views": 1477
+"views": 2777
 },
 {
 "deviceType": "TABLET",
-"views": 192
+"views": 347
 },
 {
 "deviceType": "DESKTOP",
-"views": 127
+"views": 230
 },
 {
 "deviceType": "TV",
-"views": 95
+"views": 196
 }
 ]
 },
 "ypp": {
-"subscribers": 5,
+"subscribers": 6,
 "subscribers_needed": 1000,
-"watch_hours_365d": 0.5,
+"watch_hours_365d": 0.9,
 "watch_hours_needed": 4000,
-"shorts_views_90d": 3813,
+"shorts_views_90d": 3665,
 "shorts_views_needed": 10000000,
 "analytics_live": true,
-"analytics_through": "2026-10-18"
+"analytics_through": "2026-10-19"
 },
 "budget": {
 "elevenlabs": {
@@ -1142,7 +1226,7 @@
 "title": "Can you name this Pokémon from its sound? (Generation 4) #shorts",
 "author": "@honeybunz3568",
 "text": "Chatot",
-"likes": 0,
+"likes": 1,
 "at": "2026-10-21T01:43:02Z"
 },
 {
@@ -1166,7 +1250,7 @@
 "title": "Can you name this Pokémon from its sound? (Fire-type Pokémon) #shorts",
 "author": "@StylishB3ast",
 "text": "I knew just from the cry",
-"likes": 1,
+"likes": 2,
 "at": "2026-10-20T02:46:26Z"
 },
 {
@@ -1403,18 +1487,18 @@
 },
 "voice": {
 "coral": {
-"n": 0,
-"avp": null,
-"views": null,
+"n": 1,
+"avp": 61.1,
+"views": 237.0,
 "metric": "avp",
-"score": null
+"score": 61.1
 },
 "ash": {
-"n": 0,
-"avp": null,
-"views": null,
+"n": 2,
+"avp": 37.65,
+"views": 474.5,
 "metric": "avp",
-"score": null
+"score": 37.65
 },
 "sage": {
 "n": 0,
@@ -1425,10 +1509,10 @@
 },
 "liam": {
 "n": 1,
-"avp": 21.6,
-"views": 17.0,
+"avp": 27.8,
+"views": 37.0,
 "metric": "avp",
-"score": 21.6
+"score": 27.8
 }
 },
 "thumb": {
@@ -1444,6 +1528,22 @@
 "avp": null,
 "views": null,
 "metric": "views7d",
+"score": null
+}
+},
+"title": {
+"question": {
+"n": 0,
+"avp": null,
+"views": null,
+"metric": "avp",
+"score": null
+},
+"challenge": {
+"n": 0,
+"avp": null,
+"views": null,
+"metric": "avp",
 "score": null
 }
 }
