@@ -1,9 +1,9 @@
 {
-"generated": "2026-10-22T12:20:07+00:00",
+"generated": "2026-10-22T16:52:23+00:00",
 "channel": {
 "title": "Play It By Ear",
 "subscribers": 6,
-"views": 4412,
+"views": 4434,
 "videos": 17,
 "daily": [
 {
@@ -66,14 +66,14 @@
 "platforms": {
 "instagram": {
 "id": "18113865896595842",
-"views": 213,
-"reach": 188,
-"likes": 3,
+"views": 236,
+"reach": 210,
+"likes": 4,
 "comments": 0,
-"shares": 0,
+"shares": 1,
 "saved": 0,
-"total_interactions": 3,
-"ig_reels_avg_watch_time": 19057
+"total_interactions": 5,
+"ig_reels_avg_watch_time": 18167
 },
 "facebook": {
 "id": "1142306995000299",
@@ -91,7 +91,7 @@
 "theme": "Eastern US Birds",
 "duration": 53,
 "privacy": "public",
-"views": 114,
+"views": 115,
 "likes": 0,
 "comments": 5,
 "avd": null,
@@ -578,7 +578,7 @@
 "theme": "Fire-type Pokémon",
 "duration": 45,
 "privacy": "public",
-"views": 814,
+"views": 812,
 "likes": 13,
 "comments": 1,
 "avd": 21,
@@ -600,12 +600,12 @@
 "theme": "Ghost-type Pokémon",
 "duration": 47,
 "privacy": "public",
-"views": 261,
+"views": 259,
 "likes": 9,
 "comments": 1,
 "avd": 24,
 "avp": 51.5,
-"minutes": 48,
+"minutes": 47,
 "subs": 1,
 "tags": [
 "exp:open=cold"
@@ -978,14 +978,14 @@
 "pokemon-short-generation-3-2026-10-21-beldum-cold": {
 "instagram": {
 "id": "18113865896595842",
-"views": 213,
-"reach": 188,
-"likes": 3,
+"views": 236,
+"reach": 210,
+"likes": 4,
 "comments": 0,
-"shares": 0,
+"shares": 1,
 "saved": 0,
-"total_interactions": 3,
-"ig_reels_avg_watch_time": 19057
+"total_interactions": 5,
+"ig_reels_avg_watch_time": 18167
 },
 "facebook": {
 "id": "1142306995000299",
@@ -998,11 +998,11 @@
 "handle": "playitbyear.quiz",
 "followers": 1,
 "posts": 11,
-"views": 1524,
-"reach": 1357,
-"likes": 28,
+"views": 1547,
+"reach": 1379,
+"likes": 29,
 "comments": 4,
-"shares": 1,
+"shares": 2,
 "saves": 0
 },
 "facebook": {
@@ -1016,7 +1016,7 @@
 "handle": "Play It By Ear",
 "followers": 6,
 "posts": 18,
-"views": 4412,
+"views": 4434,
 "likes": 74,
 "comments": 14
 }
@@ -1207,7 +1207,7 @@
 "subscribers_needed": 1000,
 "watch_hours_365d": 0.9,
 "watch_hours_needed": 4000,
-"shorts_views_90d": 3665,
+"shorts_views_90d": 3662,
 "shorts_views_needed": 10000000,
 "analytics_live": true,
 "analytics_through": "2026-10-19"
@@ -1440,10 +1440,8 @@
 ]
 },
 "state": {
-"decided": {
-"open": "cold"
-},
-"active": "title",
+"decided": {},
+"active": "open",
 "log": [
 {
 "when": "2026-10-21",
@@ -1466,23 +1464,49 @@
 }
 },
 "reason": "lead 71% on avp"
+},
+{
+"when": "2026-10-22",
+"experiment": "open",
+"winner": null,
+"reason": "reopened by Ben: the 2026-10-21 'cold' verdict compared Pokémon (all cold) with birds (all announce); assignment and judging are now stratified by pack"
 }
 ],
 "results": {
 "open": {
 "cold": {
-"n": 4,
-"avp": 47.975,
-"views": 162.25,
+"n": 6,
+"avp": 48.48333333333333,
+"views": 324.1666666666667,
 "metric": "avp",
-"score": 47.975
+"score": 48.48333333333333,
+"packs": {
+"birds": {
+"n": 1,
+"score": 0.0
+},
+"pokemon": {
+"n": 5,
+"score": 58.17999999999999
+}
+}
 },
 "announce": {
-"n": 5,
-"avp": 28.02,
-"views": 245.2,
+"n": 6,
+"avp": 27.28333333333333,
+"views": 241.33333333333334,
 "metric": "avp",
-"score": 28.02
+"score": 27.28333333333333,
+"packs": {
+"birds": {
+"n": 5,
+"score": 23.279999999999998
+},
+"pokemon": {
+"n": 1,
+"score": 47.3
+}
+}
 }
 },
 "voice": {
@@ -1491,28 +1515,68 @@
 "avp": 61.1,
 "views": 237.0,
 "metric": "avp",
+"score": 61.1,
+"packs": {
+"birds": {
+"n": 0,
+"score": null
+},
+"pokemon": {
+"n": 1,
 "score": 61.1
+}
+}
 },
 "ash": {
 "n": 2,
 "avp": 37.65,
 "views": 474.5,
 "metric": "avp",
-"score": 37.65
+"score": 37.65,
+"packs": {
+"birds": {
+"n": 1,
+"score": 18.9
+},
+"pokemon": {
+"n": 1,
+"score": 56.4
+}
+}
 },
 "sage": {
 "n": 0,
 "avp": null,
 "views": null,
 "metric": "avp",
+"score": null,
+"packs": {
+"birds": {
+"n": 0,
 "score": null
+},
+"pokemon": {
+"n": 0,
+"score": null
+}
+}
 },
 "liam": {
 "n": 1,
 "avp": 27.8,
 "views": 37.0,
 "metric": "avp",
+"score": 27.8,
+"packs": {
+"birds": {
+"n": 1,
 "score": 27.8
+},
+"pokemon": {
+"n": 0,
+"score": null
+}
+}
 }
 },
 "thumb": {
@@ -1521,14 +1585,16 @@
 "avp": null,
 "views": null,
 "metric": "views7d",
-"score": null
+"score": null,
+"packs": {}
 },
 "art": {
 "n": 0,
 "avp": null,
 "views": null,
 "metric": "views7d",
-"score": null
+"score": null,
+"packs": {}
 }
 },
 "title": {
