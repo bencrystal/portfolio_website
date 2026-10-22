@@ -7,7 +7,7 @@ type Video = {
   id: string; title: string; published: string; pack: string; format: 'short' | 'long'
   variant: 'coldopen' | 'announce' | null; theme: string; duration: number; privacy: string
   views: number; likes: number; comments: number; avd: number | null; avp: number | null
-  minutes: number | null; subs: number | null; tags?: string[]
+  minutes: number | null; subs: number | null; tags?: string[]; tier?: string | null
   platforms?: Record<string, Record<string, number | string | undefined>>
 }
 type PlatformSummary = { handle?: string | null; followers?: number | null; posts?: number; views?: number; reach?: number; likes?: number; comments?: number; shares?: number; saves?: number }
@@ -240,7 +240,7 @@ export default function Dashboard() {
                   <a href={`https://youtu.be/${v.id}`} target="_blank" rel="noopener noreferrer" className="hover:underline">{v.title}</a>
                 </td>
                 <td><Swatch color={PACK_COLORS[v.pack] ?? INK3} /><span style={{ color: INK2 }}>{data.packs[v.pack]?.display_name ?? v.pack}</span></td>
-                <td className="text-xs" style={{ color: INK2 }}>{v.format === 'long' ? 'long' : (v.tags?.length ? v.tags.map((t) => t.replace('exp:', '')).join(' · ') : v.variant === 'coldopen' ? 'open=cold' : v.variant === 'announce' ? 'open=announce' : '—')}</td>
+                <td className="text-xs" style={{ color: INK2 }}>{v.format === 'long' ? 'long' : (v.tags?.length ? v.tags.map((t) => t.replace('exp:', '')).join(' · ') : v.variant === 'coldopen' ? 'open=cold' : v.variant === 'announce' ? 'open=announce' : '—')}{v.tier ? <span style={{ color: INK3 }}> · {v.tier}</span> : null}</td>
                 <td className="text-right">{fmtInt(v.views)}</td>
                 <td className="text-right">{fmtPct(v.avp)}</td>
                 <td className="text-right">{fmtSecs(v.avd)}</td>
