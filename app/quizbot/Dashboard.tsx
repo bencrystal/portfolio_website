@@ -17,7 +17,7 @@ type Budget = { elevenlabs?: { tier?: string; used?: number; limit?: number; res
 type Day = { day: string; views: number; estimatedMinutesWatched: number; subscribersGained: number; subscribersLost: number }
 type Episode = { slug: string; pack: string; title: string; theme: string; status: string; youtube_id: string | null; created_at: number }
 type Comment = { video: string; title: string; author: string; text: string; likes: number; at: string }
-type ExpVariantRow = { n: number; avp: number | null; views: number | null }
+type ExpVariantRow = { n: number; avp: number | null; views: number | null; score?: number | null; metric?: string; rel?: number; packs?: Record<string, { n: number; score: number | null }> }
 type Experiments = {
   config: { min_n: number; max_n: number; min_lead: number; experiments: { id: string; question: string; parallel?: boolean; min_n?: number; max_n?: number; min_lead?: number; variants: Record<string, Record<string, unknown>> }[] }
   state: { decided: Record<string, string>; active: string | null; results?: Record<string, Record<string, ExpVariantRow>>; log: { when: string; experiment: string; winner: string; reason: string }[] }
@@ -256,7 +256,7 @@ export default function Dashboard() {
 
       <SectionHead id="experiments" title="Experiments" sub="Automated A/B tests on Shorts, judged nightly" />
       {/* ---- experiments ------------------------------------------------------------------ */}
-      <Card title="Shorts experiments" sub={`Sequential tests run one at a time, variants alternating per Short; a parallel test (voice) runs alongside, balanced against it. Judged nightly on average % viewed: at ≥${data.experiments?.config.min_n ?? 4} per side a ≥${Math.round((data.experiments?.config.min_lead ?? 0.1) * 100)}% lead decides it, else it runs to ${data.experiments?.config.max_n ?? 8} per side and the leader wins. Winners become the baseline for everything after.`}>
+      <Card title="Shorts experiments" sub={`Sequential tests run one at a time, variants alternating per Short within each pack; a parallel test (voice) runs alongside. Judged nightly on average % viewed, stratified by pack (each pack is its own comparison; the verdict averages the packs and must hold in every pack): at ≥${data.experiments?.config.min_n ?? 4} per arm per pack a ≥${Math.round((data.experiments?.config.min_lead ?? 0.1) * 100)}% pack-adjusted lead decides it, else it runs to ${data.experiments?.config.max_n ?? 8}. Winners become the baseline for everything after.`}>
         {data.experiments ? (<>
           {data.budget?.elevenlabs && (
             <p className="text-xs mb-4" style={{ color: INK3 }}>
@@ -289,10 +289,17 @@ export default function Dashboard() {
                         const r = rows[name]
                         return (
                           <tr key={name} className="border-t" style={{ borderColor: GRID, color: INK }}>
-                            <td className="py-1"><Swatch color={VARIANT_COLORS[i % VARIANT_COLORS.length]} />{name}{decided === name ? ' ✓' : ''}</td>
-                            <td className="text-right">{r?.n ?? 0}</td>
-                            <td className="text-right">{r?.avp != null ? `${Math.round(r.avp)}%` : '—'}</td>
-                            <td className="text-right">{r?.views != null ? fmtInt(Math.round(r.views)) : '—'}</td>
+                            <td className="py-1">
+                              <Swatch color={VARIANT_COLORS[i % VARIANT_COLORS.length]} />{name}{decided === name ? ' ✓' : ''}
+                              {r?.packs && Object.keys(r.packs).length > 0 && (
+                                <span className="block text-[11px] ml-5" style={{ color: INK3 }}>
+                                  {Object.entries(r.packs).map(([pk, v]) => `${data.packs[pk]?.noun ?? pk}: ${v.score != null ? `${Math.round(v.score)}%` : '—'} (${v.n})`).join(' · ')}
+                                </span>
+                              )}
+                            </td>
+                            <td className="text-right align-top">{r?.n ?? 0}</td>
+                            <td className="text-right align-top">{r?.avp != null ? `${Math.round(r.avp)}%` : '—'}</td>
+                            <td className="text-right align-top">{r?.views != null ? fmtInt(Math.round(r.views)) : '—'}</td>
                           </tr>
                         )
                       })}
