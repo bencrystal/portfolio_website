@@ -1,9 +1,9 @@
 {
-"generated": "2026-10-22T16:52:23+00:00",
+"generated": "2026-10-23T12:02:19+00:00",
 "channel": {
 "title": "Play It By Ear",
 "subscribers": 6,
-"views": 4434,
+"views": 4478,
 "videos": 17,
 "daily": [
 {
@@ -26,6 +26,13 @@
 "estimatedMinutesWatched": 342,
 "subscribersGained": 2,
 "subscribersLost": 0
+},
+{
+"day": "2026-10-20",
+"views": 670,
+"estimatedMinutesWatched": 128,
+"subscribersGained": 1,
+"subscribersLost": 1
 }
 ]
 },
@@ -50,9 +57,10 @@
 "theme": "Generation 3",
 "duration": 39,
 "privacy": "public",
-"views": 43,
-"likes": 1,
+"views": 103,
+"likes": 3,
 "comments": 0,
+"tier": null,
 "avd": null,
 "avp": null,
 "minutes": null,
@@ -66,14 +74,14 @@
 "platforms": {
 "instagram": {
 "id": "18113865896595842",
-"views": 236,
-"reach": 210,
-"likes": 4,
-"comments": 0,
+"views": 261,
+"reach": 234,
+"likes": 5,
+"comments": 1,
 "shares": 1,
 "saved": 0,
-"total_interactions": 5,
-"ig_reels_avg_watch_time": 18167
+"total_interactions": 7,
+"ig_reels_avg_watch_time": 20588
 },
 "facebook": {
 "id": "1142306995000299",
@@ -91,13 +99,14 @@
 "theme": "Eastern US Birds",
 "duration": 53,
 "privacy": "public",
-"views": 115,
+"views": 102,
 "likes": 0,
-"comments": 5,
-"avd": null,
-"avp": null,
-"minutes": null,
-"subs": null,
+"comments": 1,
+"tier": null,
+"avd": 14,
+"avp": 26.4,
+"minutes": 14,
+"subs": 0,
 "tags": [
 "exp:open=announce",
 "exp:voice=ash"
@@ -131,12 +140,13 @@
 "theme": "Birds of the Plains",
 "duration": 54,
 "privacy": "public",
-"views": 27,
+"views": 47,
 "likes": 0,
 "comments": 0,
-"avd": 10,
-"avp": 18.9,
-"minutes": 3,
+"tier": null,
+"avd": 11,
+"avp": 21.2,
+"minutes": 6,
 "subs": 0,
 "tags": [
 "exp:open=announce",
@@ -171,12 +181,13 @@
 "theme": "Fire-type Pokémon",
 "duration": 41,
 "privacy": "public",
-"views": 922,
-"likes": 20,
+"views": 950,
+"likes": 21,
 "comments": 1,
+"tier": null,
 "avd": 23,
 "avp": 56.4,
-"minutes": 172,
+"minutes": 178,
 "subs": 0,
 "tags": [
 "exp:open=cold",
@@ -211,12 +222,13 @@
 "theme": "Geese and Swans announce exp:open=announce exp:voice=coral thumb:sil",
 "duration": 56,
 "privacy": "public",
-"views": 111,
+"views": 144,
 "likes": 2,
 "comments": 1,
+"tier": null,
 "avd": 20,
-"avp": 37.5,
-"minutes": 23,
+"avp": 36.3,
+"minutes": 28,
 "subs": 0,
 "tags": [],
 "views7d": null,
@@ -248,13 +260,14 @@
 "theme": "Generation 4",
 "duration": 39,
 "privacy": "public",
-"views": 237,
-"likes": 8,
-"comments": 2,
+"views": 601,
+"likes": 18,
+"comments": 3,
+"tier": null,
 "avd": 23,
-"avp": 61.1,
-"minutes": 53,
-"subs": 0,
+"avp": 61.4,
+"minutes": 125,
+"subs": 1,
 "tags": [
 "exp:open=cold",
 "exp:voice=coral"
@@ -291,10 +304,11 @@
 "views": 1,
 "likes": 0,
 "comments": 0,
-"avd": null,
-"avp": null,
-"minutes": null,
-"subs": null,
+"tier": null,
+"avd": 1,
+"avp": 0.4,
+"minutes": 0,
+"subs": 0,
 "tags": [
 "exp:thumb=art"
 ],
@@ -316,11 +330,12 @@
 "theme": "Shorebirds and Waders",
 "duration": 54,
 "privacy": "public",
-"views": 37,
+"views": 44,
 "likes": 1,
 "comments": 0,
-"avd": 15,
-"avp": 27.8,
+"tier": null,
+"avd": 14,
+"avp": 25.9,
 "minutes": 4,
 "subs": 0,
 "tags": [
@@ -356,11 +371,12 @@
 "theme": "Birds of Prey",
 "duration": 62,
 "privacy": "public",
-"views": 9,
+"views": 14,
 "likes": 0,
 "comments": 0,
-"avd": 0,
-"avp": 0,
+"tier": null,
+"avd": 29,
+"avp": 48.1,
 "minutes": 0,
 "subs": 0,
 "tags": [
@@ -395,11 +411,12 @@
 "theme": "Owls",
 "duration": 68,
 "privacy": "public",
-"views": 8,
+"views": 13,
 "likes": 0,
 "comments": 0,
-"avd": 9,
-"avp": 14.1,
+"tier": null,
+"avd": 8,
+"avp": 12.9,
 "minutes": 0,
 "subs": 0,
 "tags": [
@@ -434,12 +451,13 @@
 "theme": "Generation 2",
 "duration": 47,
 "privacy": "public",
-"views": 15,
-"likes": 1,
+"views": 21,
+"likes": 3,
 "comments": 0,
+"tier": null,
 "avd": 33,
-"avp": 70.3,
-"minutes": 7,
+"avp": 71.3,
+"minutes": 10,
 "subs": 0,
 "tags": [
 "exp:open=cold"
@@ -473,11 +491,12 @@
 "theme": "Backyard Birds",
 "duration": 67,
 "privacy": "public",
-"views": 507,
+"views": 515,
 "likes": 5,
 "comments": 0,
+"tier": null,
 "avd": 18,
-"avp": 27.4,
+"avp": 27.2,
 "minutes": 80,
 "subs": 1,
 "tags": [
@@ -512,12 +531,13 @@
 "theme": "Ghost-type Pokémon",
 "duration": 45,
 "privacy": "public",
-"views": 503,
-"likes": 13,
+"views": 543,
+"likes": 16,
 "comments": 2,
+"tier": null,
 "avd": 23,
-"avp": 51.6,
-"minutes": 98,
+"avp": 52.3,
+"minutes": 105,
 "subs": 0,
 "tags": [
 "exp:open=cold"
@@ -534,12 +554,13 @@
 "theme": "Generation 1",
 "duration": 426,
 "privacy": "public",
-"views": 50,
+"views": 87,
 "likes": 1,
 "comments": 0,
-"avd": 89,
-"avp": 21.1,
-"minutes": 52,
+"tier": null,
+"avd": 90,
+"avp": 21.3,
+"minutes": 67,
 "subs": 0,
 "tags": [
 "exp:thumb=sil"
@@ -556,9 +577,10 @@
 "theme": "Crows and Jays",
 "duration": 61,
 "privacy": "public",
-"views": 57,
+"views": 61,
 "likes": 0,
 "comments": 1,
+"tier": null,
 "avd": 17,
 "avp": 28.2,
 "minutes": 9,
@@ -578,12 +600,13 @@
 "theme": "Fire-type Pokémon",
 "duration": 45,
 "privacy": "public",
-"views": 812,
-"likes": 13,
+"views": 817,
+"likes": 15,
 "comments": 1,
+"tier": null,
 "avd": 21,
-"avp": 47.3,
-"minutes": 149,
+"avp": 47.5,
+"minutes": 151,
 "subs": 2,
 "tags": [
 "exp:open=announce"
@@ -600,12 +623,13 @@
 "theme": "Ghost-type Pokémon",
 "duration": 47,
 "privacy": "public",
-"views": 259,
+"views": 264,
 "likes": 9,
 "comments": 1,
-"avd": 24,
-"avp": 51.5,
-"minutes": 47,
+"tier": null,
+"avd": 23,
+"avp": 50.5,
+"minutes": 48,
 "subs": 1,
 "tags": [
 "exp:open=cold"
@@ -625,6 +649,7 @@
 "views": 2,
 "likes": 0,
 "comments": 0,
+"tier": null,
 "avd": 65,
 "avp": 15.4,
 "minutes": 2,
@@ -978,14 +1003,14 @@
 "pokemon-short-generation-3-2026-10-21-beldum-cold": {
 "instagram": {
 "id": "18113865896595842",
-"views": 236,
-"reach": 210,
-"likes": 4,
-"comments": 0,
+"views": 261,
+"reach": 234,
+"likes": 5,
+"comments": 1,
 "shares": 1,
 "saved": 0,
-"total_interactions": 5,
-"ig_reels_avg_watch_time": 18167
+"total_interactions": 7,
+"ig_reels_avg_watch_time": 20588
 },
 "facebook": {
 "id": "1142306995000299",
@@ -998,10 +1023,10 @@
 "handle": "playitbyear.quiz",
 "followers": 1,
 "posts": 11,
-"views": 1547,
-"reach": 1379,
-"likes": 29,
-"comments": 4,
+"views": 1572,
+"reach": 1403,
+"likes": 30,
+"comments": 5,
 "shares": 2,
 "saves": 0
 },
@@ -1016,31 +1041,31 @@
 "handle": "Play It By Ear",
 "followers": 6,
 "posts": 18,
-"views": 4434,
-"likes": 74,
-"comments": 14
+"views": 4478,
+"likes": 94,
+"comments": 11
 }
 },
 "audience": {
 "countries": [
 {
 "country": "US",
-"views": 2098,
-"estimatedMinutesWatched": 434
+"views": 2350,
+"estimatedMinutesWatched": 481
 },
 {
 "country": "PH",
-"views": 188,
-"estimatedMinutesWatched": 22
+"views": 226,
+"estimatedMinutesWatched": 33
+},
+{
+"country": "IN",
+"views": 156,
+"estimatedMinutesWatched": 28
 },
 {
 "country": "BR",
 "views": 136,
-"estimatedMinutesWatched": 19
-},
-{
-"country": "IN",
-"views": 98,
 "estimatedMinutesWatched": 19
 },
 {
@@ -1069,6 +1094,11 @@
 "estimatedMinutesWatched": 3
 },
 {
+"country": "TH",
+"views": 21,
+"estimatedMinutesWatched": 4
+},
+{
 "country": "PE",
 "views": 20,
 "estimatedMinutesWatched": 1
@@ -1086,91 +1116,91 @@
 ],
 "ages": [
 {
-"ageGroup": "age13-17",
-"gender": "male",
-"viewerPercentage": 29.8
-},
-{
 "ageGroup": "age25-34",
 "gender": "male",
-"viewerPercentage": 26
+"viewerPercentage": 29
+},
+{
+"ageGroup": "age13-17",
+"gender": "male",
+"viewerPercentage": 25.8
 },
 {
 "ageGroup": "age35-44",
 "gender": "male",
-"viewerPercentage": 15.9
+"viewerPercentage": 16.9
+},
+{
+"ageGroup": "age35-44",
+"gender": "female",
+"viewerPercentage": 7.7
 },
 {
 "ageGroup": "age18-24",
 "gender": "male",
-"viewerPercentage": 8.2
-},
-{
-"ageGroup": "age35-44",
-"gender": "female",
-"viewerPercentage": 7.3
-},
-{
-"ageGroup": "age13-17",
-"gender": "female",
-"viewerPercentage": 2.9
-},
-{
-"ageGroup": "age65-",
-"gender": "male",
-"viewerPercentage": 2.8
-},
-{
-"ageGroup": "age45-54",
-"gender": "male",
-"viewerPercentage": 2.5
+"viewerPercentage": 7.1
 },
 {
 "ageGroup": "age25-34",
 "gender": "female",
-"viewerPercentage": 2.3
+"viewerPercentage": 4.3
+},
+{
+"ageGroup": "age13-17",
+"gender": "female",
+"viewerPercentage": 2.5
+},
+{
+"ageGroup": "age65-",
+"gender": "male",
+"viewerPercentage": 2.4
+},
+{
+"ageGroup": "age45-54",
+"gender": "male",
+"viewerPercentage": 2.2
 },
 {
 "ageGroup": "age45-54",
 "gender": "female",
-"viewerPercentage": 1.6
+"viewerPercentage": 1.4
 },
 {
 "ageGroup": "age65-",
 "gender": "female",
-"viewerPercentage": 0.7
+"viewerPercentage": 0.6
 }
 ],
 "traffic": [
 {
 "insightTrafficSourceType": "SHORTS",
-"views": 3252,
-"estimatedMinutesWatched": 595
+"views": 3759,
+"estimatedMinutesWatched": 685
 },
 {
 "insightTrafficSourceType": "YT_CHANNEL",
-"views": 133,
-"estimatedMinutesWatched": 31
+"views": 213,
+"estimatedMinutesWatched": 47
 },
 {
 "insightTrafficSourceType": "YT_SEARCH",
-"views": 53,
-"estimatedMinutesWatched": 7
+"views": 77,
+"estimatedMinutesWatched": 13
 },
 {
 "insightTrafficSourceType": "YT_OTHER_PAGE",
-"views": 52,
-"estimatedMinutesWatched": 7
-},
-{
-"insightTrafficSourceType": "RELATED_VIDEO",
-"views": 32,
-"estimatedMinutesWatched": 42
+"views": 61,
+"estimatedMinutesWatched": 10
 },
 {
 "insightTrafficSourceType": "SUBSCRIBER",
-"views": 20,
-"estimatedMinutesWatched": 4
+"views": 56,
+"estimatedMinutesWatched": 16
+},
+{
+"insightTrafficSourceType": "RELATED_VIDEO",
+"views": 35,
+"estimatedMinutesWatched": 45
 },
 {
 "insightTrafficSourceType": "NO_LINK_OTHER",
@@ -1181,36 +1211,41 @@
 "insightTrafficSourceType": "NOTIFICATION",
 "views": 4,
 "estimatedMinutesWatched": 2
+},
+{
+"insightTrafficSourceType": "SOUND_PAGE",
+"views": 2,
+"estimatedMinutesWatched": 0
 }
 ],
 "devices": [
 {
 "deviceType": "MOBILE",
-"views": 2777
+"views": 3271
 },
 {
 "deviceType": "TABLET",
-"views": 347
+"views": 421
 },
 {
 "deviceType": "DESKTOP",
-"views": 230
+"views": 284
 },
 {
 "deviceType": "TV",
-"views": 196
+"views": 235
 }
 ]
 },
 "ypp": {
 "subscribers": 6,
 "subscribers_needed": 1000,
-"watch_hours_365d": 0.9,
+"watch_hours_365d": 1.1,
 "watch_hours_needed": 4000,
-"shorts_views_90d": 3662,
+"shorts_views_90d": 4239,
 "shorts_views_needed": 10000000,
 "analytics_live": true,
-"analytics_through": "2026-10-19"
+"analytics_through": "2026-10-20"
 },
 "budget": {
 "elevenlabs": {
@@ -1476,35 +1511,35 @@
 "open": {
 "cold": {
 "n": 6,
-"avp": 48.48333333333333,
-"views": 324.1666666666667,
+"avp": 56.666666666666664,
+"views": 398.8333333333333,
 "metric": "avp",
-"score": 48.48333333333333,
+"score": 56.666666666666664,
 "packs": {
 "birds": {
 "n": 1,
-"score": 0.0
+"score": 48.1
 },
 "pokemon": {
 "n": 5,
-"score": 58.17999999999999
+"score": 58.379999999999995
 }
 }
 },
 "announce": {
-"n": 6,
-"avp": 27.28333333333333,
-"views": 241.33333333333334,
+"n": 7,
+"avp": 27.04285714285714,
+"views": 228.42857142857142,
 "metric": "avp",
-"score": 27.28333333333333,
+"score": 27.04285714285714,
 "packs": {
 "birds": {
-"n": 5,
-"score": 23.279999999999998
+"n": 6,
+"score": 23.63333333333333
 },
 "pokemon": {
 "n": 1,
-"score": 47.3
+"score": 47.5
 }
 }
 }
@@ -1512,10 +1547,10 @@
 "voice": {
 "coral": {
 "n": 1,
-"avp": 61.1,
-"views": 237.0,
+"avp": 61.4,
+"views": 601.0,
 "metric": "avp",
-"score": 61.1,
+"score": 61.4,
 "packs": {
 "birds": {
 "n": 0,
@@ -1523,20 +1558,20 @@
 },
 "pokemon": {
 "n": 1,
-"score": 61.1
+"score": 61.4
 }
 }
 },
 "ash": {
-"n": 2,
-"avp": 37.65,
-"views": 474.5,
+"n": 3,
+"avp": 34.666666666666664,
+"views": 366.3333333333333,
 "metric": "avp",
-"score": 37.65,
+"score": 34.666666666666664,
 "packs": {
 "birds": {
-"n": 1,
-"score": 18.9
+"n": 2,
+"score": 23.799999999999997
 },
 "pokemon": {
 "n": 1,
@@ -1563,14 +1598,14 @@
 },
 "liam": {
 "n": 1,
-"avp": 27.8,
-"views": 37.0,
+"avp": 25.9,
+"views": 44.0,
 "metric": "avp",
-"score": 27.8,
+"score": 25.9,
 "packs": {
 "birds": {
 "n": 1,
-"score": 27.8
+"score": 25.9
 },
 "pokemon": {
 "n": 0,
