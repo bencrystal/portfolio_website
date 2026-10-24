@@ -31,6 +31,7 @@ type Data = {
   ledger: { episodes: Episode[]; used: Record<string, Record<string, number>> }
   comments?: Comment[]
   experiments?: Experiments
+  retention?: Record<string, [number, number][]>
   platform_summary?: Record<string, PlatformSummary>
   audience?: Audience
   ypp?: Ypp
@@ -185,6 +186,11 @@ export default function Dashboard() {
       )}
 
       <SectionHead id="content" title="Content" sub="Which series and videos hold attention" />
+      {data.retention && Object.keys(data.retention).length > 0 && (
+        <Card title="Where viewers leave" sub="Audience retention from YouTube Analytics: share of viewers still watching at each point of the video. Shorts are averaged per pack; each long-form video is its own line. A cliff tells you which beat loses people; a flat line means they stay to the reveal.">
+          <RetentionChart data={data} />
+        </Card>
+      )}
       {/* ---- packs --------------------------------------------------------------------- */}
       <Card title="Packs × formats" sub="Views per video and retention, so series can be compared on equal footing">
         <table className="w-full text-sm">
@@ -549,6 +555,48 @@ function Seg({ value, onChange, options }: { value: string; onChange: (v: string
         <button key={v} onClick={() => onChange(v)} className="px-2.5 py-1"
           style={{ background: v === value ? '#2a2a2e' : 'transparent', color: v === value ? INK : INK2 }}>{label}</button>
       ))}
+    </div>
+  )
+}
+
+function RetentionChart({ data }: { data: Data }) {
+  const ret = data.retention ?? {}
+  const byId = Object.fromEntries(data.videos.map((v) => [v.id, v]))
+  const series: { label: string; color: string; pts: [number, number][]; dash?: boolean }[] = []
+  for (const pack of Object.keys(data.packs)) {
+    const ids = Object.keys(ret).filter((id) => byId[id]?.pack === pack && byId[id]?.format === 'short')
+    if (!ids.length) continue
+    const avg: [number, number][] = []
+    for (let i = 0; i <= 100; i += 2) {
+      const r = i / 100
+      const vals = ids.map((id) => { const p = ret[id].find((q) => Math.abs(q[0] - r) < 0.011); return p ? p[1] : null }).filter((x): x is number => x != null)
+      if (vals.length) avg.push([r, vals.reduce((a, b) => a + b, 0) / vals.length])
+    }
+    series.push({ label: `${data.packs[pack].display_name} Shorts (${ids.length})`, color: PACK_COLORS[pack] ?? INK3, pts: avg })
+  }
+  Object.keys(ret).filter((id) => byId[id]?.format === 'long').slice(0, 4).forEach((id, i) => {
+    series.push({ label: byId[id].title.replace(/\(\d+ Rounds\)/, '').trim().slice(0, 40), color: ['#c98500', '#9085e9', '#d55181', '#199e70'][i % 4], pts: ret[id], dash: true })
+  })
+  const W = 900, H = 220, L = 44, R = 12, T = 12, B = 28
+  const x = (r: number) => L + r * (W - L - R)
+  const y = (v: number) => T + (H - T - B) * (1 - Math.min(1, v))
+  return (
+    <div>
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" role="img" aria-label="Audience retention">
+        {[0, 0.25, 0.5, 0.75, 1].map((t) => (
+          <g key={t}>
+            <line x1={L} x2={W - R} y1={y(t)} y2={y(t)} stroke={GRID} strokeWidth={1} />
+            <text x={L - 6} y={y(t) + 4} fontSize={11} textAnchor="end" fill={INK3}>{Math.round(t * 100)}%</text>
+          </g>
+        ))}
+        {[0, 0.25, 0.5, 0.75, 1].map((r) => <text key={r} x={x(r)} y={H - 8} fontSize={11} textAnchor="middle" fill={INK3}>{Math.round(r * 100)}% of video</text>)}
+        {series.map((sr) => (
+          <path key={sr.label} d={sr.pts.map((p, i) => `${i ? 'L' : 'M'}${x(p[0]).toFixed(1)},${y(p[1]).toFixed(1)}`).join(' ')} fill="none" stroke={sr.color} strokeWidth={2} strokeDasharray={sr.dash ? '5 4' : undefined} strokeLinejoin="round" />
+        ))}
+      </svg>
+      <div className="flex flex-wrap gap-4 text-xs mt-2">
+        {series.map((sr) => <span key={sr.label} style={{ color: INK2 }}><Swatch color={sr.color} />{sr.label}{sr.dash ? ' (long form)' : ''}</span>)}
+      </div>
     </div>
   )
 }
