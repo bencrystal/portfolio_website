@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 // ---- data shape (written by quizbot/scripts/analytics_export.py) ----------------------------------
 type Video = {
-  id: string; title: string; published: string; pack: string; format: 'short' | 'long'
+  id: string; title: string; published: string; pack: string; format: 'short' | 'long' | 'rapid'
   variant: 'coldopen' | 'announce' | null; theme: string; duration: number; privacy: string
   views: number; likes: number; comments: number; avd: number | null; avp: number | null
   minutes: number | null; subs: number | null; tags?: string[]; tier?: string | null
@@ -51,7 +51,7 @@ const ago = (iso: string) => { const h = (Date.now() - new Date(iso).getTime()) 
 export default function Dashboard() {
   const [data, setData] = useState<Data | null>(null)
   const [err, setErr] = useState<string | null>(null)
-  const [fmt, setFmt] = useState<'all' | 'short' | 'long'>('all')
+  const [fmt, setFmt] = useState<'all' | 'short' | 'rapid' | 'long'>('all')
   const [sort, setSort] = useState<'published' | 'views' | 'avp'>('published')
 
   useEffect(() => {
@@ -203,14 +203,14 @@ export default function Dashboard() {
             </tr>
           </thead>
           <tbody>
-            {packs.flatMap((p) => (['short', 'long'] as const).map((f) => {
+            {packs.flatMap((p) => (['short', 'rapid', 'long'] as const).map((f) => {
               const vs = data.videos.filter((v) => v.pack === p && v.format === f && v.privacy === 'public')
               if (!vs.length) return null
               const views = vs.reduce((a, v) => a + v.views, 0)
               return (
                 <tr key={p + f} className="border-t" style={{ borderColor: GRID, color: INK }}>
                   <td className="py-2"><Swatch color={PACK_COLORS[p] ?? INK3} />{data.packs[p].display_name}</td>
-                  <td style={{ color: INK2 }}>{f === 'short' ? 'Shorts' : 'Long form'}</td>
+                  <td style={{ color: INK2 }}>{f === 'short' ? 'Shorts' : f === 'rapid' ? 'Rapid-fire' : 'Long form'}</td>
                   <td className="text-right">{vs.length}</td>
                   <td className="text-right">{fmtInt(views)}</td>
                   <td className="text-right">{fmtInt(Math.round(views / vs.length))}</td>
@@ -227,7 +227,7 @@ export default function Dashboard() {
       {/* ---- videos ---------------------------------------------------------------------- */}
       <Card title="Videos" sub="Public videos; click a title to open it" right={
         <div className="flex gap-2 text-xs">
-          <Seg value={fmt} onChange={(v) => setFmt(v as typeof fmt)} options={[['all', 'All'], ['short', 'Shorts'], ['long', 'Long']]} />
+          <Seg value={fmt} onChange={(v) => setFmt(v as typeof fmt)} options={[['all', 'All'], ['short', 'Shorts'], ['rapid', 'Rapid'], ['long', 'Long']]} />
           <Seg value={sort} onChange={(v) => setSort(v as typeof sort)} options={[['published', 'Newest'], ['views', 'Views'], ['avp', '% viewed']]} />
         </div>}>
         <table className="w-full text-sm">
@@ -246,7 +246,7 @@ export default function Dashboard() {
                   <a href={`https://youtu.be/${v.id}`} target="_blank" rel="noopener noreferrer" className="hover:underline">{v.title}</a>
                 </td>
                 <td><Swatch color={PACK_COLORS[v.pack] ?? INK3} /><span style={{ color: INK2 }}>{data.packs[v.pack]?.display_name ?? v.pack}</span></td>
-                <td className="text-xs" style={{ color: INK2 }}>{v.format === 'long' ? 'long' : (v.tags?.length ? v.tags.map((t) => t.replace('exp:', '')).join(' · ') : v.variant === 'coldopen' ? 'open=cold' : v.variant === 'announce' ? 'open=announce' : '—')}{v.tier ? <span style={{ color: INK3 }}> · {v.tier}</span> : null}</td>
+                <td className="text-xs" style={{ color: INK2 }}>{v.format === 'long' ? 'long' : v.format === 'rapid' ? 'rapid-fire' : (v.tags?.length ? v.tags.map((t) => t.replace('exp:', '')).join(' · ') : v.variant === 'coldopen' ? 'open=cold' : v.variant === 'announce' ? 'open=announce' : '—')}{v.tier ? <span style={{ color: INK3 }}> · {v.tier}</span> : null}</td>
                 <td className="text-right">{fmtInt(v.views)}</td>
                 <td className="text-right">{fmtPct(v.avp)}</td>
                 <td className="text-right">{fmtSecs(v.avd)}</td>
