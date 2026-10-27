@@ -17,7 +17,7 @@ type Budget = { elevenlabs?: { tier?: string; used?: number; limit?: number; res
 type Day = { day: string; views: number; estimatedMinutesWatched: number; subscribersGained: number; subscribersLost: number }
 type Episode = { slug: string; pack: string; title: string; theme: string; status: string; youtube_id: string | null; created_at: number }
 type Comment = { video: string; title: string; author: string; text: string; likes: number; at: string }
-type ExpVariantRow = { n: number; avp: number | null; views: number | null; score?: number | null; metric?: string; rel?: number; packs?: Record<string, { n: number; score: number | null }> }
+type ExpVariantRow = { n: number; avp: number | null; views: number | null; subs?: number | null; score?: number | null; metric?: string; rel?: number; packs?: Record<string, { n: number; score: number | null }> }
 type Experiments = {
   config: { min_n: number; max_n: number; min_lead: number; experiments: { id: string; question: string; parallel?: boolean; min_n?: number; max_n?: number; min_lead?: number; variants: Record<string, Record<string, unknown>> }[] }
   state: { decided: Record<string, string>; active: string | null; results?: Record<string, Record<string, ExpVariantRow>>; log: { when: string; experiment: string; winner: string; reason: string }[] }
@@ -289,7 +289,7 @@ export default function Dashboard() {
                   </div>
                   <p className="text-xs" style={{ color: INK3 }}>decides at ≥{minN} per side with a ≥{Math.round(lead * 100)}% lead, or at {maxN} per side</p>
                   <table className="w-full text-xs mt-2">
-                    <thead><tr style={{ color: INK3 }} className="text-left"><th className="font-medium">Variant</th><th className="font-medium text-right">n</th><th className="font-medium text-right">% viewed</th><th className="font-medium text-right">Views / video</th></tr></thead>
+                    <thead><tr style={{ color: INK3 }} className="text-left"><th className="font-medium">Variant</th><th className="font-medium text-right">n</th><th className="font-medium text-right">% viewed</th><th className="font-medium text-right">Views / video</th><th className="font-medium text-right">Subs / video</th></tr></thead>
                     <tbody>
                       {Object.keys(ex.variants).map((name, i) => {
                         const r = rows[name]
@@ -306,6 +306,7 @@ export default function Dashboard() {
                             <td className="text-right align-top">{r?.n ?? 0}</td>
                             <td className="text-right align-top">{r?.avp != null ? `${Math.round(r.avp)}%` : '—'}</td>
                             <td className="text-right align-top">{r?.views != null ? fmtInt(Math.round(r.views)) : '—'}</td>
+                            <td className="text-right align-top">{r?.subs != null ? r.subs.toFixed(2) : '—'}</td>
                           </tr>
                         )
                       })}
