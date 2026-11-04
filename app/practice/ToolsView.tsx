@@ -72,6 +72,9 @@ export default function ToolsView() {
             <button className={btn} onClick={t.tapTempo}>
               tap tempo
             </button>
+            <span className="hidden text-xs text-neutral-500 sm:inline">
+              space: start/stop · 3+ quick presses tap the tempo
+            </span>
             <label className="flex items-center gap-1.5">
               beats
               <select value={t.beatsPerBar} onChange={(e) => t.setBeatsPerBar(Number(e.target.value))} className={input}>

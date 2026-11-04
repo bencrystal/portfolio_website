@@ -216,19 +216,27 @@ export function useTools() {
     };
   }, [advanceNote]);
 
-  const toggleMetronome = useCallback(() => {
+  const startMetronome = useCallback(() => {
     const m = getMetro();
-    if (m.running) {
-      m.stop();
-      setRunning(false);
-      setPulse(-1);
-    } else {
-      beatCount.current = 0;
-      barCount.current = 0;
-      m.start();
-      setRunning(true);
-    }
+    if (m.running) return;
+    beatCount.current = 0;
+    barCount.current = 0;
+    m.start();
+    setRunning(true);
   }, []);
+
+  const stopMetronome = useCallback(() => {
+    const m = getMetro();
+    if (!m.running) return;
+    m.stop();
+    setRunning(false);
+    setPulse(-1);
+  }, []);
+
+  const toggleMetronome = useCallback(() => {
+    if (getMetro().running) stopMetronome();
+    else startMetronome();
+  }, [startMetronome, stopMetronome]);
 
   const tapTempo = useCallback(() => {
     const now = performance.now();
@@ -255,20 +263,44 @@ export function useTools() {
     else advanceNote();
   }, [advanceNote]);
 
-  // Keyboard parity with the log page: space start/stop, n new key.
+  // Spacebar does double duty: press 1 toggles start/stop, a quick press 2
+  // toggles back (an undo), and press 3+ in the same burst means the user is
+  // tapping a tempo — the first two presses were really the first taps, so
+  // the bpm is averaged over the whole burst (last 6 presses, like the tap
+  // button) and the metronome is forced on. A 2s pause ends the burst and
+  // the next press toggles again.
+  const spaceTaps = useRef<number[]>([]);
+  const onSpace = useCallback(() => {
+    const now = performance.now();
+    let burst = spaceTaps.current;
+    if (burst.length && now - burst[burst.length - 1] > 2000) burst = [];
+    burst.push(now);
+    // Trimming can't drop a tap burst back under 3, so the mode check holds.
+    spaceTaps.current = burst.slice(-6);
+    const t = spaceTaps.current;
+    if (t.length < 3) {
+      toggleMetronome();
+      return;
+    }
+    const avg = (t[t.length - 1] - t[0]) / (t.length - 1);
+    setBpm(clampBpm(60000 / avg));
+    startMetronome();
+  }, [toggleMetronome, startMetronome]);
+
+  // Keyboard parity with the log page: space start/stop (+ tap), n new key.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const el = e.target as HTMLElement;
       if (el.tagName === "INPUT" || el.tagName === "SELECT" || el.tagName === "TEXTAREA") return;
       if (e.key === " ") {
         e.preventDefault();
-        toggleMetronome();
+        if (!e.repeat) onSpace();
       }
       if (e.key === "n" || e.key === "N") advanceNote();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [toggleMetronome, advanceNote]);
+  }, [onSpace, advanceNote]);
 
   useEffect(() => () => {
     metro.current?.stop();
