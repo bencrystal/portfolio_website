@@ -4,7 +4,7 @@ import { useState } from "react";
 import Tuner from "./Tuner";
 import { ClickSound } from "./metronome";
 import { useTools, clampBpm, fmtClock } from "./tools/useTools";
-import { BackingTracks, HeaderNav, Resources, btn, card, input, label } from "./tools/shared";
+import { BackingTracks, HeaderNav, Resources, btn, card, input, label, stepBtn } from "./tools/shared";
 import TinyUnison from "./tools/TinyUnison";
 
 // Tools-only landing for /practice: metronome, random key + drone, tuner,
@@ -28,7 +28,7 @@ export default function ToolsView() {
               {Array.from({ length: t.beatsPerBar }, (_, i) => (
                 <span
                   key={i}
-                  className={`h-2.5 w-2.5 rounded-full ${
+                  className={`h-3 w-3 rounded-full ${
                     t.pulse === i ? (i === 0 ? "bg-amber-400" : "bg-neutral-200") : "bg-neutral-700"
                   }`}
                 />
@@ -40,7 +40,7 @@ export default function ToolsView() {
               onClick={t.toggleMetronome}
               className={`h-16 w-16 shrink-0 rounded-full text-sm font-semibold ${
                 t.running ? "bg-amber-500 text-neutral-950" : "bg-neutral-100 text-neutral-900"
-              }`}
+              } ${t.running && t.pulse === 0 ? "ring-4 ring-amber-400/40" : ""}`}
             >
               {t.running ? "stop" : "start"}
             </button>
@@ -60,10 +60,10 @@ export default function ToolsView() {
               />
             </div>
             <div className="flex shrink-0 flex-col gap-1.5">
-              <button className={btn} onClick={() => t.setBpm(clampBpm(t.bpm + 5))}>
+              <button className={stepBtn} onClick={() => t.setBpm(clampBpm(t.bpm + 5))}>
                 +5
               </button>
-              <button className={btn} onClick={() => t.setBpm(clampBpm(t.bpm - 5))}>
+              <button className={stepBtn} onClick={() => t.setBpm(clampBpm(t.bpm - 5))}>
                 −5
               </button>
             </div>
@@ -76,7 +76,7 @@ export default function ToolsView() {
               space: start/stop · 3+ quick presses tap the tempo
             </span>
             <label className="flex items-center gap-1.5">
-              beats
+              beats/bar
               <select value={t.beatsPerBar} onChange={(e) => t.setBeatsPerBar(Number(e.target.value))} className={input}>
                 {[2, 3, 4, 5, 6, 7].map((n) => (
                   <option key={n} value={n}>
@@ -106,17 +106,24 @@ export default function ToolsView() {
                 aria-label="click volume"
               />
             </label>
-            <button className="text-neutral-500 hover:text-neutral-300" onClick={() => setMoreOpen((o) => !o)}>
-              {moreOpen ? "less ▴" : "more ▾"}
-            </button>
+            {/* While the trainer is armed the section pins open — a silently
+                creeping tempo after a reload is too confusing otherwise. */}
+            {!t.trainer && (
+              <button className="text-neutral-500 hover:text-neutral-300" onClick={() => setMoreOpen((o) => !o)}>
+                {moreOpen ? "less ▴" : "more ▾"}
+              </button>
+            )}
           </div>
-          {moreOpen && (
+          {(moreOpen || t.trainer) && (
             <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-neutral-800 pt-3 text-sm text-neutral-300">
               <label className="flex items-center gap-1.5">
                 <input
                   type="checkbox"
                   checked={t.trainer}
-                  onChange={(e) => t.setTrainer(e.target.checked)}
+                  onChange={(e) => {
+                    t.setTrainer(e.target.checked);
+                    if (e.target.checked) setMoreOpen(true); // stay open after unchecking later
+                  }}
                   className="accent-amber-500"
                 />
                 speed trainer: +
@@ -181,6 +188,9 @@ export default function ToolsView() {
                     ))}
                   </select>
                 </label>
+                {t.noteSync > 0 && !t.running && (
+                  <span className="text-xs text-neutral-600">(needs the metronome running)</span>
+                )}
                 <button
                   className={`${btn} ${t.droneOn ? "border-amber-500 text-amber-400" : ""}`}
                   onClick={t.toggleDrone}

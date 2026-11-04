@@ -7,10 +7,15 @@ import { RESOURCES, ToolsEngine } from "./useTools";
 // ?redesign variants reinterpret.
 
 export const card = "rounded-xl border border-neutral-800 bg-neutral-900/60 p-4";
+// Three visually distinct control species so they read at a glance:
+// actions are raised pills, steppers are quiet ghost squares, and anything
+// you type or pick from is an inset dark well.
 export const btn =
-  "rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-200 hover:bg-neutral-700 active:bg-neutral-600";
+  "rounded-full border border-neutral-600/80 bg-neutral-700/70 px-3.5 py-1.5 text-sm font-medium text-neutral-100 hover:bg-neutral-600/80 active:bg-neutral-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500";
+export const stepBtn =
+  "rounded-md border border-neutral-700 px-2.5 py-1 text-sm tabular-nums text-neutral-400 hover:border-neutral-500 hover:text-neutral-100 active:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500";
 export const input =
-  "rounded-md border border-neutral-700 bg-neutral-800 px-2 py-1 text-sm text-neutral-200 focus:outline-none focus:ring-1 focus:ring-amber-500";
+  "rounded-md border border-neutral-700 bg-neutral-950/70 px-2 py-1 text-sm text-neutral-200 focus:outline-none focus:ring-1 focus:ring-amber-500";
 export const label = "text-xs uppercase tracking-wide text-neutral-500";
 
 export function HeaderNav() {
