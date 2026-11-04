@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-// Compact guitar tuner, collapsed to one row until opened. Six reference-tone
+// Compact guitar tuner, open by default and collapsible to one row. Six reference-tone
 // "pegs" sit around a little 3+3 headstock (tap to drone the string), and mic
 // mode detects what you're playing (time-domain autocorrelation) and shows a
 // cents needle. No dependencies — everything is Web Audio.
@@ -66,7 +66,7 @@ function autoCorrelate(input: Float32Array, sampleRate: number): number | null {
 }
 
 export default function Tuner() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const [micOn, setMicOn] = useState(false);
   const [playing, setPlaying] = useState<number | null>(null); // peg index
   const [heard, setHeard] = useState<{ name: string; cents: number } | null>(null);
