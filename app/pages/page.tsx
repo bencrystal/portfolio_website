@@ -37,6 +37,7 @@ const GROUPS: IndexGroup[] = [
   {
     title: 'Pages',
     entries: [
+      { href: '/links', label: '/links', note: 'Public linktree for Instagram bio (events + music), edit data/links.ts' },
       { href: '/music', label: '/music', note: 'Music releases' },
       { href: '/mezcal', label: '/mezcal', note: "Gary's Mezcal Journey — tasting invite" },
     ],
