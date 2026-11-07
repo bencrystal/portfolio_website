@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import Image from 'next/image'
 import Background from '@/components/Background'
 import { linkEvents, linkEntries, type LinkEvent, type LinkEntry } from '@/data/links'
@@ -84,15 +83,11 @@ export default function LinksPage() {
     <main className="min-h-screen min-h-dvh bg-black relative">
       <Background />
       <div className="relative z-10 mx-auto max-w-md px-6 py-16">
-        <p className="text-sm font-bold uppercase tracking-[0.3em] text-white/70">
-          bencrystal.me
-        </p>
-        <h1 className="mt-3 text-5xl sm:text-6xl font-black tracking-tighter uppercase text-white">
+        <h1 className="text-5xl sm:text-6xl font-black tracking-tighter uppercase text-white">
           Ben Crystal
-          <span style={{ color: ACCENT }}>.</span>
         </h1>
         <p className="mt-4 text-base text-neutral-300">
-          Events, new music, and everything else.
+          shows and music and everything else!
         </p>
 
         <div className="mt-10 flex flex-col gap-4">
@@ -104,11 +99,6 @@ export default function LinksPage() {
           ))}
         </div>
 
-        <p className="mt-12 text-sm uppercase tracking-[0.3em] text-neutral-400">
-          <Link href="/" className="hover:text-white transition-colors">
-            more at bencrystal.me →
-          </Link>
-        </p>
       </div>
     </main>
   )

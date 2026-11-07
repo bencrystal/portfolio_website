@@ -31,7 +31,7 @@ export const linkEntries: LinkEntry[] = [
   {
     label: 'Featherbrain on Spotify',
     href: 'https://open.spotify.com/track/74evtzOHAHVgfLy4UyTX8V',
-    note: 'New single — out now',
+    note: 'New single out now',
     thumbnail: '/featherbrain_albumart_3k.jpg',
   },
   {
