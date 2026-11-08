@@ -1,10 +1,10 @@
 {
-"generated": "2026-11-07T13:34:27+00:00",
+"generated": "2026-11-08T13:54:31+00:00",
 "channel": {
 "title": "Play It By Ear",
-"subscribers": 22,
-"views": 23996,
-"videos": 93,
+"subscribers": 23,
+"views": 27001,
+"videos": 99,
 "daily": [
 {
 "day": "2026-10-17",
@@ -120,14 +120,14 @@
 },
 {
 "day": "2026-11-02",
-"views": 789,
+"views": 783,
 "estimatedMinutesWatched": 138,
 "subscribersGained": 0,
 "subscribersLost": 0
 },
 {
 "day": "2026-11-03",
-"views": 956,
+"views": 949,
 "estimatedMinutesWatched": 171,
 "subscribersGained": 0,
 "subscribersLost": 0
@@ -137,6 +137,13 @@
 "views": 614,
 "estimatedMinutesWatched": 96,
 "subscribersGained": 1,
+"subscribersLost": 0
+},
+{
+"day": "2026-11-05",
+"views": 606,
+"estimatedMinutesWatched": 119,
+"subscribersGained": 2,
 "subscribersLost": 0
 }
 ]
@@ -153,6 +160,270 @@
 },
 "videos": [
 {
+"id": "G6HuB4S1hes",
+"title": "Name 5 Pokémon from their sounds (Generation 2) #shorts",
+"published": "2026-11-08T02:22:53Z",
+"pack": "pokemon",
+"format": "rapid",
+"variant": null,
+"theme": "Generation 2",
+"duration": 35,
+"privacy": "public",
+"views": 113,
+"likes": 2,
+"comments": 0,
+"tier": "known",
+"avd": null,
+"avp": null,
+"minutes": null,
+"subs": null,
+"tags": [
+"exp:rapidbeat=once"
+],
+"views7d": null,
+"platforms": {
+"instagram": {
+"id": "18400549123166123",
+"views": 1288,
+"reach": 1135,
+"likes": 21,
+"comments": 0,
+"shares": 6,
+"saved": 1,
+"total_interactions": 28,
+"ig_reels_avg_watch_time": 10525
+},
+"facebook": {
+"id": "1118924934181544",
+"blue_reels_play_count": 0,
+"post_video_avg_time_watched": 0,
+"rejected_metrics": "post_impressions_unique"
+}
+}
+},
+{
+"id": "Z2nkg3u29Zc",
+"title": "Name 5 Pokémon from their sounds (Water-type Pokémon) #shorts",
+"published": "2026-11-07T22:23:23Z",
+"pack": "pokemon",
+"format": "rapid",
+"variant": null,
+"theme": "Water-type Pokémon",
+"duration": 37,
+"privacy": "public",
+"views": 575,
+"likes": 6,
+"comments": 0,
+"tier": "icon",
+"avd": null,
+"avp": null,
+"minutes": null,
+"subs": null,
+"tags": [
+"exp:rapidbeat=twice"
+],
+"views7d": null,
+"platforms": {
+"instagram": {
+"id": "17940142503395930",
+"views": 30,
+"reach": 16,
+"likes": 0,
+"comments": 0,
+"shares": 0,
+"saved": 0,
+"total_interactions": 0,
+"ig_reels_avg_watch_time": 12640
+},
+"facebook": {
+"id": "2594507930973663",
+"blue_reels_play_count": 0,
+"post_video_avg_time_watched": 0,
+"rejected_metrics": "post_impressions_unique"
+}
+}
+},
+{
+"id": "943Q6-ahgxc",
+"title": "Can you name this Pokémon from its sound? (Ghost-type Pokémon) #shorts",
+"published": "2026-11-07T20:22:51Z",
+"pack": "pokemon",
+"format": "short",
+"variant": "announce",
+"theme": "Ghost-type Pokémon",
+"duration": 35,
+"privacy": "public",
+"views": 698,
+"likes": 12,
+"comments": 1,
+"tier": "known",
+"avd": null,
+"avp": null,
+"minutes": null,
+"subs": null,
+"tags": [
+"exp:captions=kinetic",
+"exp:cry=og",
+"exp:open=punch*",
+"exp:snappy=standard",
+"exp:voice=liam*"
+],
+"views7d": null,
+"platforms": {
+"instagram": {
+"id": "17987760506892053",
+"views": 1448,
+"reach": 1211,
+"likes": 25,
+"comments": 2,
+"shares": 3,
+"saved": 3,
+"total_interactions": 33,
+"ig_reels_avg_watch_time": 13690
+},
+"facebook": {
+"id": "1122646507186141",
+"blue_reels_play_count": 0,
+"post_video_avg_time_watched": 0,
+"rejected_metrics": "post_impressions_unique"
+}
+}
+},
+{
+"id": "oJK14Y_nF3I",
+"title": "Name 5 Pokémon from their sounds (Pokémon Mix) #shorts",
+"published": "2026-11-07T18:23:19Z",
+"pack": "pokemon",
+"format": "rapid",
+"variant": null,
+"theme": "Pokémon Mix",
+"duration": 33,
+"privacy": "public",
+"views": 756,
+"likes": 10,
+"comments": 0,
+"tier": "icon",
+"avd": null,
+"avp": null,
+"minutes": null,
+"subs": null,
+"tags": [
+"exp:rapidbeat=once"
+],
+"views7d": null,
+"platforms": {
+"instagram": {
+"id": "18119125678803865",
+"views": 48,
+"reach": 38,
+"likes": 1,
+"comments": 0,
+"shares": 0,
+"saved": 0,
+"total_interactions": 1,
+"ig_reels_avg_watch_time": 20659
+},
+"facebook": {
+"id": "1847986223043750",
+"blue_reels_play_count": 0,
+"post_video_avg_time_watched": 0,
+"rejected_metrics": "post_impressions_unique"
+}
+}
+},
+{
+"id": "3d0mYd0h91Y",
+"title": "Can you name this Pokémon from its sound? (Fire-type Pokémon) #shorts",
+"published": "2026-11-07T16:22:02Z",
+"pack": "pokemon",
+"format": "short",
+"variant": "announce",
+"theme": "Fire-type Pokémon",
+"duration": 34,
+"privacy": "public",
+"views": 461,
+"likes": 8,
+"comments": 0,
+"tier": "known",
+"avd": null,
+"avp": null,
+"minutes": null,
+"subs": null,
+"tags": [
+"exp:captions=static",
+"exp:cry=modern",
+"exp:open=punch*",
+"exp:snappy=standard",
+"exp:voice=liam*"
+],
+"views7d": null,
+"platforms": {
+"instagram": {
+"id": "18099301718396198",
+"views": 1686,
+"reach": 1303,
+"likes": 39,
+"comments": 0,
+"shares": 2,
+"saved": 3,
+"total_interactions": 45,
+"ig_reels_avg_watch_time": 13339
+},
+"facebook": {
+"id": "1957400212332942",
+"blue_reels_play_count": 0,
+"post_video_avg_time_watched": 0,
+"rejected_metrics": "post_impressions_unique"
+}
+}
+},
+{
+"id": "7HvldJJ1OQI",
+"title": "Can you name this Pokémon from its sound? (Dragon-type Pokémon) #shorts",
+"published": "2026-11-07T14:22:37Z",
+"pack": "pokemon",
+"format": "short",
+"variant": "announce",
+"theme": "Dragon-type Pokémon",
+"duration": 26,
+"privacy": "public",
+"views": 883,
+"likes": 13,
+"comments": 2,
+"tier": "icon",
+"avd": null,
+"avp": null,
+"minutes": null,
+"subs": null,
+"tags": [
+"exp:captions=kinetic",
+"exp:cry=modern",
+"exp:open=punch*",
+"exp:snappy=snappy",
+"exp:voice=liam*"
+],
+"views7d": null,
+"platforms": {
+"instagram": {
+"id": "18095367035489906",
+"views": 1500,
+"reach": 1127,
+"likes": 50,
+"comments": 1,
+"shares": 5,
+"saved": 1,
+"total_interactions": 58,
+"ig_reels_avg_watch_time": 11776
+},
+"facebook": {
+"id": "1346426121897764",
+"blue_reels_play_count": 0,
+"post_video_avg_time_watched": 0,
+"rejected_metrics": "post_impressions_unique"
+}
+}
+},
+{
 "id": "HLoInAcRoCY",
 "title": "Name 5 Pokémon from their sounds (Generation 3) #shorts",
 "published": "2026-11-07T02:23:42Z",
@@ -162,8 +433,8 @@
 "theme": "Generation 3",
 "duration": 39,
 "privacy": "public",
-"views": 402,
-"likes": 4,
+"views": 624,
+"likes": 7,
 "comments": 1,
 "tier": "known",
 "avd": null,
@@ -177,14 +448,14 @@
 "platforms": {
 "instagram": {
 "id": "17918611227264859",
-"views": 1315,
-"reach": 1107,
-"likes": 31,
+"views": 1463,
+"reach": 1214,
+"likes": 37,
 "comments": 1,
 "shares": 7,
 "saved": 0,
-"total_interactions": 40,
-"ig_reels_avg_watch_time": 14334
+"total_interactions": 46,
+"ig_reels_avg_watch_time": 15125
 },
 "facebook": {
 "id": "2230417840843275",
@@ -204,8 +475,8 @@
 "theme": "Generation 4",
 "duration": 28,
 "privacy": "public",
-"views": 546,
-"likes": 11,
+"views": 942,
+"likes": 17,
 "comments": 1,
 "tier": "deep",
 "avd": null,
@@ -223,14 +494,14 @@
 "platforms": {
 "instagram": {
 "id": "18104385659649343",
-"views": 1496,
-"reach": 1168,
-"likes": 33,
+"views": 1592,
+"reach": 1242,
+"likes": 37,
 "comments": 1,
 "shares": 0,
 "saved": 1,
-"total_interactions": 36,
-"ig_reels_avg_watch_time": 12833
+"total_interactions": 40,
+"ig_reels_avg_watch_time": 13054
 },
 "facebook": {
 "id": "872774649229733",
@@ -250,8 +521,8 @@
 "theme": "Kanto Gym Leaders' Pokémon",
 "duration": 38,
 "privacy": "public",
-"views": 258,
-"likes": 6,
+"views": 345,
+"likes": 8,
 "comments": 0,
 "tier": "known",
 "avd": null,
@@ -265,14 +536,14 @@
 "platforms": {
 "instagram": {
 "id": "18121957567766049",
-"views": 1320,
-"reach": 1129,
-"likes": 9,
+"views": 1404,
+"reach": 1200,
+"likes": 11,
 "comments": 0,
 "shares": 1,
 "saved": 2,
-"total_interactions": 12,
-"ig_reels_avg_watch_time": 12498
+"total_interactions": 14,
+"ig_reels_avg_watch_time": 12796
 },
 "facebook": {
 "id": "1119688790644216",
@@ -292,7 +563,7 @@
 "theme": "Generation 1",
 "duration": 40,
 "privacy": "public",
-"views": 444,
+"views": 469,
 "likes": 3,
 "comments": 0,
 "tier": "icon",
@@ -307,14 +578,14 @@
 "platforms": {
 "instagram": {
 "id": "18143695849627020",
-"views": 1379,
-"reach": 1166,
-"likes": 13,
+"views": 1471,
+"reach": 1233,
+"likes": 17,
 "comments": 0,
 "shares": 1,
 "saved": 3,
-"total_interactions": 18,
-"ig_reels_avg_watch_time": 13597
+"total_interactions": 22,
+"ig_reels_avg_watch_time": 13805
 },
 "facebook": {
 "id": "1857783785230762",
@@ -334,9 +605,9 @@
 "theme": "Bug-type Pokémon",
 "duration": 37,
 "privacy": "public",
-"views": 142,
-"likes": 2,
-"comments": 1,
+"views": 251,
+"likes": 3,
+"comments": 2,
 "tier": "known",
 "avd": null,
 "avp": null,
@@ -353,14 +624,14 @@
 "platforms": {
 "instagram": {
 "id": "18132101506698849",
-"views": 195,
-"reach": 161,
-"likes": 0,
+"views": 249,
+"reach": 203,
+"likes": 3,
 "comments": 0,
 "shares": 0,
 "saved": 0,
-"total_interactions": 0,
-"ig_reels_avg_watch_time": 12735
+"total_interactions": 3,
+"ig_reels_avg_watch_time": 14073
 },
 "facebook": {
 "id": "1521107853382277",
@@ -380,7 +651,7 @@
 "theme": "Grass-type Pokémon",
 "duration": 28,
 "privacy": "public",
-"views": 186,
+"views": 274,
 "likes": 7,
 "comments": 0,
 "tier": "known",
@@ -399,14 +670,14 @@
 "platforms": {
 "instagram": {
 "id": "18115665092163607",
-"views": 200,
-"reach": 164,
-"likes": 0,
+"views": 244,
+"reach": 201,
+"likes": 2,
 "comments": 0,
 "shares": 0,
 "saved": 0,
-"total_interactions": 0,
-"ig_reels_avg_watch_time": 11450
+"total_interactions": 2,
+"ig_reels_avg_watch_time": 11352
 },
 "facebook": {
 "id": "1155610860343636",
@@ -426,14 +697,14 @@
 "theme": "Electric-type Pokémon",
 "duration": 34,
 "privacy": "public",
-"views": 238,
-"likes": 5,
+"views": 4,
+"likes": 0,
 "comments": 0,
 "tier": "icon",
-"avd": null,
-"avp": null,
-"minutes": null,
-"subs": null,
+"avd": 22,
+"avp": 64.8,
+"minutes": 1,
+"subs": 0,
 "tags": [
 "exp:rapidbeat=once"
 ],
@@ -441,14 +712,14 @@
 "platforms": {
 "instagram": {
 "id": "18114666425143601",
-"views": 1335,
-"reach": 1151,
-"likes": 14,
+"views": 1377,
+"reach": 1180,
+"likes": 16,
 "comments": 0,
 "shares": 4,
 "saved": 2,
-"total_interactions": 20,
-"ig_reels_avg_watch_time": 11990
+"total_interactions": 22,
+"ig_reels_avg_watch_time": 12081
 },
 "facebook": {
 "id": "1125587453603011",
@@ -468,14 +739,14 @@
 "theme": "Ghost-type Pokémon",
 "duration": 41,
 "privacy": "public",
-"views": 273,
-"likes": 6,
+"views": 252,
+"likes": 4,
 "comments": 0,
 "tier": "known",
-"avd": null,
-"avp": null,
-"minutes": null,
-"subs": null,
+"avd": 25,
+"avp": 61.6,
+"minutes": 41,
+"subs": 0,
 "tags": [
 "exp:rapidbeat=twice"
 ],
@@ -483,14 +754,14 @@
 "platforms": {
 "instagram": {
 "id": "18120312628787974",
-"views": 2015,
-"reach": 1632,
-"likes": 49,
+"views": 2082,
+"reach": 1681,
+"likes": 54,
 "comments": 0,
 "shares": 9,
 "saved": 4,
-"total_interactions": 62,
-"ig_reels_avg_watch_time": 16133
+"total_interactions": 67,
+"ig_reels_avg_watch_time": 16219
 },
 "facebook": {
 "id": "1124744880276710",
@@ -510,14 +781,14 @@
 "theme": "Starter Pokémon",
 "duration": 34,
 "privacy": "public",
-"views": 120,
-"likes": 4,
+"views": 108,
+"likes": 3,
 "comments": 0,
 "tier": "icon",
-"avd": null,
-"avp": null,
-"minutes": null,
-"subs": null,
+"avd": 24,
+"avp": 73.3,
+"minutes": 23,
+"subs": 0,
 "tags": [
 "exp:captions=kinetic",
 "exp:cry=modern",
@@ -529,14 +800,14 @@
 "platforms": {
 "instagram": {
 "id": "17945357751091073",
-"views": 1374,
-"reach": 1198,
-"likes": 32,
+"views": 1405,
+"reach": 1220,
+"likes": 33,
 "comments": 0,
 "shares": 1,
 "saved": 1,
-"total_interactions": 35,
-"ig_reels_avg_watch_time": 12960
+"total_interactions": 36,
+"ig_reels_avg_watch_time": 12973
 },
 "facebook": {
 "id": "1146199827804878",
@@ -556,14 +827,14 @@
 "theme": "Pokémon Mix",
 "duration": 37,
 "privacy": "public",
-"views": 72,
-"likes": 3,
+"views": 57,
+"likes": 2,
 "comments": 0,
 "tier": "icon",
-"avd": null,
-"avp": null,
-"minutes": null,
-"subs": null,
+"avd": 21,
+"avp": 58.6,
+"minutes": 12,
+"subs": 0,
 "tags": [
 "exp:rapidbeat=once"
 ],
@@ -571,14 +842,14 @@
 "platforms": {
 "instagram": {
 "id": "17923171455450827",
-"views": 213,
-"reach": 171,
-"likes": 2,
+"views": 240,
+"reach": 192,
+"likes": 3,
 "comments": 1,
 "shares": 0,
 "saved": 0,
-"total_interactions": 3,
-"ig_reels_avg_watch_time": 15841
+"total_interactions": 4,
+"ig_reels_avg_watch_time": 15895
 },
 "facebook": {
 "id": "2232819584334076",
@@ -602,10 +873,10 @@
 "likes": 1,
 "comments": 0,
 "tier": "known",
-"avd": null,
-"avp": null,
-"minutes": null,
-"subs": null,
+"avd": 22,
+"avp": 68.3,
+"minutes": 1,
+"subs": 0,
 "tags": [
 "exp:captions=static",
 "exp:cry=og",
@@ -617,14 +888,14 @@
 "platforms": {
 "instagram": {
 "id": "18439932163182447",
-"views": 1372,
-"reach": 1156,
-"likes": 30,
+"views": 1395,
+"reach": 1174,
+"likes": 31,
 "comments": 0,
 "shares": 0,
 "saved": 1,
-"total_interactions": 32,
-"ig_reels_avg_watch_time": 11805
+"total_interactions": 33,
+"ig_reels_avg_watch_time": 11828
 },
 "facebook": {
 "id": "1457746896500130",
@@ -644,14 +915,14 @@
 "theme": "Dragon-type Pokémon",
 "duration": 27,
 "privacy": "public",
-"views": 68,
+"views": 58,
 "likes": 2,
 "comments": 0,
 "tier": "known",
-"avd": null,
-"avp": null,
-"minutes": null,
-"subs": null,
+"avd": 21,
+"avp": 79.2,
+"minutes": 10,
+"subs": 0,
 "tags": [
 "exp:captions=static",
 "exp:cry=modern",
@@ -679,13 +950,13 @@
 "theme": "Original Game Boy cries",
 "duration": 40,
 "privacy": "public",
-"views": 54,
-"likes": 0,
+"views": 74,
+"likes": 1,
 "comments": 0,
 "tier": "known",
-"avd": 19,
-"avp": 49.1,
-"minutes": 8,
+"avd": 22,
+"avp": 57.0,
+"minutes": 15,
 "subs": 0,
 "tags": [
 "exp:rapidbeat=twice"
@@ -694,14 +965,14 @@
 "platforms": {
 "instagram": {
 "id": "17891845422687039",
-"views": 1274,
-"reach": 1110,
-"likes": 22,
+"views": 1296,
+"reach": 1126,
+"likes": 23,
 "comments": 0,
 "shares": 1,
 "saved": 2,
-"total_interactions": 25,
-"ig_reels_avg_watch_time": 12978
+"total_interactions": 26,
+"ig_reels_avg_watch_time": 13085
 },
 "facebook": {
 "id": "1114612448121661",
@@ -721,13 +992,13 @@
 "theme": "Water-type Pokémon",
 "duration": 35,
 "privacy": "public",
-"views": 53,
-"likes": 2,
+"views": 76,
+"likes": 3,
 "comments": 0,
 "tier": "icon",
-"avd": 23,
-"avp": 67.5,
-"minutes": 8,
+"avd": 22,
+"avp": 64.7,
+"minutes": 12,
 "subs": 0,
 "tags": [
 "exp:rapidbeat=once"
@@ -736,14 +1007,14 @@
 "platforms": {
 "instagram": {
 "id": "18078051902741621",
-"views": 1394,
-"reach": 1175,
-"likes": 16,
+"views": 1408,
+"reach": 1189,
+"likes": 17,
 "comments": 0,
 "shares": 0,
 "saved": 3,
-"total_interactions": 19,
-"ig_reels_avg_watch_time": 13457
+"total_interactions": 20,
+"ig_reels_avg_watch_time": 13401
 },
 "facebook": {
 "id": "948300631452452",
@@ -763,13 +1034,13 @@
 "theme": "Psychic-type Pokémon",
 "duration": 35,
 "privacy": "public",
-"views": 170,
-"likes": 4,
+"views": 184,
+"likes": 5,
 "comments": 0,
 "tier": "known",
-"avd": 18,
-"avp": 53.7,
-"minutes": 27,
+"avd": 19,
+"avp": 55.8,
+"minutes": 31,
 "subs": 0,
 "tags": [
 "exp:captions=kinetic",
@@ -782,14 +1053,14 @@
 "platforms": {
 "instagram": {
 "id": "18133079701684523",
-"views": 227,
-"reach": 190,
-"likes": 6,
+"views": 237,
+"reach": 199,
+"likes": 7,
 "comments": 0,
 "shares": 0,
 "saved": 0,
-"total_interactions": 6,
-"ig_reels_avg_watch_time": 14902
+"total_interactions": 7,
+"ig_reels_avg_watch_time": 14744
 },
 "facebook": {
 "id": "2421701608576893",
@@ -809,13 +1080,13 @@
 "theme": "Generation 1",
 "duration": 29,
 "privacy": "public",
-"views": 25,
-"likes": 0,
+"views": 34,
+"likes": 1,
 "comments": 0,
 "tier": "known",
-"avd": 16,
-"avp": 58.3,
-"minutes": 3,
+"avd": 18,
+"avp": 64.0,
+"minutes": 5,
 "subs": 0,
 "tags": [
 "exp:captions=static",
@@ -828,14 +1099,14 @@
 "platforms": {
 "instagram": {
 "id": "18141927076725080",
-"views": 1432,
-"reach": 1102,
+"views": 1438,
+"reach": 1107,
 "likes": 20,
 "comments": 0,
 "shares": 0,
 "saved": 1,
 "total_interactions": 21,
-"ig_reels_avg_watch_time": 10903
+"ig_reels_avg_watch_time": 10899
 },
 "facebook": {
 "id": "1495778259266538",
@@ -855,13 +1126,13 @@
 "theme": "Bug-type Pokémon",
 "duration": 38,
 "privacy": "public",
-"views": 70,
-"likes": 4,
+"views": 83,
+"likes": 5,
 "comments": 0,
 "tier": "known",
-"avd": 26,
-"avp": 70,
-"minutes": 15,
+"avd": 28,
+"avp": 73.8,
+"minutes": 20,
 "subs": 0,
 "tags": [
 "exp:rapidbeat=twice"
@@ -870,14 +1141,14 @@
 "platforms": {
 "instagram": {
 "id": "18126961709486334",
-"views": 1361,
-"reach": 1081,
+"views": 1367,
+"reach": 1088,
 "likes": 38,
 "comments": 0,
 "shares": 5,
 "saved": 4,
 "total_interactions": 47,
-"ig_reels_avg_watch_time": 14975
+"ig_reels_avg_watch_time": 14934
 },
 "facebook": {
 "id": "1609023556905151",
@@ -897,13 +1168,13 @@
 "theme": "Legendary Pokémon",
 "duration": 30,
 "privacy": "public",
-"views": 123,
-"likes": 1,
+"views": 131,
+"likes": 2,
 "comments": 0,
 "tier": "known",
 "avd": 20,
-"avp": 68.6,
-"minutes": 16,
+"avp": 67.5,
+"minutes": 18,
 "subs": 1,
 "tags": [
 "exp:captions=static",
@@ -916,14 +1187,14 @@
 "platforms": {
 "instagram": {
 "id": "18132655759694790",
-"views": 198,
-"reach": 181,
+"views": 203,
+"reach": 186,
 "likes": 7,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 7,
-"ig_reels_avg_watch_time": 9551
+"ig_reels_avg_watch_time": 9658
 },
 "facebook": {
 "id": "1062648206832187",
@@ -943,13 +1214,13 @@
 "theme": "Generation 4",
 "duration": 40,
 "privacy": "public",
-"views": 181,
-"likes": 1,
+"views": 183,
+"likes": 2,
 "comments": 0,
 "tier": "deep",
 "avd": 19,
-"avp": 48.2,
-"minutes": 28,
+"avp": 48.5,
+"minutes": 29,
 "subs": 0,
 "tags": [
 "exp:captions=kinetic",
@@ -960,14 +1231,14 @@
 "platforms": {
 "instagram": {
 "id": "18112979258627037",
-"views": 221,
-"reach": 192,
+"views": 227,
+"reach": 197,
 "likes": 5,
 "comments": 0,
 "shares": 0,
 "saved": 1,
 "total_interactions": 6,
-"ig_reels_avg_watch_time": 12731
+"ig_reels_avg_watch_time": 12623
 },
 "facebook": {
 "id": "3648102042006325",
@@ -987,11 +1258,11 @@
 "theme": "Ghost-type Pokémon",
 "duration": 34,
 "privacy": "public",
-"views": 225,
+"views": 233,
 "likes": 2,
 "comments": 0,
 "tier": "icon",
-"avd": 20,
+"avd": 19,
 "avp": 58.8,
 "minutes": 39,
 "subs": 0,
@@ -1000,14 +1271,14 @@
 "platforms": {
 "instagram": {
 "id": "18080026424406593",
-"views": 1354,
-"reach": 1122,
+"views": 1358,
+"reach": 1126,
 "likes": 20,
 "comments": 0,
 "shares": 5,
 "saved": 2,
 "total_interactions": 28,
-"ig_reels_avg_watch_time": 13178
+"ig_reels_avg_watch_time": 13164
 },
 "facebook": {
 "id": "1764537628716499",
@@ -1027,13 +1298,13 @@
 "theme": "Fire-type Pokémon",
 "duration": 39,
 "privacy": "public",
-"views": 87,
+"views": 89,
 "likes": 2,
 "comments": 0,
 "tier": "icon",
-"avd": 20,
-"avp": 53.7,
-"minutes": 15,
+"avd": 21,
+"avp": 54.4,
+"minutes": 16,
 "subs": 0,
 "tags": [
 "exp:captions=kinetic",
@@ -1044,7 +1315,7 @@
 "platforms": {
 "instagram": {
 "id": "18132934222834740",
-"views": 1323,
+"views": 1326,
 "reach": 1108,
 "likes": 31,
 "comments": 0,
@@ -1071,27 +1342,27 @@
 "theme": "Pokémon Mix",
 "duration": 35,
 "privacy": "public",
-"views": 202,
+"views": 210,
 "likes": 1,
 "comments": 0,
 "tier": "icon",
 "avd": 21,
-"avp": 60.5,
-"minutes": 32,
+"avp": 61.0,
+"minutes": 33,
 "subs": 0,
 "tags": [],
 "views7d": null,
 "platforms": {
 "instagram": {
 "id": "18115002467171916",
-"views": 226,
-"reach": 186,
+"views": 232,
+"reach": 188,
 "likes": 5,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 5,
-"ig_reels_avg_watch_time": 14496
+"ig_reels_avg_watch_time": 14524
 },
 "facebook": {
 "id": "1869535340711179",
@@ -1111,7 +1382,7 @@
 "theme": "Dragon-type Pokémon",
 "duration": 34,
 "privacy": "public",
-"views": 152,
+"views": 150,
 "likes": 2,
 "comments": 1,
 "tier": "icon",
@@ -1128,14 +1399,14 @@
 "platforms": {
 "instagram": {
 "id": "18109634933460547",
-"views": 220,
-"reach": 183,
+"views": 223,
+"reach": 185,
 "likes": 4,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 4,
-"ig_reels_avg_watch_time": 11578
+"ig_reels_avg_watch_time": 11581
 },
 "facebook": {
 "id": "1673746627514694",
@@ -1172,14 +1443,14 @@
 "platforms": {
 "instagram": {
 "id": "18127083451963164",
-"views": 1448,
-"reach": 1191,
+"views": 1452,
+"reach": 1193,
 "likes": 24,
 "comments": 1,
 "shares": 5,
 "saved": 3,
 "total_interactions": 33,
-"ig_reels_avg_watch_time": 12929
+"ig_reels_avg_watch_time": 12918
 },
 "facebook": {
 "id": "1127362556688753",
@@ -1199,7 +1470,7 @@
 "theme": "Starter Pokémon",
 "duration": 33,
 "privacy": "public",
-"views": 60,
+"views": 58,
 "likes": 2,
 "comments": 0,
 "tier": "icon",
@@ -1212,14 +1483,14 @@
 "platforms": {
 "instagram": {
 "id": "18572506777075512",
-"views": 1463,
-"reach": 1234,
+"views": 1468,
+"reach": 1238,
 "likes": 17,
 "comments": 16,
 "shares": 5,
 "saved": 3,
 "total_interactions": 41,
-"ig_reels_avg_watch_time": 15669
+"ig_reels_avg_watch_time": 15694
 },
 "facebook": {
 "id": "2926274031070318",
@@ -1256,14 +1527,14 @@
 "platforms": {
 "instagram": {
 "id": "18346699261254911",
-"views": 252,
-"reach": 204,
+"views": 254,
+"reach": 206,
 "likes": 2,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 2,
-"ig_reels_avg_watch_time": 12204
+"ig_reels_avg_watch_time": 12104
 },
 "facebook": {
 "id": "1306911738210204",
@@ -1283,7 +1554,7 @@
 "theme": "Grass-type Pokémon",
 "duration": 36,
 "privacy": "public",
-"views": 153,
+"views": 149,
 "likes": 0,
 "comments": 1,
 "tier": "known",
@@ -1367,13 +1638,13 @@
 "theme": "Psychic-type Pokémon",
 "duration": 380,
 "privacy": "public",
-"views": 11,
+"views": 14,
 "likes": 0,
 "comments": 0,
 "tier": null,
-"avd": 27,
-"avp": 7.3,
-"minutes": 2,
+"avd": 22,
+"avp": 5.8,
+"minutes": 3,
 "subs": 0,
 "tags": [
 "exp:thumb=art"
@@ -1442,8 +1713,8 @@
 "theme": "Kanto Gym Leaders' Pokémon",
 "duration": 36,
 "privacy": "public",
-"views": 286,
-"likes": 5,
+"views": 287,
+"likes": 6,
 "comments": 1,
 "tier": "icon",
 "avd": 21,
@@ -1455,14 +1726,14 @@
 "platforms": {
 "instagram": {
 "id": "18653396659015735",
-"views": 1313,
-"reach": 1107,
+"views": 1315,
+"reach": 1108,
 "likes": 18,
 "comments": 0,
 "shares": 2,
 "saved": 0,
 "total_interactions": 20,
-"ig_reels_avg_watch_time": 12227
+"ig_reels_avg_watch_time": 12251
 },
 "facebook": {
 "id": "1124161063868714",
@@ -1557,7 +1828,7 @@
 "theme": "Legendary Pokémon",
 "duration": 39,
 "privacy": "public",
-"views": 572,
+"views": 571,
 "likes": 9,
 "comments": 1,
 "tier": "icon",
@@ -1570,14 +1841,14 @@
 "platforms": {
 "instagram": {
 "id": "18170642029464372",
-"views": 1556,
-"reach": 1288,
+"views": 1560,
+"reach": 1290,
 "likes": 22,
 "comments": 1,
 "shares": 2,
 "saved": 1,
 "total_interactions": 26,
-"ig_reels_avg_watch_time": 13969
+"ig_reels_avg_watch_time": 14000
 },
 "facebook": {
 "id": "3380292102172645",
@@ -1597,7 +1868,7 @@
 "theme": "Electric-type Pokémon",
 "duration": 39,
 "privacy": "public",
-"views": 303,
+"views": 302,
 "likes": 3,
 "comments": 0,
 "tier": "known",
@@ -1645,7 +1916,7 @@
 "comments": 1,
 "tier": "known",
 "avd": 20,
-"avp": 63.1,
+"avp": 63.2,
 "minutes": 31,
 "subs": 0,
 "tags": [
@@ -1688,11 +1959,11 @@
 "comments": 0,
 "tier": "icon",
 "avd": 19,
-"avp": 55.9,
+"avp": 56.4,
 "minutes": 39,
 "subs": 1,
 "tags": [],
-"views7d": null,
+"views7d": 401,
 "platforms": {
 "instagram": {
 "id": "18021480497732029",
@@ -1728,14 +1999,14 @@
 "comments": 0,
 "tier": "deep",
 "avd": 21,
-"avp": 60.0,
+"avp": 60.7,
 "minutes": 21,
 "subs": 0,
 "tags": [
 "exp:open=cold",
 "exp:voice=liam"
 ],
-"views7d": null,
+"views7d": 125,
 "platforms": {
 "instagram": {
 "id": "17906480280355405",
@@ -1775,7 +2046,7 @@
 "minutes": 107,
 "subs": 0,
 "tags": [],
-"views7d": null,
+"views7d": 808,
 "platforms": {
 "instagram": {
 "id": "18104899241567643",
@@ -1818,7 +2089,7 @@
 "exp:open=announce",
 "exp:voice=sage"
 ],
-"views7d": null,
+"views7d": 179,
 "platforms": {
 "instagram": {
 "id": "18437933773197508",
@@ -1905,14 +2176,14 @@
 "platforms": {
 "instagram": {
 "id": "18180253858448160",
-"views": 1374,
+"views": 1378,
 "reach": 1108,
 "likes": 23,
 "comments": 0,
 "shares": 3,
 "saved": 2,
 "total_interactions": 29,
-"ig_reels_avg_watch_time": 13007
+"ig_reels_avg_watch_time": 13032
 },
 "facebook": {
 "id": "1120700180817499",
@@ -1936,8 +2207,8 @@
 "likes": 8,
 "comments": 0,
 "tier": "icon",
-"avd": 23,
-"avp": 53.7,
+"avd": 22,
+"avp": 53.4,
 "minutes": 55,
 "subs": 0,
 "tags": [
@@ -2031,14 +2302,14 @@
 "platforms": {
 "instagram": {
 "id": "18133003090689174",
-"views": 216,
-"reach": 190,
+"views": 217,
+"reach": 192,
 "likes": 3,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 3,
-"ig_reels_avg_watch_time": 9709
+"ig_reels_avg_watch_time": 9661
 },
 "facebook": {
 "id": "2111599443048865",
@@ -2074,14 +2345,14 @@
 "platforms": {
 "instagram": {
 "id": "18007029654007503",
-"views": 1420,
-"reach": 1193,
+"views": 1423,
+"reach": 1196,
 "likes": 37,
 "comments": 1,
 "shares": 1,
 "saved": 3,
 "total_interactions": 43,
-"ig_reels_avg_watch_time": 14070
+"ig_reels_avg_watch_time": 14064
 },
 "facebook": {
 "id": "1329793295828882",
@@ -2114,14 +2385,14 @@
 "platforms": {
 "instagram": {
 "id": "18060181277592823",
-"views": 1378,
-"reach": 1121,
+"views": 1379,
+"reach": 1122,
 "likes": 16,
 "comments": 1,
 "shares": 1,
 "saved": 2,
 "total_interactions": 20,
-"ig_reels_avg_watch_time": 11817
+"ig_reels_avg_watch_time": 11809
 },
 "facebook": {
 "id": "1622752072685082",
@@ -2141,12 +2412,12 @@
 "theme": "Generation 4",
 "duration": 36,
 "privacy": "public",
-"views": 379,
+"views": 380,
 "likes": 6,
 "comments": 1,
 "tier": "deep",
 "avd": 24,
-"avp": 67.1,
+"avp": 67.3,
 "minutes": 57,
 "subs": 0,
 "tags": [
@@ -2157,14 +2428,14 @@
 "platforms": {
 "instagram": {
 "id": "18133402651824431",
-"views": 264,
-"reach": 218,
+"views": 265,
+"reach": 219,
 "likes": 2,
 "comments": 0,
 "shares": 8,
 "saved": 0,
 "total_interactions": 10,
-"ig_reels_avg_watch_time": 12738
+"ig_reels_avg_watch_time": 12820
 },
 "facebook": {
 "id": "1698703678529826",
@@ -2197,14 +2468,14 @@
 "platforms": {
 "instagram": {
 "id": "17895123465440055",
-"views": 221,
-"reach": 178,
+"views": 223,
+"reach": 180,
 "likes": 1,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 1,
-"ig_reels_avg_watch_time": 15910
+"ig_reels_avg_watch_time": 15823
 },
 "facebook": {
 "id": "1538190018074157",
@@ -2229,7 +2500,7 @@
 "comments": 0,
 "tier": "known",
 "avd": 25,
-"avp": 72.5,
+"avp": 72.8,
 "minutes": 71,
 "subs": 1,
 "tags": [
@@ -2267,13 +2538,13 @@
 "theme": "Grass-type Pokémon",
 "duration": 36,
 "privacy": "public",
-"views": 524,
+"views": 525,
 "likes": 11,
 "comments": 2,
 "tier": "known",
 "avd": 21,
-"avp": 59.5,
-"minutes": 88,
+"avp": 59.6,
+"minutes": 89,
 "subs": 0,
 "tags": [
 "exp:open=punch",
@@ -2366,14 +2637,14 @@
 "platforms": {
 "instagram": {
 "id": "18128466158511068",
-"views": 244,
-"reach": 211,
+"views": 246,
+"reach": 212,
 "likes": 4,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 4,
-"ig_reels_avg_watch_time": 14194
+"ig_reels_avg_watch_time": 14285
 },
 "facebook": {
 "id": "1133836922452799",
@@ -2495,14 +2766,14 @@
 "platforms": {
 "instagram": {
 "id": "18242666002316186",
-"views": 1669,
-"reach": 1338,
+"views": 1672,
+"reach": 1339,
 "likes": 33,
 "comments": 1,
 "shares": 3,
 "saved": 2,
 "total_interactions": 39,
-"ig_reels_avg_watch_time": 14921
+"ig_reels_avg_watch_time": 14925
 },
 "facebook": {
 "id": "1452891863448936",
@@ -2634,12 +2905,12 @@
 "theme": "Birds of Prey",
 "duration": 43,
 "privacy": "public",
-"views": 73,
+"views": 74,
 "likes": 1,
 "comments": 0,
 "tier": "icon",
 "avd": 13,
-"avp": 31.6,
+"avp": 30.9,
 "minutes": 7,
 "subs": 0,
 "tags": [
@@ -2650,14 +2921,14 @@
 "platforms": {
 "instagram": {
 "id": "18013849079972898",
-"views": 152,
-"reach": 122,
+"views": 153,
+"reach": 123,
 "likes": 4,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 4,
-"ig_reels_avg_watch_time": 9659
+"ig_reels_avg_watch_time": 9720
 },
 "facebook": {
 "id": "1581392247004691",
@@ -2853,14 +3124,14 @@
 "platforms": {
 "instagram": {
 "id": "18134582080743428",
-"views": 101,
+"views": 103,
 "reach": 94,
 "likes": 1,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 1,
-"ig_reels_avg_watch_time": 2680
+"ig_reels_avg_watch_time": 3203
 },
 "facebook": {
 "id": "2497444547405292",
@@ -3056,14 +3327,14 @@
 "platforms": {
 "instagram": {
 "id": "17969378241192047",
-"views": 206,
+"views": 207,
 "reach": 190,
 "likes": 1,
 "comments": 0,
 "shares": 1,
 "saved": 0,
 "total_interactions": 2,
-"ig_reels_avg_watch_time": 4301
+"ig_reels_avg_watch_time": 4540
 },
 "facebook": {
 "id": "1680230540101075",
@@ -3142,14 +3413,14 @@
 "platforms": {
 "instagram": {
 "id": "17919541113453349",
-"views": 206,
+"views": 209,
 "reach": 190,
 "likes": 0,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 0,
-"ig_reels_avg_watch_time": 2618
+"ig_reels_avg_watch_time": 2884
 },
 "facebook": {
 "id": "1137855458598706",
@@ -3169,7 +3440,7 @@
 "theme": "Dragon-type Pokémon",
 "duration": 33,
 "privacy": "public",
-"views": 973,
+"views": 974,
 "likes": 7,
 "comments": 3,
 "tier": "deep",
@@ -3471,12 +3742,12 @@
 "theme": "Fire-type Pokémon",
 "duration": 41,
 "privacy": "public",
-"views": 1061,
+"views": 1062,
 "likes": 26,
 "comments": 1,
 "tier": null,
 "avd": 23,
-"avp": 56.2,
+"avp": 56.1,
 "minutes": 200,
 "subs": 1,
 "tags": [
@@ -3755,12 +4026,12 @@
 "theme": "Generation 2",
 "duration": 47,
 "privacy": "public",
-"views": 30,
-"likes": 3,
+"views": 31,
+"likes": 4,
 "comments": 0,
 "tier": null,
-"avd": 33,
-"avp": 71.0,
+"avd": 32,
+"avp": 68.7,
 "minutes": 14,
 "subs": 0,
 "tags": [
@@ -3968,6 +4239,60 @@
 ],
 "ledger": {
 "episodes": [
+{
+"slug": "pokemon-short-generation-2-2026-11-07-dunsparce-rapid",
+"pack": "pokemon",
+"title": "Name 5 Pokémon from their sounds (Generation 2) #shorts",
+"theme": "Generation 2",
+"status": "uploaded",
+"youtube_id": "G6HuB4S1hes",
+"created_at": 1794104521.2548416
+},
+{
+"slug": "pokemon-short-water-type-pok-mon-2026-11-07-mudkip-rapid",
+"pack": "pokemon",
+"title": "Name 5 Pokémon from their sounds (Water-type Pokémon) #shorts",
+"theme": "Water-type Pokémon",
+"status": "uploaded",
+"youtube_id": "Z2nkg3u29Zc",
+"created_at": 1794090130.304915
+},
+{
+"slug": "pokemon-short-ghost-type-pok-mon-2026-11-07-duskull-ann",
+"pack": "pokemon",
+"title": "Can you name this Pokémon from its sound? (Ghost-type Pokémon) #shorts",
+"theme": "Ghost-type Pokémon",
+"status": "uploaded",
+"youtube_id": "943Q6-ahgxc",
+"created_at": 1794082920.156496
+},
+{
+"slug": "pokemon-short-pok-mon-mix-2026-11-07-pikachu-rapid",
+"pack": "pokemon",
+"title": "Name 5 Pokémon from their sounds (Pokémon Mix) #shorts",
+"theme": "Pokémon Mix",
+"status": "uploaded",
+"youtube_id": "oJK14Y_nF3I",
+"created_at": 1794075744.5884097
+},
+{
+"slug": "pokemon-short-fire-type-pok-mon-2026-11-07-torkoal-ann",
+"pack": "pokemon",
+"title": "Can you name this Pokémon from its sound? (Fire-type Pokémon) #shorts",
+"theme": "Fire-type Pokémon",
+"status": "uploaded",
+"youtube_id": "3d0mYd0h91Y",
+"created_at": 1794068463.489127
+},
+{
+"slug": "pokemon-short-dragon-type-pok-mon-2026-11-07-garchomp-ann",
+"pack": "pokemon",
+"title": "Can you name this Pokémon from its sound? (Dragon-type Pokémon) #shorts",
+"theme": "Dragon-type Pokémon",
+"status": "uploaded",
+"youtube_id": "7HvldJJ1OQI",
+"created_at": 1794061312.6130948
+},
 {
 "slug": "pokemon-short-generation-3-2026-11-06-metagross-rapid",
 "pack": "pokemon",
@@ -4811,8 +5136,8 @@
 "short": 16
 },
 "pokemon": {
-"rapid": 116,
-"short": 45
+"rapid": 131,
+"short": 48
 }
 }
 },
@@ -5113,14 +5438,14 @@
 "birds-short-birds-of-the-night-2026-10-24-barn-owl-cold": {
 "instagram": {
 "id": "17919541113453349",
-"views": 206,
+"views": 209,
 "reach": 190,
 "likes": 0,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 0,
-"ig_reels_avg_watch_time": 2618
+"ig_reels_avg_watch_time": 2884
 },
 "facebook": {
 "id": "1137855458598706",
@@ -5151,14 +5476,14 @@
 "birds-short-backyard-birds-2026-10-24-black-capped-chickadee-ann": {
 "instagram": {
 "id": "17969378241192047",
-"views": 206,
+"views": 207,
 "reach": 190,
 "likes": 1,
 "comments": 0,
 "shares": 1,
 "saved": 0,
 "total_interactions": 2,
-"ig_reels_avg_watch_time": 4301
+"ig_reels_avg_watch_time": 4540
 },
 "facebook": {
 "id": "1680230540101075",
@@ -5235,14 +5560,14 @@
 "birds-short-birds-of-the-united-states-2026-10-25-american-robin-ann": {
 "instagram": {
 "id": "18134582080743428",
-"views": 101,
+"views": 103,
 "reach": 94,
 "likes": 1,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 1,
-"ig_reels_avg_watch_time": 2680
+"ig_reels_avg_watch_time": 3203
 },
 "facebook": {
 "id": "2497444547405292",
@@ -5319,14 +5644,14 @@
 "birds-short-birds-of-prey-2026-10-26-bald-eagle-ann": {
 "instagram": {
 "id": "18013849079972898",
-"views": 152,
-"reach": 122,
+"views": 153,
+"reach": 123,
 "likes": 4,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 4,
-"ig_reels_avg_watch_time": 9659
+"ig_reels_avg_watch_time": 9720
 },
 "facebook": {
 "id": "1581392247004691",
@@ -5384,14 +5709,14 @@
 "pokemon-short-starter-pok-mon-2026-10-27-chimchar-cold": {
 "instagram": {
 "id": "18242666002316186",
-"views": 1669,
-"reach": 1338,
+"views": 1672,
+"reach": 1339,
 "likes": 33,
 "comments": 1,
 "shares": 3,
 "saved": 2,
 "total_interactions": 39,
-"ig_reels_avg_watch_time": 14921
+"ig_reels_avg_watch_time": 14925
 },
 "facebook": {
 "id": "1452891863448936",
@@ -5441,14 +5766,14 @@
 "pokemon-short-bug-type-pok-mon-2026-10-28-parasect-rapid": {
 "instagram": {
 "id": "18128466158511068",
-"views": 244,
-"reach": 211,
+"views": 246,
+"reach": 212,
 "likes": 4,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 4,
-"ig_reels_avg_watch_time": 14194
+"ig_reels_avg_watch_time": 14285
 },
 "facebook": {
 "id": "1133836922452799",
@@ -5517,14 +5842,14 @@
 "pokemon-short-dragon-type-pok-mon-2026-10-29-dratini-rapid": {
 "instagram": {
 "id": "17895123465440055",
-"views": 221,
-"reach": 178,
+"views": 223,
+"reach": 180,
 "likes": 1,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 1,
-"ig_reels_avg_watch_time": 15910
+"ig_reels_avg_watch_time": 15823
 },
 "facebook": {
 "id": "1538190018074157",
@@ -5536,14 +5861,14 @@
 "pokemon-short-generation-4-2026-10-29-palkia-ann": {
 "instagram": {
 "id": "18133402651824431",
-"views": 264,
-"reach": 218,
+"views": 265,
+"reach": 219,
 "likes": 2,
 "comments": 0,
 "shares": 8,
 "saved": 0,
 "total_interactions": 10,
-"ig_reels_avg_watch_time": 12738
+"ig_reels_avg_watch_time": 12820
 },
 "facebook": {
 "id": "1698703678529826",
@@ -5555,14 +5880,14 @@
 "pokemon-short-generation-2-2026-10-29-raikou-rapid": {
 "instagram": {
 "id": "18060181277592823",
-"views": 1378,
-"reach": 1121,
+"views": 1379,
+"reach": 1122,
 "likes": 16,
 "comments": 1,
 "shares": 1,
 "saved": 2,
 "total_interactions": 20,
-"ig_reels_avg_watch_time": 11817
+"ig_reels_avg_watch_time": 11809
 },
 "facebook": {
 "id": "1622752072685082",
@@ -5574,14 +5899,14 @@
 "pokemon-short-generation-1-2026-10-29-ivysaur-ann": {
 "instagram": {
 "id": "18007029654007503",
-"views": 1420,
-"reach": 1193,
+"views": 1423,
+"reach": 1196,
 "likes": 37,
 "comments": 1,
 "shares": 1,
 "saved": 3,
 "total_interactions": 43,
-"ig_reels_avg_watch_time": 14070
+"ig_reels_avg_watch_time": 14064
 },
 "facebook": {
 "id": "1329793295828882",
@@ -5593,14 +5918,14 @@
 "pokemon-short-generation-3-2026-10-30-skitty-ann": {
 "instagram": {
 "id": "18133003090689174",
-"views": 216,
-"reach": 190,
+"views": 217,
+"reach": 192,
 "likes": 3,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 3,
-"ig_reels_avg_watch_time": 9709
+"ig_reels_avg_watch_time": 9661
 },
 "facebook": {
 "id": "2111599443048865",
@@ -5650,14 +5975,14 @@
 "pokemon-short-psychic-type-pok-mon-2026-10-30-mew-rapid": {
 "instagram": {
 "id": "18180253858448160",
-"views": 1374,
+"views": 1378,
 "reach": 1108,
 "likes": 23,
 "comments": 0,
 "shares": 3,
 "saved": 2,
 "total_interactions": 29,
-"ig_reels_avg_watch_time": 13007
+"ig_reels_avg_watch_time": 13032
 },
 "facebook": {
 "id": "1120700180817499",
@@ -5802,14 +6127,14 @@
 "pokemon-short-legendary-pok-mon-2026-11-01-ho-oh-rapid": {
 "instagram": {
 "id": "18170642029464372",
-"views": 1556,
-"reach": 1288,
+"views": 1560,
+"reach": 1290,
 "likes": 22,
 "comments": 1,
 "shares": 2,
 "saved": 1,
 "total_interactions": 26,
-"ig_reels_avg_watch_time": 13969
+"ig_reels_avg_watch_time": 14000
 },
 "facebook": {
 "id": "3380292102172645",
@@ -5848,14 +6173,14 @@
 "pokemon-short-kanto-gym-leaders-pok-mon-2026-11-01-raichu-rapid": {
 "instagram": {
 "id": "18653396659015735",
-"views": 1313,
-"reach": 1107,
+"views": 1315,
+"reach": 1108,
 "likes": 18,
 "comments": 0,
 "shares": 2,
 "saved": 0,
 "total_interactions": 20,
-"ig_reels_avg_watch_time": 12227
+"ig_reels_avg_watch_time": 12251
 },
 "facebook": {
 "id": "1124161063868714",
@@ -5932,14 +6257,14 @@
 "pokemon-short-generation-3-2026-11-02-sharpedo-ann": {
 "instagram": {
 "id": "18346699261254911",
-"views": 252,
-"reach": 204,
+"views": 254,
+"reach": 206,
 "likes": 2,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 2,
-"ig_reels_avg_watch_time": 12204
+"ig_reels_avg_watch_time": 12104
 },
 "facebook": {
 "id": "1306911738210204",
@@ -5951,14 +6276,14 @@
 "pokemon-short-starter-pok-mon-2026-11-02-charmander-rapid": {
 "instagram": {
 "id": "18572506777075512",
-"views": 1463,
-"reach": 1234,
+"views": 1468,
+"reach": 1238,
 "likes": 17,
 "comments": 16,
 "shares": 5,
 "saved": 3,
 "total_interactions": 41,
-"ig_reels_avg_watch_time": 15669
+"ig_reels_avg_watch_time": 15694
 },
 "facebook": {
 "id": "2926274031070318",
@@ -5970,14 +6295,14 @@
 "pokemon-short-electric-type-pok-mon-2026-11-02-pikachu-cold": {
 "instagram": {
 "id": "18127083451963164",
-"views": 1448,
-"reach": 1191,
+"views": 1452,
+"reach": 1193,
 "likes": 24,
 "comments": 1,
 "shares": 5,
 "saved": 3,
 "total_interactions": 33,
-"ig_reels_avg_watch_time": 12929
+"ig_reels_avg_watch_time": 12918
 },
 "facebook": {
 "id": "1127362556688753",
@@ -5989,14 +6314,14 @@
 "pokemon-short-dragon-type-pok-mon-2026-11-03-dragonite-ann": {
 "instagram": {
 "id": "18109634933460547",
-"views": 220,
-"reach": 183,
+"views": 223,
+"reach": 185,
 "likes": 4,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 4,
-"ig_reels_avg_watch_time": 11578
+"ig_reels_avg_watch_time": 11581
 },
 "facebook": {
 "id": "1673746627514694",
@@ -6008,14 +6333,14 @@
 "pokemon-short-pok-mon-mix-2026-11-03-psyduck-rapid": {
 "instagram": {
 "id": "18115002467171916",
-"views": 226,
-"reach": 186,
+"views": 232,
+"reach": 188,
 "likes": 5,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 5,
-"ig_reels_avg_watch_time": 14496
+"ig_reels_avg_watch_time": 14524
 },
 "facebook": {
 "id": "1869535340711179",
@@ -6027,7 +6352,7 @@
 "pokemon-short-fire-type-pok-mon-2026-11-03-ho-oh-cold": {
 "instagram": {
 "id": "18132934222834740",
-"views": 1323,
+"views": 1326,
 "reach": 1108,
 "likes": 31,
 "comments": 0,
@@ -6046,14 +6371,14 @@
 "pokemon-short-ghost-type-pok-mon-2026-11-03-gengar-rapid": {
 "instagram": {
 "id": "18080026424406593",
-"views": 1354,
-"reach": 1122,
+"views": 1358,
+"reach": 1126,
 "likes": 20,
 "comments": 0,
 "shares": 5,
 "saved": 2,
 "total_interactions": 28,
-"ig_reels_avg_watch_time": 13178
+"ig_reels_avg_watch_time": 13164
 },
 "facebook": {
 "id": "1764537628716499",
@@ -6065,14 +6390,14 @@
 "pokemon-short-generation-4-2026-11-03-regigigas-ann": {
 "instagram": {
 "id": "18112979258627037",
-"views": 221,
-"reach": 192,
+"views": 227,
+"reach": 197,
 "likes": 5,
 "comments": 0,
 "shares": 0,
 "saved": 1,
 "total_interactions": 6,
-"ig_reels_avg_watch_time": 12731
+"ig_reels_avg_watch_time": 12623
 },
 "facebook": {
 "id": "3648102042006325",
@@ -6084,14 +6409,14 @@
 "pokemon-short-legendary-pok-mon-2026-11-04-deoxys-ann": {
 "instagram": {
 "id": "18132655759694790",
-"views": 198,
-"reach": 181,
+"views": 203,
+"reach": 186,
 "likes": 7,
 "comments": 0,
 "shares": 0,
 "saved": 0,
 "total_interactions": 7,
-"ig_reels_avg_watch_time": 9551
+"ig_reels_avg_watch_time": 9658
 },
 "facebook": {
 "id": "1062648206832187",
@@ -6103,14 +6428,14 @@
 "pokemon-short-bug-type-pok-mon-2026-11-04-illumise-rapid": {
 "instagram": {
 "id": "18126961709486334",
-"views": 1361,
-"reach": 1081,
+"views": 1367,
+"reach": 1088,
 "likes": 38,
 "comments": 0,
 "shares": 5,
 "saved": 4,
 "total_interactions": 47,
-"ig_reels_avg_watch_time": 14975
+"ig_reels_avg_watch_time": 14934
 },
 "facebook": {
 "id": "1609023556905151",
@@ -6122,14 +6447,14 @@
 "pokemon-short-generation-1-2026-11-04-kadabra-ann": {
 "instagram": {
 "id": "18141927076725080",
-"views": 1432,
-"reach": 1102,
+"views": 1438,
+"reach": 1107,
 "likes": 20,
 "comments": 0,
 "shares": 0,
 "saved": 1,
 "total_interactions": 21,
-"ig_reels_avg_watch_time": 10903
+"ig_reels_avg_watch_time": 10899
 },
 "facebook": {
 "id": "1495778259266538",
@@ -6141,14 +6466,14 @@
 "pokemon-short-psychic-type-pok-mon-2026-11-04-starmie-ann": {
 "instagram": {
 "id": "18133079701684523",
-"views": 227,
-"reach": 190,
-"likes": 6,
+"views": 237,
+"reach": 199,
+"likes": 7,
 "comments": 0,
 "shares": 0,
 "saved": 0,
-"total_interactions": 6,
-"ig_reels_avg_watch_time": 14902
+"total_interactions": 7,
+"ig_reels_avg_watch_time": 14744
 },
 "facebook": {
 "id": "2421701608576893",
@@ -6160,14 +6485,14 @@
 "pokemon-short-water-type-pok-mon-2026-11-04-totodile-rapid": {
 "instagram": {
 "id": "18078051902741621",
-"views": 1394,
-"reach": 1175,
-"likes": 16,
+"views": 1408,
+"reach": 1189,
+"likes": 17,
 "comments": 0,
 "shares": 0,
 "saved": 3,
-"total_interactions": 19,
-"ig_reels_avg_watch_time": 13457
+"total_interactions": 20,
+"ig_reels_avg_watch_time": 13401
 },
 "facebook": {
 "id": "948300631452452",
@@ -6179,14 +6504,14 @@
 "pokemon-short-original-game-boy-cries-2026-11-04-mankey-rapid": {
 "instagram": {
 "id": "17891845422687039",
-"views": 1274,
-"reach": 1110,
-"likes": 22,
+"views": 1296,
+"reach": 1126,
+"likes": 23,
 "comments": 0,
 "shares": 1,
 "saved": 2,
-"total_interactions": 25,
-"ig_reels_avg_watch_time": 12978
+"total_interactions": 26,
+"ig_reels_avg_watch_time": 13085
 },
 "facebook": {
 "id": "1114612448121661",
@@ -6206,14 +6531,14 @@
 "pokemon-short-generation-2-2026-11-05-corsola-ann": {
 "instagram": {
 "id": "18439932163182447",
-"views": 1372,
-"reach": 1156,
-"likes": 30,
+"views": 1395,
+"reach": 1174,
+"likes": 31,
 "comments": 0,
 "shares": 0,
 "saved": 1,
-"total_interactions": 32,
-"ig_reels_avg_watch_time": 11805
+"total_interactions": 33,
+"ig_reels_avg_watch_time": 11828
 },
 "facebook": {
 "id": "1457746896500130",
@@ -6225,14 +6550,14 @@
 "pokemon-short-pok-mon-mix-2026-11-05-bulbasaur-rapid": {
 "instagram": {
 "id": "17923171455450827",
-"views": 213,
-"reach": 171,
-"likes": 2,
+"views": 240,
+"reach": 192,
+"likes": 3,
 "comments": 1,
 "shares": 0,
 "saved": 0,
-"total_interactions": 3,
-"ig_reels_avg_watch_time": 15841
+"total_interactions": 4,
+"ig_reels_avg_watch_time": 15895
 },
 "facebook": {
 "id": "2232819584334076",
@@ -6244,14 +6569,14 @@
 "pokemon-short-starter-pok-mon-2026-11-05-treecko-ann": {
 "instagram": {
 "id": "17945357751091073",
-"views": 1374,
-"reach": 1198,
-"likes": 32,
+"views": 1405,
+"reach": 1220,
+"likes": 33,
 "comments": 0,
 "shares": 1,
 "saved": 1,
-"total_interactions": 35,
-"ig_reels_avg_watch_time": 12960
+"total_interactions": 36,
+"ig_reels_avg_watch_time": 12973
 },
 "facebook": {
 "id": "1146199827804878",
@@ -6263,14 +6588,14 @@
 "pokemon-short-ghost-type-pok-mon-2026-11-05-misdreavus-rapid": {
 "instagram": {
 "id": "18120312628787974",
-"views": 2015,
-"reach": 1632,
-"likes": 49,
+"views": 2082,
+"reach": 1681,
+"likes": 54,
 "comments": 0,
 "shares": 9,
 "saved": 4,
-"total_interactions": 62,
-"ig_reels_avg_watch_time": 16133
+"total_interactions": 67,
+"ig_reels_avg_watch_time": 16219
 },
 "facebook": {
 "id": "1124744880276710",
@@ -6282,14 +6607,14 @@
 "pokemon-short-electric-type-pok-mon-2026-11-05-pichu-rapid": {
 "instagram": {
 "id": "18114666425143601",
-"views": 1335,
-"reach": 1151,
-"likes": 14,
+"views": 1377,
+"reach": 1180,
+"likes": 16,
 "comments": 0,
 "shares": 4,
 "saved": 2,
-"total_interactions": 20,
-"ig_reels_avg_watch_time": 11990
+"total_interactions": 22,
+"ig_reels_avg_watch_time": 12081
 },
 "facebook": {
 "id": "1125587453603011",
@@ -6301,14 +6626,14 @@
 "pokemon-short-grass-type-pok-mon-2026-11-06-weepinbell-ann": {
 "instagram": {
 "id": "18115665092163607",
-"views": 200,
-"reach": 164,
-"likes": 0,
+"views": 244,
+"reach": 201,
+"likes": 2,
 "comments": 0,
 "shares": 0,
 "saved": 0,
-"total_interactions": 0,
-"ig_reels_avg_watch_time": 11450
+"total_interactions": 2,
+"ig_reels_avg_watch_time": 11352
 },
 "facebook": {
 "id": "1155610860343636",
@@ -6320,14 +6645,14 @@
 "pokemon-short-bug-type-pok-mon-2026-11-06-paras-ann": {
 "instagram": {
 "id": "18132101506698849",
-"views": 195,
-"reach": 161,
-"likes": 0,
+"views": 249,
+"reach": 203,
+"likes": 3,
 "comments": 0,
 "shares": 0,
 "saved": 0,
-"total_interactions": 0,
-"ig_reels_avg_watch_time": 12735
+"total_interactions": 3,
+"ig_reels_avg_watch_time": 14073
 },
 "facebook": {
 "id": "1521107853382277",
@@ -6339,14 +6664,14 @@
 "pokemon-short-generation-1-2026-11-06-squirtle-rapid": {
 "instagram": {
 "id": "18143695849627020",
-"views": 1379,
-"reach": 1166,
-"likes": 13,
+"views": 1471,
+"reach": 1233,
+"likes": 17,
 "comments": 0,
 "shares": 1,
 "saved": 3,
-"total_interactions": 18,
-"ig_reels_avg_watch_time": 13597
+"total_interactions": 22,
+"ig_reels_avg_watch_time": 13805
 },
 "facebook": {
 "id": "1857783785230762",
@@ -6358,14 +6683,14 @@
 "pokemon-short-kanto-gym-leaders-pok-mon-2026-11-06-onix-rapid": {
 "instagram": {
 "id": "18121957567766049",
-"views": 1320,
-"reach": 1129,
-"likes": 9,
+"views": 1404,
+"reach": 1200,
+"likes": 11,
 "comments": 0,
 "shares": 1,
 "saved": 2,
-"total_interactions": 12,
-"ig_reels_avg_watch_time": 12498
+"total_interactions": 14,
+"ig_reels_avg_watch_time": 12796
 },
 "facebook": {
 "id": "1119688790644216",
@@ -6377,14 +6702,14 @@
 "pokemon-short-generation-4-2026-11-06-floatzel-ann": {
 "instagram": {
 "id": "18104385659649343",
-"views": 1496,
-"reach": 1168,
-"likes": 33,
+"views": 1592,
+"reach": 1242,
+"likes": 37,
 "comments": 1,
 "shares": 0,
 "saved": 1,
-"total_interactions": 36,
-"ig_reels_avg_watch_time": 12833
+"total_interactions": 40,
+"ig_reels_avg_watch_time": 13054
 },
 "facebook": {
 "id": "872774649229733",
@@ -6396,17 +6721,131 @@
 "pokemon-short-generation-3-2026-11-06-metagross-rapid": {
 "instagram": {
 "id": "17918611227264859",
-"views": 1315,
-"reach": 1107,
-"likes": 31,
+"views": 1463,
+"reach": 1214,
+"likes": 37,
 "comments": 1,
 "shares": 7,
 "saved": 0,
-"total_interactions": 40,
-"ig_reels_avg_watch_time": 14334
+"total_interactions": 46,
+"ig_reels_avg_watch_time": 15125
 },
 "facebook": {
 "id": "2230417840843275",
+"blue_reels_play_count": 0,
+"post_video_avg_time_watched": 0,
+"rejected_metrics": "post_impressions_unique"
+}
+},
+"pokemon-short-dragon-type-pok-mon-2026-11-07-garchomp-ann": {
+"instagram": {
+"id": "18095367035489906",
+"views": 1500,
+"reach": 1127,
+"likes": 50,
+"comments": 1,
+"shares": 5,
+"saved": 1,
+"total_interactions": 58,
+"ig_reels_avg_watch_time": 11776
+},
+"facebook": {
+"id": "1346426121897764",
+"blue_reels_play_count": 0,
+"post_video_avg_time_watched": 0,
+"rejected_metrics": "post_impressions_unique"
+}
+},
+"pokemon-short-fire-type-pok-mon-2026-11-07-torkoal-ann": {
+"instagram": {
+"id": "18099301718396198",
+"views": 1686,
+"reach": 1303,
+"likes": 39,
+"comments": 0,
+"shares": 2,
+"saved": 3,
+"total_interactions": 45,
+"ig_reels_avg_watch_time": 13339
+},
+"facebook": {
+"id": "1957400212332942",
+"blue_reels_play_count": 0,
+"post_video_avg_time_watched": 0,
+"rejected_metrics": "post_impressions_unique"
+}
+},
+"pokemon-short-pok-mon-mix-2026-11-07-pikachu-rapid": {
+"instagram": {
+"id": "18119125678803865",
+"views": 48,
+"reach": 38,
+"likes": 1,
+"comments": 0,
+"shares": 0,
+"saved": 0,
+"total_interactions": 1,
+"ig_reels_avg_watch_time": 20659
+},
+"facebook": {
+"id": "1847986223043750",
+"blue_reels_play_count": 0,
+"post_video_avg_time_watched": 0,
+"rejected_metrics": "post_impressions_unique"
+}
+},
+"pokemon-short-ghost-type-pok-mon-2026-11-07-duskull-ann": {
+"instagram": {
+"id": "17987760506892053",
+"views": 1448,
+"reach": 1211,
+"likes": 25,
+"comments": 2,
+"shares": 3,
+"saved": 3,
+"total_interactions": 33,
+"ig_reels_avg_watch_time": 13690
+},
+"facebook": {
+"id": "1122646507186141",
+"blue_reels_play_count": 0,
+"post_video_avg_time_watched": 0,
+"rejected_metrics": "post_impressions_unique"
+}
+},
+"pokemon-short-water-type-pok-mon-2026-11-07-mudkip-rapid": {
+"instagram": {
+"id": "17940142503395930",
+"views": 30,
+"reach": 16,
+"likes": 0,
+"comments": 0,
+"shares": 0,
+"saved": 0,
+"total_interactions": 0,
+"ig_reels_avg_watch_time": 12640
+},
+"facebook": {
+"id": "2594507930973663",
+"blue_reels_play_count": 0,
+"post_video_avg_time_watched": 0,
+"rejected_metrics": "post_impressions_unique"
+}
+},
+"pokemon-short-generation-2-2026-11-07-dunsparce-rapid": {
+"instagram": {
+"id": "18400549123166123",
+"views": 1288,
+"reach": 1135,
+"likes": 21,
+"comments": 0,
+"shares": 6,
+"saved": 1,
+"total_interactions": 28,
+"ig_reels_avg_watch_time": 10525
+},
+"facebook": {
+"id": "1118924934181544",
 "blue_reels_play_count": 0,
 "post_video_avg_time_watched": 0,
 "rejected_metrics": "post_impressions_unique"
@@ -6416,47 +6855,47 @@
 "platform_summary": {
 "instagram": {
 "handle": "playitbyear.quiz",
-"followers": 48,
-"posts": 81,
-"views": 59983,
-"reach": 50035,
-"likes": 954,
-"comments": 42,
-"shares": 128,
-"saves": 62
+"followers": 60,
+"posts": 87,
+"views": 66817,
+"reach": 55494,
+"likes": 1124,
+"comments": 45,
+"shares": 144,
+"saves": 70
 },
 "facebook": {
 "handle": "Play It By Ear",
 "followers": 0,
-"posts": 88,
+"posts": 94,
 "views": 3,
 "reach": 0
 },
 "youtube": {
 "handle": "Play It By Ear",
-"followers": 22,
-"posts": 94,
-"views": 26029,
-"likes": 399,
-"comments": 42
+"followers": 23,
+"posts": 100,
+"views": 30257,
+"likes": 462,
+"comments": 46
 }
 },
 "audience": {
 "countries": [
 {
 "country": "US",
-"views": 11493,
-"estimatedMinutesWatched": 2070
+"views": 11983,
+"estimatedMinutesWatched": 2170
+},
+{
+"country": "ID",
+"views": 934,
+"estimatedMinutesWatched": 122
 },
 {
 "country": "PH",
 "views": 916,
 "estimatedMinutesWatched": 143
-},
-{
-"country": "ID",
-"views": 904,
-"estimatedMinutesWatched": 114
 },
 {
 "country": "GB",
@@ -6573,22 +7012,22 @@
 {
 "ageGroup": "age13-17",
 "gender": "male",
-"viewerPercentage": 28.8
+"viewerPercentage": 29
 },
 {
 "ageGroup": "age25-34",
 "gender": "male",
-"viewerPercentage": 23.1
+"viewerPercentage": 23.3
 },
 {
 "ageGroup": "age35-44",
 "gender": "male",
-"viewerPercentage": 13.2
+"viewerPercentage": 13.4
 },
 {
 "ageGroup": "age18-24",
 "gender": "male",
-"viewerPercentage": 10.2
+"viewerPercentage": 10
 },
 {
 "ageGroup": "age35-44",
@@ -6598,12 +7037,12 @@
 {
 "ageGroup": "age25-34",
 "gender": "female",
-"viewerPercentage": 4.9
+"viewerPercentage": 4.8
 },
 {
 "ageGroup": "age45-54",
 "gender": "male",
-"viewerPercentage": 4.7
+"viewerPercentage": 4.6
 },
 {
 "ageGroup": "age45-54",
@@ -6613,7 +7052,7 @@
 {
 "ageGroup": "age13-17",
 "gender": "female",
-"viewerPercentage": 2.2
+"viewerPercentage": 2.1
 },
 {
 "ageGroup": "age65-",
@@ -6639,32 +7078,32 @@
 "traffic": [
 {
 "insightTrafficSourceType": "SHORTS",
-"views": 21145,
-"estimatedMinutesWatched": 3306
+"views": 21661,
+"estimatedMinutesWatched": 3399
 },
 {
 "insightTrafficSourceType": "YT_CHANNEL",
-"views": 1053,
-"estimatedMinutesWatched": 226
+"views": 1108,
+"estimatedMinutesWatched": 244
 },
 {
 "insightTrafficSourceType": "YT_SEARCH",
-"views": 534,
-"estimatedMinutesWatched": 81
-},
-{
-"insightTrafficSourceType": "SUBSCRIBER",
-"views": 215,
-"estimatedMinutesWatched": 49
+"views": 563,
+"estimatedMinutesWatched": 88
 },
 {
 "insightTrafficSourceType": "YT_OTHER_PAGE",
-"views": 215,
-"estimatedMinutesWatched": 39
+"views": 219,
+"estimatedMinutesWatched": 40
+},
+{
+"insightTrafficSourceType": "SUBSCRIBER",
+"views": 216,
+"estimatedMinutesWatched": 50
 },
 {
 "insightTrafficSourceType": "RELATED_VIDEO",
-"views": 77,
+"views": 78,
 "estimatedMinutesWatched": 119
 },
 {
@@ -6696,2451 +7135,461 @@
 "devices": [
 {
 "deviceType": "MOBILE",
-"views": 18787
+"views": 19233
 },
 {
 "deviceType": "TABLET",
-"views": 2314
+"views": 2393
 },
 {
 "deviceType": "DESKTOP",
-"views": 1178
+"views": 1207
 },
 {
 "deviceType": "TV",
-"views": 952
+"views": 1004
 }
 ]
 },
 "retention": {
-"8WlMy0E9MrM": [
+"VE0EYoCyM8o": [
 [
 0.01,
-1.083
+1.099
 ],
 [
 0.02,
-1.042
+1.077
 ],
 [
 0.03,
-1.0
+1.066
 ],
 [
 0.04,
-1.0
+1.055
 ],
 [
 0.05,
-0.958
+1.055
 ],
 [
 0.06,
-0.958
+1.044
 ],
 [
 0.07,
-0.958
+1.044
 ],
 [
 0.08,
-0.958
+1.033
 ],
 [
 0.09,
-0.958
+1.022
 ],
 [
 0.1,
-0.958
+1.022
 ],
 [
 0.11,
-0.958
+1.022
 ],
 [
 0.12,
-0.875
+0.967
 ],
 [
 0.13,
-0.833
-],
-[
-0.14,
-0.833
-],
-[
-0.15,
-0.792
-],
-[
-0.16,
-0.75
-],
-[
-0.17,
-0.75
-],
-[
-0.18,
-0.708
-],
-[
-0.19,
-0.667
-],
-[
-0.2,
-0.667
-],
-[
-0.21,
-0.667
-],
-[
-0.22,
-0.667
-],
-[
-0.23,
-0.625
-],
-[
-0.24,
-0.625
-],
-[
-0.25,
-0.583
-],
-[
-0.26,
-0.625
-],
-[
-0.27,
-0.625
-],
-[
-0.28,
-0.625
-],
-[
-0.29,
-0.583
-],
-[
-0.3,
-0.542
-],
-[
-0.31,
-0.542
-],
-[
-0.32,
-0.542
-],
-[
-0.33,
-0.5
-],
-[
-0.34,
-0.5
-],
-[
-0.35,
-0.5
-],
-[
-0.36,
-0.5
-],
-[
-0.37,
-0.5
-],
-[
-0.38,
-0.5
-],
-[
-0.39,
-0.5
-],
-[
-0.4,
-0.5
-],
-[
-0.41,
-0.5
-],
-[
-0.42,
-0.5
-],
-[
-0.43,
-0.5
-],
-[
-0.44,
-0.5
-],
-[
-0.45,
-0.417
-],
-[
-0.46,
-0.417
-],
-[
-0.47,
-0.417
-],
-[
-0.48,
-0.417
-],
-[
-0.49,
-0.417
-],
-[
-0.5,
-0.417
-],
-[
-0.51,
-0.417
-],
-[
-0.52,
-0.458
-],
-[
-0.53,
-0.417
-],
-[
-0.54,
-0.417
-],
-[
-0.55,
-0.417
-],
-[
-0.56,
-0.417
-],
-[
-0.57,
-0.417
-],
-[
-0.58,
-0.417
-],
-[
-0.59,
-0.417
-],
-[
-0.6,
-0.417
-],
-[
-0.61,
-0.417
-],
-[
-0.62,
-0.375
-],
-[
-0.63,
-0.417
-],
-[
-0.64,
-0.417
-],
-[
-0.65,
-0.417
-],
-[
-0.66,
-0.417
-],
-[
-0.67,
-0.417
-],
-[
-0.68,
-0.417
-],
-[
-0.69,
-0.417
-],
-[
-0.7,
-0.417
-],
-[
-0.71,
-0.417
-],
-[
-0.72,
-0.375
-],
-[
-0.73,
-0.375
-],
-[
-0.74,
-0.375
-],
-[
-0.75,
-0.375
-],
-[
-0.76,
-0.333
-],
-[
-0.77,
-0.333
-],
-[
-0.78,
-0.375
-],
-[
-0.79,
-0.375
-],
-[
-0.8,
-0.333
-],
-[
-0.81,
-0.333
-],
-[
-0.82,
-0.333
-],
-[
-0.83,
-0.333
-],
-[
-0.84,
-0.333
-],
-[
-0.85,
-0.292
-],
-[
-0.86,
-0.292
-],
-[
-0.87,
-0.292
-],
-[
-0.88,
-0.292
-],
-[
-0.89,
-0.292
-],
-[
-0.9,
-0.292
-],
-[
-0.91,
-0.292
-],
-[
-0.92,
-0.292
-],
-[
-0.93,
-0.167
-],
-[
-0.94,
-0.167
-],
-[
-0.95,
-0.167
-],
-[
-0.96,
-0.125
-],
-[
-0.97,
-0.125
-],
-[
-0.98,
-0.083
-],
-[
-0.99,
-0.083
-],
-[
-1.0,
-0.083
-]
-],
-"cCFJ1CShcfs": [
-[
-0.01,
-1.095
-],
-[
-0.02,
-1.048
-],
-[
-0.03,
-1.048
-],
-[
-0.04,
-1.048
-],
-[
-0.05,
-1.048
-],
-[
-0.06,
-1.048
-],
-[
-0.07,
-1.048
-],
-[
-0.08,
-1.048
-],
-[
-0.09,
-1.048
-],
-[
-0.1,
-1.048
-],
-[
-0.11,
-1.048
-],
-[
-0.12,
-1.048
-],
-[
-0.13,
-1.048
-],
-[
-0.14,
-1.0
-],
-[
-0.15,
-1.0
-],
-[
-0.16,
-0.952
-],
-[
-0.17,
-0.905
-],
-[
-0.18,
-0.905
-],
-[
-0.19,
-0.857
-],
-[
-0.2,
-0.857
-],
-[
-0.21,
-0.857
-],
-[
-0.22,
-0.857
-],
-[
-0.23,
-0.857
-],
-[
-0.24,
-0.857
-],
-[
-0.25,
-0.857
-],
-[
-0.26,
-0.857
-],
-[
-0.27,
-0.809
-],
-[
-0.28,
-0.809
-],
-[
-0.29,
-0.762
-],
-[
-0.3,
-0.714
-],
-[
-0.31,
-0.667
-],
-[
-0.32,
-0.667
-],
-[
-0.33,
-0.667
-],
-[
-0.34,
-0.667
-],
-[
-0.35,
-0.667
-],
-[
-0.36,
-0.667
-],
-[
-0.37,
-0.667
-],
-[
-0.38,
-0.667
-],
-[
-0.39,
-0.667
-],
-[
-0.4,
-0.667
-],
-[
-0.41,
-0.667
-],
-[
-0.42,
-0.667
-],
-[
-0.43,
-0.667
-],
-[
-0.44,
-0.667
-],
-[
-0.45,
-0.667
-],
-[
-0.46,
-0.667
-],
-[
-0.47,
-0.667
-],
-[
-0.48,
-0.667
-],
-[
-0.49,
-0.667
-],
-[
-0.5,
-0.619
-],
-[
-0.51,
-0.571
-],
-[
-0.52,
-0.619
-],
-[
-0.53,
-0.619
-],
-[
-0.54,
-0.619
-],
-[
-0.55,
-0.619
-],
-[
-0.56,
-0.619
-],
-[
-0.57,
-0.619
-],
-[
-0.58,
-0.619
-],
-[
-0.59,
-0.571
-],
-[
-0.6,
-0.619
-],
-[
-0.61,
-0.619
-],
-[
-0.62,
-0.619
-],
-[
-0.63,
-0.619
-],
-[
-0.64,
-0.619
-],
-[
-0.65,
-0.619
-],
-[
-0.66,
-0.619
-],
-[
-0.67,
-0.571
-],
-[
-0.68,
-0.619
-],
-[
-0.69,
-0.619
-],
-[
-0.7,
-0.619
-],
-[
-0.71,
-0.619
-],
-[
-0.72,
-0.619
-],
-[
-0.73,
-0.619
-],
-[
-0.74,
-0.619
-],
-[
-0.75,
-0.619
-],
-[
-0.76,
-0.619
-],
-[
-0.77,
-0.619
-],
-[
-0.78,
-0.619
-],
-[
-0.79,
-0.619
-],
-[
-0.8,
-0.619
-],
-[
-0.81,
-0.619
-],
-[
-0.82,
-0.619
-],
-[
-0.83,
-0.619
-],
-[
-0.84,
-0.571
-],
-[
-0.85,
-0.571
-],
-[
-0.86,
-0.571
-],
-[
-0.87,
-0.571
-],
-[
-0.88,
-0.571
-],
-[
-0.89,
-0.571
-],
-[
-0.9,
-0.571
-],
-[
-0.91,
-0.571
-],
-[
-0.92,
-0.524
-],
-[
-0.93,
-0.381
-],
-[
-0.94,
-0.333
-],
-[
-0.95,
-0.286
-],
-[
-0.96,
-0.238
-],
-[
-0.97,
-0.238
-],
-[
-0.98,
-0.143
-],
-[
-0.99,
-0.143
-],
-[
-1.0,
-0.143
-]
-],
-"NJK-L8cq8oY": [
-[
-0.01,
-1.086
-],
-[
-0.02,
-1.062
-],
-[
-0.03,
-1.049
-],
-[
-0.04,
-1.037
-],
-[
-0.05,
-1.025
-],
-[
-0.06,
-1.025
-],
-[
-0.07,
-1.025
-],
-[
-0.08,
-1.012
-],
-[
-0.09,
-1.012
-],
-[
-0.1,
-1.012
-],
-[
-0.11,
-1.012
-],
-[
-0.12,
-1.012
-],
-[
-0.13,
-0.938
-],
-[
-0.14,
 0.901
 ],
 [
+0.14,
+0.857
+],
+[
 0.15,
-0.84
+0.824
 ],
 [
 0.16,
-0.815
+0.802
 ],
 [
 0.17,
-0.815
+0.802
 ],
 [
 0.18,
-0.753
+0.78
 ],
 [
 0.19,
-0.728
+0.791
 ],
 [
 0.2,
-0.716
+0.813
 ],
 [
 0.21,
-0.704
+0.813
 ],
 [
 0.22,
-0.679
+0.791
 ],
 [
 0.23,
-0.679
+0.78
 ],
 [
 0.24,
-0.679
+0.769
 ],
 [
 0.25,
-0.667
+0.758
 ],
 [
 0.26,
-0.667
+0.725
 ],
 [
 0.27,
-0.667
+0.714
 ],
 [
 0.28,
-0.654
+0.692
 ],
 [
 0.29,
-0.642
+0.692
 ],
 [
 0.3,
-0.63
+0.67
 ],
 [
 0.31,
-0.63
+0.67
 ],
 [
 0.32,
-0.605
+0.67
 ],
 [
 0.33,
+0.648
+],
+[
+0.34,
+0.648
+],
+[
+0.35,
+0.648
+],
+[
+0.36,
+0.637
+],
+[
+0.37,
+0.637
+],
+[
+0.38,
+0.626
+],
+[
+0.39,
+0.615
+],
+[
+0.4,
+0.626
+],
+[
+0.41,
+0.637
+],
+[
+0.42,
+0.637
+],
+[
+0.43,
+0.615
+],
+[
+0.44,
 0.593
 ],
 [
-0.34,
-0.58
-],
-[
-0.35,
-0.568
-],
-[
-0.36,
-0.543
-],
-[
-0.37,
-0.543
-],
-[
-0.38,
-0.543
-],
-[
-0.39,
-0.543
-],
-[
-0.4,
-0.531
-],
-[
-0.41,
-0.543
-],
-[
-0.42,
-0.543
-],
-[
-0.43,
-0.543
-],
-[
-0.44,
-0.543
-],
-[
 0.45,
-0.543
+0.582
 ],
 [
 0.46,
-0.543
+0.582
 ],
 [
 0.47,
-0.543
+0.582
 ],
 [
 0.48,
-0.543
+0.571
 ],
 [
 0.49,
-0.543
+0.56
 ],
 [
 0.5,
-0.543
+0.549
 ],
 [
 0.51,
-0.543
+0.56
 ],
 [
 0.52,
-0.543
+0.56
 ],
 [
 0.53,
-0.531
+0.549
 ],
 [
 0.54,
-0.543
+0.549
 ],
 [
 0.55,
-0.531
+0.549
 ],
 [
 0.56,
-0.531
+0.549
 ],
 [
 0.57,
-0.531
+0.549
 ],
 [
 0.58,
-0.531
+0.549
 ],
 [
 0.59,
-0.531
+0.549
 ],
 [
 0.6,
-0.531
+0.527
 ],
 [
 0.61,
-0.518
+0.527
 ],
 [
 0.62,
-0.506
+0.505
 ],
 [
 0.63,
-0.494
+0.505
 ],
 [
 0.64,
-0.469
+0.505
 ],
 [
 0.65,
-0.469
+0.505
 ],
 [
 0.66,
-0.469
+0.505
 ],
 [
 0.67,
-0.469
+0.505
 ],
 [
 0.68,
-0.469
+0.505
 ],
 [
 0.69,
-0.469
+0.505
 ],
 [
 0.7,
-0.469
+0.505
 ],
 [
 0.71,
-0.469
+0.505
 ],
 [
 0.72,
-0.457
+0.505
 ],
 [
 0.73,
-0.444
+0.505
 ],
 [
 0.74,
-0.432
+0.516
 ],
 [
 0.75,
-0.42
+0.505
 ],
 [
 0.76,
-0.42
+0.505
 ],
 [
 0.77,
-0.42
+0.505
 ],
 [
 0.78,
-0.432
+0.505
 ],
 [
 0.79,
-0.432
+0.505
 ],
 [
 0.8,
-0.42
+0.505
 ],
 [
 0.81,
-0.42
+0.505
 ],
 [
 0.82,
-0.42
+0.516
 ],
 [
 0.83,
-0.42
+0.505
 ],
 [
 0.84,
-0.42
+0.516
 ],
 [
 0.85,
-0.42
+0.516
 ],
 [
 0.86,
-0.37
+0.516
 ],
 [
 0.87,
-0.358
+0.516
 ],
 [
 0.88,
-0.321
+0.505
 ],
 [
 0.89,
-0.284
+0.505
 ],
 [
 0.9,
-0.296
+0.516
 ],
 [
 0.91,
-0.284
+0.516
 ],
 [
 0.92,
-0.247
+0.495
 ],
 [
 0.93,
-0.198
+0.484
 ],
 [
 0.94,
-0.173
+0.45
 ],
 [
 0.95,
-0.161
+0.374
 ],
 [
 0.96,
-0.136
+0.297
 ],
 [
 0.97,
-0.099
+0.275
 ],
 [
 0.98,
-0.037
+0.176
 ],
 [
 0.99,
-0.037
+0.176
 ],
 [
 1.0,
-0.037
+0.176
 ]
 ],
-"BnKKb4ZviFU": [
+"D2vJcY5RulI": [
 [
 0.01,
-1.0
+1.164
 ],
 [
 0.02,
-1.0
+1.164
 ],
 [
 0.03,
-1.0
+1.145
 ],
 [
 0.04,
-1.0
-],
-[
-0.05,
-0.9
-],
-[
-0.06,
-1.0
-],
-[
-0.07,
-1.0
-],
-[
-0.08,
-1.0
-],
-[
-0.09,
-1.0
-],
-[
-0.1,
-1.0
-],
-[
-0.11,
-1.0
-],
-[
-0.12,
-1.0
-],
-[
-0.13,
-1.0
-],
-[
-0.14,
-1.0
-],
-[
-0.15,
-1.0
-],
-[
-0.16,
-1.0
-],
-[
-0.17,
-1.0
-],
-[
-0.18,
-0.9
-],
-[
-0.19,
-0.9
-],
-[
-0.2,
-0.9
-],
-[
-0.21,
-0.9
-],
-[
-0.22,
-0.9
-],
-[
-0.23,
-0.9
-],
-[
-0.24,
-0.9
-],
-[
-0.25,
-0.9
-],
-[
-0.26,
-0.9
-],
-[
-0.27,
-0.9
-],
-[
-0.28,
-0.9
-],
-[
-0.29,
-0.9
-],
-[
-0.3,
-0.9
-],
-[
-0.31,
-0.8
-],
-[
-0.32,
-0.8
-],
-[
-0.33,
-0.8
-],
-[
-0.34,
-0.8
-],
-[
-0.35,
-0.8
-],
-[
-0.36,
-0.8
-],
-[
-0.37,
-0.7
-],
-[
-0.38,
-0.7
-],
-[
-0.39,
-0.7
-],
-[
-0.4,
-0.7
-],
-[
-0.41,
-0.7
-],
-[
-0.42,
-0.6
-],
-[
-0.43,
-0.6
-],
-[
-0.44,
-0.6
-],
-[
-0.45,
-0.6
-],
-[
-0.46,
-0.6
-],
-[
-0.47,
-0.6
-],
-[
-0.48,
-0.6
-],
-[
-0.49,
-0.6
-],
-[
-0.5,
-0.6
-],
-[
-0.51,
-0.6
-],
-[
-0.52,
-0.6
-],
-[
-0.53,
-0.6
-],
-[
-0.54,
-0.6
-],
-[
-0.55,
-0.6
-],
-[
-0.56,
-0.6
-],
-[
-0.57,
-0.6
-],
-[
-0.58,
-0.6
-],
-[
-0.59,
-0.6
-],
-[
-0.6,
-0.6
-],
-[
-0.61,
-0.6
-],
-[
-0.62,
-0.6
-],
-[
-0.63,
-0.6
-],
-[
-0.64,
-0.6
-],
-[
-0.65,
-0.6
-],
-[
-0.66,
-0.6
-],
-[
-0.67,
-0.6
-],
-[
-0.68,
-0.6
-],
-[
-0.69,
-0.6
-],
-[
-0.7,
-0.6
-],
-[
-0.71,
-0.6
-],
-[
-0.72,
-0.5
-],
-[
-0.73,
-0.5
-],
-[
-0.74,
-0.5
-],
-[
-0.75,
-0.5
-],
-[
-0.76,
-0.5
-],
-[
-0.77,
-0.5
-],
-[
-0.78,
-0.5
-],
-[
-0.79,
-0.5
-],
-[
-0.8,
-0.5
-],
-[
-0.81,
-0.5
-],
-[
-0.82,
-0.5
-],
-[
-0.83,
-0.5
-],
-[
-0.84,
-0.4
-],
-[
-0.85,
-0.4
-],
-[
-0.86,
-0.4
-],
-[
-0.87,
-0.4
-],
-[
-0.88,
-0.4
-],
-[
-0.89,
-0.3
-],
-[
-0.9,
-0.2
-],
-[
-0.92,
-0.1
-],
-[
-0.93,
-0.1
-],
-[
-0.94,
-0.1
-],
-[
-0.95,
-0.1
-],
-[
-0.96,
-0.1
-]
-],
-"bVO3XjeIvGg": [
-[
-0.01,
-1.118
-],
-[
-0.02,
-1.088
-],
-[
-0.03,
-1.059
-],
-[
-0.04,
-1.059
-],
-[
-0.05,
-1.059
-],
-[
-0.06,
-1.059
-],
-[
-0.07,
-1.059
-],
-[
-0.08,
-1.059
-],
-[
-0.09,
-1.029
-],
-[
-0.1,
-1.029
-],
-[
-0.11,
-1.029
-],
-[
-0.12,
-1.029
-],
-[
-0.13,
-1.0
-],
-[
-0.14,
-0.941
-],
-[
-0.15,
-0.853
-],
-[
-0.16,
-0.823
-],
-[
-0.17,
-0.765
-],
-[
-0.18,
-0.794
-],
-[
-0.19,
-0.823
-],
-[
-0.2,
-0.823
-],
-[
-0.21,
-0.794
-],
-[
-0.22,
-0.794
-],
-[
-0.23,
-0.794
-],
-[
-0.24,
-0.765
-],
-[
-0.25,
-0.765
-],
-[
-0.26,
-0.735
-],
-[
-0.27,
-0.735
-],
-[
-0.28,
-0.735
-],
-[
-0.29,
-0.735
-],
-[
-0.3,
-0.735
-],
-[
-0.31,
-0.735
-],
-[
-0.32,
-0.735
-],
-[
-0.33,
-0.735
-],
-[
-0.34,
-0.735
-],
-[
-0.35,
-0.735
-],
-[
-0.36,
-0.735
-],
-[
-0.37,
-0.735
-],
-[
-0.38,
-0.735
-],
-[
-0.39,
-0.735
-],
-[
-0.4,
-0.735
-],
-[
-0.41,
-0.735
-],
-[
-0.42,
-0.706
-],
-[
-0.43,
-0.706
-],
-[
-0.44,
-0.706
-],
-[
-0.45,
-0.706
-],
-[
-0.46,
-0.706
-],
-[
-0.47,
-0.706
-],
-[
-0.48,
-0.706
-],
-[
-0.49,
-0.677
-],
-[
-0.5,
-0.677
-],
-[
-0.51,
-0.677
-],
-[
-0.52,
-0.677
-],
-[
-0.53,
-0.677
-],
-[
-0.54,
-0.677
-],
-[
-0.55,
-0.677
-],
-[
-0.56,
-0.677
-],
-[
-0.57,
-0.677
-],
-[
-0.58,
-0.677
-],
-[
-0.59,
-0.677
-],
-[
-0.6,
-0.677
-],
-[
-0.61,
-0.677
-],
-[
-0.62,
-0.677
-],
-[
-0.63,
-0.677
-],
-[
-0.64,
-0.677
-],
-[
-0.65,
-0.677
-],
-[
-0.66,
-0.677
-],
-[
-0.67,
-0.677
-],
-[
-0.68,
-0.677
-],
-[
-0.69,
-0.677
-],
-[
-0.7,
-0.677
-],
-[
-0.71,
-0.677
-],
-[
-0.72,
-0.677
-],
-[
-0.73,
-0.677
-],
-[
-0.74,
-0.677
-],
-[
-0.75,
-0.647
-],
-[
-0.76,
-0.647
-],
-[
-0.77,
-0.647
-],
-[
-0.78,
-0.647
-],
-[
-0.79,
-0.647
-],
-[
-0.8,
-0.618
-],
-[
-0.81,
-0.618
-],
-[
-0.82,
-0.588
-],
-[
-0.83,
-0.588
-],
-[
-0.84,
-0.588
-],
-[
-0.85,
-0.588
-],
-[
-0.86,
-0.588
-],
-[
-0.87,
-0.588
-],
-[
-0.88,
-0.588
-],
-[
-0.89,
-0.588
-],
-[
-0.9,
-0.588
-],
-[
-0.91,
-0.588
-],
-[
-0.92,
-0.588
-],
-[
-0.93,
-0.588
-],
-[
-0.94,
-0.559
-],
-[
-0.95,
-0.441
-],
-[
-0.96,
-0.353
-],
-[
-0.97,
-0.324
-],
-[
-0.98,
-0.324
-],
-[
-0.99,
-0.294
-],
-[
-1.0,
-0.294
-]
-],
-"FMX1P88TvvU": [
-[
-0.01,
-1.296
-],
-[
-0.02,
-1.296
-],
-[
-0.03,
-1.273
-],
-[
-0.04,
-1.227
-],
-[
-0.05,
-1.159
-],
-[
-0.06,
-1.159
-],
-[
-0.07,
-1.159
-],
-[
-0.08,
-1.159
-],
-[
-0.09,
-1.159
-],
-[
-0.1,
-1.159
-],
-[
-0.11,
-1.136
-],
-[
-0.12,
-1.114
-],
-[
-0.13,
-1.114
-],
-[
-0.14,
 1.091
 ],
 [
-0.15,
-1.023
-],
-[
-0.16,
-1.0
-],
-[
-0.17,
-0.955
-],
-[
-0.18,
-0.955
-],
-[
-0.19,
-0.932
-],
-[
-0.2,
-0.841
-],
-[
-0.21,
-0.795
-],
-[
-0.22,
-0.773
-],
-[
-0.23,
-0.773
-],
-[
-0.24,
-0.773
-],
-[
-0.25,
-0.773
-],
-[
-0.26,
-0.773
-],
-[
-0.27,
-0.75
-],
-[
-0.28,
-0.75
-],
-[
-0.29,
-0.727
-],
-[
-0.3,
-0.75
-],
-[
-0.31,
-0.727
-],
-[
-0.32,
-0.705
-],
-[
-0.33,
-0.705
-],
-[
-0.34,
-0.705
-],
-[
-0.35,
-0.705
-],
-[
-0.36,
-0.705
-],
-[
-0.37,
-0.659
-],
-[
-0.38,
-0.659
-],
-[
-0.39,
-0.659
-],
-[
-0.4,
-0.659
-],
-[
-0.41,
-0.659
-],
-[
-0.42,
-0.659
-],
-[
-0.43,
-0.659
-],
-[
-0.44,
-0.659
-],
-[
-0.45,
-0.659
-],
-[
-0.46,
-0.659
-],
-[
-0.47,
-0.659
-],
-[
-0.48,
-0.659
-],
-[
-0.49,
-0.659
-],
-[
-0.5,
-0.659
-],
-[
-0.51,
-0.659
-],
-[
-0.52,
-0.659
-],
-[
-0.53,
-0.659
-],
-[
-0.54,
-0.659
-],
-[
-0.55,
-0.659
-],
-[
-0.56,
-0.659
-],
-[
-0.57,
-0.659
-],
-[
-0.58,
-0.659
-],
-[
-0.59,
-0.659
-],
-[
-0.6,
-0.659
-],
-[
-0.61,
-0.636
-],
-[
-0.62,
-0.636
-],
-[
-0.63,
-0.636
-],
-[
-0.64,
-0.636
-],
-[
-0.65,
-0.636
-],
-[
-0.66,
-0.659
-],
-[
-0.67,
-0.659
-],
-[
-0.68,
-0.659
-],
-[
-0.69,
-0.659
-],
-[
-0.7,
-0.659
-],
-[
-0.71,
-0.659
-],
-[
-0.72,
-0.659
-],
-[
-0.73,
-0.659
-],
-[
-0.74,
-0.659
-],
-[
-0.75,
-0.659
-],
-[
-0.76,
-0.659
-],
-[
-0.77,
-0.636
-],
-[
-0.78,
-0.636
-],
-[
-0.79,
-0.636
-],
-[
-0.8,
-0.614
-],
-[
-0.81,
-0.614
-],
-[
-0.82,
-0.614
-],
-[
-0.83,
-0.591
-],
-[
-0.84,
-0.568
-],
-[
-0.85,
-0.545
-],
-[
-0.86,
-0.5
-],
-[
-0.87,
-0.477
-],
-[
-0.88,
-0.455
-],
-[
-0.89,
-0.455
-],
-[
-0.9,
-0.432
-],
-[
-0.91,
-0.432
-],
-[
-0.92,
-0.409
-],
-[
-0.93,
-0.386
-],
-[
-0.94,
-0.364
-],
-[
-0.95,
-0.364
-],
-[
-0.96,
-0.341
-],
-[
-0.97,
-0.318
-],
-[
-0.98,
-0.318
-],
-[
-0.99,
-0.318
-],
-[
-1.0,
-0.318
-]
-],
-"l1qU9f03kOM": [
-[
-0.01,
-1.108
-],
-[
-0.02,
-1.084
-],
-[
-0.03,
-1.084
-],
-[
-0.04,
-1.072
-],
-[
 0.05,
-1.072
+1.091
 ],
 [
 0.06,
-1.072
+1.091
 ],
 [
 0.07,
-1.072
+1.073
 ],
 [
 0.08,
-1.072
+1.091
 ],
 [
 0.09,
-1.06
+1.036
 ],
 [
 0.1,
@@ -9148,91 +7597,1289 @@
 ],
 [
 0.11,
-1.024
+1.018
 ],
 [
 0.12,
-0.964
+1.018
 ],
 [
 0.13,
-0.928
+1.018
 ],
 [
 0.14,
-0.904
+1.0
 ],
 [
 0.15,
-0.843
+0.982
 ],
 [
 0.16,
-0.783
+0.891
 ],
 [
 0.17,
-0.783
+0.873
 ],
 [
 0.18,
-0.771
+0.855
 ],
 [
 0.19,
-0.759
+0.836
 ],
 [
 0.2,
-0.735
+0.836
 ],
 [
 0.21,
-0.699
+0.836
 ],
 [
 0.22,
-0.675
+0.836
 ],
 [
 0.23,
-0.675
+0.818
 ],
 [
 0.24,
-0.663
+0.818
 ],
 [
 0.25,
-0.663
+0.818
 ],
 [
 0.26,
-0.651
+0.818
 ],
 [
 0.27,
-0.651
+0.818
 ],
 [
 0.28,
-0.663
+0.8
 ],
 [
 0.29,
-0.626
+0.782
 ],
 [
 0.3,
-0.626
+0.782
 ],
 [
 0.31,
-0.615
+0.782
 ],
 [
 0.32,
-0.602
+0.782
+],
+[
+0.33,
+0.782
+],
+[
+0.34,
+0.782
+],
+[
+0.35,
+0.782
+],
+[
+0.36,
+0.782
+],
+[
+0.37,
+0.782
+],
+[
+0.38,
+0.782
+],
+[
+0.39,
+0.782
+],
+[
+0.4,
+0.782
+],
+[
+0.41,
+0.818
+],
+[
+0.42,
+0.818
+],
+[
+0.43,
+0.818
+],
+[
+0.44,
+0.818
+],
+[
+0.45,
+0.818
+],
+[
+0.46,
+0.818
+],
+[
+0.47,
+0.818
+],
+[
+0.48,
+0.818
+],
+[
+0.49,
+0.818
+],
+[
+0.5,
+0.818
+],
+[
+0.51,
+0.818
+],
+[
+0.52,
+0.818
+],
+[
+0.53,
+0.818
+],
+[
+0.54,
+0.8
+],
+[
+0.55,
+0.8
+],
+[
+0.56,
+0.8
+],
+[
+0.57,
+0.8
+],
+[
+0.58,
+0.782
+],
+[
+0.59,
+0.782
+],
+[
+0.6,
+0.782
+],
+[
+0.61,
+0.782
+],
+[
+0.62,
+0.782
+],
+[
+0.63,
+0.782
+],
+[
+0.64,
+0.782
+],
+[
+0.65,
+0.782
+],
+[
+0.66,
+0.782
+],
+[
+0.67,
+0.782
+],
+[
+0.68,
+0.782
+],
+[
+0.69,
+0.782
+],
+[
+0.7,
+0.782
+],
+[
+0.71,
+0.782
+],
+[
+0.72,
+0.782
+],
+[
+0.73,
+0.782
+],
+[
+0.74,
+0.782
+],
+[
+0.75,
+0.782
+],
+[
+0.76,
+0.782
+],
+[
+0.77,
+0.782
+],
+[
+0.78,
+0.782
+],
+[
+0.79,
+0.782
+],
+[
+0.8,
+0.782
+],
+[
+0.81,
+0.782
+],
+[
+0.82,
+0.709
+],
+[
+0.83,
+0.673
+],
+[
+0.84,
+0.673
+],
+[
+0.85,
+0.655
+],
+[
+0.86,
+0.564
+],
+[
+0.87,
+0.491
+],
+[
+0.88,
+0.473
+],
+[
+0.89,
+0.418
+],
+[
+0.9,
+0.382
+],
+[
+0.91,
+0.345
+],
+[
+0.92,
+0.327
+],
+[
+0.93,
+0.327
+],
+[
+0.94,
+0.309
+],
+[
+0.95,
+0.273
+],
+[
+0.96,
+0.273
+],
+[
+0.97,
+0.255
+],
+[
+0.98,
+0.255
+],
+[
+0.99,
+0.255
+],
+[
+1.0,
+0.255
+]
+],
+"FbspGzoG-H4": [
+[
+0.01,
+1.0
+],
+[
+0.02,
+1.0
+],
+[
+0.03,
+1.0
+],
+[
+0.04,
+1.0
+],
+[
+0.05,
+1.0
+],
+[
+0.06,
+1.0
+],
+[
+0.07,
+1.0
+],
+[
+0.08,
+1.0
+],
+[
+0.09,
+0.97
+],
+[
+0.1,
+0.97
+],
+[
+0.11,
+0.97
+],
+[
+0.12,
+0.97
+],
+[
+0.13,
+0.97
+],
+[
+0.14,
+0.939
+],
+[
+0.15,
+0.879
+],
+[
+0.16,
+0.788
+],
+[
+0.17,
+0.758
+],
+[
+0.18,
+0.727
+],
+[
+0.19,
+0.727
+],
+[
+0.2,
+0.697
+],
+[
+0.21,
+0.697
+],
+[
+0.22,
+0.697
+],
+[
+0.23,
+0.697
+],
+[
+0.24,
+0.697
+],
+[
+0.25,
+0.667
+],
+[
+0.26,
+0.667
+],
+[
+0.27,
+0.667
+],
+[
+0.28,
+0.667
+],
+[
+0.29,
+0.667
+],
+[
+0.3,
+0.667
+],
+[
+0.31,
+0.576
+],
+[
+0.32,
+0.606
+],
+[
+0.33,
+0.576
+],
+[
+0.34,
+0.576
+],
+[
+0.35,
+0.576
+],
+[
+0.36,
+0.576
+],
+[
+0.37,
+0.576
+],
+[
+0.38,
+0.576
+],
+[
+0.39,
+0.576
+],
+[
+0.4,
+0.576
+],
+[
+0.41,
+0.576
+],
+[
+0.42,
+0.576
+],
+[
+0.43,
+0.576
+],
+[
+0.44,
+0.576
+],
+[
+0.45,
+0.576
+],
+[
+0.46,
+0.606
+],
+[
+0.47,
+0.606
+],
+[
+0.48,
+0.606
+],
+[
+0.49,
+0.576
+],
+[
+0.5,
+0.576
+],
+[
+0.51,
+0.606
+],
+[
+0.52,
+0.545
+],
+[
+0.53,
+0.576
+],
+[
+0.54,
+0.576
+],
+[
+0.55,
+0.576
+],
+[
+0.56,
+0.576
+],
+[
+0.57,
+0.576
+],
+[
+0.58,
+0.576
+],
+[
+0.59,
+0.576
+],
+[
+0.6,
+0.576
+],
+[
+0.61,
+0.606
+],
+[
+0.62,
+0.606
+],
+[
+0.63,
+0.606
+],
+[
+0.64,
+0.606
+],
+[
+0.65,
+0.606
+],
+[
+0.66,
+0.576
+],
+[
+0.67,
+0.515
+],
+[
+0.68,
+0.515
+],
+[
+0.69,
+0.515
+],
+[
+0.7,
+0.515
+],
+[
+0.71,
+0.545
+],
+[
+0.72,
+0.515
+],
+[
+0.73,
+0.545
+],
+[
+0.74,
+0.576
+],
+[
+0.75,
+0.576
+],
+[
+0.76,
+0.606
+],
+[
+0.77,
+0.636
+],
+[
+0.78,
+0.636
+],
+[
+0.79,
+0.636
+],
+[
+0.8,
+0.545
+],
+[
+0.81,
+0.576
+],
+[
+0.82,
+0.576
+],
+[
+0.83,
+0.545
+],
+[
+0.84,
+0.515
+],
+[
+0.85,
+0.515
+],
+[
+0.86,
+0.515
+],
+[
+0.87,
+0.485
+],
+[
+0.88,
+0.485
+],
+[
+0.89,
+0.515
+],
+[
+0.9,
+0.485
+],
+[
+0.91,
+0.424
+],
+[
+0.92,
+0.303
+],
+[
+0.93,
+0.273
+],
+[
+0.94,
+0.212
+],
+[
+0.95,
+0.182
+],
+[
+0.96,
+0.061
+],
+[
+0.97,
+0.061
+],
+[
+0.98,
+0.03
+]
+],
+"kq7HAbYnnR4": [
+[
+0.01,
+1.37
+],
+[
+0.02,
+1.333
+],
+[
+0.03,
+1.296
+],
+[
+0.04,
+1.148
+],
+[
+0.05,
+1.148
+],
+[
+0.06,
+1.148
+],
+[
+0.07,
+1.148
+],
+[
+0.08,
+1.148
+],
+[
+0.09,
+1.111
+],
+[
+0.1,
+1.074
+],
+[
+0.11,
+1.037
+],
+[
+0.12,
+1.037
+],
+[
+0.13,
+1.037
+],
+[
+0.14,
+1.037
+],
+[
+0.15,
+1.037
+],
+[
+0.16,
+1.0
+],
+[
+0.17,
+1.0
+],
+[
+0.18,
+1.0
+],
+[
+0.19,
+0.963
+],
+[
+0.2,
+0.963
+],
+[
+0.21,
+0.963
+],
+[
+0.22,
+0.963
+],
+[
+0.23,
+0.963
+],
+[
+0.24,
+0.926
+],
+[
+0.25,
+0.889
+],
+[
+0.26,
+0.889
+],
+[
+0.27,
+0.889
+],
+[
+0.28,
+0.889
+],
+[
+0.29,
+0.889
+],
+[
+0.3,
+0.889
+],
+[
+0.31,
+0.889
+],
+[
+0.32,
+0.889
+],
+[
+0.33,
+0.889
+],
+[
+0.34,
+0.889
+],
+[
+0.35,
+0.889
+],
+[
+0.36,
+0.889
+],
+[
+0.37,
+0.889
+],
+[
+0.38,
+0.889
+],
+[
+0.39,
+0.889
+],
+[
+0.4,
+0.889
+],
+[
+0.41,
+0.889
+],
+[
+0.42,
+0.889
+],
+[
+0.43,
+0.889
+],
+[
+0.44,
+0.852
+],
+[
+0.45,
+0.852
+],
+[
+0.46,
+0.852
+],
+[
+0.47,
+0.852
+],
+[
+0.48,
+0.852
+],
+[
+0.49,
+0.815
+],
+[
+0.5,
+0.778
+],
+[
+0.51,
+0.778
+],
+[
+0.52,
+0.778
+],
+[
+0.53,
+0.778
+],
+[
+0.54,
+0.778
+],
+[
+0.55,
+0.778
+],
+[
+0.56,
+0.778
+],
+[
+0.57,
+0.778
+],
+[
+0.58,
+0.778
+],
+[
+0.59,
+0.778
+],
+[
+0.6,
+0.778
+],
+[
+0.61,
+0.778
+],
+[
+0.62,
+0.778
+],
+[
+0.63,
+0.778
+],
+[
+0.64,
+0.815
+],
+[
+0.65,
+0.815
+],
+[
+0.66,
+0.815
+],
+[
+0.67,
+0.815
+],
+[
+0.68,
+0.815
+],
+[
+0.69,
+0.815
+],
+[
+0.7,
+0.815
+],
+[
+0.71,
+0.778
+],
+[
+0.72,
+0.778
+],
+[
+0.73,
+0.778
+],
+[
+0.74,
+0.778
+],
+[
+0.75,
+0.778
+],
+[
+0.76,
+0.778
+],
+[
+0.77,
+0.778
+],
+[
+0.78,
+0.741
+],
+[
+0.79,
+0.704
+],
+[
+0.8,
+0.63
+],
+[
+0.81,
+0.63
+],
+[
+0.82,
+0.593
+],
+[
+0.83,
+0.593
+],
+[
+0.84,
+0.593
+],
+[
+0.85,
+0.556
+],
+[
+0.86,
+0.481
+],
+[
+0.87,
+0.444
+],
+[
+0.88,
+0.481
+],
+[
+0.89,
+0.481
+],
+[
+0.9,
+0.444
+],
+[
+0.91,
+0.444
+],
+[
+0.92,
+0.444
+],
+[
+0.93,
+0.444
+],
+[
+0.94,
+0.407
+],
+[
+0.95,
+0.37
+],
+[
+0.96,
+0.37
+],
+[
+0.97,
+0.296
+],
+[
+0.98,
+0.296
+],
+[
+0.99,
+0.296
+],
+[
+1.0,
+0.296
+]
+],
+"8WlMy0E9MrM": [
+[
+0.01,
+1.051
+],
+[
+0.02,
+1.026
+],
+[
+0.03,
+1.0
+],
+[
+0.04,
+0.974
+],
+[
+0.05,
+0.949
+],
+[
+0.06,
+0.949
+],
+[
+0.07,
+0.949
+],
+[
+0.08,
+0.949
+],
+[
+0.09,
+0.949
+],
+[
+0.1,
+0.949
+],
+[
+0.11,
+0.949
+],
+[
+0.12,
+0.897
+],
+[
+0.13,
+0.872
+],
+[
+0.14,
+0.872
+],
+[
+0.15,
+0.846
+],
+[
+0.16,
+0.821
+],
+[
+0.17,
+0.846
+],
+[
+0.18,
+0.821
+],
+[
+0.19,
+0.795
+],
+[
+0.2,
+0.795
+],
+[
+0.21,
+0.795
+],
+[
+0.22,
+0.795
+],
+[
+0.23,
+0.718
+],
+[
+0.24,
+0.744
+],
+[
+0.25,
+0.692
+],
+[
+0.26,
+0.718
+],
+[
+0.27,
+0.718
+],
+[
+0.28,
+0.692
+],
+[
+0.29,
+0.667
+],
+[
+0.3,
+0.641
+],
+[
+0.31,
+0.641
+],
+[
+0.32,
+0.641
 ],
 [
 0.33,
@@ -9248,43 +8895,2455 @@
 ],
 [
 0.36,
-0.602
+0.615
 ],
 [
 0.37,
-0.602
+0.615
 ],
 [
 0.38,
-0.602
+0.615
 ],
 [
 0.39,
-0.602
+0.615
 ],
 [
 0.4,
-0.602
+0.615
 ],
 [
 0.41,
-0.578
+0.641
 ],
 [
 0.42,
-0.578
+0.641
 ],
 [
 0.43,
-0.566
+0.615
 ],
 [
 0.44,
-0.566
+0.59
 ],
 [
 0.45,
-0.542
+0.538
+],
+[
+0.46,
+0.564
+],
+[
+0.47,
+0.564
+],
+[
+0.48,
+0.564
+],
+[
+0.49,
+0.564
+],
+[
+0.5,
+0.538
+],
+[
+0.51,
+0.538
+],
+[
+0.52,
+0.564
+],
+[
+0.53,
+0.538
+],
+[
+0.54,
+0.513
+],
+[
+0.55,
+0.513
+],
+[
+0.56,
+0.513
+],
+[
+0.57,
+0.538
+],
+[
+0.58,
+0.538
+],
+[
+0.59,
+0.538
+],
+[
+0.6,
+0.538
+],
+[
+0.61,
+0.538
+],
+[
+0.62,
+0.513
+],
+[
+0.63,
+0.538
+],
+[
+0.64,
+0.564
+],
+[
+0.65,
+0.513
+],
+[
+0.66,
+0.513
+],
+[
+0.67,
+0.513
+],
+[
+0.68,
+0.513
+],
+[
+0.69,
+0.487
+],
+[
+0.7,
+0.487
+],
+[
+0.71,
+0.487
+],
+[
+0.72,
+0.461
+],
+[
+0.73,
+0.461
+],
+[
+0.74,
+0.461
+],
+[
+0.75,
+0.436
+],
+[
+0.76,
+0.41
+],
+[
+0.77,
+0.41
+],
+[
+0.78,
+0.436
+],
+[
+0.79,
+0.461
+],
+[
+0.8,
+0.436
+],
+[
+0.81,
+0.436
+],
+[
+0.82,
+0.436
+],
+[
+0.83,
+0.436
+],
+[
+0.84,
+0.436
+],
+[
+0.85,
+0.41
+],
+[
+0.86,
+0.385
+],
+[
+0.87,
+0.41
+],
+[
+0.88,
+0.41
+],
+[
+0.89,
+0.41
+],
+[
+0.9,
+0.359
+],
+[
+0.91,
+0.333
+],
+[
+0.92,
+0.282
+],
+[
+0.93,
+0.179
+],
+[
+0.94,
+0.179
+],
+[
+0.95,
+0.179
+],
+[
+0.96,
+0.103
+],
+[
+0.97,
+0.103
+],
+[
+0.98,
+0.051
+],
+[
+0.99,
+0.051
+],
+[
+1.0,
+0.051
+]
+],
+"cCFJ1CShcfs": [
+[
+0.01,
+1.062
+],
+[
+0.02,
+1.031
+],
+[
+0.03,
+1.031
+],
+[
+0.04,
+1.031
+],
+[
+0.05,
+1.031
+],
+[
+0.06,
+1.031
+],
+[
+0.07,
+1.031
+],
+[
+0.08,
+1.031
+],
+[
+0.09,
+1.031
+],
+[
+0.1,
+1.031
+],
+[
+0.11,
+1.031
+],
+[
+0.12,
+1.031
+],
+[
+0.13,
+1.031
+],
+[
+0.14,
+1.0
+],
+[
+0.15,
+0.969
+],
+[
+0.16,
+0.906
+],
+[
+0.17,
+0.875
+],
+[
+0.18,
+0.875
+],
+[
+0.19,
+0.844
+],
+[
+0.2,
+0.844
+],
+[
+0.21,
+0.844
+],
+[
+0.22,
+0.844
+],
+[
+0.23,
+0.844
+],
+[
+0.24,
+0.812
+],
+[
+0.25,
+0.812
+],
+[
+0.26,
+0.812
+],
+[
+0.27,
+0.781
+],
+[
+0.28,
+0.781
+],
+[
+0.29,
+0.75
+],
+[
+0.3,
+0.719
+],
+[
+0.31,
+0.688
+],
+[
+0.32,
+0.688
+],
+[
+0.33,
+0.688
+],
+[
+0.34,
+0.688
+],
+[
+0.35,
+0.688
+],
+[
+0.36,
+0.688
+],
+[
+0.37,
+0.688
+],
+[
+0.38,
+0.688
+],
+[
+0.39,
+0.688
+],
+[
+0.4,
+0.688
+],
+[
+0.41,
+0.688
+],
+[
+0.42,
+0.688
+],
+[
+0.43,
+0.688
+],
+[
+0.44,
+0.656
+],
+[
+0.45,
+0.656
+],
+[
+0.46,
+0.625
+],
+[
+0.47,
+0.625
+],
+[
+0.48,
+0.625
+],
+[
+0.49,
+0.625
+],
+[
+0.5,
+0.594
+],
+[
+0.51,
+0.562
+],
+[
+0.52,
+0.594
+],
+[
+0.53,
+0.594
+],
+[
+0.54,
+0.594
+],
+[
+0.55,
+0.594
+],
+[
+0.56,
+0.594
+],
+[
+0.57,
+0.594
+],
+[
+0.58,
+0.594
+],
+[
+0.59,
+0.562
+],
+[
+0.6,
+0.594
+],
+[
+0.61,
+0.594
+],
+[
+0.62,
+0.594
+],
+[
+0.63,
+0.594
+],
+[
+0.64,
+0.594
+],
+[
+0.65,
+0.594
+],
+[
+0.66,
+0.594
+],
+[
+0.67,
+0.562
+],
+[
+0.68,
+0.594
+],
+[
+0.69,
+0.594
+],
+[
+0.7,
+0.594
+],
+[
+0.71,
+0.594
+],
+[
+0.72,
+0.594
+],
+[
+0.73,
+0.594
+],
+[
+0.74,
+0.594
+],
+[
+0.75,
+0.594
+],
+[
+0.76,
+0.594
+],
+[
+0.77,
+0.562
+],
+[
+0.78,
+0.562
+],
+[
+0.79,
+0.562
+],
+[
+0.8,
+0.562
+],
+[
+0.81,
+0.562
+],
+[
+0.82,
+0.562
+],
+[
+0.83,
+0.562
+],
+[
+0.84,
+0.531
+],
+[
+0.85,
+0.531
+],
+[
+0.86,
+0.531
+],
+[
+0.87,
+0.531
+],
+[
+0.88,
+0.531
+],
+[
+0.89,
+0.531
+],
+[
+0.9,
+0.531
+],
+[
+0.91,
+0.531
+],
+[
+0.92,
+0.5
+],
+[
+0.93,
+0.375
+],
+[
+0.94,
+0.312
+],
+[
+0.95,
+0.219
+],
+[
+0.96,
+0.188
+],
+[
+0.97,
+0.156
+],
+[
+0.98,
+0.094
+],
+[
+0.99,
+0.094
+],
+[
+1.0,
+0.094
+]
+],
+"NJK-L8cq8oY": [
+[
+0.01,
+1.1
+],
+[
+0.02,
+1.078
+],
+[
+0.03,
+1.056
+],
+[
+0.04,
+1.044
+],
+[
+0.05,
+1.022
+],
+[
+0.06,
+1.022
+],
+[
+0.07,
+1.022
+],
+[
+0.08,
+1.011
+],
+[
+0.09,
+1.011
+],
+[
+0.1,
+1.011
+],
+[
+0.11,
+1.011
+],
+[
+0.12,
+1.011
+],
+[
+0.13,
+0.944
+],
+[
+0.14,
+0.911
+],
+[
+0.15,
+0.856
+],
+[
+0.16,
+0.833
+],
+[
+0.17,
+0.822
+],
+[
+0.18,
+0.767
+],
+[
+0.19,
+0.744
+],
+[
+0.2,
+0.733
+],
+[
+0.21,
+0.722
+],
+[
+0.22,
+0.7
+],
+[
+0.23,
+0.7
+],
+[
+0.24,
+0.7
+],
+[
+0.25,
+0.689
+],
+[
+0.26,
+0.689
+],
+[
+0.27,
+0.678
+],
+[
+0.28,
+0.667
+],
+[
+0.29,
+0.656
+],
+[
+0.3,
+0.644
+],
+[
+0.31,
+0.644
+],
+[
+0.32,
+0.622
+],
+[
+0.33,
+0.611
+],
+[
+0.34,
+0.6
+],
+[
+0.35,
+0.589
+],
+[
+0.36,
+0.567
+],
+[
+0.37,
+0.567
+],
+[
+0.38,
+0.567
+],
+[
+0.39,
+0.567
+],
+[
+0.4,
+0.556
+],
+[
+0.41,
+0.567
+],
+[
+0.42,
+0.567
+],
+[
+0.43,
+0.567
+],
+[
+0.44,
+0.567
+],
+[
+0.45,
+0.567
+],
+[
+0.46,
+0.567
+],
+[
+0.47,
+0.567
+],
+[
+0.48,
+0.567
+],
+[
+0.49,
+0.567
+],
+[
+0.5,
+0.567
+],
+[
+0.51,
+0.567
+],
+[
+0.52,
+0.567
+],
+[
+0.53,
+0.556
+],
+[
+0.54,
+0.567
+],
+[
+0.55,
+0.556
+],
+[
+0.56,
+0.556
+],
+[
+0.57,
+0.556
+],
+[
+0.58,
+0.556
+],
+[
+0.59,
+0.556
+],
+[
+0.6,
+0.556
+],
+[
+0.61,
+0.544
+],
+[
+0.62,
+0.533
+],
+[
+0.63,
+0.533
+],
+[
+0.64,
+0.511
+],
+[
+0.65,
+0.511
+],
+[
+0.66,
+0.5
+],
+[
+0.67,
+0.5
+],
+[
+0.68,
+0.5
+],
+[
+0.69,
+0.5
+],
+[
+0.7,
+0.5
+],
+[
+0.71,
+0.5
+],
+[
+0.72,
+0.489
+],
+[
+0.73,
+0.467
+],
+[
+0.74,
+0.456
+],
+[
+0.75,
+0.444
+],
+[
+0.76,
+0.444
+],
+[
+0.77,
+0.444
+],
+[
+0.78,
+0.456
+],
+[
+0.79,
+0.456
+],
+[
+0.8,
+0.444
+],
+[
+0.81,
+0.444
+],
+[
+0.82,
+0.444
+],
+[
+0.83,
+0.444
+],
+[
+0.84,
+0.444
+],
+[
+0.85,
+0.444
+],
+[
+0.86,
+0.4
+],
+[
+0.87,
+0.367
+],
+[
+0.88,
+0.344
+],
+[
+0.89,
+0.311
+],
+[
+0.9,
+0.322
+],
+[
+0.91,
+0.289
+],
+[
+0.92,
+0.256
+],
+[
+0.93,
+0.211
+],
+[
+0.94,
+0.189
+],
+[
+0.95,
+0.178
+],
+[
+0.96,
+0.144
+],
+[
+0.97,
+0.111
+],
+[
+0.98,
+0.056
+],
+[
+0.99,
+0.044
+],
+[
+1.0,
+0.044
+]
+],
+"BnKKb4ZviFU": [
+[
+0.01,
+1.062
+],
+[
+0.02,
+1.062
+],
+[
+0.03,
+1.062
+],
+[
+0.04,
+1.062
+],
+[
+0.05,
+1.0
+],
+[
+0.06,
+1.062
+],
+[
+0.07,
+1.062
+],
+[
+0.08,
+1.062
+],
+[
+0.09,
+1.062
+],
+[
+0.1,
+1.0
+],
+[
+0.11,
+1.0
+],
+[
+0.12,
+1.0
+],
+[
+0.13,
+1.0
+],
+[
+0.14,
+1.0
+],
+[
+0.15,
+1.0
+],
+[
+0.16,
+1.0
+],
+[
+0.17,
+1.0
+],
+[
+0.18,
+0.938
+],
+[
+0.19,
+0.938
+],
+[
+0.2,
+0.938
+],
+[
+0.21,
+0.938
+],
+[
+0.22,
+0.938
+],
+[
+0.23,
+0.938
+],
+[
+0.24,
+0.938
+],
+[
+0.25,
+0.938
+],
+[
+0.26,
+0.938
+],
+[
+0.27,
+0.938
+],
+[
+0.28,
+0.938
+],
+[
+0.29,
+0.938
+],
+[
+0.3,
+0.938
+],
+[
+0.31,
+0.875
+],
+[
+0.32,
+0.875
+],
+[
+0.33,
+0.875
+],
+[
+0.34,
+0.875
+],
+[
+0.35,
+0.875
+],
+[
+0.36,
+0.875
+],
+[
+0.37,
+0.812
+],
+[
+0.38,
+0.812
+],
+[
+0.39,
+0.812
+],
+[
+0.4,
+0.75
+],
+[
+0.41,
+0.75
+],
+[
+0.42,
+0.688
+],
+[
+0.43,
+0.688
+],
+[
+0.44,
+0.688
+],
+[
+0.45,
+0.625
+],
+[
+0.46,
+0.625
+],
+[
+0.47,
+0.625
+],
+[
+0.48,
+0.625
+],
+[
+0.49,
+0.625
+],
+[
+0.5,
+0.625
+],
+[
+0.51,
+0.625
+],
+[
+0.52,
+0.625
+],
+[
+0.53,
+0.625
+],
+[
+0.54,
+0.625
+],
+[
+0.55,
+0.625
+],
+[
+0.56,
+0.625
+],
+[
+0.57,
+0.625
+],
+[
+0.58,
+0.625
+],
+[
+0.59,
+0.625
+],
+[
+0.6,
+0.625
+],
+[
+0.61,
+0.625
+],
+[
+0.62,
+0.625
+],
+[
+0.63,
+0.625
+],
+[
+0.64,
+0.625
+],
+[
+0.65,
+0.625
+],
+[
+0.66,
+0.625
+],
+[
+0.67,
+0.625
+],
+[
+0.68,
+0.625
+],
+[
+0.69,
+0.625
+],
+[
+0.7,
+0.625
+],
+[
+0.71,
+0.625
+],
+[
+0.72,
+0.562
+],
+[
+0.73,
+0.562
+],
+[
+0.74,
+0.562
+],
+[
+0.75,
+0.562
+],
+[
+0.76,
+0.562
+],
+[
+0.77,
+0.562
+],
+[
+0.78,
+0.562
+],
+[
+0.79,
+0.562
+],
+[
+0.8,
+0.562
+],
+[
+0.81,
+0.562
+],
+[
+0.82,
+0.562
+],
+[
+0.83,
+0.562
+],
+[
+0.84,
+0.5
+],
+[
+0.85,
+0.5
+],
+[
+0.86,
+0.5
+],
+[
+0.87,
+0.5
+],
+[
+0.88,
+0.5
+],
+[
+0.89,
+0.438
+],
+[
+0.9,
+0.312
+],
+[
+0.91,
+0.188
+],
+[
+0.92,
+0.25
+],
+[
+0.93,
+0.25
+],
+[
+0.94,
+0.25
+],
+[
+0.95,
+0.25
+],
+[
+0.96,
+0.25
+],
+[
+0.97,
+0.125
+],
+[
+0.98,
+0.125
+],
+[
+0.99,
+0.125
+],
+[
+1.0,
+0.125
+]
+],
+"bVO3XjeIvGg": [
+[
+0.01,
+1.116
+],
+[
+0.02,
+1.093
+],
+[
+0.03,
+1.07
+],
+[
+0.04,
+1.07
+],
+[
+0.05,
+1.07
+],
+[
+0.06,
+1.07
+],
+[
+0.07,
+1.07
+],
+[
+0.08,
+1.07
+],
+[
+0.09,
+1.046
+],
+[
+0.1,
+1.046
+],
+[
+0.11,
+1.046
+],
+[
+0.12,
+1.046
+],
+[
+0.13,
+1.023
+],
+[
+0.14,
+0.977
+],
+[
+0.15,
+0.907
+],
+[
+0.16,
+0.884
+],
+[
+0.17,
+0.814
+],
+[
+0.18,
+0.837
+],
+[
+0.19,
+0.86
+],
+[
+0.2,
+0.86
+],
+[
+0.21,
+0.814
+],
+[
+0.22,
+0.837
+],
+[
+0.23,
+0.837
+],
+[
+0.24,
+0.814
+],
+[
+0.25,
+0.814
+],
+[
+0.26,
+0.791
+],
+[
+0.27,
+0.791
+],
+[
+0.28,
+0.791
+],
+[
+0.29,
+0.791
+],
+[
+0.3,
+0.791
+],
+[
+0.31,
+0.767
+],
+[
+0.32,
+0.791
+],
+[
+0.33,
+0.767
+],
+[
+0.34,
+0.767
+],
+[
+0.35,
+0.767
+],
+[
+0.36,
+0.767
+],
+[
+0.37,
+0.767
+],
+[
+0.38,
+0.744
+],
+[
+0.39,
+0.767
+],
+[
+0.4,
+0.767
+],
+[
+0.41,
+0.767
+],
+[
+0.42,
+0.744
+],
+[
+0.43,
+0.744
+],
+[
+0.44,
+0.744
+],
+[
+0.45,
+0.721
+],
+[
+0.46,
+0.721
+],
+[
+0.47,
+0.744
+],
+[
+0.48,
+0.744
+],
+[
+0.49,
+0.721
+],
+[
+0.5,
+0.721
+],
+[
+0.51,
+0.721
+],
+[
+0.52,
+0.721
+],
+[
+0.53,
+0.721
+],
+[
+0.54,
+0.698
+],
+[
+0.55,
+0.698
+],
+[
+0.56,
+0.721
+],
+[
+0.57,
+0.721
+],
+[
+0.58,
+0.721
+],
+[
+0.59,
+0.721
+],
+[
+0.6,
+0.721
+],
+[
+0.61,
+0.721
+],
+[
+0.62,
+0.721
+],
+[
+0.63,
+0.721
+],
+[
+0.64,
+0.698
+],
+[
+0.65,
+0.698
+],
+[
+0.66,
+0.698
+],
+[
+0.67,
+0.698
+],
+[
+0.68,
+0.721
+],
+[
+0.69,
+0.721
+],
+[
+0.7,
+0.721
+],
+[
+0.71,
+0.698
+],
+[
+0.72,
+0.698
+],
+[
+0.73,
+0.721
+],
+[
+0.74,
+0.721
+],
+[
+0.75,
+0.698
+],
+[
+0.76,
+0.698
+],
+[
+0.77,
+0.698
+],
+[
+0.78,
+0.698
+],
+[
+0.79,
+0.698
+],
+[
+0.8,
+0.674
+],
+[
+0.81,
+0.674
+],
+[
+0.82,
+0.651
+],
+[
+0.83,
+0.651
+],
+[
+0.84,
+0.651
+],
+[
+0.85,
+0.651
+],
+[
+0.86,
+0.651
+],
+[
+0.87,
+0.651
+],
+[
+0.88,
+0.651
+],
+[
+0.89,
+0.651
+],
+[
+0.9,
+0.651
+],
+[
+0.91,
+0.651
+],
+[
+0.92,
+0.628
+],
+[
+0.93,
+0.628
+],
+[
+0.94,
+0.581
+],
+[
+0.95,
+0.488
+],
+[
+0.96,
+0.395
+],
+[
+0.97,
+0.372
+],
+[
+0.98,
+0.349
+],
+[
+0.99,
+0.326
+],
+[
+1.0,
+0.326
+]
+],
+"FMX1P88TvvU": [
+[
+0.01,
+1.26
+],
+[
+0.02,
+1.26
+],
+[
+0.03,
+1.24
+],
+[
+0.04,
+1.2
+],
+[
+0.05,
+1.14
+],
+[
+0.06,
+1.14
+],
+[
+0.07,
+1.14
+],
+[
+0.08,
+1.14
+],
+[
+0.09,
+1.14
+],
+[
+0.1,
+1.14
+],
+[
+0.11,
+1.12
+],
+[
+0.12,
+1.1
+],
+[
+0.13,
+1.1
+],
+[
+0.14,
+1.08
+],
+[
+0.15,
+1.02
+],
+[
+0.16,
+0.98
+],
+[
+0.17,
+0.94
+],
+[
+0.18,
+0.94
+],
+[
+0.19,
+0.92
+],
+[
+0.2,
+0.84
+],
+[
+0.21,
+0.8
+],
+[
+0.22,
+0.78
+],
+[
+0.23,
+0.78
+],
+[
+0.24,
+0.78
+],
+[
+0.25,
+0.78
+],
+[
+0.26,
+0.78
+],
+[
+0.27,
+0.76
+],
+[
+0.28,
+0.76
+],
+[
+0.29,
+0.74
+],
+[
+0.3,
+0.76
+],
+[
+0.31,
+0.74
+],
+[
+0.32,
+0.7
+],
+[
+0.33,
+0.7
+],
+[
+0.34,
+0.7
+],
+[
+0.35,
+0.7
+],
+[
+0.36,
+0.7
+],
+[
+0.37,
+0.66
+],
+[
+0.38,
+0.66
+],
+[
+0.39,
+0.66
+],
+[
+0.4,
+0.66
+],
+[
+0.41,
+0.66
+],
+[
+0.42,
+0.66
+],
+[
+0.43,
+0.66
+],
+[
+0.44,
+0.66
+],
+[
+0.45,
+0.66
+],
+[
+0.46,
+0.66
+],
+[
+0.47,
+0.66
+],
+[
+0.48,
+0.66
+],
+[
+0.49,
+0.66
+],
+[
+0.5,
+0.66
+],
+[
+0.51,
+0.66
+],
+[
+0.52,
+0.66
+],
+[
+0.53,
+0.66
+],
+[
+0.54,
+0.66
+],
+[
+0.55,
+0.66
+],
+[
+0.56,
+0.66
+],
+[
+0.57,
+0.66
+],
+[
+0.58,
+0.66
+],
+[
+0.59,
+0.66
+],
+[
+0.6,
+0.66
+],
+[
+0.61,
+0.64
+],
+[
+0.62,
+0.64
+],
+[
+0.63,
+0.64
+],
+[
+0.64,
+0.64
+],
+[
+0.65,
+0.64
+],
+[
+0.66,
+0.66
+],
+[
+0.67,
+0.66
+],
+[
+0.68,
+0.66
+],
+[
+0.69,
+0.64
+],
+[
+0.7,
+0.64
+],
+[
+0.71,
+0.64
+],
+[
+0.72,
+0.64
+],
+[
+0.73,
+0.64
+],
+[
+0.74,
+0.64
+],
+[
+0.75,
+0.64
+],
+[
+0.76,
+0.64
+],
+[
+0.77,
+0.62
+],
+[
+0.78,
+0.62
+],
+[
+0.79,
+0.62
+],
+[
+0.8,
+0.6
+],
+[
+0.81,
+0.6
+],
+[
+0.82,
+0.6
+],
+[
+0.83,
+0.58
+],
+[
+0.84,
+0.54
+],
+[
+0.85,
+0.5
+],
+[
+0.86,
+0.46
+],
+[
+0.87,
+0.44
+],
+[
+0.88,
+0.42
+],
+[
+0.89,
+0.42
+],
+[
+0.9,
+0.4
+],
+[
+0.91,
+0.4
+],
+[
+0.92,
+0.38
+],
+[
+0.93,
+0.34
+],
+[
+0.94,
+0.32
+],
+[
+0.95,
+0.32
+],
+[
+0.96,
+0.3
+],
+[
+0.97,
+0.28
+],
+[
+0.98,
+0.28
+],
+[
+0.99,
+0.28
+],
+[
+1.0,
+0.28
+]
+],
+"l1qU9f03kOM": [
+[
+0.01,
+1.106
+],
+[
+0.02,
+1.082
+],
+[
+0.03,
+1.082
+],
+[
+0.04,
+1.071
+],
+[
+0.05,
+1.071
+],
+[
+0.06,
+1.071
+],
+[
+0.07,
+1.071
+],
+[
+0.08,
+1.071
+],
+[
+0.09,
+1.059
+],
+[
+0.1,
+1.035
+],
+[
+0.11,
+1.023
+],
+[
+0.12,
+0.965
+],
+[
+0.13,
+0.929
+],
+[
+0.14,
+0.906
+],
+[
+0.15,
+0.847
+],
+[
+0.16,
+0.788
+],
+[
+0.17,
+0.788
+],
+[
+0.18,
+0.777
+],
+[
+0.19,
+0.765
+],
+[
+0.2,
+0.741
+],
+[
+0.21,
+0.706
+],
+[
+0.22,
+0.682
+],
+[
+0.23,
+0.682
+],
+[
+0.24,
+0.671
+],
+[
+0.25,
+0.671
+],
+[
+0.26,
+0.659
+],
+[
+0.27,
+0.659
+],
+[
+0.28,
+0.671
+],
+[
+0.29,
+0.635
+],
+[
+0.3,
+0.635
+],
+[
+0.31,
+0.624
+],
+[
+0.32,
+0.612
+],
+[
+0.33,
+0.624
+],
+[
+0.34,
+0.624
+],
+[
+0.35,
+0.624
+],
+[
+0.36,
+0.612
+],
+[
+0.37,
+0.612
+],
+[
+0.38,
+0.6
+],
+[
+0.39,
+0.6
+],
+[
+0.4,
+0.6
+],
+[
+0.41,
+0.577
+],
+[
+0.42,
+0.577
+],
+[
+0.43,
+0.565
+],
+[
+0.44,
+0.565
+],
+[
+0.45,
+0.541
 ],
 [
 0.46,
@@ -9292,229 +11351,229 @@
 ],
 [
 0.47,
-0.458
+0.459
 ],
 [
 0.48,
-0.458
+0.459
 ],
 [
 0.49,
-0.422
+0.423
 ],
 [
 0.5,
-0.422
+0.423
 ],
 [
 0.51,
-0.373
+0.377
 ],
 [
 0.52,
-0.385
+0.388
 ],
 [
 0.53,
-0.385
+0.388
 ],
 [
 0.54,
-0.385
+0.388
 ],
 [
 0.55,
-0.361
+0.365
 ],
 [
 0.56,
-0.337
+0.341
 ],
 [
 0.57,
-0.325
+0.329
 ],
 [
 0.58,
-0.325
+0.329
 ],
 [
 0.59,
-0.325
+0.329
 ],
 [
 0.6,
-0.325
+0.329
 ],
 [
 0.61,
-0.325
+0.329
 ],
 [
 0.62,
-0.325
+0.329
 ],
 [
 0.63,
-0.325
+0.329
 ],
 [
 0.64,
-0.325
+0.329
 ],
 [
 0.65,
-0.325
+0.329
 ],
 [
 0.66,
-0.313
+0.318
 ],
 [
 0.67,
-0.313
+0.318
 ],
 [
 0.68,
-0.313
+0.318
 ],
 [
 0.69,
-0.313
+0.318
 ],
 [
 0.7,
-0.313
+0.318
 ],
 [
 0.71,
-0.313
+0.318
 ],
 [
 0.72,
-0.313
+0.318
 ],
 [
 0.73,
-0.313
+0.318
 ],
 [
 0.74,
-0.313
+0.318
 ],
 [
 0.75,
-0.313
+0.318
 ],
 [
 0.76,
-0.313
+0.318
 ],
 [
 0.77,
-0.313
+0.318
 ],
 [
 0.78,
-0.313
+0.318
 ],
 [
 0.79,
-0.313
+0.318
 ],
 [
 0.8,
-0.313
+0.318
 ],
 [
 0.81,
-0.277
+0.282
 ],
 [
 0.82,
-0.265
+0.271
 ],
 [
 0.83,
-0.241
+0.247
 ],
 [
 0.84,
-0.217
+0.212
 ],
 [
 0.85,
-0.205
+0.2
 ],
 [
 0.86,
-0.205
+0.2
 ],
 [
 0.87,
-0.193
+0.188
 ],
 [
 0.88,
-0.169
+0.165
 ],
 [
 0.89,
-0.157
+0.153
 ],
 [
 0.9,
-0.157
+0.153
 ],
 [
 0.91,
-0.157
+0.153
 ],
 [
 0.92,
-0.157
+0.153
 ],
 [
 0.93,
-0.145
+0.141
 ],
 [
 0.94,
-0.145
+0.141
 ],
 [
 0.95,
-0.133
+0.129
 ],
 [
 0.96,
-0.121
+0.118
 ],
 [
 0.97,
-0.121
+0.118
 ],
 [
 0.98,
-0.096
+0.094
 ],
 [
 0.99,
-0.048
+0.047
 ],
 [
 1.0,
-0.048
+0.047
 ]
 ],
 "nIbDFrCW-Zs": [
 [
 0.01,
-1.118
+1.117
 ],
 [
 0.02,
-1.109
+1.108
 ],
 [
 0.03,
@@ -9562,803 +11621,803 @@
 ],
 [
 0.14,
-0.927
+0.928
 ],
 [
 0.15,
-0.909
+0.91
 ],
 [
 0.16,
-0.882
+0.883
 ],
 [
 0.17,
-0.855
+0.856
 ],
 [
 0.18,
-0.855
+0.856
 ],
 [
 0.19,
-0.836
+0.838
 ],
 [
 0.2,
-0.818
+0.82
 ],
 [
 0.21,
-0.8
+0.802
 ],
 [
 0.22,
-0.764
+0.766
 ],
 [
 0.23,
-0.736
+0.739
 ],
 [
 0.24,
-0.709
+0.712
 ],
 [
 0.25,
-0.691
+0.694
 ],
 [
 0.26,
-0.664
+0.667
 ],
 [
 0.27,
-0.664
+0.667
 ],
 [
 0.28,
-0.645
+0.649
 ],
 [
 0.29,
-0.636
+0.64
 ],
 [
 0.3,
-0.645
+0.649
 ],
 [
 0.31,
-0.627
+0.631
 ],
 [
 0.32,
-0.627
+0.631
 ],
 [
 0.33,
-0.627
+0.631
 ],
 [
 0.34,
-0.618
+0.622
 ],
 [
 0.35,
-0.627
+0.631
 ],
 [
 0.36,
-0.636
+0.64
 ],
 [
 0.37,
-0.618
+0.622
 ],
 [
 0.38,
-0.627
+0.631
 ],
 [
 0.39,
-0.627
+0.631
 ],
 [
 0.4,
-0.636
+0.64
 ],
 [
 0.41,
-0.636
+0.64
 ],
 [
 0.42,
-0.609
+0.613
 ],
 [
 0.43,
-0.582
+0.586
 ],
 [
 0.44,
-0.582
+0.586
 ],
 [
 0.45,
-0.573
+0.577
 ],
 [
 0.46,
-0.573
+0.577
 ],
 [
 0.47,
-0.564
+0.568
 ],
 [
 0.48,
-0.545
+0.549
 ],
 [
 0.49,
-0.536
+0.54
 ],
 [
 0.5,
-0.536
+0.54
 ],
 [
 0.51,
-0.536
+0.54
 ],
 [
 0.52,
-0.545
+0.549
 ],
 [
 0.53,
-0.545
+0.549
 ],
 [
 0.54,
-0.527
+0.531
 ],
 [
 0.55,
-0.536
+0.54
 ],
 [
 0.56,
-0.536
+0.54
 ],
 [
 0.57,
-0.545
+0.549
 ],
 [
 0.58,
-0.545
+0.549
 ],
 [
 0.59,
-0.545
+0.549
 ],
 [
 0.6,
-0.536
+0.54
 ],
 [
 0.61,
-0.536
+0.54
 ],
 [
 0.62,
-0.518
+0.522
 ],
 [
 0.63,
-0.509
+0.514
 ],
 [
 0.64,
-0.509
+0.505
 ],
 [
 0.65,
-0.518
+0.514
 ],
 [
 0.66,
-0.518
+0.514
 ],
 [
 0.67,
-0.518
+0.514
 ],
 [
 0.68,
-0.509
+0.505
 ],
 [
 0.69,
-0.509
+0.505
 ],
 [
 0.7,
-0.518
+0.514
 ],
 [
 0.71,
-0.527
+0.522
 ],
 [
 0.72,
-0.527
+0.522
 ],
 [
 0.73,
-0.527
+0.522
 ],
 [
 0.74,
-0.518
+0.514
 ],
 [
 0.75,
-0.509
+0.505
 ],
 [
 0.76,
-0.509
+0.505
 ],
 [
 0.77,
-0.509
+0.505
 ],
 [
 0.78,
-0.491
+0.486
 ],
 [
 0.79,
-0.482
+0.477
 ],
 [
 0.8,
-0.473
+0.469
 ],
 [
 0.81,
-0.464
+0.46
 ],
 [
 0.82,
-0.455
+0.45
 ],
 [
 0.83,
-0.445
+0.441
 ],
 [
 0.84,
-0.445
+0.441
 ],
 [
 0.85,
-0.445
+0.441
 ],
 [
 0.86,
-0.436
+0.432
 ],
 [
 0.87,
-0.436
+0.432
 ],
 [
 0.88,
-0.436
+0.432
 ],
 [
 0.89,
-0.436
+0.432
 ],
 [
 0.9,
-0.427
+0.423
 ],
 [
 0.91,
-0.409
+0.405
 ],
 [
 0.92,
-0.391
+0.387
 ],
 [
 0.93,
-0.355
+0.351
 ],
 [
 0.94,
-0.291
+0.288
 ],
 [
 0.95,
-0.218
+0.216
 ],
 [
 0.96,
-0.191
+0.189
 ],
 [
 0.97,
-0.154
+0.153
 ],
 [
 0.98,
-0.118
+0.117
 ],
 [
 0.99,
-0.118
+0.117
 ],
 [
 1.0,
-0.118
+0.117
 ]
 ],
 "eZuxGZWLy6Q": [
 [
 0.01,
-1.093
+1.089
 ],
 [
 0.02,
-1.093
+1.089
 ],
 [
 0.03,
-1.046
+1.044
 ],
 [
 0.04,
-1.046
+1.044
 ],
 [
 0.05,
-1.046
+1.044
 ],
 [
 0.06,
-1.046
+1.044
 ],
 [
 0.07,
-1.046
+1.044
 ],
 [
 0.08,
-1.046
+1.044
 ],
 [
 0.09,
-1.046
+1.044
 ],
 [
 0.1,
-1.046
+1.044
 ],
 [
 0.11,
-1.046
+1.044
 ],
 [
 0.12,
-1.023
+1.022
 ],
 [
 0.13,
-0.977
+0.978
 ],
 [
 0.14,
-0.953
+0.956
 ],
 [
 0.15,
-0.953
+0.956
 ],
 [
 0.16,
-0.93
+0.933
 ],
 [
 0.17,
-0.907
+0.911
 ],
 [
 0.18,
-0.907
+0.911
 ],
 [
 0.19,
-0.884
+0.889
 ],
 [
 0.2,
-0.837
+0.844
 ],
 [
 0.21,
-0.814
+0.822
 ],
 [
 0.22,
-0.767
+0.778
 ],
 [
 0.23,
-0.767
+0.778
 ],
 [
 0.24,
-0.744
+0.756
 ],
 [
 0.25,
-0.744
+0.756
 ],
 [
 0.26,
-0.744
+0.756
 ],
 [
 0.27,
-0.744
+0.756
 ],
 [
 0.28,
-0.744
+0.756
 ],
 [
 0.29,
-0.721
+0.733
 ],
 [
 0.3,
-0.721
+0.733
 ],
 [
 0.31,
-0.721
+0.733
 ],
 [
 0.32,
-0.721
+0.733
 ],
 [
 0.33,
-0.721
+0.733
 ],
 [
 0.34,
-0.674
+0.689
 ],
 [
 0.35,
-0.674
+0.689
 ],
 [
 0.36,
-0.674
+0.689
 ],
 [
 0.37,
-0.674
+0.689
 ],
 [
 0.38,
-0.674
+0.689
 ],
 [
 0.39,
-0.674
+0.689
 ],
 [
 0.4,
-0.674
+0.689
 ],
 [
 0.41,
-0.674
+0.689
 ],
 [
 0.42,
-0.674
+0.689
 ],
 [
 0.43,
-0.651
+0.667
 ],
 [
 0.44,
-0.581
+0.6
 ],
 [
 0.45,
-0.581
+0.6
 ],
 [
 0.46,
-0.581
+0.6
 ],
 [
 0.47,
-0.558
+0.578
 ],
 [
 0.48,
-0.535
+0.533
 ],
 [
 0.49,
-0.535
+0.533
 ],
 [
 0.5,
-0.488
+0.489
 ],
 [
 0.51,
-0.488
+0.489
 ],
 [
 0.52,
-0.465
+0.467
 ],
 [
 0.53,
-0.465
+0.467
 ],
 [
 0.54,
-0.488
+0.489
 ],
 [
 0.55,
-0.488
+0.489
 ],
 [
 0.56,
-0.465
+0.467
 ],
 [
 0.57,
-0.465
+0.467
 ],
 [
 0.58,
-0.442
+0.444
 ],
 [
 0.59,
-0.442
+0.444
 ],
 [
 0.6,
-0.395
+0.4
 ],
 [
 0.61,
-0.372
+0.378
 ],
 [
 0.62,
-0.372
+0.378
 ],
 [
 0.63,
-0.372
+0.378
 ],
 [
 0.64,
-0.372
+0.378
 ],
 [
 0.65,
-0.372
+0.378
 ],
 [
 0.66,
-0.372
+0.378
 ],
 [
 0.67,
-0.372
+0.378
 ],
 [
 0.68,
-0.349
+0.356
 ],
 [
 0.69,
-0.349
+0.356
 ],
 [
 0.7,
-0.349
+0.356
 ],
 [
 0.71,
-0.349
+0.356
 ],
 [
 0.72,
-0.349
+0.356
 ],
 [
 0.73,
-0.349
+0.356
 ],
 [
 0.74,
-0.349
+0.356
 ],
 [
 0.75,
-0.349
+0.356
 ],
 [
 0.76,
-0.349
+0.356
 ],
 [
 0.77,
-0.349
+0.356
 ],
 [
 0.78,
-0.349
+0.356
 ],
 [
 0.79,
-0.349
+0.356
 ],
 [
 0.8,
-0.349
+0.356
 ],
 [
 0.81,
-0.349
+0.356
 ],
 [
 0.82,
-0.349
+0.356
 ],
 [
 0.83,
-0.326
+0.333
 ],
 [
 0.84,
-0.302
+0.311
 ],
 [
 0.85,
-0.279
+0.289
 ],
 [
 0.86,
-0.256
+0.267
 ],
 [
 0.87,
-0.256
+0.267
 ],
 [
 0.88,
-0.233
+0.244
 ],
 [
 0.89,
-0.233
+0.244
 ],
 [
 0.9,
-0.186
+0.2
 ],
 [
 0.91,
-0.186
+0.2
 ],
 [
 0.92,
-0.186
+0.2
 ],
 [
 0.93,
-0.186
+0.2
 ],
 [
 0.94,
-0.186
+0.2
 ],
 [
 0.95,
-0.186
+0.178
 ],
 [
 0.96,
-0.186
+0.178
 ],
 [
 0.97,
-0.139
+0.133
 ],
 [
 0.98,
-0.116
+0.111
 ],
 [
 0.99,
-0.116
+0.111
 ],
 [
 1.0,
-0.116
+0.111
 ]
 ],
 "8eFc7V5iQhE": [
 [
 0.01,
-1.138
+1.148
 ],
 [
 0.02,
-1.126
+1.125
 ],
 [
 0.03,
-1.103
+1.102
 ],
 [
 0.04,
-1.103
+1.102
 ],
 [
 0.05,
-1.103
+1.102
 ],
 [
 0.06,
-1.103
+1.102
 ],
 [
 0.07,
-1.103
+1.102
 ],
 [
 0.08,
-1.103
+1.102
 ],
 [
 0.09,
-1.092
+1.091
 ],
 [
 0.1,
-1.081
+1.08
 ],
 [
 0.11,
-1.081
+1.08
 ],
 [
 0.12,
-1.081
+1.08
 ],
 [
 0.13,
@@ -10378,339 +12437,339 @@
 ],
 [
 0.17,
-0.954
+0.955
 ],
 [
 0.18,
-0.919
+0.92
 ],
 [
 0.19,
-0.908
+0.909
 ],
 [
 0.2,
-0.908
+0.909
 ],
 [
 0.21,
-0.908
+0.909
 ],
 [
 0.22,
-0.897
+0.898
 ],
 [
 0.23,
-0.862
+0.864
 ],
 [
 0.24,
-0.805
+0.807
 ],
 [
 0.25,
-0.77
+0.773
 ],
 [
 0.26,
-0.759
+0.761
 ],
 [
 0.27,
-0.713
+0.716
 ],
 [
 0.28,
-0.69
+0.693
 ],
 [
 0.29,
-0.655
+0.659
 ],
 [
 0.3,
-0.609
+0.614
 ],
 [
 0.31,
-0.598
+0.602
 ],
 [
 0.32,
-0.586
+0.591
 ],
 [
 0.33,
-0.575
+0.58
 ],
 [
 0.34,
-0.563
+0.568
 ],
 [
 0.35,
-0.563
+0.568
 ],
 [
 0.36,
-0.563
+0.568
 ],
 [
 0.37,
-0.563
+0.568
 ],
 [
 0.38,
-0.552
+0.557
 ],
 [
 0.39,
-0.552
+0.557
 ],
 [
 0.4,
-0.552
+0.557
 ],
 [
 0.41,
-0.552
+0.557
 ],
 [
 0.42,
-0.552
+0.557
 ],
 [
 0.43,
-0.552
+0.557
 ],
 [
 0.44,
-0.552
+0.557
 ],
 [
 0.45,
-0.529
+0.534
 ],
 [
 0.46,
-0.529
+0.534
 ],
 [
 0.47,
-0.529
+0.534
 ],
 [
 0.48,
-0.529
+0.534
 ],
 [
 0.49,
-0.529
+0.534
 ],
 [
 0.5,
-0.529
+0.534
 ],
 [
 0.51,
-0.529
+0.534
 ],
 [
 0.52,
-0.529
+0.534
 ],
 [
 0.53,
-0.517
+0.523
 ],
 [
 0.54,
-0.506
+0.511
 ],
 [
 0.55,
-0.494
+0.5
 ],
 [
 0.56,
-0.494
+0.5
 ],
 [
 0.57,
-0.471
+0.477
 ],
 [
 0.58,
-0.471
+0.477
 ],
 [
 0.59,
-0.471
+0.477
 ],
 [
 0.6,
-0.471
+0.477
 ],
 [
 0.61,
-0.471
+0.477
 ],
 [
 0.62,
-0.46
+0.466
 ],
 [
 0.63,
-0.471
+0.477
 ],
 [
 0.64,
-0.46
+0.466
 ],
 [
 0.65,
-0.46
+0.466
 ],
 [
 0.66,
-0.46
+0.466
 ],
 [
 0.67,
-0.448
+0.455
 ],
 [
 0.68,
-0.448
+0.455
 ],
 [
 0.69,
-0.46
+0.466
 ],
 [
 0.7,
-0.46
+0.466
 ],
 [
 0.71,
-0.46
+0.466
 ],
 [
 0.72,
-0.46
+0.466
 ],
 [
 0.73,
-0.46
+0.466
 ],
 [
 0.74,
-0.46
+0.466
 ],
 [
 0.75,
-0.46
+0.466
 ],
 [
 0.76,
-0.46
+0.466
 ],
 [
 0.77,
-0.46
+0.466
 ],
 [
 0.78,
-0.46
+0.466
 ],
 [
 0.79,
-0.46
+0.466
 ],
 [
 0.8,
-0.46
+0.466
 ],
 [
 0.81,
-0.46
+0.466
 ],
 [
 0.82,
-0.448
+0.455
 ],
 [
 0.83,
-0.448
+0.455
 ],
 [
 0.84,
-0.448
+0.455
 ],
 [
 0.85,
-0.448
+0.455
 ],
 [
 0.86,
-0.448
+0.455
 ],
 [
 0.87,
-0.448
+0.455
 ],
 [
 0.88,
-0.448
+0.455
 ],
 [
 0.89,
-0.448
+0.455
 ],
 [
 0.9,
-0.448
+0.455
 ],
 [
 0.91,
-0.448
+0.455
 ],
 [
 0.92,
-0.448
+0.455
 ],
 [
 0.93,
-0.414
+0.409
 ],
 [
 0.94,
-0.356
+0.352
 ],
 [
 0.95,
-0.322
+0.33
 ],
 [
 0.96,
-0.287
+0.295
 ],
 [
 0.97,
-0.241
+0.25
 ],
 [
 0.98,
-0.207
+0.216
 ],
 [
 0.99,
-0.207
+0.216
 ],
 [
 1.0,
-0.207
+0.216
 ]
 ],
 "hUAoqfyIsNM": [
@@ -14732,2439 +16791,59 @@
 1.0,
 0.089
 ]
-],
-"Tv7R5-JHIRY": [
-[
-0.01,
-1.101
-],
-[
-0.02,
-1.085
-],
-[
-0.03,
-1.077
-],
-[
-0.04,
-1.07
-],
-[
-0.05,
-1.062
-],
-[
-0.06,
-1.054
-],
-[
-0.07,
-1.054
-],
-[
-0.08,
-1.039
-],
-[
-0.09,
-1.039
-],
-[
-0.1,
-1.023
-],
-[
-0.11,
-1.016
-],
-[
-0.12,
-1.0
-],
-[
-0.13,
-0.985
-],
-[
-0.14,
-0.961
-],
-[
-0.15,
-0.969
-],
-[
-0.16,
-0.922
-],
-[
-0.17,
-0.868
-],
-[
-0.18,
-0.822
-],
-[
-0.19,
-0.76
-],
-[
-0.2,
-0.752
-],
-[
-0.21,
-0.736
-],
-[
-0.22,
-0.729
-],
-[
-0.23,
-0.729
-],
-[
-0.24,
-0.729
-],
-[
-0.25,
-0.736
-],
-[
-0.26,
-0.729
-],
-[
-0.27,
-0.713
-],
-[
-0.28,
-0.713
-],
-[
-0.29,
-0.698
-],
-[
-0.3,
-0.682
-],
-[
-0.31,
-0.674
-],
-[
-0.32,
-0.667
-],
-[
-0.33,
-0.667
-],
-[
-0.34,
-0.659
-],
-[
-0.35,
-0.659
-],
-[
-0.36,
-0.659
-],
-[
-0.37,
-0.651
-],
-[
-0.38,
-0.643
-],
-[
-0.39,
-0.636
-],
-[
-0.4,
-0.605
-],
-[
-0.41,
-0.612
-],
-[
-0.42,
-0.597
-],
-[
-0.43,
-0.597
-],
-[
-0.44,
-0.566
-],
-[
-0.45,
-0.543
-],
-[
-0.46,
-0.543
-],
-[
-0.47,
-0.543
-],
-[
-0.48,
-0.527
-],
-[
-0.49,
-0.519
-],
-[
-0.5,
-0.519
-],
-[
-0.51,
-0.504
-],
-[
-0.52,
-0.481
-],
-[
-0.53,
-0.473
-],
-[
-0.54,
-0.45
-],
-[
-0.55,
-0.45
-],
-[
-0.56,
-0.442
-],
-[
-0.57,
-0.45
-],
-[
-0.58,
-0.442
-],
-[
-0.59,
-0.434
-],
-[
-0.6,
-0.419
-],
-[
-0.61,
-0.411
-],
-[
-0.62,
-0.403
-],
-[
-0.63,
-0.388
-],
-[
-0.64,
-0.388
-],
-[
-0.65,
-0.38
-],
-[
-0.66,
-0.38
-],
-[
-0.67,
-0.38
-],
-[
-0.68,
-0.38
-],
-[
-0.69,
-0.38
-],
-[
-0.7,
-0.372
-],
-[
-0.71,
-0.38
-],
-[
-0.72,
-0.372
-],
-[
-0.73,
-0.372
-],
-[
-0.74,
-0.372
-],
-[
-0.75,
-0.372
-],
-[
-0.76,
-0.372
-],
-[
-0.77,
-0.38
-],
-[
-0.78,
-0.38
-],
-[
-0.79,
-0.38
-],
-[
-0.8,
-0.38
-],
-[
-0.81,
-0.38
-],
-[
-0.82,
-0.372
-],
-[
-0.83,
-0.326
-],
-[
-0.84,
-0.318
-],
-[
-0.85,
-0.271
-],
-[
-0.86,
-0.233
-],
-[
-0.87,
-0.217
-],
-[
-0.88,
-0.217
-],
-[
-0.89,
-0.202
-],
-[
-0.9,
-0.202
-],
-[
-0.91,
-0.202
-],
-[
-0.92,
-0.202
-],
-[
-0.93,
-0.171
-],
-[
-0.94,
-0.163
-],
-[
-0.95,
-0.139
-],
-[
-0.96,
-0.124
-],
-[
-0.97,
-0.101
-],
-[
-0.98,
-0.085
-],
-[
-0.99,
-0.062
-],
-[
-1.0,
-0.062
-]
-],
-"qjvWzk-Uric": [
-[
-0.01,
-1.179
-],
-[
-0.02,
-1.167
-],
-[
-0.03,
-1.179
-],
-[
-0.04,
-1.179
-],
-[
-0.05,
-1.167
-],
-[
-0.06,
-1.179
-],
-[
-0.07,
-1.179
-],
-[
-0.08,
-1.179
-],
-[
-0.09,
-1.179
-],
-[
-0.1,
-1.179
-],
-[
-0.11,
-1.155
-],
-[
-0.12,
-1.143
-],
-[
-0.13,
-1.131
-],
-[
-0.14,
-1.119
-],
-[
-0.15,
-1.107
-],
-[
-0.16,
-1.071
-],
-[
-0.17,
-1.036
-],
-[
-0.18,
-1.0
-],
-[
-0.19,
-0.964
-],
-[
-0.2,
-0.929
-],
-[
-0.21,
-0.917
-],
-[
-0.22,
-0.905
-],
-[
-0.23,
-0.905
-],
-[
-0.24,
-0.893
-],
-[
-0.25,
-0.905
-],
-[
-0.26,
-0.881
-],
-[
-0.27,
-0.869
-],
-[
-0.28,
-0.857
-],
-[
-0.29,
-0.845
-],
-[
-0.3,
-0.857
-],
-[
-0.31,
-0.833
-],
-[
-0.32,
-0.821
-],
-[
-0.33,
-0.821
-],
-[
-0.34,
-0.821
-],
-[
-0.35,
-0.833
-],
-[
-0.36,
-0.845
-],
-[
-0.37,
-0.833
-],
-[
-0.38,
-0.821
-],
-[
-0.39,
-0.809
-],
-[
-0.4,
-0.809
-],
-[
-0.41,
-0.75
-],
-[
-0.42,
-0.738
-],
-[
-0.43,
-0.702
-],
-[
-0.44,
-0.655
-],
-[
-0.45,
-0.643
-],
-[
-0.46,
-0.619
-],
-[
-0.47,
-0.607
-],
-[
-0.48,
-0.571
-],
-[
-0.49,
-0.548
-],
-[
-0.5,
-0.548
-],
-[
-0.51,
-0.524
-],
-[
-0.52,
-0.512
-],
-[
-0.53,
-0.512
-],
-[
-0.54,
-0.5
-],
-[
-0.55,
-0.488
-],
-[
-0.56,
-0.488
-],
-[
-0.57,
-0.488
-],
-[
-0.58,
-0.488
-],
-[
-0.59,
-0.488
-],
-[
-0.6,
-0.488
-],
-[
-0.61,
-0.488
-],
-[
-0.62,
-0.488
-],
-[
-0.63,
-0.476
-],
-[
-0.64,
-0.476
-],
-[
-0.65,
-0.476
-],
-[
-0.66,
-0.452
-],
-[
-0.67,
-0.429
-],
-[
-0.68,
-0.429
-],
-[
-0.69,
-0.429
-],
-[
-0.7,
-0.429
-],
-[
-0.71,
-0.429
-],
-[
-0.72,
-0.429
-],
-[
-0.73,
-0.417
-],
-[
-0.74,
-0.417
-],
-[
-0.75,
-0.417
-],
-[
-0.76,
-0.417
-],
-[
-0.77,
-0.417
-],
-[
-0.78,
-0.417
-],
-[
-0.79,
-0.405
-],
-[
-0.8,
-0.405
-],
-[
-0.81,
-0.393
-],
-[
-0.82,
-0.393
-],
-[
-0.83,
-0.393
-],
-[
-0.84,
-0.393
-],
-[
-0.85,
-0.381
-],
-[
-0.86,
-0.381
-],
-[
-0.87,
-0.333
-],
-[
-0.88,
-0.333
-],
-[
-0.89,
-0.298
-],
-[
-0.9,
-0.298
-],
-[
-0.91,
-0.298
-],
-[
-0.92,
-0.298
-],
-[
-0.93,
-0.298
-],
-[
-0.94,
-0.286
-],
-[
-0.95,
-0.25
-],
-[
-0.96,
-0.226
-],
-[
-0.97,
-0.214
-],
-[
-0.98,
-0.214
-],
-[
-0.99,
-0.214
-],
-[
-1.0,
-0.214
-]
-],
-"YaZM3f-ZI-Y": [
-[
-0.01,
-1.104
-],
-[
-0.02,
-1.094
-],
-[
-0.03,
-1.094
-],
-[
-0.04,
-1.085
-],
-[
-0.05,
-1.075
-],
-[
-0.06,
-1.075
-],
-[
-0.07,
-1.075
-],
-[
-0.08,
-1.085
-],
-[
-0.09,
-1.094
-],
-[
-0.1,
-1.085
-],
-[
-0.11,
-1.075
-],
-[
-0.12,
-1.057
-],
-[
-0.13,
-1.038
-],
-[
-0.14,
-1.0
-],
-[
-0.15,
-0.972
-],
-[
-0.16,
-0.934
-],
-[
-0.17,
-0.887
-],
-[
-0.18,
-0.858
-],
-[
-0.19,
-0.84
-],
-[
-0.2,
-0.821
-],
-[
-0.21,
-0.821
-],
-[
-0.22,
-0.821
-],
-[
-0.23,
-0.726
-],
-[
-0.24,
-0.689
-],
-[
-0.25,
-0.632
-],
-[
-0.26,
-0.632
-],
-[
-0.27,
-0.632
-],
-[
-0.28,
-0.623
-],
-[
-0.29,
-0.594
-],
-[
-0.3,
-0.576
-],
-[
-0.31,
-0.576
-],
-[
-0.32,
-0.576
-],
-[
-0.33,
-0.576
-],
-[
-0.34,
-0.576
-],
-[
-0.35,
-0.576
-],
-[
-0.36,
-0.576
-],
-[
-0.37,
-0.585
-],
-[
-0.38,
-0.576
-],
-[
-0.39,
-0.576
-],
-[
-0.4,
-0.557
-],
-[
-0.41,
-0.557
-],
-[
-0.42,
-0.538
-],
-[
-0.43,
-0.528
-],
-[
-0.44,
-0.528
-],
-[
-0.45,
-0.519
-],
-[
-0.46,
-0.519
-],
-[
-0.47,
-0.519
-],
-[
-0.48,
-0.519
-],
-[
-0.49,
-0.519
-],
-[
-0.5,
-0.519
-],
-[
-0.51,
-0.528
-],
-[
-0.52,
-0.528
-],
-[
-0.53,
-0.509
-],
-[
-0.54,
-0.509
-],
-[
-0.55,
-0.509
-],
-[
-0.56,
-0.491
-],
-[
-0.57,
-0.491
-],
-[
-0.58,
-0.481
-],
-[
-0.59,
-0.481
-],
-[
-0.6,
-0.481
-],
-[
-0.61,
-0.481
-],
-[
-0.62,
-0.472
-],
-[
-0.63,
-0.472
-],
-[
-0.64,
-0.462
-],
-[
-0.65,
-0.453
-],
-[
-0.66,
-0.453
-],
-[
-0.67,
-0.472
-],
-[
-0.68,
-0.472
-],
-[
-0.69,
-0.472
-],
-[
-0.7,
-0.462
-],
-[
-0.71,
-0.462
-],
-[
-0.72,
-0.453
-],
-[
-0.73,
-0.434
-],
-[
-0.74,
-0.434
-],
-[
-0.75,
-0.434
-],
-[
-0.76,
-0.434
-],
-[
-0.77,
-0.434
-],
-[
-0.78,
-0.434
-],
-[
-0.79,
-0.425
-],
-[
-0.8,
-0.406
-],
-[
-0.81,
-0.406
-],
-[
-0.82,
-0.406
-],
-[
-0.83,
-0.406
-],
-[
-0.84,
-0.406
-],
-[
-0.85,
-0.406
-],
-[
-0.86,
-0.406
-],
-[
-0.87,
-0.406
-],
-[
-0.88,
-0.415
-],
-[
-0.89,
-0.406
-],
-[
-0.9,
-0.377
-],
-[
-0.91,
-0.302
-],
-[
-0.92,
-0.245
-],
-[
-0.93,
-0.217
-],
-[
-0.94,
-0.207
-],
-[
-0.95,
-0.189
-],
-[
-0.96,
-0.142
-],
-[
-0.97,
-0.113
-],
-[
-0.98,
-0.038
-],
-[
-0.99,
-0.038
-],
-[
-1.0,
-0.038
-]
-],
-"D0uzrVYvliE": [
-[
-0.01,
-1.14
-],
-[
-0.02,
-1.123
-],
-[
-0.03,
-1.105
-],
-[
-0.04,
-1.053
-],
-[
-0.05,
-1.053
-],
-[
-0.06,
-1.053
-],
-[
-0.07,
-1.035
-],
-[
-0.08,
-1.035
-],
-[
-0.09,
-1.035
-],
-[
-0.1,
-1.0
-],
-[
-0.11,
-1.0
-],
-[
-0.12,
-1.0
-],
-[
-0.13,
-0.983
-],
-[
-0.14,
-0.983
-],
-[
-0.15,
-0.965
-],
-[
-0.16,
-0.965
-],
-[
-0.17,
-0.947
-],
-[
-0.18,
-0.93
-],
-[
-0.19,
-0.895
-],
-[
-0.2,
-0.877
-],
-[
-0.21,
-0.825
-],
-[
-0.22,
-0.842
-],
-[
-0.23,
-0.86
-],
-[
-0.24,
-0.825
-],
-[
-0.25,
-0.825
-],
-[
-0.26,
-0.807
-],
-[
-0.27,
-0.807
-],
-[
-0.28,
-0.825
-],
-[
-0.29,
-0.825
-],
-[
-0.3,
-0.825
-],
-[
-0.31,
-0.807
-],
-[
-0.32,
-0.789
-],
-[
-0.33,
-0.772
-],
-[
-0.34,
-0.789
-],
-[
-0.35,
-0.772
-],
-[
-0.36,
-0.754
-],
-[
-0.37,
-0.737
-],
-[
-0.38,
-0.719
-],
-[
-0.39,
-0.737
-],
-[
-0.4,
-0.719
-],
-[
-0.41,
-0.737
-],
-[
-0.42,
-0.719
-],
-[
-0.43,
-0.702
-],
-[
-0.44,
-0.702
-],
-[
-0.45,
-0.702
-],
-[
-0.46,
-0.702
-],
-[
-0.47,
-0.684
-],
-[
-0.48,
-0.632
-],
-[
-0.49,
-0.614
-],
-[
-0.5,
-0.614
-],
-[
-0.51,
-0.597
-],
-[
-0.52,
-0.597
-],
-[
-0.53,
-0.579
-],
-[
-0.54,
-0.561
-],
-[
-0.55,
-0.561
-],
-[
-0.56,
-0.561
-],
-[
-0.57,
-0.561
-],
-[
-0.58,
-0.544
-],
-[
-0.59,
-0.526
-],
-[
-0.6,
-0.544
-],
-[
-0.61,
-0.526
-],
-[
-0.62,
-0.509
-],
-[
-0.63,
-0.491
-],
-[
-0.64,
-0.474
-],
-[
-0.65,
-0.474
-],
-[
-0.66,
-0.456
-],
-[
-0.67,
-0.474
-],
-[
-0.68,
-0.474
-],
-[
-0.69,
-0.474
-],
-[
-0.7,
-0.474
-],
-[
-0.71,
-0.491
-],
-[
-0.72,
-0.491
-],
-[
-0.73,
-0.491
-],
-[
-0.74,
-0.491
-],
-[
-0.75,
-0.509
-],
-[
-0.76,
-0.491
-],
-[
-0.77,
-0.491
-],
-[
-0.78,
-0.491
-],
-[
-0.79,
-0.491
-],
-[
-0.8,
-0.491
-],
-[
-0.81,
-0.491
-],
-[
-0.82,
-0.491
-],
-[
-0.83,
-0.491
-],
-[
-0.84,
-0.491
-],
-[
-0.85,
-0.491
-],
-[
-0.86,
-0.456
-],
-[
-0.87,
-0.421
-],
-[
-0.88,
-0.351
-],
-[
-0.89,
-0.316
-],
-[
-0.9,
-0.281
-],
-[
-0.91,
-0.246
-],
-[
-0.92,
-0.211
-],
-[
-0.93,
-0.211
-],
-[
-0.94,
-0.211
-],
-[
-0.95,
-0.193
-],
-[
-0.96,
-0.175
-],
-[
-0.97,
-0.158
-],
-[
-0.98,
-0.158
-],
-[
-0.99,
-0.158
-],
-[
-1.0,
-0.175
-]
-],
-"705cST9CH9s": [
-[
-0.01,
-1.096
-],
-[
-0.02,
-1.086
-],
-[
-0.03,
-1.079
-],
-[
-0.04,
-1.058
-],
-[
-0.05,
-1.058
-],
-[
-0.06,
-1.048
-],
-[
-0.07,
-1.045
-],
-[
-0.08,
-1.045
-],
-[
-0.09,
-1.034
-],
-[
-0.1,
-1.024
-],
-[
-0.11,
-1.028
-],
-[
-0.12,
-0.969
-],
-[
-0.13,
-0.914
-],
-[
-0.14,
-0.88
-],
-[
-0.15,
-0.842
-],
-[
-0.16,
-0.832
-],
-[
-0.17,
-0.818
-],
-[
-0.18,
-0.814
-],
-[
-0.19,
-0.797
-],
-[
-0.2,
-0.783
-],
-[
-0.21,
-0.78
-],
-[
-0.22,
-0.777
-],
-[
-0.23,
-0.725
-],
-[
-0.24,
-0.698
-],
-[
-0.25,
-0.68
-],
-[
-0.26,
-0.663
-],
-[
-0.27,
-0.65
-],
-[
-0.28,
-0.625
-],
-[
-0.29,
-0.619
-],
-[
-0.3,
-0.591
-],
-[
-0.31,
-0.564
-],
-[
-0.32,
-0.567
-],
-[
-0.33,
-0.553
-],
-[
-0.34,
-0.553
-],
-[
-0.35,
-0.546
-],
-[
-0.36,
-0.546
-],
-[
-0.37,
-0.546
-],
-[
-0.38,
-0.546
-],
-[
-0.39,
-0.553
-],
-[
-0.4,
-0.55
-],
-[
-0.41,
-0.533
-],
-[
-0.42,
-0.519
-],
-[
-0.43,
-0.502
-],
-[
-0.44,
-0.495
-],
-[
-0.45,
-0.488
-],
-[
-0.46,
-0.485
-],
-[
-0.47,
-0.485
-],
-[
-0.48,
-0.474
-],
-[
-0.49,
-0.471
-],
-[
-0.5,
-0.464
-],
-[
-0.51,
-0.464
-],
-[
-0.52,
-0.46
-],
-[
-0.53,
-0.457
-],
-[
-0.54,
-0.457
-],
-[
-0.55,
-0.457
-],
-[
-0.56,
-0.457
-],
-[
-0.57,
-0.454
-],
-[
-0.58,
-0.443
-],
-[
-0.59,
-0.443
-],
-[
-0.6,
-0.443
-],
-[
-0.61,
-0.436
-],
-[
-0.62,
-0.44
-],
-[
-0.63,
-0.433
-],
-[
-0.64,
-0.416
-],
-[
-0.65,
-0.409
-],
-[
-0.66,
-0.399
-],
-[
-0.67,
-0.399
-],
-[
-0.68,
-0.399
-],
-[
-0.69,
-0.392
-],
-[
-0.7,
-0.388
-],
-[
-0.71,
-0.385
-],
-[
-0.72,
-0.392
-],
-[
-0.73,
-0.395
-],
-[
-0.74,
-0.395
-],
-[
-0.75,
-0.395
-],
-[
-0.76,
-0.399
-],
-[
-0.77,
-0.399
-],
-[
-0.78,
-0.399
-],
-[
-0.79,
-0.395
-],
-[
-0.8,
-0.385
-],
-[
-0.81,
-0.378
-],
-[
-0.82,
-0.381
-],
-[
-0.83,
-0.385
-],
-[
-0.84,
-0.392
-],
-[
-0.85,
-0.381
-],
-[
-0.86,
-0.381
-],
-[
-0.87,
-0.375
-],
-[
-0.88,
-0.378
-],
-[
-0.89,
-0.378
-],
-[
-0.9,
-0.375
-],
-[
-0.91,
-0.368
-],
-[
-0.92,
-0.33
-],
-[
-0.93,
-0.289
-],
-[
-0.94,
-0.265
-],
-[
-0.95,
-0.21
-],
-[
-0.96,
-0.168
-],
-[
-0.97,
-0.144
-],
-[
-0.98,
-0.113
-],
-[
-0.99,
-0.117
-],
-[
-1.0,
-0.117
-]
-],
-"tqMT6UqSYUw": [
-[
-0.01,
-1.179
-],
-[
-0.02,
-1.164
-],
-[
-0.03,
-1.149
-],
-[
-0.04,
-1.134
-],
-[
-0.05,
-1.134
-],
-[
-0.06,
-1.134
-],
-[
-0.07,
-1.119
-],
-[
-0.08,
-1.119
-],
-[
-0.09,
-1.119
-],
-[
-0.1,
-1.119
-],
-[
-0.11,
-1.119
-],
-[
-0.12,
-1.075
-],
-[
-0.13,
-1.06
-],
-[
-0.14,
-0.97
-],
-[
-0.15,
-0.881
-],
-[
-0.16,
-0.836
-],
-[
-0.17,
-0.821
-],
-[
-0.18,
-0.806
-],
-[
-0.19,
-0.806
-],
-[
-0.2,
-0.791
-],
-[
-0.21,
-0.776
-],
-[
-0.22,
-0.776
-],
-[
-0.23,
-0.776
-],
-[
-0.24,
-0.776
-],
-[
-0.25,
-0.776
-],
-[
-0.26,
-0.776
-],
-[
-0.27,
-0.776
-],
-[
-0.28,
-0.776
-],
-[
-0.29,
-0.731
-],
-[
-0.3,
-0.716
-],
-[
-0.31,
-0.731
-],
-[
-0.32,
-0.731
-],
-[
-0.33,
-0.731
-],
-[
-0.34,
-0.716
-],
-[
-0.35,
-0.716
-],
-[
-0.36,
-0.716
-],
-[
-0.37,
-0.716
-],
-[
-0.38,
-0.716
-],
-[
-0.39,
-0.702
-],
-[
-0.4,
-0.702
-],
-[
-0.41,
-0.702
-],
-[
-0.42,
-0.702
-],
-[
-0.43,
-0.702
-],
-[
-0.44,
-0.687
-],
-[
-0.45,
-0.687
-],
-[
-0.46,
-0.687
-],
-[
-0.47,
-0.657
-],
-[
-0.48,
-0.627
-],
-[
-0.49,
-0.612
-],
-[
-0.5,
-0.582
-],
-[
-0.51,
-0.582
-],
-[
-0.52,
-0.537
-],
-[
-0.53,
-0.522
-],
-[
-0.54,
-0.522
-],
-[
-0.55,
-0.507
-],
-[
-0.56,
-0.507
-],
-[
-0.57,
-0.492
-],
-[
-0.58,
-0.492
-],
-[
-0.59,
-0.492
-],
-[
-0.6,
-0.492
-],
-[
-0.61,
-0.492
-],
-[
-0.62,
-0.492
-],
-[
-0.63,
-0.478
-],
-[
-0.64,
-0.478
-],
-[
-0.65,
-0.478
-],
-[
-0.66,
-0.478
-],
-[
-0.67,
-0.478
-],
-[
-0.68,
-0.478
-],
-[
-0.69,
-0.478
-],
-[
-0.7,
-0.478
-],
-[
-0.71,
-0.478
-],
-[
-0.72,
-0.478
-],
-[
-0.73,
-0.463
-],
-[
-0.74,
-0.463
-],
-[
-0.75,
-0.463
-],
-[
-0.76,
-0.463
-],
-[
-0.77,
-0.448
-],
-[
-0.78,
-0.448
-],
-[
-0.79,
-0.448
-],
-[
-0.8,
-0.448
-],
-[
-0.81,
-0.448
-],
-[
-0.82,
-0.448
-],
-[
-0.83,
-0.463
-],
-[
-0.84,
-0.478
-],
-[
-0.85,
-0.478
-],
-[
-0.86,
-0.448
-],
-[
-0.87,
-0.418
-],
-[
-0.88,
-0.403
-],
-[
-0.89,
-0.373
-],
-[
-0.9,
-0.373
-],
-[
-0.91,
-0.343
-],
-[
-0.92,
-0.313
-],
-[
-0.93,
-0.298
-],
-[
-0.94,
-0.298
-],
-[
-0.95,
-0.269
-],
-[
-0.96,
-0.254
-],
-[
-0.97,
-0.224
-],
-[
-0.98,
-0.179
-],
-[
-0.99,
-0.134
-],
-[
-1.0,
-0.134
-]
 ]
 },
 "ypp": {
-"subscribers": 22,
+"subscribers": 23,
 "subscribers_needed": 1000,
 "watch_hours_365d": 2.9,
 "watch_hours_needed": 4000,
-"shorts_views_90d": 17572,
+"shorts_views_90d": 20219,
 "shorts_views_needed": 10000000,
 "analytics_live": true,
-"analytics_through": "2026-11-04"
+"analytics_through": "2026-11-05"
 },
 "budget": {
 "elevenlabs": {
 "tier": "free",
-"used": 7725,
+"used": 8125,
 "limit": 10000,
 "resets": "2026-11-18"
 }
 },
 "comments": [
+{
+"video": "7OQ7yKfOUFY",
+"title": "Can you name this Pokémon from its sound? (Bug-type Pokémon) #shorts",
+"author": "@Sukiaplayz-c4t",
+"text": "I thought it was mewto cuz the cry is to similar",
+"likes": 1,
+"at": "2026-11-08T06:20:55Z"
+},
+{
+"video": "943Q6-ahgxc",
+"title": "Can you name this Pokémon from its sound? (Ghost-type Pokémon) #shorts",
+"author": "@angelocorrea5456",
+"text": "Duskull?",
+"likes": 0,
+"at": "2026-11-08T04:58:32Z"
+},
+{
+"video": "7HvldJJ1OQI",
+"title": "Can you name this Pokémon from its sound? (Dragon-type Pokémon) #shorts",
+"author": "@GoofyAhGarchomp",
+"text": "THE SECOND I HEARD IT",
+"likes": 0,
+"at": "2026-11-07T22:36:44Z"
+},
+{
+"video": "7HvldJJ1OQI",
+"title": "Can you name this Pokémon from its sound? (Dragon-type Pokémon) #shorts",
+"author": "@wesleytube6841",
+"text": "At first, I thought Giritina until I remembered Garchomp",
+"likes": 0,
+"at": "2026-11-07T14:33:30Z"
+},
 {
 "video": "HLoInAcRoCY",
 "title": "Name 5 Pokémon from their sounds (Generation 3) #shorts",
@@ -17188,22 +16867,6 @@
 "text": "\"first seen in the kanto region\" doesn't help because every kanto region cry genuinely sounds identical to me",
 "likes": 1,
 "at": "2026-11-06T16:52:44Z"
-},
-{
-"video": "hUAoqfyIsNM",
-"title": "Can you name this Pokémon from its sound? (Dragon-type Pokémon) #shorts",
-"author": "@DugaraaTumurhuyg",
-"text": "Draginite on the second hint",
-"likes": 0,
-"at": "2026-11-03T14:54:16Z"
-},
-{
-"video": "Ox2hjiWBdKo",
-"title": "Can you name this Pokémon from its sound? (Electric-type Pokémon) #shorts",
-"author": "@bruhbruhrchannel2-en9st",
-"text": "insta pikachu",
-"likes": 0,
-"at": "2026-11-03T04:21:14Z"
 }
 ],
 "experiments": {
@@ -17793,140 +17456,142 @@
 },
 "captions": {
 "kinetic": {
-"n": 6,
-"avp": 55.400000000000006,
-"views": 156.5,
-"subs": 0.16666666666666666,
+"n": 7,
+"avp": 58.4,
+"views": 151.57142857142858,
+"subs": 0.14285714285714285,
 "metric": "avp",
-"score": 55.6625,
+"score": 61.0,
 "balanced_on": [
 "icon",
 "known"
 ],
 "packs": {
 "pokemon": {
-"n": 6,
-"score": 55.6625
-}
+"n": 7,
+"score": 61.0
 }
 },
+"rel": 0.981
+},
 "static": {
-"n": 5,
-"avp": 59.879999999999995,
-"views": 153.2,
-"subs": 0.2,
+"n": 7,
+"avp": 64.5,
+"views": 120.85714285714286,
+"subs": 0.14285714285714285,
 "metric": "avp",
-"score": 60.02499999999999,
+"score": 63.375,
 "balanced_on": [
 "icon",
 "known"
 ],
 "packs": {
 "pokemon": {
-"n": 5,
-"score": 60.02499999999999
+"n": 7,
+"score": 63.375
 }
-}
+},
+"rel": 1.019
 }
 },
 "snappy": {
 "standard": {
-"n": 1,
-"avp": 53.7,
-"views": 170.0,
+"n": 3,
+"avp": 65.8,
+"views": 99.66666666666667,
 "subs": 0.0,
 "metric": "avp",
-"score": 53.7,
+"score": 62.05,
 "balanced_on": [
 "known"
 ],
 "packs": {
 "pokemon": {
-"n": 1,
-"score": 53.7
+"n": 3,
+"score": 62.05
 }
 }
 },
 "snappy": {
-"n": 2,
-"avp": 63.449999999999996,
-"views": 74.0,
-"subs": 0.5,
+"n": 3,
+"avp": 70.23333333333333,
+"views": 74.33333333333333,
+"subs": 0.3333333333333333,
 "metric": "avp",
-"score": 63.449999999999996,
+"score": 70.23333333333333,
 "balanced_on": [
 "known"
 ],
 "packs": {
 "pokemon": {
-"n": 2,
-"score": 63.449999999999996
+"n": 3,
+"score": 70.23333333333333
 }
 }
 }
 },
 "cry": {
 "modern": {
-"n": 2,
-"avp": 61.15,
-"views": 146.5,
-"subs": 0.5,
+"n": 4,
+"avp": 68.95,
+"views": 120.25,
+"subs": 0.25,
 "metric": "avp",
-"score": 61.15,
+"score": 67.5,
 "balanced_on": [
 "known"
 ],
 "packs": {
 "pokemon": {
-"n": 2,
-"score": 61.15
+"n": 4,
+"score": 67.5
 }
 }
 },
 "og": {
-"n": 1,
-"avp": 58.3,
-"views": 25.0,
+"n": 2,
+"avp": 66.15,
+"views": 20.5,
 "subs": 0.0,
 "metric": "avp",
-"score": 58.3,
+"score": 66.15,
 "balanced_on": [
 "known"
 ],
 "packs": {
 "pokemon": {
-"n": 1,
-"score": 58.3
+"n": 2,
+"score": 66.15
 }
 }
 }
 },
 "rapidbeat": {
 "once": {
-"n": 1,
-"avp": 67.5,
-"views": 53.0,
+"n": 3,
+"avp": 62.699999999999996,
+"views": 45.666666666666664,
 "subs": 0.0,
 "metric": "avp",
-"score": 67.5,
+"score": 62.699999999999996,
 "packs": {
 "pokemon": {
-"n": 1,
-"score": 67.5
+"n": 3,
+"score": 62.699999999999996
 }
 }
 },
 "twice": {
-"n": 2,
-"avp": 59.55,
-"views": 62.0,
+"n": 3,
+"avp": 64.13333333333334,
+"views": 136.33333333333334,
 "subs": 0.0,
 "metric": "avp",
-"score": 59.55,
+"score": 64.13333333333334,
 "packs": {
 "pokemon": {
-"n": 2,
-"score": 59.55
+"n": 3,
+"score": 64.13333333333334
 }
 }
 }
