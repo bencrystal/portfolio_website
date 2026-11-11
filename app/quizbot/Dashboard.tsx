@@ -53,6 +53,9 @@ export default function Dashboard() {
   const [err, setErr] = useState<string | null>(null)
   const [fmt, setFmt] = useState<'all' | 'short' | 'rapid' | 'long'>('all')
   const [sort, setSort] = useState<'published' | 'views' | 'avp'>('published')
+  const [allVideos, setAllVideos] = useState(false)
+  const [allComments, setAllComments] = useState(false)
+  const [dailyMetric, setDailyMetric] = useState<'views' | 'subs'>('views')
 
   useEffect(() => {
     fetch('/api/quizbot', { cache: 'no-store' })
@@ -89,6 +92,26 @@ export default function Dashboard() {
     }
   })()
   const sorted = [...videos].sort((a, b) => sort === 'views' ? b.views - a.views : sort === 'avp' ? (b.avp ?? -1) - (a.avp ?? -1) : b.published.localeCompare(a.published))
+  const publicCount = data.videos.filter((v) => v.privacy === 'public').length
+  // pace over the last 28 reported days, for the monetisation ETAs
+  const pace = (() => {
+    const d = data.channel.daily.slice(-28)
+    if (d.length < 7) return null
+    return {
+      days: d.length,
+      subsPerDay: d.reduce((a, x) => a + x.subscribersGained - x.subscribersLost, 0) / d.length,
+      viewsPerDay: d.reduce((a, x) => a + x.views, 0) / d.length,
+    }
+  })()
+  // subscribers accumulate, so a linear ETA is honest for them
+  const subsEta = (() => {
+    if (!pace || !data.ypp || data.ypp.subscribers >= data.ypp.subscribers_needed) return null
+    if (pace.subsPerDay <= 0) return `no net growth in the last ${pace.days} d`
+    const days = (data.ypp.subscribers_needed - data.ypp.subscribers) / pace.subsPerDay
+    if (days > 1095) return `years away at the last ${pace.days} d pace`
+    return `~${new Date(Date.now() + days * 864e5).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} at the last ${pace.days} d pace`
+  })()
+  const shownVideos = allVideos ? sorted.slice(0, 60) : data.videos.filter((v) => v.privacy === 'public').sort((a, b) => b.published.localeCompare(a.published)).slice(0, 6)
 
   return (
     <Shell>
@@ -119,23 +142,46 @@ export default function Dashboard() {
         <Stat label="Subscribers" value={fmtInt(data.channel.subscribers)} delta={kpi.subsDelta} deltaLabel="last 7 d" />
         <Stat label={kpi.live ? 'Views, last 7 days' : 'Views, videos from last 7 d'} value={fmtInt(kpi.views7)} delta={kpi.viewsDelta} deltaLabel="vs prior 7 d" pct />
         <Stat label="Shorts % viewed, last 7 d" value={kpi.avp7 == null ? '—' : `${Math.round(kpi.avp7)}%`} delta={kpi.avpDelta} deltaLabel="vs prior 7 d" pts />
-        <Stat label="Public videos" value={fmtInt(data.videos.filter((v) => v.privacy === 'public').length)} delta={kpi.videos7} deltaLabel="last 7 d" />
+        {data.platform_summary?.instagram?.followers != null
+          ? <Stat label="Instagram followers" value={fmtInt(data.platform_summary.instagram.followers)} />
+          : <Stat label="Public videos" value={fmtInt(publicCount)} delta={kpi.videos7} deltaLabel="last 7 d" />}
       </section>
 
       <SectionHead id="overview" title="Overview" sub="How the channel is doing this week" />
-      {/* ---- daily views ----------------------------------------------------------------- */}
-      <Card title="Daily views" sub="Channel-wide, all formats">
-        <DailyChart days={data.channel.daily.slice(-42)} />
+      {/* ---- daily views / subscribers ----------------------------------------------------- */}
+      <Card title={dailyMetric === 'views' ? 'Daily views' : 'Subscribers'}
+        sub={dailyMetric === 'views' ? 'Channel-wide, all formats' : 'Cumulative net gain since YouTube Analytics began reporting'}
+        right={<Seg value={dailyMetric} onChange={(v) => setDailyMetric(v as typeof dailyMetric)} options={[['views', 'Views'], ['subs', 'Subscribers']]} />}>
+        <DailyChart days={data.channel.daily} metric={dailyMetric} />
       </Card>
 
       {/* ---- monetisation progress -------------------------------------------------------- */}
-      {data.ypp && (
-        <Card title="Road to monetisation" sub="YouTube Partner Program: 1,000 subscribers plus either 4,000 long-form watch hours (365 d) or 10M Shorts views (90 d). Shorts watch time does not count toward the hours.">
-          <div className="grid md:grid-cols-3 gap-6 text-sm">
-            <Bar label="Subscribers" value={data.ypp.subscribers} target={data.ypp.subscribers_needed} />
-            <Bar label="Long-form watch hours, 365 d" value={data.ypp.watch_hours_365d} target={data.ypp.watch_hours_needed} />
-            <Bar label="Shorts views, 90 d" value={data.ypp.shorts_views_90d} target={data.ypp.shorts_views_needed} />
-          </div>
+      {(data.ypp || data.platform_summary?.instagram?.followers != null) && (
+        <Card title="Road to monetisation" sub="What each platform requires before it pays out.">
+          {data.ypp && (
+            <div className="mb-6">
+              <p className="text-sm font-medium" style={{ color: INK }}>YouTube — Partner Program</p>
+              <p className="text-xs mb-3" style={{ color: INK3 }}>1,000 subscribers plus either 4,000 long-form watch hours (365 d) or 10M Shorts views (90 d). Shorts watch time does not count toward the hours.</p>
+              <div className="grid md:grid-cols-3 gap-6 text-sm">
+                <Bar label="Subscribers" value={data.ypp.subscribers} target={data.ypp.subscribers_needed} note={subsEta} />
+                <Bar label="Long-form watch hours, 365 d" value={data.ypp.watch_hours_365d} target={data.ypp.watch_hours_needed} />
+                <Bar label="Shorts views, 90 d" value={data.ypp.shorts_views_90d} target={data.ypp.shorts_views_needed}
+                  note={pace && data.ypp.shorts_views_90d < data.ypp.shorts_views_needed
+                    ? `rolling 90 d window — needs ${fmtInt(Math.round(data.ypp.shorts_views_needed / 90))}/d sustained; last ${pace.days} d: ${fmtInt(Math.round(pace.viewsPerDay))}/d (all formats)`
+                    : null} />
+              </div>
+            </div>
+          )}
+          {data.platform_summary?.instagram?.followers != null && (
+            <div>
+              <p className="text-sm font-medium" style={{ color: INK }}>Instagram — Gifts &amp; Subscriptions</p>
+              <p className="text-xs mb-3" style={{ color: INK3 }}>Reels Gifts open at 500 followers, Subscriptions at 10,000 — both need a professional account in an eligible country. Bonus programs are invite-only, so followers are the ladder.</p>
+              <div className="grid md:grid-cols-3 gap-6 text-sm">
+                <Bar label="Followers → Gifts" value={data.platform_summary.instagram.followers} target={500} />
+                <Bar label="Followers → Subscriptions" value={data.platform_summary.instagram.followers} target={10000} />
+              </div>
+            </div>
+          )}
         </Card>
       )}
 
@@ -225,10 +271,15 @@ export default function Dashboard() {
       </Card>
 
       {/* ---- videos ---------------------------------------------------------------------- */}
-      <Card title="Videos" sub="Public videos; click a title to open it" right={
-        <div className="flex gap-2 text-xs">
-          <Seg value={fmt} onChange={(v) => setFmt(v as typeof fmt)} options={[['all', 'All'], ['short', 'Shorts'], ['rapid', 'Rapid'], ['long', 'Long']]} />
-          <Seg value={sort} onChange={(v) => setSort(v as typeof sort)} options={[['published', 'Newest'], ['views', 'Views'], ['avp', '% viewed']]} />
+      <Card title="Videos" sub={allVideos ? 'Public videos; click a title to open it' : `The ${shownVideos.length} newest; click a title to open it`} right={
+        <div className="flex flex-wrap gap-2 text-xs">
+          {allVideos && <>
+            <Seg value={fmt} onChange={(v) => setFmt(v as typeof fmt)} options={[['all', 'All'], ['short', 'Shorts'], ['rapid', 'Rapid'], ['long', 'Long']]} />
+            <Seg value={sort} onChange={(v) => setSort(v as typeof sort)} options={[['published', 'Newest'], ['views', 'Views'], ['avp', '% viewed']]} />
+          </>}
+          <button onClick={() => setAllVideos(!allVideos)} className="rounded-md border px-2.5 py-1" style={{ borderColor: GRID, color: INK2 }}>
+            {allVideos ? 'Show recent only' : `Show all ${fmtInt(publicCount)}`}
+          </button>
         </div>}>
         <table className="w-full text-sm">
           <thead>
@@ -240,7 +291,7 @@ export default function Dashboard() {
             </tr>
           </thead>
           <tbody>
-            {sorted.slice(0, 60).map((v) => (
+            {shownVideos.map((v) => (
               <tr key={v.id} className="border-t" style={{ borderColor: GRID, color: INK }}>
                 <td className="py-2 pr-3 max-w-[28rem] truncate">
                   <a href={`https://youtu.be/${v.id}`} target="_blank" rel="noopener noreferrer" className="hover:underline">{v.title}</a>
@@ -262,7 +313,7 @@ export default function Dashboard() {
 
       <SectionHead id="experiments" title="Experiments" sub="Automated A/B tests on Shorts, judged nightly" />
       {/* ---- experiments ------------------------------------------------------------------ */}
-      <Card title="Shorts experiments" sub={`Sequential tests run one at a time, variants alternating per Short within each pack; a parallel test (voice) runs alongside. Judged nightly on average % viewed, stratified by pack (each pack is its own comparison; the verdict averages the packs and must hold in every pack): at ≥${data.experiments?.config.min_n ?? 4} per arm per pack a ≥${Math.round((data.experiments?.config.min_lead ?? 0.1) * 100)}% pack-adjusted lead decides it, else it runs to ${data.experiments?.config.max_n ?? 8}. Winners become the baseline for everything after.`}>
+      <Card title="Shorts experiments" sub="Tests run one at a time (a parallel voice test alongside), variants alternating per Short. Judged nightly on average % viewed, stratified by pack — the verdict must hold in every pack. Winners become the baseline for everything after; each card below shows its own decision thresholds.">
         {data.experiments ? (<>
           {data.budget?.elevenlabs && (
             <p className="text-xs mb-4" style={{ color: INK3 }}>
@@ -335,10 +386,15 @@ export default function Dashboard() {
 
       <SectionHead id="viewers" title="Viewers" sub="What people say in the comments" />
       {/* ---- comments --------------------------------------------------------------------- */}
-      <Card title="Recent comments" sub="Top comments on the newest videos — the qualitative side of the numbers">
+      <Card title="Recent comments" sub="Top comments on the newest videos — the qualitative side of the numbers" right={
+        (data.comments?.length ?? 0) > 8 && (
+          <button onClick={() => setAllComments(!allComments)} className="text-xs rounded-md border px-2.5 py-1" style={{ borderColor: GRID, color: INK2 }}>
+            {allComments ? 'Show fewer' : `Show all ${Math.min(data.comments!.length, 30)}`}
+          </button>
+        )}>
         {data.comments?.length ? (
           <ul className="space-y-3 text-sm">
-            {data.comments.slice(0, 30).map((c, i) => (
+            {data.comments.slice(0, allComments ? 30 : 8).map((c, i) => (
               <li key={i} className="border-t pt-3" style={{ borderColor: GRID }}>
                 <p style={{ color: INK }}>{c.text}</p>
                 <p className="text-xs mt-1" style={{ color: INK3 }}>{c.author} · {c.likes} likes · <a href={`https://youtu.be/${c.video}`} target="_blank" rel="noopener noreferrer" className="hover:underline">{c.title}</a> · {ago(c.at)}</p>
@@ -516,7 +572,7 @@ function Card({ title, sub, right, children }: { title: string; sub?: string; ri
 
 const num = (x: unknown) => (typeof x === 'number' ? fmtInt(x) : '—')
 
-function Bar({ label, value, target }: { label: string; value: number; target: number }) {
+function Bar({ label, value, target, note }: { label: string; value: number; target: number; note?: string | null }) {
   const pct = Math.min(100, (100 * value) / target)
   return (
     <div>
@@ -524,7 +580,7 @@ function Bar({ label, value, target }: { label: string; value: number; target: n
       <div className="h-2 rounded" style={{ background: GRID }} role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100}>
         <div className="h-2 rounded" style={{ width: `${Math.max(pct, value > 0 ? 1 : 0)}%`, background: pct >= 100 ? '#199e70' : '#3987e5' }} />
       </div>
-      <p className="text-xs mt-1" style={{ color: INK3 }}>{pct >= 100 ? 'reached' : `${pct < 1 ? pct.toFixed(2) : Math.round(pct)}%`}</p>
+      <p className="text-xs mt-1" style={{ color: INK3 }}>{pct >= 100 ? 'reached' : `${pct < 1 ? pct.toFixed(2) : Math.round(pct)}%`}{note ? ` · ${note}` : ''}</p>
     </div>
   )
 }
@@ -602,18 +658,22 @@ function RetentionChart({ data }: { data: Data }) {
   )
 }
 
-function DailyChart({ days }: { days: Day[] }) {
+function DailyChart({ days: allDays, metric }: { days: Day[]; metric: 'views' | 'subs' }) {
   const [hover, setHover] = useState<number | null>(null)
-  if (!days.length) return <p className="text-sm" style={{ color: INK2 }}>No daily data yet.</p>
+  if (!allDays.length) return <p className="text-sm" style={{ color: INK2 }}>No daily data yet.</p>
+  // the subs line is cumulative since the first analytics day, so accumulate before windowing to 42 days
+  let acc = 0
+  const allVals = allDays.map((d) => metric === 'views' ? d.views : (acc += d.subscribersGained - d.subscribersLost))
+  const days = allDays.slice(-42), vals = allVals.slice(-42)
   const W = 900, H = 200, L = 44, R = 12, T = 12, B = 28
-  const max = Math.max(1, ...days.map((d) => d.views))
+  const lo = Math.min(0, ...vals), max = Math.max(lo + 1, ...vals)
   const x = (i: number) => L + (i * (W - L - R)) / Math.max(1, days.length - 1)
-  const y = (v: number) => T + (H - T - B) * (1 - v / max)
-  const path = days.map((d, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(d.views).toFixed(1)}`).join(' ')
-  const ticks = [0, 0.5, 1].map((f) => Math.round(max * f))
+  const y = (v: number) => T + (H - T - B) * (1 - (v - lo) / (max - lo))
+  const path = vals.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ')
+  const ticks = [0, 0.5, 1].map((f) => Math.round(lo + (max - lo) * f)).filter((t, i, a) => a.indexOf(t) === i)
   return (
     <div className="relative">
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" role="img" aria-label="Daily channel views"
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" role="img" aria-label={metric === 'views' ? 'Daily channel views' : 'Cumulative net subscribers'}
         onMouseLeave={() => setHover(null)}
         onMouseMove={(e) => {
           const r = (e.currentTarget as SVGSVGElement).getBoundingClientRect()
@@ -633,13 +693,15 @@ function DailyChart({ days }: { days: Day[] }) {
         {hover != null && (
           <g>
             <line x1={x(hover)} x2={x(hover)} y1={T} y2={H - B} stroke={INK3} strokeWidth={1} strokeDasharray="3 3" />
-            <circle cx={x(hover)} cy={y(days[hover].views)} r={4} fill="#3987e5" stroke="#1a1a19" strokeWidth={2} />
+            <circle cx={x(hover)} cy={y(vals[hover])} r={4} fill="#3987e5" stroke="#1a1a19" strokeWidth={2} />
           </g>
         )}
       </svg>
       {hover != null && (
         <div className="absolute top-2 right-3 text-xs rounded border px-2 py-1" style={{ borderColor: GRID, background: '#1a1a19', color: INK }}>
-          {days[hover].day}: {fmtInt(days[hover].views)} views · {fmtInt(Math.round(days[hover].estimatedMinutesWatched))} min · +{days[hover].subscribersGained} subs
+          {metric === 'views'
+            ? <>{days[hover].day}: {fmtInt(days[hover].views)} views · {fmtInt(Math.round(days[hover].estimatedMinutesWatched))} min · +{days[hover].subscribersGained} subs</>
+            : <>{days[hover].day}: {fmtInt(vals[hover])} net subs · +{days[hover].subscribersGained} / −{days[hover].subscribersLost} that day</>}
         </div>
       )}
     </div>
