@@ -40,7 +40,7 @@ const GROUPS: IndexGroup[] = [
       { href: '/links', label: '/links', note: 'Public linktree for Instagram bio (events + music), edit data/links.ts' },
       { href: '/music', label: '/music', note: 'Music releases' },
       { href: '/mezcal', label: '/mezcal', note: "Gary's Mezcal Journey — tasting invite" },
-      { href: '/fetus', label: '/fetus', note: 'Fetal length by week (cm / in) with fruit & veg comparisons' },
+      { href: '/fetus', label: '/fetus', note: 'Fetal length by week (cm / in) with fruit/veg and everyday-object comparisons' },
     ],
   },
   {
