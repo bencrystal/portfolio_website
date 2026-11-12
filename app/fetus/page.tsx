@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Background from '@/components/Background'
 
 export const metadata: Metadata = {
@@ -11,42 +12,42 @@ interface WeekRow {
   week: number
   cm: number
   item: string
-  emoji: string
+  image: string // file in /public/fetus, without extension
 }
 
 // Weeks 12–26 are from the source chart; 5–11 and 27–30 are filled in from
 // standard embryo/fetal growth references. Lengths switch from crown-rump to
 // head-to-toe at week 20, which is why the numbers jump there.
 const CROWN_RUMP: WeekRow[] = [
-  { week: 5, cm: 0.2, item: 'Sesame seed', emoji: '🌱' },
-  { week: 6, cm: 0.5, item: 'Lentil', emoji: '🫘' },
-  { week: 7, cm: 1.0, item: 'Blueberry', emoji: '🫐' },
-  { week: 8, cm: 1.6, item: 'Raspberry', emoji: '🍇' },
-  { week: 9, cm: 2.3, item: 'Cherry', emoji: '🍒' },
-  { week: 10, cm: 3.1, item: 'Strawberry', emoji: '🍓' },
-  { week: 11, cm: 4.1, item: 'Brussels sprout', emoji: '🥬' },
-  { week: 12, cm: 5.4, item: 'Lime', emoji: '🍋‍🟩' },
-  { week: 13, cm: 7.4, item: 'Lemon', emoji: '🍋' },
-  { week: 14, cm: 8.7, item: 'Navel orange', emoji: '🍊' },
-  { week: 15, cm: 10.1, item: 'Grapefruit', emoji: '🍊' },
-  { week: 16, cm: 11.6, item: 'Avocado', emoji: '🥑' },
-  { week: 17, cm: 13, item: 'Pear', emoji: '🍐' },
-  { week: 18, cm: 14.2, item: 'Sweet potato', emoji: '🍠' },
-  { week: 19, cm: 15.3, item: 'Mango', emoji: '🥭' },
+  { week: 5, cm: 0.2, item: 'Sesame seed', image: 'sesame' },
+  { week: 6, cm: 0.5, item: 'Lentil', image: 'lentil' },
+  { week: 7, cm: 1.0, item: 'Blueberry', image: 'blueberry' },
+  { week: 8, cm: 1.6, item: 'Raspberry', image: 'raspberry' },
+  { week: 9, cm: 2.3, item: 'Cherry', image: 'cherry' },
+  { week: 10, cm: 3.1, item: 'Strawberry', image: 'strawberry' },
+  { week: 11, cm: 4.1, item: 'Brussels sprout', image: 'brussels-sprout' },
+  { week: 12, cm: 5.4, item: 'Lime', image: 'lime' },
+  { week: 13, cm: 7.4, item: 'Lemon', image: 'lemon' },
+  { week: 14, cm: 8.7, item: 'Navel orange', image: 'orange' },
+  { week: 15, cm: 10.1, item: 'Grapefruit', image: 'grapefruit' },
+  { week: 16, cm: 11.6, item: 'Avocado', image: 'avocado' },
+  { week: 17, cm: 13, item: 'Pear', image: 'pear' },
+  { week: 18, cm: 14.2, item: 'Sweet potato', image: 'sweet-potato' },
+  { week: 19, cm: 15.3, item: 'Mango', image: 'mango' },
 ]
 
 const HEAD_TO_TOE: WeekRow[] = [
-  { week: 20, cm: 25.6, item: 'Large banana', emoji: '🍌' },
-  { week: 21, cm: 26.7, item: 'Large carrot', emoji: '🥕' },
-  { week: 22, cm: 27.8, item: 'Papaya', emoji: '🥭' },
-  { week: 23, cm: 28.9, item: 'Ear of corn (in the husk)', emoji: '🌽' },
-  { week: 24, cm: 30, item: 'Pineapple (with crown)', emoji: '🍍' },
-  { week: 25, cm: 34.6, item: 'English cucumber', emoji: '🥒' },
-  { week: 26, cm: 35.6, item: 'Bunch of scallions', emoji: '🧅' },
-  { week: 27, cm: 36.6, item: 'Rhubarb stalk', emoji: '🌿' },
-  { week: 28, cm: 37.6, item: 'Leek', emoji: '🥬' },
-  { week: 29, cm: 38.6, item: 'Bunch of celery', emoji: '🥬' },
-  { week: 30, cm: 39.9, item: 'Daikon radish', emoji: '🥕' },
+  { week: 20, cm: 25.6, item: 'Large banana', image: 'banana' },
+  { week: 21, cm: 26.7, item: 'Large carrot', image: 'carrot' },
+  { week: 22, cm: 27.8, item: 'Papaya', image: 'papaya' },
+  { week: 23, cm: 28.9, item: 'Ear of corn (in the husk)', image: 'corn' },
+  { week: 24, cm: 30, item: 'Pineapple (with crown)', image: 'pineapple' },
+  { week: 25, cm: 34.6, item: 'English cucumber', image: 'cucumber' },
+  { week: 26, cm: 35.6, item: 'Bunch of scallions', image: 'scallion' },
+  { week: 27, cm: 36.6, item: 'Rhubarb stalk', image: 'rhubarb' },
+  { week: 28, cm: 37.6, item: 'Leek', image: 'leek' },
+  { week: 29, cm: 38.6, item: 'Bunch of celery', image: 'celery' },
+  { week: 30, cm: 39.9, item: 'Daikon radish', image: 'daikon' },
 ]
 
 const ACCENT = '#57f1ff'
@@ -77,11 +78,17 @@ function Row({ row }: { row: WeekRow }) {
       <td className="px-4 py-3 text-right tabular-nums text-neutral-200 whitespace-nowrap">
         {(row.cm / CM_PER_INCH).toFixed(1)} in
       </td>
-      <td className="px-4 py-3 text-white">
-        <span className="mr-2" aria-hidden>
-          {row.emoji}
+      <td className="px-4 py-2 text-white">
+        <span className="flex items-center gap-3">
+          <Image
+            src={`/fetus/${row.image}.jpg`}
+            alt=""
+            width={48}
+            height={48}
+            className="h-12 w-12 shrink-0 rounded-lg object-cover"
+          />
+          {row.item}
         </span>
-        {row.item}
       </td>
     </tr>
   )
@@ -126,6 +133,7 @@ export default function FetusPage() {
         <p className="mt-6 text-sm leading-relaxed text-neutral-400">
           Lengths are averages; individual pregnancies vary. The jump at week 20 is the switch from
           crown-to-rump to head-to-toe measurement, not a growth spurt. Comparisons are approximate.
+          Photos from Wikimedia Commons.
         </p>
       </div>
     </main>
