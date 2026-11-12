@@ -58,7 +58,7 @@ const CM_PER_INCH = 2.54
 function SectionRow({ label, note }: { label: string; note: string }) {
   return (
     <tr className="border-b border-neutral-800 bg-neutral-950/50">
-      <th colSpan={5} scope="colgroup" className="px-4 py-3 text-left">
+      <th colSpan={5} scope="colgroup" className="px-2 sm:px-4 py-3 text-left">
         <span className="text-xs font-bold uppercase tracking-[0.3em]" style={{ color: ACCENT }}>
           {label}
         </span>
@@ -70,8 +70,8 @@ function SectionRow({ label, note }: { label: string; note: string }) {
 
 function Comparison({ src, label }: { src: string; label: string }) {
   return (
-    <td className="px-4 py-2 text-white">
-      <span className="flex min-w-[9rem] items-center gap-3">
+    <td className="px-2 sm:px-4 py-2 align-top sm:align-middle text-xs sm:text-base text-white">
+      <span className="flex flex-col items-start gap-1 sm:min-w-[9rem] sm:flex-row sm:items-center sm:gap-3">
         <Image
           src={src}
           alt=""
@@ -86,16 +86,18 @@ function Comparison({ src, label }: { src: string; label: string }) {
 }
 
 function Row({ row }: { row: WeekRow }) {
+  const inches = (row.cm / CM_PER_INCH).toFixed(1)
   return (
     <tr className="border-b border-neutral-800 last:border-b-0 hover:bg-neutral-800 transition-colors">
-      <td className="px-4 py-3 font-bold tabular-nums text-white whitespace-nowrap">
+      <td className="px-2 sm:px-4 py-3 font-bold tabular-nums text-white whitespace-nowrap">
         {row.week} <span className="font-normal text-neutral-400">wk</span>
       </td>
-      <td className="px-4 py-3 text-right tabular-nums text-neutral-200 whitespace-nowrap">
+      <td className="px-2 sm:px-4 py-3 text-right tabular-nums text-neutral-200 whitespace-nowrap">
         {row.cm.toFixed(1)} cm
+        <span className="block text-neutral-400 sm:hidden">{inches} in</span>
       </td>
-      <td className="px-4 py-3 text-right tabular-nums text-neutral-200 whitespace-nowrap">
-        {(row.cm / CM_PER_INCH).toFixed(1)} in
+      <td className="hidden sm:table-cell px-4 py-3 text-right tabular-nums text-neutral-200 whitespace-nowrap">
+        {inches} in
       </td>
       <Comparison src={`/fetus/${row.image}.jpg`} label={row.item} />
       <Comparison src={`/fetus/objects/${row.objectImage}.jpg`} label={row.object} />
@@ -119,12 +121,18 @@ export default function FetusPage() {
         <div className="mt-10 overflow-x-auto rounded-xl border border-neutral-800 bg-neutral-900 shadow-2xl">
           <table className="w-full text-sm sm:text-base">
             <thead>
-              <tr className="border-b border-neutral-800 text-xs uppercase tracking-[0.2em] text-white/60">
-                <th scope="col" className="px-4 py-3 text-left font-bold">Week</th>
-                <th scope="col" className="px-4 py-3 text-right font-bold">cm</th>
-                <th scope="col" className="px-4 py-3 text-right font-bold">Inches</th>
-                <th scope="col" className="px-4 py-3 text-left font-bold">Fruit / veg</th>
-                <th scope="col" className="px-4 py-3 text-left font-bold">Everyday object</th>
+              <tr className="border-b border-neutral-800 text-xs uppercase tracking-wider sm:tracking-[0.2em] text-white/60">
+                <th scope="col" className="px-2 sm:px-4 py-3 text-left font-bold">Week</th>
+                <th scope="col" className="px-2 sm:px-4 py-3 text-right font-bold">
+                  <span className="sm:hidden">Length</span>
+                  <span className="hidden sm:inline">cm</span>
+                </th>
+                <th scope="col" className="hidden sm:table-cell px-4 py-3 text-right font-bold">Inches</th>
+                <th scope="col" className="px-2 sm:px-4 py-3 text-left font-bold">Fruit / veg</th>
+                <th scope="col" className="px-2 sm:px-4 py-3 text-left font-bold">
+                  <span className="sm:hidden">Object</span>
+                  <span className="hidden sm:inline">Everyday object</span>
+                </th>
               </tr>
             </thead>
             <tbody>
