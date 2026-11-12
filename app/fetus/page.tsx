@@ -93,11 +93,11 @@ function Row({ row }: { row: WeekRow }) {
         {row.week} <span className="font-normal text-neutral-400">wk</span>
       </td>
       <td className="px-2 sm:px-4 py-3 text-right tabular-nums text-neutral-200 whitespace-nowrap">
-        {row.cm.toFixed(1)} cm
-        <span className="block text-neutral-400 sm:hidden">{inches} in</span>
+        {inches} in
+        <span className="block text-neutral-400 sm:hidden">{row.cm.toFixed(1)} cm</span>
       </td>
       <td className="hidden sm:table-cell px-4 py-3 text-right tabular-nums text-neutral-200 whitespace-nowrap">
-        {inches} in
+        {row.cm.toFixed(1)} cm
       </td>
       <Comparison src={`/fetus/${row.image}.jpg`} label={row.item} />
       <Comparison src={`/fetus/objects/${row.objectImage}.jpg`} label={row.object} />
@@ -125,9 +125,9 @@ export default function FetusPage() {
                 <th scope="col" className="px-2 sm:px-4 py-3 text-left font-bold">Week</th>
                 <th scope="col" className="px-2 sm:px-4 py-3 text-right font-bold">
                   <span className="sm:hidden">Length</span>
-                  <span className="hidden sm:inline">cm</span>
+                  <span className="hidden sm:inline">Inches</span>
                 </th>
-                <th scope="col" className="hidden sm:table-cell px-4 py-3 text-right font-bold">Inches</th>
+                <th scope="col" className="hidden sm:table-cell px-4 py-3 text-right font-bold">cm</th>
                 <th scope="col" className="px-2 sm:px-4 py-3 text-left font-bold">Fruit / veg</th>
                 <th scope="col" className="px-2 sm:px-4 py-3 text-left font-bold">
                   <span className="sm:hidden">Object</span>
