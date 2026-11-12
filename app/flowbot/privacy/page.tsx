@@ -132,6 +132,16 @@ export default function FlowBotPrivacyPage() {
             </a>
             .
           </p>
+          <p>
+            Need help with the app? See{' '}
+            <a
+              href="/flowbot/support"
+              className="text-white underline underline-offset-2 hover:text-neutral-300"
+            >
+              Support
+            </a>
+            .
+          </p>
         </Section>
       </main>
     </>
