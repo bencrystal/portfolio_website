@@ -1,5 +1,5 @@
 {
-"generated": "2026-11-13T00:05:02+00:00",
+"generated": "2026-11-13T00:09:52+00:00",
 "channel": {
 "title": "Play It By Ear",
 "subscribers": 36,
@@ -221,14 +221,14 @@
 "platforms": {
 "instagram": {
 "id": "18101197769647838",
-"views": 376,
-"reach": 250,
+"views": 422,
+"reach": 301,
 "likes": 4,
 "comments": 0,
 "shares": 1,
 "saved": 0,
 "total_interactions": 5,
-"ig_reels_avg_watch_time": 12655
+"ig_reels_avg_watch_time": 13658
 },
 "facebook": {
 "id": "1452834169559108",
@@ -248,8 +248,8 @@
 "theme": "Psychic-type Pokémon",
 "duration": 26,
 "privacy": "public",
-"views": 282,
-"likes": 3,
+"views": 294,
+"likes": 4,
 "comments": 1,
 "tier": "known",
 "avd": null,
@@ -341,7 +341,7 @@
 "theme": "Grass-type Pokémon",
 "duration": 26,
 "privacy": "public",
-"views": 74,
+"views": 76,
 "likes": 3,
 "comments": 2,
 "tier": "known",
@@ -363,7 +363,7 @@
 "platforms": {
 "instagram": {
 "id": "18100430285409447",
-"views": 899,
+"views": 902,
 "reach": 696,
 "likes": 16,
 "comments": 1,
@@ -412,7 +412,7 @@
 "platforms": {
 "instagram": {
 "id": "18115949126144210",
-"views": 1396,
+"views": 1397,
 "reach": 1066,
 "likes": 24,
 "comments": 3,
@@ -439,7 +439,7 @@
 "theme": "Bug-type Pokémon",
 "duration": 26,
 "privacy": "public",
-"views": 395,
+"views": 396,
 "likes": 4,
 "comments": 1,
 "tier": "known",
@@ -2168,7 +2168,7 @@
 "exp:snappy=standard",
 "exp:voice=liam*"
 ],
-"views7d": null,
+"views7d": 133,
 "platforms": {
 "instagram": {
 "id": "17945357751091073",
@@ -2210,7 +2210,7 @@
 "tags": [
 "exp:rapidbeat=once"
 ],
-"views7d": null,
+"views7d": 85,
 "platforms": {
 "instagram": {
 "id": "17923171455450827",
@@ -2256,7 +2256,7 @@
 "exp:snappy=standard",
 "exp:voice=liam*"
 ],
-"views7d": null,
+"views7d": 21,
 "platforms": {
 "instagram": {
 "id": "18439932163182447",
@@ -2302,7 +2302,7 @@
 "exp:snappy=snappy",
 "exp:voice=liam*"
 ],
-"views7d": null,
+"views7d": 80,
 "platforms": {
 "facebook": {
 "id": "1078909321849985",
@@ -2333,7 +2333,7 @@
 "tags": [
 "exp:rapidbeat=twice"
 ],
-"views7d": null,
+"views7d": 34,
 "platforms": {
 "instagram": {
 "id": "17891845422687039",
@@ -8960,7 +8960,7 @@
 "pokemon-short-generation-3-2026-11-12-blaziken-ann": {
 "instagram": {
 "id": "18115949126144210",
-"views": 1396,
+"views": 1397,
 "reach": 1066,
 "likes": 24,
 "comments": 3,
@@ -8979,7 +8979,7 @@
 "pokemon-short-grass-type-pok-mon-2026-11-12-seedot-ann": {
 "instagram": {
 "id": "18100430285409447",
-"views": 899,
+"views": 902,
 "reach": 696,
 "likes": 16,
 "comments": 1,
@@ -9036,14 +9036,14 @@
 "pokemon-short-ghost-type-pok-mon-2026-11-12-haunter-rapid": {
 "instagram": {
 "id": "18101197769647838",
-"views": 376,
-"reach": 250,
+"views": 422,
+"reach": 301,
 "likes": 4,
 "comments": 0,
 "shares": 1,
 "saved": 0,
 "total_interactions": 5,
-"ig_reels_avg_watch_time": 12655
+"ig_reels_avg_watch_time": 13658
 },
 "facebook": {
 "id": "1452834169559108",
@@ -9058,8 +9058,8 @@
 "handle": "playitbyear.quiz",
 "followers": 94,
 "posts": 116,
-"views": 96784,
-"reach": 79821,
+"views": 96834,
+"reach": 79872,
 "likes": 1779,
 "comments": 62,
 "shares": 223,
@@ -9076,8 +9076,8 @@
 "handle": "Play It By Ear",
 "followers": 36,
 "posts": 130,
-"views": 41979,
-"likes": 699,
+"views": 41994,
+"likes": 700,
 "comments": 63
 }
 },
@@ -21032,7 +21032,7 @@
 "subscribers_needed": 1000,
 "watch_hours_365d": 4.2,
 "watch_hours_needed": 4000,
-"shorts_views_90d": 26926,
+"shorts_views_90d": 26941,
 "shorts_views_needed": 10000000,
 "analytics_live": true,
 "analytics_through": "2026-11-10"
