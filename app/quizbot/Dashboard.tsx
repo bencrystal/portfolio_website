@@ -56,12 +56,14 @@ export default function Dashboard() {
   const [allVideos, setAllVideos] = useState(false)
   const [allComments, setAllComments] = useState(false)
   const [dailyMetric, setDailyMetric] = useState<'views' | 'subs'>('views')
+  const [brief, setBrief] = useState<Brief | null>(null)
 
   useEffect(() => {
     fetch('/api/quizbot', { cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`${r.status}`))))
       .then(setData)
       .catch((e) => setErr(String(e)))
+    fetch('/api/quizbot/brief', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).then(setBrief).catch(() => setBrief(null))
   }, [])
 
   const videos = useMemo(() => (data?.videos ?? []).filter((v) => v.privacy === 'public' && (fmt === 'all' || v.format === fmt)), [data, fmt])
@@ -133,10 +135,12 @@ export default function Dashboard() {
       </header>
 
       <nav className="sticky top-0 z-10 -mx-6 px-6 py-2 mb-8 flex gap-4 text-xs overflow-x-auto" style={{ background: 'rgba(26,26,25,0.92)', backdropFilter: 'blur(6px)', borderBottom: `1px solid ${GRID}` }}>
-        {[['overview', 'Overview'], ['growth', 'Growth'], ['content', 'Content'], ['experiments', 'Experiments'], ['decisions', 'Decisions'], ['viewers', 'Viewers'], ['operations', 'Operations']].map(([id, label]) => (
+        {[['brief', 'Today'], ['overview', 'Overview'], ['growth', 'Growth'], ['content', 'Content'], ['experiments', 'Experiments'], ['decisions', 'Decisions'], ['viewers', 'Viewers'], ['operations', 'Operations']].map(([id, label]) => (
           <a key={id} href={`#${id}`} className="whitespace-nowrap hover:underline" style={{ color: INK2 }}>{label}</a>
         ))}
       </nav>
+
+      {brief && <BriefPanel brief={brief} />}
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Stat label="Subscribers" value={fmtInt(data.channel.subscribers)} delta={kpi.subsDelta} deltaLabel="last 7 d" />
@@ -530,6 +534,56 @@ function Decisions() {
 }
 
 // ---- pieces ------------------------------------------------------------------------------------
+type BriefDecision = { id: string; title: string; why: string; options: string[]; recommendation?: string; how?: string }
+type Brief = {
+  date: string; written_at: string; headline: string
+  happened: string[]; decisions: BriefDecision[]; ideas: string[]; watch: string[]; changes?: string[]
+}
+
+// The morning brief: written by the daily Claude task after the analytics job, so Ben reads one panel
+// instead of asking "any new updates?". Decisions are answered in chat (or in the Decisions panel for PRs).
+function BriefPanel({ brief }: { brief: Brief }) {
+  const stale = (Date.now() - new Date(brief.written_at).getTime()) / 3.6e6 > 36
+  const Block = ({ title, items, tone }: { title: string; items: string[]; tone?: string }) => items.length ? (
+    <div>
+      <p className="text-[11px] font-bold uppercase tracking-[0.2em] mb-1.5" style={{ color: tone ?? INK3 }}>{title}</p>
+      <ul className="space-y-1.5">{items.map((t, i) => <li key={i} className="text-sm leading-snug" style={{ color: INK2 }}>{t}</li>)}</ul>
+    </div>
+  ) : null
+  return (
+    <section id="brief" className="mb-8 rounded-xl border p-5" style={{ borderColor: '#57f1ff55', background: 'rgba(87,241,255,0.04)' }}>
+      <div className="flex items-baseline justify-between gap-4 flex-wrap">
+        <p className="text-[11px] font-bold uppercase tracking-[0.3em]" style={{ color: '#57f1ff' }}>Today · {brief.date}</p>
+        <p className="text-[11px]" style={{ color: stale ? '#c98500' : INK3 }}>{stale ? `brief is ${Math.round((Date.now() - new Date(brief.written_at).getTime()) / 3.6e6)} h old — the morning task may have failed` : `written ${ago(brief.written_at)}`}</p>
+      </div>
+      <h2 className="text-lg font-semibold mt-2 mb-4" style={{ color: INK }}>{brief.headline}</h2>
+      <div className="grid md:grid-cols-2 gap-6">
+        <Block title="What happened" items={brief.happened} />
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] mb-1.5" style={{ color: brief.decisions.length ? '#c98500' : INK3 }}>
+            {brief.decisions.length ? `Decisions waiting on you (${brief.decisions.length})` : 'No decisions waiting on you'}
+          </p>
+          <ul className="space-y-3">
+            {brief.decisions.map((d) => (
+              <li key={d.id} className="rounded-lg border p-3" style={{ borderColor: GRID }}>
+                <p className="text-sm font-semibold" style={{ color: INK }}>{d.title}</p>
+                <p className="text-xs mt-1 leading-snug" style={{ color: INK2 }}>{d.why}</p>
+                <ul className="mt-2 space-y-0.5">
+                  {d.options.map((o, i) => <li key={i} className="text-xs" style={{ color: o === d.recommendation ? '#57f1ff' : INK3 }}>{o === d.recommendation ? '▸ ' : '· '}{o}{o === d.recommendation ? ' (recommended)' : ''}</li>)}
+                </ul>
+                {d.how && <p className="text-[11px] mt-2" style={{ color: INK3 }}>{d.how}</p>}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <Block title="Ideas" items={brief.ideas} />
+        <Block title="Watching" items={brief.watch} />
+        {brief.changes && brief.changes.length > 0 && <Block title="Changed since yesterday" items={brief.changes} />}
+      </div>
+    </section>
+  )
+}
+
 function Shell({ children }: { children: React.ReactNode }) {
   return <main className="min-h-screen text-white tabular-nums"><div className="max-w-6xl mx-auto px-6 py-12">{children}</div></main>
 }
