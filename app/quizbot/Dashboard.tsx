@@ -30,6 +30,7 @@ type Data = {
   videos: Video[]
   ledger: { episodes: Episode[]; used: Record<string, Record<string, number>> }
   comments?: Comment[]
+  formats?: Record<string, { n: number; median_views: number; avp: number | null; fitness: number; slot: string; mech: string; cue: string; twist: string; label: string }>
   experiments?: Experiments
   retention?: Record<string, [number, number][]>
   platform_summary?: Record<string, PlatformSummary>
@@ -236,6 +237,32 @@ export default function Dashboard() {
       )}
 
       <SectionHead id="content" title="Content" sub="Which series and videos hold attention" />
+      {data.formats && Object.keys(data.formats).length > 0 && (
+        <Card title="Formats" sub="Every kind of video the channel makes, last 21 days. Fitness is the format's median views over the median of its slot (single Shorts, rapid-fire, long-form); rapid-fire slots are dealt out in proportion to it, so a format earns or loses airtime on its own numbers. New formats start at 1.0.">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-xs" style={{ color: INK3 }}>
+                  <th className="py-1 pr-4 font-normal">Format</th><th className="py-1 pr-4 font-normal">Game</th><th className="py-1 pr-4 font-normal">Cue</th><th className="py-1 pr-4 font-normal">Twist</th>
+                  <th className="py-1 pr-4 font-normal text-right">Videos</th><th className="py-1 pr-4 font-normal text-right">Median views</th><th className="py-1 pr-4 font-normal text-right">% viewed</th><th className="py-1 font-normal text-right">Fitness</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(data.formats).sort((a, b) => a[1].slot.localeCompare(b[1].slot) || b[1].median_views - a[1].median_views).map(([id, f]) => (
+                  <tr key={id} style={{ borderTop: `1px solid ${GRID}`, color: INK2 }}>
+                    <td className="py-1.5 pr-4" style={{ color: INK }}>{f.label ?? id} <span className="text-xs" style={{ color: INK3 }}>· {f.slot}</span></td>
+                    <td className="py-1.5 pr-4">{f.mech}</td><td className="py-1.5 pr-4">{f.cue}</td><td className="py-1.5 pr-4">{f.twist === 'none' ? '—' : f.twist}</td>
+                    <td className="py-1.5 pr-4 text-right tabular-nums">{f.n}</td>
+                    <td className="py-1.5 pr-4 text-right tabular-nums">{fmtInt(Math.round(f.median_views))}</td>
+                    <td className="py-1.5 pr-4 text-right tabular-nums">{fmtPct(f.avp)}</td>
+                    <td className="py-1.5 text-right tabular-nums" style={{ color: f.n < 3 ? INK3 : f.fitness >= 1.15 ? '#3fb27f' : f.fitness <= 0.85 ? '#d1603d' : INK2 }}>{f.n < 3 ? 'new' : `${f.fitness.toFixed(2)}×`}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
       {data.retention && Object.keys(data.retention).length > 0 && (
         <Card title="Where viewers leave" sub="Audience retention from YouTube Analytics: share of viewers still watching at each point of the video. Shorts are averaged per pack; each long-form video is its own line. A cliff tells you which beat loses people; a flat line means they stay to the reveal.">
           <RetentionChart data={data} />
