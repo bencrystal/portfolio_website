@@ -1,37 +1,41 @@
 {
-  "date": "2026-11-16",
-  "written_at": "2026-11-16T23:20:00Z",
-  "headline": "Best week yet — subs 40 → 54 since Friday, 3,097 views on Nov 13 — with zero failures; one decision (captions) still waiting on you.",
-  "happened": [
-    "Sun Nov 15 – Mon Nov 16: 6 single Shorts, 4 rapid-fires (two of them the new 7-sound variant, 49–52 s) and this week's long-form (Dragon-type, 6 min 28 s, first one voiced by Liam from the credit surplus). 29 workflow runs, 29 green.",
-    "Subscribers 54 (+14 in two days). Channel 54.2k views. Analytics (through Nov 13): 2,064 on Nov 12, 3,097 on Nov 13 — fifth straight day above 2,000. Instagram 121.7k views, 121 followers.",
-    "Public counts for the weekend's uploads: Shorts medians 486 (Fri), 579 (Sat); rapid-fires 424 / 517 / 539 / 572 — both formats at their highest sustained level.",
-    "The supervisor's Sunday run added two rapid-fire tests (coral vs Liam voice; think-time) and fixed a TTS edge case (a clip too short for its text is now retried instead of shipped).",
-    "ElevenLabs: 2,066 of 31,496 credits used, 23 days to reset — the long-form will keep getting Liam."
-  ],
-  "decisions": [
-    {
-      "id": "captions-tie",
-      "title": "Reopen the captions decision? It was a tie on retention and static reaches 34 % fewer viewers.",
-      "why": "The judge crowned static at the sample cap on a 3 % lead (bar is 10 %) and bypassed the views guard. The rule is fixed for future tests; this one needs a human call.",
-      "options": [
-        "Reopen and keep kinetic as baseline (incumbent on a tie)",
-        "Leave static; carry kinetic's gold highlight and chunked Pokédex into static as a new test",
-        "Rerun the test from scratch"
-      ],
-      "recommendation": "Reopen and keep kinetic as baseline (incumbent on a tie)",
-      "how": "Reply in chat; it's a one-line edit to state/experiments.json."
-    }
-  ],
-  "ideas": [
-    "Rapid-fire comments are now full guess lists (\"1: blaziken line 2: dragonair 3: one of the hitmons…\") — the score-tally opener could also count these partial-credit replies, not just \"n/5\".",
-    "\"The typing helped so much\" (Kanto Gyms rapid) is the first direct evidence for the silent type pills; worth a line in the rapid-fire description so mute viewers know to look for them."
-  ],
-  "watch": [
-    "Cry test: original 73.8 vs modern 71.8 % viewed (n=14/16) — the two closest arms we've had; may end a tie, which now keeps modern.",
-    "CTA: score 75.3 vs subscribe 75.7 (n=6/7) — dead even on retention; the subs-per-video column will decide if either matters.",
-    "Series numbers 76.8 vs plain 76.5 (n=6/2), ladder 77.2 vs chip 75.8 (n=6/2), loop ending 60.8 vs spoken 57.2 (n=3/5) — all early.",
-    "GitHub dropped five hourly runs on Saturday; the watchdog now checks hourly and nothing was missed since."
-  ],
-  "changes": ["First brief — nothing to compare yet."]
+ "date": "2026-11-17",
+ "written_at": "2026-11-17T12:42:00Z",
+ "headline": "Clean day — 7 uploads, 30 green runs — and PR #8's new formats (Pokémon-or-medicine, slowed cries, Pokédex-first) are rendered and waiting on your preview check; the nightly analytics job hasn't fired yet, so every number here is still yesterday's.",
+ "happened": [
+  "Mon Nov 16: 3 single Shorts (Fire-type · Ep. 73, Starter, Legendary · Ep. 75), 3 rapid-fires (Generation 3; Ghost-type as a 7-sound, 49 s; Generation 4, which landed at 21:49 ET after the 01 UTC slot slipped) and the Dragon-type long-form (6 min 28 s). All public on YouTube and cross-posted to Instagram and Facebook. 30 workflow runs since yesterday morning, 30 green, nothing in Run failures.",
+  "PR #8 opened at 00:44 UTC on the branch you green-lit Sunday (\"go for it\"): a \"Pokémon or medicine?\" word quiz for the rapid-fire slots (67 generic drug names), a slowed-down-cries rapid theme, an `order` test for Shorts (open on the cry vs. on the Pokédex line) and a format registry with per-format fitness. Four preview renders came off the branch between 00:46 and 01:13 UTC (Pokémon-or-medicine twice, slowed cries, one Short); none were uploaded. The PR says previews before merge.",
+  "No fresh analytics: the nightly job (06:40 UTC cron) had not fired by 12:35 UTC. It has fired 7–10 h late every day since Thursday (13:45, 14:52, 14:16, 16:20 UTC), so the dashboard is still yesterday's 16:27 UTC snapshot — 54 subscribers, 54,176 channel views, 150 videos, analytics through Nov 13 (3,097 views that day). Every experiment standing is identical to yesterday's.",
+  "Only one upload has happened since yesterday's brief (written 18:20 ET): the Generation 4 rapid-fire. The rest of the day's tally above was already in it."
+ ],
+ "decisions": [
+  {
+   "id": "captions-tie",
+   "title": "Reopen the captions decision? It was a tie on retention and static reaches 34 % fewer viewers.",
+   "why": "The judge crowned static at the sample cap on a 3 % lead (bar is 10 %) and bypassed the views guard. The rule is fixed for future tests; this one needs a human call.",
+   "options": [
+    "Reopen and keep kinetic as baseline (incumbent on a tie)",
+    "Leave static; carry kinetic's gold highlight and chunked Pokédex into static as a new test",
+    "Rerun the test from scratch"
+   ],
+   "recommendation": "Reopen and keep kinetic as baseline (incumbent on a tie)",
+   "how": "Reply in chat; it's a one-line edit to state/experiments.json."
+  }
+ ],
+ "ideas": [
+  "Give the analytics workflow the same hourly watchdog dispatch the episodes workflow has: its 06:40 UTC cron fired at 13:45, 14:52, 14:16 and 16:20 UTC on the last four days, so this 07:35 ET brief has been reading day-old numbers every morning.",
+  "A rapid-fire viewer (3 likes, Fire-type 7-sound, Nov 13) says he got them \"because of the small silhouette before the reveal\" — in rapid-fire the ~2 s silhouette under the sting is working as a hint; worth a rapid-fire test of reveal-without-silhouette, keeping the art frame in the last 22 % for the thumbnail."
+ ],
+ "watch": [
+  "PR #8: four previews rendered, none uploaded; the merge waits on your look. Until then the rapid-fire slots keep drawing from today's themes.",
+  "Cry test: original 73.8 vs modern 71.8 % viewed (n=14/16), unchanged — captions closed at a similar sample on a 3 % lead, so this could end at the next judgement; a tie now keeps the incumbent (modern).",
+  "CTA: score 75.3 vs subscribe 75.7 (n=6/7), unchanged. Series 76.8 vs plain 76.5 (n=6/2), ladder 77.2 vs chip 75.8 (n=6/2), loop ending 60.8 vs spoken 57.2 (n=3/5) — all still early; rapid-fire length and voice have no data yet (views7d needs a week).",
+  "Single Shorts are splitting hard: at the 16:27 UTC snapshot Bug 791, Electric 586 and Gen 4 579 views sat beside Gen 1 33, Psychic 26 and Water-type 5 (20–44 h old). The experiment tags don't separate the two groups; two of the three low ones were the 20 UTC slot, but Thursday's 20 UTC Short had 486.",
+  "ElevenLabs: 2,066 of 31,496 credits used, resets Dec 9 — unchanged; Liam voiced Monday's long-form."
+ ],
+ "changes": [
+  "New: PR #8 (new formats + format registry) opened overnight with four preview renders.",
+  "No new numbers or test movement — the analytics job hasn't run since yesterday's brief, so dashboard figures and standings are identical.",
+  "Still zero run failures; the one open decision (captions-tie) is unchanged."
+ ]
 }
