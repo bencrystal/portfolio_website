@@ -58,13 +58,18 @@ export default function Dashboard() {
   const [allComments, setAllComments] = useState(false)
   const [dailyMetric, setDailyMetric] = useState<'views' | 'subs'>('views')
   const [brief, setBrief] = useState<Brief | null>(null)
+  const [briefErr, setBriefErr] = useState<string | null>(null)
 
   useEffect(() => {
     fetch('/api/quizbot', { cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`${r.status}`))))
       .then(setData)
       .catch((e) => setErr(String(e)))
-    fetch('/api/quizbot/brief', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).then(setBrief).catch(() => setBrief(null))
+    // The brief must never fail silently: if it can't be loaded, the page says so where the panel would be.
+    fetch(`/api/quizbot/brief?t=${Math.floor(Date.now() / 6e4)}`, { cache: 'no-store' })
+      .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() })
+      .then((b) => { if (b && b.headline) setBrief(b); else setBriefErr('no brief has been published yet') })
+      .catch((e) => setBriefErr(String(e.message ?? e)))
   }, [])
 
   const videos = useMemo(() => (data?.videos ?? []).filter((v) => v.privacy === 'public' && (fmt === 'all' || v.format === fmt)), [data, fmt])
@@ -142,6 +147,11 @@ export default function Dashboard() {
       </nav>
 
       {brief && <BriefPanel brief={brief} />}
+      {!brief && briefErr && (
+        <section id="brief" className="mb-8 rounded-xl border p-4 text-sm" style={{ borderColor: '#c9850055', color: '#c98500' }}>
+          Today&rsquo;s brief couldn&rsquo;t be loaded ({briefErr}). Reload the page; if this stays, tell Claude.
+        </section>
+      )}
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Stat label="Subscribers" value={fmtInt(data.channel.subscribers)} delta={kpi.subsDelta} deltaLabel="last 7 d" />
