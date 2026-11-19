@@ -1,42 +1,43 @@
 {
- "date": "2026-11-18",
- "written_at": "2026-11-18T12:36:00Z",
- "headline": "Clean again — 5 uploads, 28 runs, 0 failures — but analytics only reach Nov 14 and PR #8 is still waiting on your preview check.",
- "happened": [
-  "Tue Nov 17: 2 single Shorts uploaded (Psychic-type, Electric-type) and 3 rapid-fires (Then & Now cries, Dragon-type, a 7-sound Pokémon Mix at 54 s), all public on YouTube and cross-posted to Instagram and Facebook. Two more renders (Grass-type Ep. 78 at 17:46 UTC, Slowed-down cries at 17:52 UTC) have no YouTube link in the Episode log. 28 workflow runs since yesterday's brief, all green; Run failures is empty.",
-  "Analytics job ran at 16:25 UTC Nov 17 (about 9 h after its 06:40 cron); data now runs through Nov 14. Nov 14 was the biggest day in the window: 4,902 views, +6/−2 subscribers. Nov 8–14 total 21,351 views. Channel: 55 subscribers (was 54), 56,614 views (was 54,176), 156 videos (was 150). The nightly job has not fired yet today (last analytics run: Nov 17 16:25 UTC).",
-  "Judge: no new decisions. Captions stays crowned static (Nov 13); the active test is cta. Standings moved a little: cry og 73.4 vs modern 71.0 (n=15/18), series numbered 77.6 vs plain 69.8 (n=6/5).",
-  "Single Shorts from Nov 14–16 are bimodal: Psychic 10, Gen 1 19, Fire Ep. 73 4, Starter 10, Water Ep. 72 11 views, against Bug 637, Dragon 862, Electric 621 and 846, Gen 4 704 and 881, Legendary 707. Ages differ by 1–4 days, but the weak ones are the low-fitness themes (Starter, Water, Gen 1 at 0.4; Fire 0.56).",
-  "Two commits to main since yesterday's brief: the TTS length check now also covers the trimmed clip (re-synthesises if cut off), and the daily.yml run artifact now holds only that run's files. PR #8 (new formats) is still open, not merged."
- ],
- "decisions": [
-  {
-   "id": "captions-tie",
-   "title": "Reopen the captions decision? It was a tie on retention and static reaches 34 % fewer viewers.",
-   "why": "The judge crowned static at the sample cap on a 3 % lead (bar is 10 %) and bypassed the views guard. The rule is fixed for future tests; this one needs a human call.",
-   "options": [
-    "Reopen and keep kinetic as baseline (incumbent on a tie)",
-    "Leave static; carry kinetic's gold highlight and chunked Pokédex into static as a new test",
-    "Rerun the test from scratch"
-   ],
-   "recommendation": "Reopen and keep kinetic as baseline (incumbent on a tie)",
-   "how": "Reply in chat; it's a one-line edit to state/experiments.json."
-  }
- ],
- "ideas": [
-  "Themes at the 0.4 fitness floor with n≥3 for Shorts (Starter n=4, median 97.5 views; Generation 1 n=3, median 41; Generation 2 n=5, median 98) still get drawn while Dragon (median 737.5) and Electric (621) sit at 2.0+; pausing the floor themes for Shorts for a week would test whether those slots do better on the strong ones.",
-  "Rapid-fire themes outperform the same themes as single Shorts at the low end (Starter rapid median 148 views vs Starter Short 97.5; Generation 1 rapid 229 vs Short 41) — the rapid format may be the better home for weak themes."
- ],
- "watch": [
-  "PR #8 (Pokémon-or-medicine, slowed cries, Pokédex-first test, format registry): open since Nov 17 00:44 UTC, merge waits on your preview look.",
-  "Active test cta: score 74.7 (n=7) vs subscribe 71.4 (n=9), leading but early. Other open comparisons, all early: series numbered 77.6 (n=6) vs plain 69.8 (n=5); ladder dots 72.5 (n=9) vs chip 75.9 (n=2); rapidtail spoken 63.3 (n=6) vs loop 61.2 (n=5). rapidlen and rapidvoice have no scored videos yet (views7d needs a week).",
-  "Analytics is stale again: dashboard generated Nov 17 16:32 UTC, data through Nov 14 — so Nov 15–17 uploads show no retention yet.",
-  "ElevenLabs: 2,315 of 31,496 credits used (up from 2,066 yesterday), resets Dec 9 — low use against the plan you want used.",
-  "YPP: 55 / 1,000 subscribers, 4.7 / 4,000 watch hours, 33,923 Shorts views in 90 days vs the 10,000,000 bar."
- ],
- "changes": [
-  "New data: analytics advanced from Nov 13 to Nov 14 (55 subs, 56,614 views, 156 videos); cry and series standings shifted slightly.",
-  "Two new commits on main (TTS trimmed-clip check; flat run artifact). PR #8 unchanged.",
-  "Still zero run failures; captions-tie is still the only open decision."
- ]
+  "date": "2026-11-19",
+  "written_at": "2026-11-19T12:40:00Z",
+  "headline": "Clean again (6 uploads, 29 runs, 0 failures) and the judge closed cta (score) and cry (modern), so the hints test is now live; captions-tie still needs your call and analytics only reach Nov 15.",
+  "happened": [
+    "Wed Nov 18 (UTC, since yesterday's brief): 3 single Shorts (Bug-type Ep. 79, Water-type, Fire-type Ep. 81) and 3 rapid-fires (Generation 1 at 41 s, Legendary at 43 s, a 7-sound Generation 4 at 55 s). All public on YouTube and cross-posted to Instagram and Facebook. 29 workflow runs, all green; Run failures is empty.",
+    "Judge, Nov 18: cta decided as score (74.7 vs 73.3 on pack-adjusted % viewed, n=9/10, a 2 % lead called 'close enough'); cry decided as modern (og led 73.4 vs 71.8, n=16/20, a 2 % lead, incumbent kept). The active test is now hints, with no scored videos yet.",
+    "Analytics ran Nov 18 at 15:56 UTC and now reach Nov 15: 3,966 views and +8/-1 subscribers that day; Nov 9-15 total 21,672 views. Channel: 55 subscribers (unchanged), 60,055 views (was 56,614), 161 videos (was 156). The nightly job has not run yet today.",
+    "Views on the 3 Shorts from Nov 18 are still tiny (Bug Ep. 79: 40 at the last pull; the other two are not in the dashboard list yet), so treat them as unknown, not weak. Nov 17 singles: Psychic 815, Electric 231; rapid-fires: Then & Now 591, Gen 4 866, Mix 265, Dragon 12.",
+    "No new commits on main since the Nov 18 judgement commit. PR #8 (new formats) is still open."
+  ],
+  "decisions": [
+    {
+      "id": "captions-tie",
+      "title": "Reopen the captions decision? It was a tie on retention and static reaches 34 % fewer viewers.",
+      "why": "The judge crowned static at the sample cap on a 3 % lead (bar is 10 %) and bypassed the views guard. The rule is fixed for future tests; this one needs a human call.",
+      "options": [
+        "Reopen and keep kinetic as baseline (incumbent on a tie)",
+        "Leave static; carry kinetic's gold highlight and chunked Pokédex into static as a new test",
+        "Rerun the test from scratch"
+      ],
+      "recommendation": "Reopen and keep kinetic as baseline (incumbent on a tie)",
+      "how": "Reply in chat; it's a one-line edit to state/experiments.json."
+    }
+  ],
+  "ideas": [
+    "Themes at the 0.4 fitness floor still get Shorts slots (Starter n=4, median 98 views; Water n=2, 83; Generation 1 n=3, 41) while Dragon (median 784) and Psychic (682.5) sit at 2.2+; a week without the floor themes in Shorts would show whether those slots do better on the strong ones.",
+    "The same weak themes do better as rapid-fires than as single Shorts (Generation 1 rapid median 229 vs 41; Generation 2 675 vs 153.5; Starter 148 vs 98), so rapid may be the better home for them."
+  ],
+  "watch": [
+    "PR #8 (Pokémon-or-medicine, slowed cries, Pokédex-first test, format registry): open since Nov 17, still waiting on your preview check.",
+    "cta and cry were both called on 2 % leads, well under the 10 % bar. cta crowned the leader; cry kept the incumbent. If you want ties to always hold the incumbent, cta is the one that differs.",
+    "Open comparisons, all early: series numbered 79.7 (n=9) vs plain 70.0 (n=5); ladder dots 74.0 (n=11) vs chip 74.2 (n=3); rapidtail spoken 63.8 (n=7) vs loop 62.3 (n=7), though loop gains more subscribers per video (1.14 vs 0.14). rapidlen has no scored videos yet and rapidvoice has one.",
+    "Platforms: Instagram 132 followers and 136,117 views; Facebook shows 0 followers, 3 views and 0 reach across 156 posts, so the Facebook cross-post is reaching nobody.",
+    "ElevenLabs balance could not be read (the API call timed out), so no figure today. YPP: 55 / 1,000 subscribers, 4.8 / 4,000 watch hours, 35,281 Shorts views in 90 days vs the 10,000,000 bar."
+  ],
+  "changes": [
+    "Judge decided cta (score) and cry (modern) on Nov 18; hints is now the active test.",
+    "Analytics advanced from Nov 14 to Nov 15 (60,055 views, 161 videos, 55 subscribers).",
+    "No new commits on main; PR #8 unchanged; still zero run failures and captions-tie is the only open decision.",
+    "New in watch: Facebook reach is zero, and the ElevenLabs balance was unreadable today."
+  ]
 }
