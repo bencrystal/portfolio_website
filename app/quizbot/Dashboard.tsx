@@ -572,51 +572,101 @@ function Decisions() {
 
 // ---- pieces ------------------------------------------------------------------------------------
 type BriefDecision = { id: string; title: string; why: string; options: string[]; recommendation?: string; how?: string }
+type BriefMetric = { label: string; value: string; delta?: string }
+type BriefTest = { name: string; a: string; b: string; status: 'early' | 'leading' | 'tie' | 'decided' | string; note?: string }
 type Brief = {
   date: string; written_at: string; headline: string
+  metrics?: BriefMetric[]; tests?: BriefTest[]
   happened: string[]; decisions: BriefDecision[]; ideas: string[]; watch: string[]; changes?: string[]
 }
 
 // The morning brief: written by the daily Claude task after the analytics job, so Ben reads one panel
-// instead of asking "any new updates?". Decisions are answered in chat (or in the Decisions panel for PRs).
+// instead of asking "any new updates?". Built to be scanned: figures in a strip, tests in a table, and
+// everything else as one-line bullets. Decisions are answered in chat.
 function BriefPanel({ brief }: { brief: Brief }) {
-  const stale = (Date.now() - new Date(brief.written_at).getTime()) / 3.6e6 > 36
-  const Block = ({ title, items, tone }: { title: string; items: string[]; tone?: string }) => items.length ? (
+  const hours = (Date.now() - new Date(brief.written_at).getTime()) / 3.6e6
+  const stale = hours > 36
+  const CYAN = '#57f1ff', AMBER = '#c98500'
+  const tone: Record<string, string> = { decided: '#3fb27f', leading: CYAN, tie: INK3, early: INK3 }
+  const Bullets = ({ title, items }: { title: string; items?: string[] }) => items && items.length ? (
     <div>
-      <p className="text-[11px] font-bold uppercase tracking-[0.2em] mb-1.5" style={{ color: tone ?? INK3 }}>{title}</p>
-      <ul className="space-y-1.5">{items.map((t, i) => <li key={i} className="text-sm leading-snug" style={{ color: INK2 }}>{t}</li>)}</ul>
+      <p className="text-[11px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: INK3 }}>{title}</p>
+      <ul className="space-y-1.5">
+        {items.map((t, i) => (
+          <li key={i} className="text-sm leading-snug flex gap-2" style={{ color: INK2 }}>
+            <span aria-hidden style={{ color: INK3 }}>•</span><span>{t}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   ) : null
   return (
     <section id="brief" className="mb-8 rounded-xl border p-5" style={{ borderColor: '#57f1ff55', background: 'rgba(87,241,255,0.04)' }}>
       <div className="flex items-baseline justify-between gap-4 flex-wrap">
-        <p className="text-[11px] font-bold uppercase tracking-[0.3em]" style={{ color: '#57f1ff' }}>Today · {brief.date}</p>
-        <p className="text-[11px]" style={{ color: stale ? '#c98500' : INK3 }}>{stale ? `brief is ${Math.round((Date.now() - new Date(brief.written_at).getTime()) / 3.6e6)} h old — the morning task may have failed` : `written ${ago(brief.written_at)}`}</p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.3em]" style={{ color: CYAN }}>Today · {brief.date}</p>
+        <p className="text-[11px]" style={{ color: stale ? AMBER : INK3 }}>{stale ? `brief is ${Math.round(hours)} h old — the morning task may have failed` : `written ${ago(brief.written_at)}`}</p>
       </div>
-      <h2 className="text-lg font-semibold mt-2 mb-4" style={{ color: INK }}>{brief.headline}</h2>
-      <div className="grid md:grid-cols-2 gap-6">
-        <Block title="What happened" items={brief.happened} />
-        <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] mb-1.5" style={{ color: brief.decisions.length ? '#c98500' : INK3 }}>
-            {brief.decisions.length ? `Decisions waiting on you (${brief.decisions.length})` : 'No decisions waiting on you'}
-          </p>
-          <ul className="space-y-3">
-            {brief.decisions.map((d) => (
-              <li key={d.id} className="rounded-lg border p-3" style={{ borderColor: GRID }}>
-                <p className="text-sm font-semibold" style={{ color: INK }}>{d.title}</p>
-                <p className="text-xs mt-1 leading-snug" style={{ color: INK2 }}>{d.why}</p>
-                <ul className="mt-2 space-y-0.5">
-                  {d.options.map((o, i) => <li key={i} className="text-xs" style={{ color: o === d.recommendation ? '#57f1ff' : INK3 }}>{o === d.recommendation ? '▸ ' : '· '}{o}{o === d.recommendation ? ' (recommended)' : ''}</li>)}
-                </ul>
-                {d.how && <p className="text-[11px] mt-2" style={{ color: INK3 }}>{d.how}</p>}
-              </li>
-            ))}
-          </ul>
+      <h2 className="text-lg font-semibold mt-2" style={{ color: INK }}>{brief.headline}</h2>
+
+      {brief.metrics && brief.metrics.length > 0 && (
+        <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+          {brief.metrics.map((m) => (
+            <div key={m.label} className="rounded-lg border px-3 py-2" style={{ borderColor: GRID }}>
+              <p className="text-[10px] uppercase tracking-[0.15em]" style={{ color: INK3 }}>{m.label}</p>
+              <p className="text-base font-semibold tabular-nums" style={{ color: INK }}>
+                {m.value}{m.delta ? <span className="text-xs font-normal ml-1.5" style={{ color: INK3 }}>{m.delta}</span> : null}
+              </p>
+            </div>
+          ))}
         </div>
-        <Block title="Ideas" items={brief.ideas} />
-        <Block title="Watching" items={brief.watch} />
-        {brief.changes && brief.changes.length > 0 && <Block title="Changed since yesterday" items={brief.changes} />}
+      )}
+
+      <div className="mt-5">
+        <p className="text-[11px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: brief.decisions.length ? AMBER : INK3 }}>
+          {brief.decisions.length ? `Needs you (${brief.decisions.length})` : 'Nothing needs you today'}
+        </p>
+        <div className="grid md:grid-cols-2 gap-3">
+          {brief.decisions.map((d) => (
+            <div key={d.id} className="rounded-lg border p-3" style={{ borderColor: '#c9850066' }}>
+              <p className="text-sm font-semibold" style={{ color: INK }}>{d.title}</p>
+              <p className="text-xs mt-1 leading-snug" style={{ color: INK2 }}>{d.why}</p>
+              <ul className="mt-2 space-y-0.5">
+                {d.options.map((o, i) => <li key={i} className="text-xs" style={{ color: o === d.recommendation ? CYAN : INK3 }}>{o === d.recommendation ? '▸ ' : '· '}{o}{o === d.recommendation ? ' — recommended' : ''}</li>)}
+              </ul>
+              {d.how && <p className="text-[11px] mt-2" style={{ color: INK3 }}>{d.how}</p>}
+            </div>
+          ))}
+        </div>
       </div>
+
+      <div className="mt-5 grid md:grid-cols-2 gap-x-8 gap-y-5">
+        <Bullets title="What happened" items={brief.happened} />
+        <Bullets title="Watching" items={brief.watch} />
+        <Bullets title="Ideas" items={brief.ideas} />
+        <Bullets title="Changed since yesterday" items={brief.changes} />
+      </div>
+
+      {brief.tests && brief.tests.length > 0 && (
+        <div className="mt-5">
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: INK3 }}>Tests</p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <tbody>
+                {brief.tests.map((t) => (
+                  <tr key={t.name} style={{ borderTop: `1px solid ${GRID}`, color: INK2 }}>
+                    <td className="py-1.5 pr-4 whitespace-nowrap" style={{ color: INK }}>{t.name}</td>
+                    <td className="py-1.5 pr-4 tabular-nums whitespace-nowrap">{t.a}</td>
+                    <td className="py-1.5 pr-4 tabular-nums whitespace-nowrap">{t.b}</td>
+                    <td className="py-1.5 pr-4 whitespace-nowrap text-xs uppercase tracking-wider" style={{ color: tone[t.status] ?? INK3 }}>{t.status}</td>
+                    <td className="py-1.5 text-xs" style={{ color: INK3 }}>{t.note ?? ''}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-[11px] mt-1.5" style={{ color: INK3 }}>Score is average % viewed; the number in brackets is how many videos.</p>
+        </div>
+      )}
     </section>
   )
 }
