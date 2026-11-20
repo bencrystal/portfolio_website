@@ -1,51 +1,44 @@
 {
-  "date": "2026-11-19",
-  "written_at": "2026-11-19T18:10:00Z",
-  "headline": "Clean day; two tests closed, kinetic captions restored, and PR #8 is waiting on you.",
+  "date": "2026-11-20",
+  "written_at": "2026-11-20T12:45:00Z",
+  "headline": "Clean day, six uploads, no failures; PR #8 still waits on you.",
   "metrics": [
-    {"label": "Subscribers", "value": "55"},
-    {"label": "Views · Nov 15", "value": "3,966"},
-    {"label": "Views · Nov 9–15", "value": "21,672"},
-    {"label": "Uploads · Nov 18", "value": "6"},
+    {"label": "Subscribers", "value": "59", "delta": "+4"},
+    {"label": "Views · Nov 16", "value": "2,704"},
+    {"label": "Uploads · Nov 19", "value": "6"},
     {"label": "Run failures", "value": "0"},
-    {"label": "Instagram views", "value": "136,117"}
+    {"label": "Instagram views", "value": "141,084", "delta": "+4,967"},
+    {"label": "ElevenLabs credits used", "value": "2,611 / 31,496"}
   ],
   "happened": [
-    "Three Shorts and three rapid-fires went out on Nov 18, all green.",
-    "The judge closed the closing-line test: the score ask stays.",
-    "The judge closed the cry test: modern cries stay.",
-    "You restored kinetic captions as the baseline today."
+    "Three Shorts and three rapid-fires went out on Nov 19, all green.",
+    "Viewers keep posting their rapid-fire scores in the comments."
   ],
   "decisions": [
     {
       "id": "pr-8-new-formats",
       "title": "Merge PR #8: Pokémon-or-medicine, slowed cries, Pokédex-first test?",
-      "why": "Previews are rendered and the intro and voice fixes you asked for are in; nothing goes live until you say so.",
+      "why": "Previews are rendered and the intro and voice fixes are in; nothing goes live until Ben says so.",
       "options": ["Merge all of it", "Merge without slowed cries (51 s is long)", "Hold for changes"],
       "recommendation": "Merge all of it",
       "how": "Reply in chat."
     }
   ],
   "tests": [
-    {"name": "Closing line", "a": "score 74.7 (9)", "b": "subscribe 73.3 (10)", "status": "decided", "note": "score kept on a tie"},
-    {"name": "Cry", "a": "original 73.4 (16)", "b": "modern 71.8 (20)", "status": "decided", "note": "modern kept on a tie"},
-    {"name": "Captions", "a": "static 68.6", "b": "kinetic 66.9", "status": "decided", "note": "kinetic kept, your call"},
-    {"name": "Episode numbers", "a": "numbered 79.7 (9)", "b": "plain 70.0 (5)", "status": "leading"},
-    {"name": "Points ladder", "a": "dots 74.0 (11)", "b": "chip 74.2 (3)", "status": "early"},
-    {"name": "Rapid ending", "a": "spoken 63.8 (7)", "b": "loop 62.3 (7)", "status": "early", "note": "loop gains more subscribers"},
-    {"name": "Hint count", "a": "—", "b": "—", "status": "early", "note": "started Nov 18"}
+    {"name": "Episode numbers", "a": "numbered 76.7 (11)", "b": "plain 70.7 (6)", "status": "leading"},
+    {"name": "Points ladder", "a": "dots 74.5 (12)", "b": "chip 69.7 (5)", "status": "early"},
+    {"name": "Rapid ending", "a": "spoken 66.1 (9)", "b": "loop 62.1 (8)", "status": "early", "note": "loop gains more subscribers"},
+    {"name": "Rapid voice", "a": "liam 74.5 (2)", "b": "coral 59.6 (2)", "status": "early"},
+    {"name": "Hint count", "a": "—", "b": "—", "status": "early", "note": "no scored videos yet"}
   ],
   "ideas": [
-    "Move Starter, Water and Generation 1 themes to rapid-fire only, because they do several times better there than as single Shorts.",
-    "Stop the Facebook cross-post, because 156 posts have reached nobody."
+    "Stop the Facebook cross-post, because 162 posts have reached nobody."
   ],
   "watch": [
-    "Episode numbers lead by ten points and are five videos from a decision.",
-    "The analytics job runs 7 to 10 hours late, so morning figures are a day old.",
-    "ElevenLabs balance could not be read this morning."
+    "Analytics runs three days behind, so the newest views are Nov 16.",
+    "One Nov 18 Short used the fallback voice instead of Liam."
   ],
   "changes": [
-    "Captions decision closed.",
-    "Closing-line and cry tests decided; the hint-count test is now running."
+    "Brief format tightened to one-line bullets with a metrics strip."
   ]
 }
