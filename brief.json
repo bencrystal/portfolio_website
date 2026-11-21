@@ -1,44 +1,36 @@
 {
-  "date": "2026-11-20",
-  "written_at": "2026-11-20T12:45:00Z",
-  "headline": "Clean day, six uploads, no failures; PR #8 still waits on you.",
+  "date": "2026-11-21", "written_at": "2026-11-21T12:40:00Z",
+  "headline": "Six uploads, no failures, and the new formats are live.",
   "metrics": [
-    {"label": "Subscribers", "value": "59", "delta": "+4"},
-    {"label": "Views · Nov 16", "value": "2,704"},
-    {"label": "Uploads · Nov 19", "value": "6"},
+    {"label": "Subscribers", "value": "61", "delta": "+2"},
+    {"label": "Views · Nov 17", "value": "3,173"},
+    {"label": "Uploads · Nov 20", "value": "6"},
     {"label": "Run failures", "value": "0"},
-    {"label": "Instagram views", "value": "141,084", "delta": "+4,967"},
-    {"label": "ElevenLabs credits used", "value": "2,611 / 31,496"}
+    {"label": "Instagram views", "value": "146,729", "delta": "+5,645"},
+    {"label": "ElevenLabs credits used", "value": "2,786 / 31,496"}
   ],
   "happened": [
-    "Three Shorts and three rapid-fires went out on Nov 19, all green.",
-    "Viewers keep posting their rapid-fire scores in the comments."
+    "Three Shorts and three rapid-fires went out, all green.",
+    "PR #8 merged, so the medicine quiz and slowed cries are live.",
+    "The episode numbers test is decided, numbered stays."
   ],
-  "decisions": [
-    {
-      "id": "pr-8-new-formats",
-      "title": "Merge PR #8: Pokémon-or-medicine, slowed cries, Pokédex-first test?",
-      "why": "Previews are rendered and the intro and voice fixes are in; nothing goes live until Ben says so.",
-      "options": ["Merge all of it", "Merge without slowed cries (51 s is long)", "Hold for changes"],
-      "recommendation": "Merge all of it",
-      "how": "Reply in chat."
-    }
-  ],
+  "decisions": [],
   "tests": [
-    {"name": "Episode numbers", "a": "numbered 76.7 (11)", "b": "plain 70.7 (6)", "status": "leading"},
-    {"name": "Points ladder", "a": "dots 74.5 (12)", "b": "chip 69.7 (5)", "status": "early"},
-    {"name": "Rapid ending", "a": "spoken 66.1 (9)", "b": "loop 62.1 (8)", "status": "early", "note": "loop gains more subscribers"},
-    {"name": "Rapid voice", "a": "liam 74.5 (2)", "b": "coral 59.6 (2)", "status": "early"},
+    {"name": "Points ladder", "a": "dots 74.7 (14)", "b": "chip 73.1 (5)", "status": "early"},
+    {"name": "Rapid ending", "a": "spoken 65.1 (12)", "b": "loop 62.0 (8)", "status": "early", "note": "loop gains more subscribers"},
+    {"name": "Rapid voice", "a": "liam 70.9 (4)", "b": "coral 56.8 (3)", "status": "early"},
+    {"name": "Rapid length", "a": "five 301 (2)", "b": "seven 145.5 (2)", "status": "early", "note": "judged on 7-day views"},
     {"name": "Hint count", "a": "—", "b": "—", "status": "early", "note": "no scored videos yet"}
   ],
   "ideas": [
-    "Stop the Facebook cross-post, because 162 posts have reached nobody."
+    "Stop the Facebook cross-post, because 168 posts have drawn 3 views."
   ],
   "watch": [
-    "Analytics runs three days behind, so the newest views are Nov 16.",
-    "One Nov 18 Short used the fallback voice instead of Liam."
+    "Analytics runs four days behind, so the newest views are Nov 17.",
+    "Slowed-cry rapid-fire ran 44 seconds, longer than the usual 35."
   ],
   "changes": [
-    "Brief format tightened to one-line bullets with a metrics strip."
+    "Pokédex hints now agree in plural after the name is hidden.",
+    "Binary quiz video slugs now come from the first word."
   ]
 }
