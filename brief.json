@@ -1,36 +1,36 @@
 {
-  "date": "2026-11-21", "written_at": "2026-11-21T12:40:00Z",
-  "headline": "Six uploads, no failures, and the new formats are live.",
+  "date": "2026-11-22",
+  "written_at": "2026-11-22T12:45:00Z",
+  "headline": "Six uploads went out; one render failed on a voice clip and recovered.",
   "metrics": [
-    {"label": "Subscribers", "value": "61", "delta": "+2"},
-    {"label": "Views · Nov 17", "value": "3,173"},
-    {"label": "Uploads · Nov 20", "value": "6"},
-    {"label": "Run failures", "value": "0"},
-    {"label": "Instagram views", "value": "146,729", "delta": "+5,645"},
-    {"label": "ElevenLabs credits used", "value": "2,786 / 31,496"}
+    {"label": "Subscribers", "value": "67", "delta": "+6"},
+    {"label": "Views · Nov 18", "value": "3,367"},
+    {"label": "Uploads · Nov 21", "value": "6"},
+    {"label": "Run failures", "value": "1"},
+    {"label": "Instagram views", "value": "149,989", "delta": "+3,260"},
+    {"label": "ElevenLabs credits used", "value": "2,966 / 31,496"}
   ],
   "happened": [
-    "Three Shorts and three rapid-fires went out, all green.",
-    "PR #8 merged, so the medicine quiz and slowed cries are live.",
-    "The episode numbers test is decided, numbered stays."
+    "Three Shorts and three rapid-fires went out.",
+    "A Generation 4 Short failed on a too-short voice clip.",
+    "The next hourly slot published a different Short.",
+    "Dragon, Psychic and Electric Shorts draw the most views; Starter and Gen 1 trail."
   ],
   "decisions": [],
   "tests": [
-    {"name": "Points ladder", "a": "dots 74.7 (14)", "b": "chip 73.1 (5)", "status": "early"},
-    {"name": "Rapid ending", "a": "spoken 65.1 (12)", "b": "loop 62.0 (8)", "status": "early", "note": "loop gains more subscribers"},
-    {"name": "Rapid voice", "a": "liam 70.9 (4)", "b": "coral 56.8 (3)", "status": "early"},
-    {"name": "Rapid length", "a": "five 301 (2)", "b": "seven 145.5 (2)", "status": "early", "note": "judged on 7-day views"},
-    {"name": "Hint count", "a": "—", "b": "—", "status": "early", "note": "no scored videos yet"}
+    {"name": "Hint count", "a": "two 88.0 (1)", "b": "one 75.2 (1)", "status": "early"},
+    {"name": "Points ladder", "a": "dots 74.4 (15)", "b": "chip 74.4 (7)", "status": "early"},
+    {"name": "Rapid ending", "a": "spoken 66.1 (15)", "b": "loop 62.1 (8)", "status": "tie", "note": "loop gains more subscribers"},
+    {"name": "Rapid voice", "a": "liam 69.4 (5)", "b": "coral 65.7 (5)", "status": "early"},
+    {"name": "Rapid length", "a": "seven 811.5 (4)", "b": "five 513.7 (3)", "status": "early", "note": "judged on 7-day views"}
   ],
   "ideas": [
-    "Stop the Facebook cross-post, because 168 posts have drawn 3 views."
+    "Stop the Facebook cross-post, because 174 posts have drawn 3 views."
   ],
   "watch": [
-    "Analytics runs four days behind, so the newest views are Nov 17.",
-    "Slowed-cry rapid-fire ran 44 seconds, longer than the usual 35."
+    "Analytics runs four days behind, so the newest views are Nov 18.",
+    "The voice clip failure may repeat on short Pokédex lines.",
+    "ElevenLabs credits are far under pace, and Ben wants them used."
   ],
-  "changes": [
-    "Pokédex hints now agree in plural after the name is hidden.",
-    "Binary quiz video slugs now come from the first word."
-  ]
+  "changes": []
 }
