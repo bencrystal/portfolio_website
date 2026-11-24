@@ -1,34 +1,38 @@
 {
-  "date": "2026-11-23", "written_at": "2026-11-23T12:50:00Z",
-  "headline": "Six uploads, no failures; the points-ladder test ended with dots kept.",
+  "date": "2026-11-24",
+  "written_at": "2026-11-24T12:45:00Z",
+  "headline": "Seven uploads, one preview failure; the Real animal or Pokémon explorer is shelved.",
   "metrics": [
-    {"label": "Subscribers", "value": "71", "delta": "+4"},
-    {"label": "Views · Nov 19", "value": "2,446"},
-    {"label": "Uploads · Nov 22", "value": "6"},
-    {"label": "Run failures", "value": "0"},
-    {"label": "Instagram views", "value": "159,736", "delta": "+9,747"},
-    {"label": "ElevenLabs credits used", "value": "3,234 / 31,496"}
+    {"label": "Subscribers", "value": "73", "delta": "+2"},
+    {"label": "Views · Nov 20", "value": "3,736"},
+    {"label": "Uploads · last 24 h", "value": "7"},
+    {"label": "Run failures", "value": "1"},
+    {"label": "Instagram views", "value": "166,723", "delta": "+6,987"},
+    {"label": "ElevenLabs credits used", "value": "4,131 / 31,496"}
   ],
   "happened": [
-    "Three Shorts and three rapid-fires went out.",
-    "The points-ladder test ended in a tie, so dots stay.",
-    "Rapid-fire Ash and Generation 2 rounds ran alongside a seven-sound Dragon round."
+    "A long-form, three Shorts and three rapid-fires went out.",
+    "Instagram rejected one Reel upload; YouTube and Facebook took it.",
+    "Real animal or Pokémon? failed its overnight preview render.",
+    "Six other explorer concepts rendered cleanly as previews."
   ],
   "decisions": [],
   "tests": [
-    {"name": "Points ladder", "a": "dots 74.1 (16)", "b": "chip 78.2 (9)", "status": "decided", "note": "tie, dots kept as incumbent"},
-    {"name": "Hint count", "a": "two 78.1 (4)", "b": "one 77.2 (1)", "status": "early"},
-    {"name": "Rapid ending", "a": "spoken 66.5 (16)", "b": "loop 61.9 (10)", "status": "tie", "note": "loop gains more subscribers"},
-    {"name": "Rapid voice", "a": "liam 68.0 (7)", "b": "coral 67.8 (6)", "status": "early"},
-    {"name": "Rapid length", "a": "five 572.4 (5)", "b": "seven 544.2 (5)", "status": "early", "note": "judged on 7-day views"}
+    {"name": "Hint count", "a": "two 73.1 (7)", "b": "one 77.5 (1)", "status": "early"},
+    {"name": "Rapid ending", "a": "spoken 66.5 (17)", "b": "loop 61.9 (10)", "status": "tie", "note": "loop reaches more viewers"},
+    {"name": "Rapid length", "a": "five 552.7 (6)", "b": "seven 545.8 (7)", "status": "early", "note": "judged on 7-day views"},
+    {"name": "Rapid voice", "a": "liam 68.4 (8)", "b": "coral 66.3 (6)", "status": "early"},
+    {"name": "Order", "a": "cry 75.1 (1)", "b": "dex no data", "status": "early"}
   ],
   "ideas": [],
   "watch": [
-    "Analytics runs four days behind, so the newest views are Nov 19.",
+    "Analytics runs four days behind, so the newest views are Nov 20.",
+    "Instagram error 2207077 hit one Reel; watch for repeats.",
     "Credits are far under pace and reset on Dec 9."
   ],
   "changes": [
-    "A voice line cut short twice now falls back to OpenAI instead of failing.",
-    "The run log now prints each item's spoken hints for checking."
+    "The explore lane now gives two daily Shorts to new concepts on trial.",
+    "A second renderer, Remotion, now draws the medicine quiz as an explorer.",
+    "Real animal or Pokémon? is shelved because recordings clash with synthesised cries."
   ]
 }
