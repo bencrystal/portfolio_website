@@ -1,32 +1,32 @@
 {
-  "date": "2026-11-26", "written_at": "2026-11-26T12:40:00Z",
-  "headline": "Six uploads, no failures, and seven-sound rapid-fires won the length test.",
+  "date": "2026-11-27", "written_at": "2026-11-27T12:40:00Z",
+  "headline": "Six uploads, no failures, and Pokémon-or-X Shorts keep out-pulling the channel's base Shorts.",
   "metrics": [
-    {"label": "Subscribers", "value": "76", "delta": "+2"},
-    {"label": "Views · Nov 22", "value": "3,301"},
+    {"label": "Subscribers", "value": "80", "delta": "+4"},
+    {"label": "Views · Nov 23", "value": "1,873"},
     {"label": "Uploads · last 24 h", "value": "6"},
     {"label": "Run failures", "value": "0"},
-    {"label": "Instagram views", "value": "176,621", "delta": "+3,322"},
-    {"label": "ElevenLabs credits used", "value": "4,421 / 31,496"}
+    {"label": "Instagram views", "value": "179,992", "delta": "+3,371"},
+    {"label": "ElevenLabs credits used", "value": "4,630 / 31,496"}
   ],
   "happened": [
-    "Rapid length test decided: seven sounds beat five on seven-day views.",
     "Two Shorts and four rapid-fires went out, all cross-posted.",
-    "Shorts Ep. 99 and Ep. 100 were Dragon and Grass types.",
+    "Shorts Ep. 101 and Ep. 102 were Generation 1 and Bug types.",
+    "Explorer Shorts for IKEA, tech company and cheese are on trial.",
     "No explorer concept has been judged yet."
   ],
   "decisions": [],
   "tests": [
-    {"name": "Rapid length", "a": "seven 621 (10)", "b": "five 473 (9)", "status": "decided", "note": "judged on 7-day views"},
-    {"name": "Hint count", "a": "two 71.0 (10)", "b": "one 69.0 (4)", "status": "early"},
-    {"name": "Order", "a": "cry 69.0 (3)", "b": "dex 67.1 (4)", "status": "early"},
-    {"name": "Rapid ending", "a": "spoken 66.0 (22)", "b": "loop 62.1 (11)", "status": "tie"},
-    {"name": "Rapid voice", "a": "coral 68.3 (9)", "b": "liam 64.8 (11)", "status": "early"}
+    {"name": "Hint count", "a": "two 71.2 (12)", "b": "one 66.3 (5)", "status": "early"},
+    {"name": "Order", "a": "dex 68.6 (5)", "b": "cry 66.9 (5)", "status": "early"},
+    {"name": "Rapid ending", "a": "spoken 65.9 (23)", "b": "loop 62.2 (11)", "status": "tie"},
+    {"name": "Rapid voice", "a": "coral 67.9 (9)", "b": "liam 65.0 (12)", "status": "early"}
   ],
-  "ideas": [],
+  "ideas": [
+    "Add more Pokémon-or-X concepts because each one so far beat the base Shorts median on views."
+  ],
   "watch": [
-    "Analytics runs four days behind, so the newest views are Nov 22.",
-    "Facebook shows 3 views across 199 posts."
+    "Nov 23 views are the lowest of the last ten days."
   ],
   "changes": []
 }
