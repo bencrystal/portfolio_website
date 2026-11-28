@@ -4,7 +4,7 @@ import Background from '@/components/Background'
 
 export const metadata: Metadata = {
   title: 'All Pages · Ben Crystal',
-  description: 'Personal index of every unlinked page on bencrystal.me.',
+  description: 'Personal index of every hidden page on bencrystal.me.',
   robots: { index: false },
 }
 
@@ -32,15 +32,7 @@ const GROUPS: IndexGroup[] = [
       { href: '/practice/tree', label: '/practice/tree', note: 'Old skill tree (demoted, kept reachable)' },
       { href: '/define', label: '/define', note: 'Merriam-Webster + Urban Dictionary side by side' },
       { href: '/quizbot', label: '/quizbot', note: 'Play It By Ear channel dashboard (aliases: /audioquiz, /playitbyear)' },
-    ],
-  },
-  {
-    title: 'Pages',
-    entries: [
       { href: '/links', label: '/links', note: 'Public linktree for Instagram bio (events + music), edit data/links.ts' },
-      { href: '/music', label: '/music', note: 'Music releases' },
-      { href: '/mezcal', label: '/mezcal', note: "Gary's Mezcal Journey — tasting invite" },
-      { href: '/fetus', label: '/fetus', note: 'Fetal length by week (cm / in) with fruit/veg and everyday-object comparisons' },
     ],
   },
   {
@@ -51,6 +43,17 @@ const GROUPS: IndexGroup[] = [
       { href: '/livemic/privacy', label: '/livemic/privacy', note: 'Live Mic privacy policy' },
       { href: '/livemic/support', label: '/livemic/support', note: 'Live Mic support page' },
       { href: '/quizbot/privacy', label: '/quizbot/privacy', note: 'Quizbot privacy policy (Meta / TikTok developer apps)' },
+      { href: '/quizbot/terms', label: '/quizbot/terms', note: 'Quizbot terms of service' },
+      { href: '/quizbot/tiktok-callback', label: '/quizbot/tiktok-callback', note: 'TikTok OAuth redirect target' },
+    ],
+  },
+  {
+    title: 'Client pages',
+    entries: [
+      { href: '/mezcal', label: '/mezcal', note: "Gary's Mezcal Journey — tasting invite" },
+      { href: '/fetus', label: '/fetus', note: 'Fetal length by week (cm / in) with fruit/veg and everyday-object comparisons' },
+      { href: '/drgarycrystal', label: '/drgarycrystal', note: 'Dr. Gary Crystal site redesign preview', external: true },
+      { href: '/modernfamilydentistryjc', label: '/modernfamilydentistryjc', note: 'Modern Family Dentistry JC demo', external: true },
     ],
   },
   {
@@ -133,7 +136,7 @@ export default function AllPagesPage() {
           <span style={{ color: ACCENT }}>.</span>
         </h1>
         <p className="mt-4 max-w-xl text-base text-neutral-300">
-          Every unlinked page on the site, in one place. Not indexed by search engines.
+          Every hidden page on the site, in one place. Not indexed by search engines.
         </p>
 
         <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 items-start">
