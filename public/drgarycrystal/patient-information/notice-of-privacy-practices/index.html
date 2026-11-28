@@ -4,7 +4,7 @@
       if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
         document.documentElement.classList.add('anim');
       }
-    </script><script type="application/ld+json">{"@context":"https://schema.org","@type":"Dentist","name":"Gary S. Crystal, DMD, PA","url":"https://www.drgarycrystal.com/","telephone":"+1-908-665-0200","faxNumber":"+1-908-771-0156","medicalSpecialty":"Prosthodontic","address":{"@type":"PostalAddress","streetAddress":"221 Sherman Avenue","addressLocality":"Berkeley Heights","addressRegion":"NJ","postalCode":"07922","addressCountry":"US"}}</script><link rel="stylesheet" href="/drgarycrystal/_astro/Base.DQHYqagm.css"></head><body id="top"><a class="skip" href="#main">Skip to main content</a><header class="site-header"><div class="wrap header-top"><a class="wordmark" href="/drgarycrystal/"><strong>Gary S. Crystal, DMD</strong><span>Implant, Aesthetic &amp; Restorative Dentistry</span></a><a class="btn" href="tel:+19086650200">Call (908) 665-0200</a></div><nav class="site-nav" aria-label="Main"><div class="wrap menu-bar"><button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu"><svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button></div><ul class="wrap" id="site-menu"><li><a href="/drgarycrystal/">Home</a></li><li><a href="/drgarycrystal/patient-information/" aria-current="true">Patient Information</a></li><li><a href="/drgarycrystal/treatments/">Treatments</a></li><li><a href="/drgarycrystal/cosmetic-treatments/">Cosmetic Treatments</a></li><li><a href="/drgarycrystal/dental-health/">Dental Health</a></li><li><a href="/drgarycrystal/meet-us/">Meet the Doctor</a></li><li><a href="/drgarycrystal/contact-us/">Contact</a></li></ul></nav></header><main id="main"><div class="wrap page has-side"><article><p class="crumbs"><a href="/drgarycrystal/patient-information/">Patient Information</a></p><h1>Notice of Privacy Practices</h1><div class="prose"><p>This section describes how health information about you may be used and disclosed and how you can get access to this information.</p>
+    </script><script type="application/ld+json">{"@context":"https://schema.org","@type":"Dentist","name":"Gary S. Crystal, DMD, PA","url":"https://www.drgarycrystal.com/","telephone":"+1-908-665-0200","faxNumber":"+1-908-771-0156","medicalSpecialty":"Prosthodontic","address":{"@type":"PostalAddress","streetAddress":"221 Sherman Avenue","addressLocality":"Berkeley Heights","addressRegion":"NJ","postalCode":"07922","addressCountry":"US"}}</script><link rel="stylesheet" href="/drgarycrystal/_astro/Base.BXjjrCSI.css"></head><body id="top"><a class="skip" href="#main">Skip to main content</a><header class="site-header"><div class="wrap header-top"><a class="wordmark" href="/drgarycrystal/"><strong>Gary S. Crystal, DMD</strong><span>Implant, Aesthetic &amp; Restorative Dentistry</span></a><a class="btn" href="tel:+19086650200">Call (908) 665-0200</a></div><nav class="site-nav" aria-label="Main"><div class="wrap menu-bar"><button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu"><svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button></div><ul class="wrap" id="site-menu"><li><a href="/drgarycrystal/">Home</a></li><li><a href="/drgarycrystal/patient-information/" aria-current="true">Patient Information</a></li><li><a href="/drgarycrystal/treatments/">Treatments</a></li><li><a href="/drgarycrystal/cosmetic-treatments/">Cosmetic Treatments</a></li><li><a href="/drgarycrystal/dental-health/">Dental Health</a></li><li><a href="/drgarycrystal/meet-us/">Meet the Doctor</a></li><li><a href="/drgarycrystal/contact-us/">Contact</a></li></ul></nav></header><main id="main"><div class="wrap page has-side"><article><p class="crumbs"><a href="/drgarycrystal/patient-information/">Patient Information</a></p><h1>Notice of Privacy Practices</h1><div class="prose"><p>This section describes how health information about you may be used and disclosed and how you can get access to this information.</p>
 <p>Please review it carefully. The privacy of your health information is important to us.</p>
 <p>OUR LEGAL DUTY</p>
 <p>We are required by applicable federal and state law to maintain the privacy of your health information. We are also required to give you this Notice about our privacy practices, our legal duties and your rights concerning your health information. We must follow the privacy practices that are described in this Notice while it is in effect. This Notice takes effect April 14, 2003 and will remain in effect until we replace it.</p>
@@ -36,20 +36,47 @@
           const open = menu.classList.toggle('open');
           toggle.setAttribute('aria-expanded', String(open));
         });
-        // Carousels scroll natively (swipe, trackpad, keyboard); the buttons just nudge the track.
+        // Carousels scroll natively (swipe, trackpad, keyboard). The script marks the middle
+        // slide as current and, once scrolling settles, moves a slide from the far end round
+        // to the near one, so there is always a neighbour on both sides and it never ends.
         document.querySelectorAll('.carousel').forEach((c) => {
           const track = c.querySelector('.track');
           const [prev, next] = c.querySelectorAll('.carousel-nav button');
-          const step = (dir) => track.scrollBy({ left: dir * track.clientWidth * 0.85, behavior: 'smooth' });
-          const sync = () => {
-            prev.disabled = track.scrollLeft < 8;
-            next.disabled = track.scrollLeft + track.clientWidth > track.scrollWidth - 8;
+          const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+          const loops = track.children.length > 2;
+          const mid = (el) => el.offsetLeft + el.offsetWidth / 2;
+          const centre = () => track.scrollLeft + track.clientWidth / 2;
+          const current = () =>
+            [...track.children].reduce((best, el) => (Math.abs(mid(el) - centre()) < Math.abs(mid(best) - centre()) ? el : best));
+          const mark = () => {
+            const now = current();
+            for (const el of track.children) el.classList.toggle('is-active', el === now);
+            return now;
           };
-          prev.addEventListener('click', () => step(-1));
-          next.addEventListener('click', () => step(1));
-          track.addEventListener('scroll', sync, { passive: true });
-          addEventListener('resize', sync);
-          sync();
+          const jump = (el) => track.scrollTo({ left: mid(el) - track.clientWidth / 2, behavior: 'instant' });
+          const settle = () => {
+            const now = mark();
+            if (!loops) return;
+            if (!now.previousElementSibling) track.prepend(track.lastElementChild);
+            else if (!now.nextElementSibling) track.append(track.firstElementChild);
+            else return;
+            jump(now);
+          };
+          const go = (el) => el && track.scrollTo({ left: mid(el) - track.clientWidth / 2, behavior: calm ? 'auto' : 'smooth' });
+          prev.addEventListener('click', () => go(current().previousElementSibling));
+          next.addEventListener('click', () => go(current().nextElementSibling));
+          track.addEventListener('click', (e) => {
+            const el = e.target.closest('.track > li');
+            if (el && el !== current()) go(el);
+          });
+          let timer;
+          track.addEventListener('scroll', () => {
+            mark();
+            clearTimeout(timer);
+            timer = setTimeout(settle, 140);
+          }, { passive: true });
+          addEventListener('resize', () => jump(current()));
+          settle();
         });
 
         if (!document.documentElement.classList.contains('anim')) return;
