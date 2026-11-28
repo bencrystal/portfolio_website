@@ -4,7 +4,7 @@
       if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
         document.documentElement.classList.add('anim');
       }
-    </script><script type="application/ld+json">{"@context":"https://schema.org","@type":"Dentist","name":"Gary S. Crystal, DMD, PA","url":"https://www.drgarycrystal.com/","telephone":"+1-908-665-0200","faxNumber":"+1-908-771-0156","medicalSpecialty":"Prosthodontic","address":{"@type":"PostalAddress","streetAddress":"221 Sherman Avenue","addressLocality":"Berkeley Heights","addressRegion":"NJ","postalCode":"07922","addressCountry":"US"}}</script><link rel="stylesheet" href="/drgarycrystal/_astro/Base.ts7nJ9vW.css"></head><body id="top"><a class="skip" href="#main">Skip to main content</a><header class="site-header"><div class="wrap header-top"><a class="wordmark" href="/drgarycrystal/"><strong>Gary S. Crystal, DMD</strong><span>Implant, Aesthetic &amp; Restorative Dentistry</span></a><a class="btn" href="tel:+19086650200">Call (908) 665-0200</a></div><nav class="site-nav" aria-label="Main"><div class="wrap menu-bar"><button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu"><svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button></div><ul class="wrap" id="site-menu"><li><a href="/drgarycrystal/">Home</a></li><li><a href="/drgarycrystal/patient-information/" aria-current="true">Patient Information</a></li><li><a href="/drgarycrystal/treatments/">Treatments</a></li><li><a href="/drgarycrystal/cosmetic-treatments/">Cosmetic Treatments</a></li><li><a href="/drgarycrystal/dental-health/">Dental Health</a></li><li><a href="/drgarycrystal/meet-us/">Meet the Doctor</a></li><li><a href="/drgarycrystal/contact-us/">Contact</a></li></ul></nav></header><main id="main"><div class="wrap page has-side"><article><p class="crumbs"><a href="/drgarycrystal/patient-information/">Patient Information</a></p><h1>Under Armour Performance Mouthwear</h1><div class="prose"><h3>PERFORMANCE SOLUTIONS FOR EVERY ATHLETE.</h3>
+    </script><script type="application/ld+json">{"@context":"https://schema.org","@type":"Dentist","name":"Gary S. Crystal, DMD, PA","url":"https://www.drgarycrystal.com/","telephone":"+1-908-665-0200","faxNumber":"+1-908-771-0156","medicalSpecialty":"Prosthodontic","address":{"@type":"PostalAddress","streetAddress":"221 Sherman Avenue","addressLocality":"Berkeley Heights","addressRegion":"NJ","postalCode":"07922","addressCountry":"US"}}</script><link rel="stylesheet" href="/drgarycrystal/_astro/Base.ByoBLswo.css"></head><body id="top"><a class="skip" href="#main">Skip to main content</a><header class="site-header"><div class="wrap header-top"><a class="wordmark" href="/drgarycrystal/"><strong>Gary S. Crystal, DMD</strong><span>Implant, Aesthetic &amp; Restorative Dentistry</span></a><a class="btn" href="tel:+19086650200">Call (908) 665-0200</a></div><nav class="site-nav" aria-label="Main"><div class="wrap menu-bar"><button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu"><svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button></div><ul class="wrap" id="site-menu"><li><a href="/drgarycrystal/">Home</a></li><li><a href="/drgarycrystal/patient-information/" aria-current="true">Patient Information</a></li><li><a href="/drgarycrystal/treatments/">Treatments</a></li><li><a href="/drgarycrystal/cosmetic-treatments/">Cosmetic Treatments</a></li><li><a href="/drgarycrystal/dental-health/">Dental Health</a></li><li><a href="/drgarycrystal/meet-us/">Meet the Doctor</a></li><li><a href="/drgarycrystal/contact-us/">Contact</a></li></ul></nav></header><main id="main"><div class="wrap page has-side"><article><p class="crumbs"><a href="/drgarycrystal/patient-information/">Patient Information</a></p><h1>Under Armour Performance Mouthwear</h1><div class="prose"><h3>PERFORMANCE SOLUTIONS FOR EVERY ATHLETE.</h3>
 <h2>The technology is patented. The performance is proven. The advantages are undeniable.</h2>
 <p> Under Armour</p>
 <p> <a href="http://www.underarmour.com/shop/us/en/accessories?cid=DA|Armourbite">View Website</a></p>
@@ -17,6 +17,22 @@
           const open = menu.classList.toggle('open');
           toggle.setAttribute('aria-expanded', String(open));
         });
+        // Carousels scroll natively (swipe, trackpad, keyboard); the buttons just nudge the track.
+        document.querySelectorAll('.carousel').forEach((c) => {
+          const track = c.querySelector('.track');
+          const [prev, next] = c.querySelectorAll('.carousel-nav button');
+          const step = (dir) => track.scrollBy({ left: dir * track.clientWidth * 0.85, behavior: 'smooth' });
+          const sync = () => {
+            prev.disabled = track.scrollLeft < 8;
+            next.disabled = track.scrollLeft + track.clientWidth > track.scrollWidth - 8;
+          };
+          prev.addEventListener('click', () => step(-1));
+          next.addEventListener('click', () => step(1));
+          track.addEventListener('scroll', sync, { passive: true });
+          addEventListener('resize', sync);
+          sync();
+        });
+
         if (!document.documentElement.classList.contains('anim')) return;
         const io = new IntersectionObserver(
           (entries) => entries.forEach((e) => {

@@ -54,6 +54,9 @@ const nextConfig = {
       // pages are directory index.html files; asset files are matched first.
       { source: '/drgarycrystal', destination: '/drgarycrystal/index.html' },
       { source: '/drgarycrystal/:path*', destination: '/drgarycrystal/:path*/index.html' },
+      // Same arrangement for the /modernfamilydentistryjc demo.
+      { source: '/modernfamilydentistryjc', destination: '/modernfamilydentistryjc/index.html' },
+      { source: '/modernfamilydentistryjc/:path*', destination: '/modernfamilydentistryjc/:path*/index.html' },
     ]
   },
   // Add cache control
