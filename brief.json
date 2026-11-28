@@ -1,32 +1,34 @@
 {
-  "date": "2026-11-27", "written_at": "2026-11-27T12:40:00Z",
-  "headline": "Six uploads, no failures, and Pokémon-or-X Shorts keep out-pulling the channel's base Shorts.",
+  "date": "2026-11-28", "written_at": "2026-11-28T12:40:00Z",
+  "headline": "Seven uploads, no failures, and Pokémon-or-X explorers are still beating base Shorts.",
   "metrics": [
-    {"label": "Subscribers", "value": "80", "delta": "+4"},
-    {"label": "Views · Nov 23", "value": "1,873"},
-    {"label": "Uploads · last 24 h", "value": "6"},
+    {"label": "Subscribers", "value": "83", "delta": "+3"},
+    {"label": "Views · Nov 24", "value": "4,185"},
+    {"label": "Uploads · last 24 h", "value": "7"},
     {"label": "Run failures", "value": "0"},
-    {"label": "Instagram views", "value": "179,992", "delta": "+3,371"},
-    {"label": "ElevenLabs credits used", "value": "4,630 / 31,496"}
+    {"label": "Instagram views", "value": "187,485", "delta": "+7,493"},
+    {"label": "ElevenLabs credits used", "value": "4,773 / 31,496"}
   ],
   "happened": [
-    "Two Shorts and four rapid-fires went out, all cross-posted.",
-    "Shorts Ep. 101 and Ep. 102 were Generation 1 and Bug types.",
-    "Explorer Shorts for IKEA, tech company and cheese are on trial.",
+    "Two Shorts and five rapid-fires went out.",
+    "Shorts Ep. 103 and Ep. 104 were Psychic and Water types.",
+    "The first Which Pokémon is it? explorer rapid-fire went live.",
     "No explorer concept has been judged yet."
   ],
   "decisions": [],
   "tests": [
-    {"name": "Hint count", "a": "two 71.2 (12)", "b": "one 66.3 (5)", "status": "early"},
-    {"name": "Order", "a": "dex 68.6 (5)", "b": "cry 66.9 (5)", "status": "early"},
-    {"name": "Rapid ending", "a": "spoken 65.9 (23)", "b": "loop 62.2 (11)", "status": "tie"},
-    {"name": "Rapid voice", "a": "coral 67.9 (9)", "b": "liam 65.0 (12)", "status": "early"}
-  ],
-  "ideas": [
-    "Add more Pokémon-or-X concepts because each one so far beat the base Shorts median on views."
+    {"name": "Hint count", "a": "two 71.7 (13)", "b": "one 65.5 (6)", "status": "early"},
+    {"name": "Order", "a": "cry 68.4 (6)", "b": "dex 67.4 (6)", "status": "early"},
+    {"name": "Rapid ending", "a": "spoken 65.4 (24)", "b": "loop 62.6 (11)", "status": "tie"},
+    {"name": "Rapid voice", "a": "coral 66.7 (9)", "b": "liam 65.3 (13)", "status": "early"}
   ],
   "watch": [
-    "Nov 23 views are the lowest of the last ten days."
+    "Viewers on the medicine rapid-fire call the AI voice bad.",
+    "Explorer Shorts for cheese and tech company are above the base median."
   ],
-  "changes": []
+  "changes": [
+    "Which Pokémon is it? joined the explore lane.",
+    "The corpus study now filters by channel size.",
+    "The roadmap now lists general formats after the first explorer verdicts."
+  ]
 }
