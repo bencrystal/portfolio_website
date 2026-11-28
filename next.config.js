@@ -48,7 +48,13 @@ const nextConfig = {
   // /index can't be an app route (collides with Next's internal name for /),
   // so the personal page index lives at /pages and /index aliases it.
   rewrites: async () => {
-    return [{ source: '/index', destination: '/pages' }]
+    return [
+      { source: '/index', destination: '/pages' },
+      // /drgarycrystal is a static preview build (public/drgarycrystal) whose
+      // pages are directory index.html files; asset files are matched first.
+      { source: '/drgarycrystal', destination: '/drgarycrystal/index.html' },
+      { source: '/drgarycrystal/:path*', destination: '/drgarycrystal/:path*/index.html' },
+    ]
   },
   // Add cache control
   headers: async () => {
